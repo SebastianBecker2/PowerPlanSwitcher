@@ -32,7 +32,8 @@ namespace PowerPlanSwitcher
 
                 var schemeButton = new ToolStripMenuItem
                 {
-                    Text = (activeSchemeGuid == guid ? "*" : "")
+                    Image = setting?.Icon,
+                    Text = (activeSchemeGuid == guid ? "(Active) " : "")
                         + (name ?? guid.ToString()),
                 };
 
