@@ -28,6 +28,7 @@ namespace PowerPlanSwitcher
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsDlg));
             this.DgvPowerSchemes = new System.Windows.Forms.DataGridView();
             this.DgcVisible = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.DgcName = new System.Windows.Forms.DataGridViewTextBoxColumn();
@@ -115,8 +116,9 @@ namespace PowerPlanSwitcher
             this.Controls.Add(this.BtnCancel);
             this.Controls.Add(this.BtnOk);
             this.Controls.Add(this.DgvPowerSchemes);
+            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
             this.Name = "SettingsDlg";
-            this.Text = "Form1";
+            this.Text = "PowerPlanSwitcher - Settings";
             ((System.ComponentModel.ISupportInitialize)(this.DgvPowerSchemes)).EndInit();
             this.ResumeLayout(false);
 
