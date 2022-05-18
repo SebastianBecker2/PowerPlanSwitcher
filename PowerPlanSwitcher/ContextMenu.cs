@@ -15,6 +15,7 @@ namespace PowerPlanSwitcher
             AddPowerSchemes();
             _ = Items.Add(new ToolStripSeparator());
             AddSettingsButton();
+            AddAboutButton();
             _ = Items.Add(new ToolStripSeparator());
             AddCloseButton();
         }
@@ -30,46 +31,62 @@ namespace PowerPlanSwitcher
                     continue;
                 }
 
-                var schemeButton = new ToolStripMenuItem
+                var button = new ToolStripMenuItem
                 {
                     Image = setting?.Icon,
                     Text = (activeSchemeGuid == guid ? "(Active) " : "")
                         + (name ?? guid.ToString()),
                 };
 
-                schemeButton.Click += (s, e) =>
+                button.Click += (_, _) =>
                     PowerManager.SetActivePowerScheme(guid);
 
-                _ = Items.Add(schemeButton);
+                _ = Items.Add(button);
             }
         }
 
         private void AddSettingsButton()
         {
-            var settingsButton = new ToolStripMenuItem
+            var button = new ToolStripMenuItem
             {
                 Text = "Open settings..."
             };
 
-            settingsButton.Click += (s, e) =>
+            button.Click += (_, _) =>
             {
                 using var dlg = new SettingsDlg();
                 _ = dlg.ShowDialog();
             };
 
-            _ = Items.Add(settingsButton);
+            _ = Items.Add(button);
+        }
+
+        private void AddAboutButton()
+        {
+            var button = new ToolStripMenuItem
+            {
+                Text = "About..."
+            };
+
+            button.Click += (_, _) =>
+            {
+                using var dlg = new AboutBox1();
+                _ = dlg.ShowDialog();
+            };
+
+            _ = Items.Add(button);
         }
 
         private void AddCloseButton()
         {
-            var closeButton = new ToolStripMenuItem
+            var button = new ToolStripMenuItem
             {
                 Text = "Close PowerPlanSwitcher"
             };
 
-            closeButton.Click += (s, e) => Application.Exit();
+            button.Click += (_, _) => Application.Exit();
 
-            _ = Items.Add(closeButton);
+            _ = Items.Add(button);
         }
     }
 }

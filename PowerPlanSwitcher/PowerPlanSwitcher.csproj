@@ -2,11 +2,23 @@
 
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
-    <TargetFramework>net6.0-windows</TargetFramework>
+    <TargetFramework>net6.0-windows10.0.17763.0</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>Resources\power_surge.ico</ApplicationIcon>
+    <Description>Using the following libraries:
+
+    Newtonsoft.Json
+    FatCow IconPack (http://www.fatcow.com/free-icons)
+
+</Description>
+    <Authors>Sebastian Becker</Authors>
   </PropertyGroup>
+
+  <ItemGroup>
+    <Content Include="Resources\power_surge.ico" />
+  </ItemGroup>
 
   <ItemGroup>
     <PackageReference Include="Newtonsoft.Json" Version="13.0.1" />
