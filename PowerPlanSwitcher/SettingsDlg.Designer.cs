@@ -30,11 +30,11 @@ namespace PowerPlanSwitcher
         {
             System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsDlg));
             this.DgvPowerSchemes = new System.Windows.Forms.DataGridView();
+            this.BtnOk = new System.Windows.Forms.Button();
+            this.BtnCancel = new System.Windows.Forms.Button();
             this.DgcVisible = new System.Windows.Forms.DataGridViewCheckBoxColumn();
             this.DgcName = new System.Windows.Forms.DataGridViewTextBoxColumn();
             this.DgcIcon = new System.Windows.Forms.DataGridViewImageColumn();
-            this.BtnOk = new System.Windows.Forms.Button();
-            this.BtnCancel = new System.Windows.Forms.Button();
             ((System.ComponentModel.ISupportInitialize)(this.DgvPowerSchemes)).BeginInit();
             this.SuspendLayout();
             // 
@@ -61,29 +61,6 @@ namespace PowerPlanSwitcher
             this.DgvPowerSchemes.TabIndex = 0;
             this.DgvPowerSchemes.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.HandleDgvPowerSchemesCellMouseDown);
             // 
-            // DgcVisible
-            // 
-            this.DgcVisible.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.DgcVisible.Frozen = true;
-            this.DgcVisible.HeaderText = "Visible";
-            this.DgcVisible.Name = "DgcVisible";
-            this.DgcVisible.Width = 47;
-            // 
-            // DgcName
-            // 
-            this.DgcName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.DgcName.HeaderText = "Name";
-            this.DgcName.Name = "DgcName";
-            this.DgcName.ReadOnly = true;
-            // 
-            // DgcIcon
-            // 
-            this.DgcIcon.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.DgcIcon.HeaderText = "Icon";
-            this.DgcIcon.Name = "DgcIcon";
-            this.DgcIcon.ReadOnly = true;
-            this.DgcIcon.Width = 36;
-            // 
             // BtnOk
             // 
             this.BtnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
@@ -105,6 +82,30 @@ namespace PowerPlanSwitcher
             this.BtnCancel.TabIndex = 2;
             this.BtnCancel.Text = "Cancel";
             this.BtnCancel.UseVisualStyleBackColor = true;
+            // 
+            // DgcVisible
+            // 
+            this.DgcVisible.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.DgcVisible.Frozen = true;
+            this.DgcVisible.HeaderText = "Visible";
+            this.DgcVisible.Name = "DgcVisible";
+            this.DgcVisible.ReadOnly = true;
+            this.DgcVisible.Width = 47;
+            // 
+            // DgcName
+            // 
+            this.DgcName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.DgcName.HeaderText = "Name";
+            this.DgcName.Name = "DgcName";
+            this.DgcName.ReadOnly = true;
+            // 
+            // DgcIcon
+            // 
+            this.DgcIcon.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
+            this.DgcIcon.HeaderText = "Icon";
+            this.DgcIcon.Name = "DgcIcon";
+            this.DgcIcon.ReadOnly = true;
+            this.DgcIcon.Width = 36;
             // 
             // SettingsDlg
             // 

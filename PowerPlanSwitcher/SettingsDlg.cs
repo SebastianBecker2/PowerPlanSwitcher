@@ -36,19 +36,10 @@ namespace PowerPlanSwitcher
             return row;
         }
 
-        private void HandleDgvPowerSchemesCellMouseDown(object sender, DataGridViewCellMouseEventArgs e)
+        private void HandleDlgPowerSchemesImageCellClick(
+            object sender,
+            DataGridViewCellMouseEventArgs e)
         {
-            if (e.RowIndex < 0 || e.RowIndex >= DgvPowerSchemes.RowCount)
-            {
-                return;
-            }
-
-            // Has to be the icon column
-            if (e.ColumnIndex != 2)
-            {
-                return;
-            }
-
             var cell = DgvPowerSchemes.Rows[e.RowIndex].Cells[e.ColumnIndex];
 
             if (e.Button == MouseButtons.Right)
@@ -62,8 +53,8 @@ namespace PowerPlanSwitcher
                 var typeFilters = new[]
                 {
                     "All image types " +
-                        "(*.png; *.jpg; *.jpeg; *.bmp; *.tiff; *.tif; *.gif)" +
-                        "|*.png;*.jpg;*.jpeg;*.bmp;*.tiff;*.tif;*.gif",
+                    "(*.png; *.jpg; *.jpeg; *.bmp; *.tiff; *.tif; *.gif)" +
+                    "|*.png;*.jpg;*.jpeg;*.bmp;*.tiff;*.tif;*.gif",
                     "PNG (*.png)|*.png",
                     "JPEG (*.jpg; *.jpeg)|*.jpg;*.jpeg",
                     "BMP (*.bmp)|*.bmp",
@@ -88,16 +79,48 @@ namespace PowerPlanSwitcher
             }
         }
 
+        private void HandleDlgPowerSchemesVisibleCellClick(
+            object sender,
+            DataGridViewCellMouseEventArgs e)
+        {
+            var cell = DgvPowerSchemes.Rows[e.RowIndex].Cells[e.ColumnIndex];
+            cell.Value = !(bool)cell.Value;
+        }
+
+        private void HandleDgvPowerSchemesCellMouseDown(
+            object sender,
+            DataGridViewCellMouseEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= DgvPowerSchemes.RowCount)
+            {
+                return;
+            }
+
+            // Handle image cell click
+            if (e.ColumnIndex == 2)
+            {
+                HandleDlgPowerSchemesImageCellClick(sender, e);
+                return;
+            }
+
+            // Handle visible checkbox cell click
+            if (e.ColumnIndex == 0)
+            {
+                HandleDlgPowerSchemesVisibleCellClick(sender, e);
+            }
+        }
+
         private void BtnOk_Click(object sender, EventArgs e)
         {
             foreach (DataGridViewRow row in DgvPowerSchemes.Rows)
             {
                 var schemeGuid = (Guid)row.Tag!;
-                PowerSchemeSettings.SetSetting(schemeGuid, new PowerSchemeSettings.Setting
-                {
-                    Visible = (bool)row.Cells[0].Value,
-                    Icon = row.Cells[2].Value as Image,
-                });
+                PowerSchemeSettings.SetSetting(schemeGuid,
+                    new PowerSchemeSettings.Setting
+                    {
+                        Visible = (bool)row.Cells[0].Value,
+                        Icon = row.Cells[2].Value as Image,
+                    });
             }
             PowerSchemeSettings.SaveSettings();
             DialogResult = DialogResult.OK;
