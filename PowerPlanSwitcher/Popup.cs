@@ -12,14 +12,16 @@ namespace PowerPlanSwitcher
 
         public Popup() => InitializeComponent();
 
-        private Button CreateButton(Guid guid, string? name, bool active)
+        private Button CreateButton(
+            Guid guid,
+            string? name,
+            Image? icon,
+            bool active)
         {
-            var setting = PowerSchemeSettings.GetSetting(guid);
-
             var button = new Button
             {
                 FlatStyle = FlatStyle.Popup,
-                Image = setting?.Icon,
+                Image = icon,
                 ImageAlign = ContentAlignment.MiddleLeft,
                 TextImageRelation = TextImageRelation.ImageBeforeText,
                 TextAlign = ContentAlignment.MiddleLeft,
@@ -59,13 +61,24 @@ namespace PowerPlanSwitcher
 
             foreach (var (guid, name) in PowerManager.GetPowerSchemes())
             {
+                var setting = PowerSchemeSettings.GetSetting(guid);
+                if (setting is not null && !setting.Visible)
+                {
+                    continue;
+                }
+
                 _ = TlpPowerSchemes.RowStyles.Add(new RowStyle
                 {
                     SizeType = SizeType.Percent,
                     Height = 50,
                 });
+
                 TlpPowerSchemes.Controls.Add(
-                    CreateButton(guid, name, activeSchemeGuid == guid));
+                    CreateButton(
+                        guid,
+                        name,
+                        setting?.Icon,
+                        activeSchemeGuid == guid));
             }
 
             Height = TlpPowerSchemes.Controls.Count * ButtonHeight;
