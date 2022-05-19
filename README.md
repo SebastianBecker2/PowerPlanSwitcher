@@ -1,4 +1,7 @@
 # PowerPlanSwitcher
+
+[![Build status](https://ci.appveyor.com/api/projects/status/k4umrwnp4grsp164/branch/main?svg=true)](https://ci.appveyor.com/project/SebastianBecker2/powerplanswitcher/branch/main)
+
 Tray-Icon tool to show the currently selected windows power plan, switch it manually and automatically.
 
 PowerPlanSwitcher is using the following tools, resources and libraries:
