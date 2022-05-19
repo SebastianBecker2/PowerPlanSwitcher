@@ -79,7 +79,7 @@ namespace PowerPlanSwitcher
 
             button.Click += (_, _) =>
             {
-                using var dlg = new AboutBox1();
+                using var dlg = new AboutBox();
                 _ = dlg.ShowDialog();
             };
 

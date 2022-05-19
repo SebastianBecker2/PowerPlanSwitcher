@@ -3,9 +3,9 @@ namespace PowerPlanSwitcher
     using System.Reflection;
     using System.Windows.Forms;
 
-    internal partial class AboutBox1 : Form
+    internal partial class AboutBox : Form
     {
-        public AboutBox1()
+        public AboutBox()
         {
             InitializeComponent();
             Text = $"About { AssemblyTitle ?? ""}";

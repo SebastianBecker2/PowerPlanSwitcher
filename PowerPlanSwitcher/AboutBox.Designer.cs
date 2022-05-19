@@ -1,6 +1,6 @@
 namespace PowerPlanSwitcher
 {
-    internal partial class AboutBox1
+    internal partial class AboutBox
     {
         /// <summary>
         /// Required designer variable.
@@ -27,7 +27,7 @@ namespace PowerPlanSwitcher
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutBox1));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AboutBox));
             this.tableLayoutPanel = new System.Windows.Forms.TableLayoutPanel();
             this.labelProductName = new System.Windows.Forms.Label();
             this.labelVersion = new System.Windows.Forms.Label();
