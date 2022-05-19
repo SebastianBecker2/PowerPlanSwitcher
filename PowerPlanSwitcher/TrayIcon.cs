@@ -1,6 +1,5 @@
 namespace PowerPlanSwitcher
 {
-    using System.Windows.Forms.VisualStyles;
     using Properties;
 
     internal class TrayIcon : IDisposable
