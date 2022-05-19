@@ -56,6 +56,7 @@ namespace PowerPlanSwitcher
             this.DgvPowerSchemes.MultiSelect = false;
             this.DgvPowerSchemes.Name = "DgvPowerSchemes";
             this.DgvPowerSchemes.RowHeadersVisible = false;
+            this.DgvPowerSchemes.RowTemplate.Height = 26;
             this.DgvPowerSchemes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
             this.DgvPowerSchemes.Size = new System.Drawing.Size(434, 203);
             this.DgvPowerSchemes.TabIndex = 0;
