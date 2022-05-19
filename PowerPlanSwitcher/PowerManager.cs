@@ -212,6 +212,9 @@ namespace PowerPlanSwitcher
 
         public PowerManager()
         {
+#if DEBUG
+            return;
+#endif
             var callback =
                 new DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS
                 {
