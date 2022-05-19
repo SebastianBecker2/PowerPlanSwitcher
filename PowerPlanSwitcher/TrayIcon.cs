@@ -15,42 +15,48 @@ namespace PowerPlanSwitcher
             Visible = true,
         };
         private readonly PowerManager powerManager = new();
-        private Popup? popupDlg;
+        private bool isPopupDlgVisible;
 
         public TrayIcon()
         {
             var contextMenu = new ContextMenu();
             notifyIcon.ContextMenuStrip = contextMenu;
-            contextMenu.SettingsChanged += (_, _) =>
-            {
-                var activeSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
-                if (activeSchemeGuid is null)
-                {
-                    return;
-                }
-                UpdateIcon(activeSchemeGuid.Value);
-            };
+            contextMenu.SettingsChanged += (_, _) => UpdateIcon();
 
             notifyIcon.MouseClick += (_, e) =>
             {
-                if (e.Button != MouseButtons.Left)
+                if (e.Button != MouseButtons.Left || isPopupDlgVisible)
                 {
                     return;
                 }
 
-                if (popupDlg is not null)
-                {
-                    return;
-                }
 
-                popupDlg = new Popup();
-                _ = popupDlg.ShowDialog();
-                popupDlg.Dispose();
-                popupDlg = null;
+                isPopupDlgVisible = true;
+                try
+                {
+                    using var popupDlg = new Popup();
+                    _ = popupDlg.ShowDialog();
+                }
+                finally
+                {
+                    isPopupDlgVisible = false;
+                }
             };
 
             powerManager.ActivePowerSchemeChanged += (_, e) =>
                 UpdateIcon(e.ActiveSchemeGuid);
+
+            UpdateIcon();
+        }
+
+        private void UpdateIcon()
+        {
+            var activeSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
+            if (activeSchemeGuid is null)
+            {
+                return;
+            }
+            UpdateIcon(activeSchemeGuid.Value);
         }
 
         private void UpdateIcon(Guid guid)
@@ -116,7 +122,6 @@ namespace PowerPlanSwitcher
 
             if (disposing)
             {
-                popupDlg?.Dispose();
                 notifyIcon.Dispose();
                 powerManager.Dispose();
             }
