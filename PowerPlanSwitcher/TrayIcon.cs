@@ -1,5 +1,6 @@
 namespace PowerPlanSwitcher
 {
+    using System.Windows.Forms.VisualStyles;
     using Properties;
 
     internal class TrayIcon : IDisposable
@@ -16,18 +17,39 @@ namespace PowerPlanSwitcher
             ContextMenuStrip = new ContextMenu()
         };
         private readonly PowerManager powerManager = new();
+        private Popup? PopupDlg;
 
-        public TrayIcon() =>
+        public TrayIcon()
+        {
+            notifyIcon.MouseClick += (_, e) =>
+            {
+                if (e.Button != MouseButtons.Left)
+                {
+                    return;
+                }
+
+                if (PopupDlg is not null)
+                {
+                    return;
+                }
+
+                PopupDlg = new Popup();
+                _ = PopupDlg.ShowDialog();
+                PopupDlg.Dispose();
+                PopupDlg = null;
+            };
+
             powerManager.ActivePowerSchemeChanged += (_, e) =>
-               {
-                   var setting = PowerSchemeSettings.GetSetting(e.ActiveSchemeGuid);
-                   if (setting?.Icon is null)
-                   {
-                       notifyIcon.Icon = DefaultIcon;
-                       return;
-                   }
-                   notifyIcon.Icon = IconFromImage(setting.Icon);
-               };
+            {
+                var setting = PowerSchemeSettings.GetSetting(e.ActiveSchemeGuid);
+                if (setting?.Icon is null)
+                {
+                    notifyIcon.Icon = DefaultIcon;
+                    return;
+                }
+                notifyIcon.Icon = IconFromImage(setting.Icon);
+            };
+        }
 
         private static Icon IconFromImage(Image img)
         {
@@ -81,6 +103,7 @@ namespace PowerPlanSwitcher
 
             if (disposing)
             {
+                PopupDlg?.Dispose();
                 notifyIcon.Dispose();
                 powerManager.Dispose();
             }
