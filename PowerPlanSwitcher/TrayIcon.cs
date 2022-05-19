@@ -14,13 +14,24 @@ namespace PowerPlanSwitcher
             Icon = DefaultIcon,
             Text = "PowerPlanSwitcher",
             Visible = true,
-            ContextMenuStrip = new ContextMenu()
         };
         private readonly PowerManager powerManager = new();
-        private Popup? PopupDlg;
+        private Popup? popupDlg;
 
         public TrayIcon()
         {
+            var contextMenu = new ContextMenu();
+            notifyIcon.ContextMenuStrip = contextMenu;
+            contextMenu.SettingsChanged += (_, _) =>
+            {
+                var activeSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
+                if (activeSchemeGuid is null)
+                {
+                    return;
+                }
+                UpdateIcon(activeSchemeGuid.Value);
+            };
+
             notifyIcon.MouseClick += (_, e) =>
             {
                 if (e.Button != MouseButtons.Left)
@@ -28,27 +39,30 @@ namespace PowerPlanSwitcher
                     return;
                 }
 
-                if (PopupDlg is not null)
+                if (popupDlg is not null)
                 {
                     return;
                 }
 
-                PopupDlg = new Popup();
-                _ = PopupDlg.ShowDialog();
-                PopupDlg.Dispose();
-                PopupDlg = null;
+                popupDlg = new Popup();
+                _ = popupDlg.ShowDialog();
+                popupDlg.Dispose();
+                popupDlg = null;
             };
 
             powerManager.ActivePowerSchemeChanged += (_, e) =>
+                UpdateIcon(e.ActiveSchemeGuid);
+        }
+
+        private void UpdateIcon(Guid guid)
+        {
+            var setting = PowerSchemeSettings.GetSetting(guid);
+            if (setting?.Icon is null)
             {
-                var setting = PowerSchemeSettings.GetSetting(e.ActiveSchemeGuid);
-                if (setting?.Icon is null)
-                {
-                    notifyIcon.Icon = DefaultIcon;
-                    return;
-                }
-                notifyIcon.Icon = IconFromImage(setting.Icon);
-            };
+                notifyIcon.Icon = DefaultIcon;
+                return;
+            }
+            notifyIcon.Icon = IconFromImage(setting.Icon);
         }
 
         private static Icon IconFromImage(Image img)
@@ -103,7 +117,7 @@ namespace PowerPlanSwitcher
 
             if (disposing)
             {
-                PopupDlg?.Dispose();
+                popupDlg?.Dispose();
                 notifyIcon.Dispose();
                 powerManager.Dispose();
             }

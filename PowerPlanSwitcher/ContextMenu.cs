@@ -2,7 +2,12 @@ namespace PowerPlanSwitcher
 {
     internal class ContextMenu : ContextMenuStrip
     {
-        public ContextMenu() : base()
+
+        public event EventHandler<SettingsChangedEventArgs>? SettingsChanged;
+        protected virtual void OnSettingsChanged() =>
+            SettingsChanged?.Invoke(this, new SettingsChangedEventArgs());
+
+        public ContextMenu()
         {
             BuildContextMenu();
 
@@ -55,7 +60,11 @@ namespace PowerPlanSwitcher
             button.Click += (_, _) =>
             {
                 using var dlg = new SettingsDlg();
-                _ = dlg.ShowDialog();
+                if (dlg.ShowDialog() != DialogResult.OK)
+                {
+                    return;
+                }
+                OnSettingsChanged();
             };
 
             _ = Items.Add(button);
