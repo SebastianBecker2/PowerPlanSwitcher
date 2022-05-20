@@ -57,7 +57,7 @@ namespace PowerPlanSwitcher
                 {
                     Value = setting is null || setting.Visible,
                 },
-                new DataGridViewTextBoxCell { Value = scheme.guid, },
+                new DataGridViewTextBoxCell { Value = scheme.name, },
                 new DataGridViewImageCell
                 {
                     Value = setting?.Icon,
