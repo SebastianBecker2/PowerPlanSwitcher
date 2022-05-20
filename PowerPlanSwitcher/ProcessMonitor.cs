@@ -11,7 +11,7 @@ namespace PowerPlanSwitcher
         private DateTime lastUpdate;
         private readonly Timer? updateTimer;
         private bool disposedValue;
-        private readonly Guid baselinePowerSchemeGuid;
+        private Guid baselinePowerSchemeGuid;
         private PowerRule? previouslyAppliedPowerRule;
 
 
@@ -52,6 +52,16 @@ namespace PowerPlanSwitcher
                 {
                     return;
                 }
+
+                // If no rule was active and the user changed the power
+                // scheme, we use the newly set power scheme as the new
+                // baseline.
+                if (previouslyAppliedPowerRule is null)
+                {
+                    baselinePowerSchemeGuid =
+                        PowerManager.GetActivePowerSchemeGuid();
+                }
+
                 previouslyAppliedPowerRule = applicableRule;
 
                 if (applicableRule is null)
