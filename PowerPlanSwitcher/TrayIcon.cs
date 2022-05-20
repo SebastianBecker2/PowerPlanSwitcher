@@ -38,7 +38,7 @@ namespace PowerPlanSwitcher
                 }
 
                 popupDlg = new Popup();
-                popupDlg.ShowDialog();
+                _ = popupDlg.ShowDialog();
                 popupDlg?.Dispose();
                 popupDlg = null;
             };
