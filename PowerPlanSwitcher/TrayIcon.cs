@@ -16,7 +16,7 @@ namespace PowerPlanSwitcher
         };
         private readonly PowerManager powerManager = new();
         private readonly ProcessMonitor processMonitor = new();
-        private Popup? popupDlg;
+        private PowerSchemeSelectorDlg? powerSchemeSelectorDlg;
 
         public TrayIcon()
         {
@@ -31,16 +31,16 @@ namespace PowerPlanSwitcher
                     return;
                 }
 
-                if (popupDlg is not null)
+                if (powerSchemeSelectorDlg is not null)
                 {
-                    popupDlg.Close();
+                    powerSchemeSelectorDlg.Close();
                     return;
                 }
 
-                popupDlg = new Popup();
-                _ = popupDlg.ShowDialog();
-                popupDlg?.Dispose();
-                popupDlg = null;
+                powerSchemeSelectorDlg = new PowerSchemeSelectorDlg();
+                _ = powerSchemeSelectorDlg.ShowDialog();
+                powerSchemeSelectorDlg?.Dispose();
+                powerSchemeSelectorDlg = null;
             };
 
             powerManager.ActivePowerSchemeChanged += (_, e) =>
@@ -122,7 +122,7 @@ namespace PowerPlanSwitcher
 
             if (disposing)
             {
-                popupDlg?.Dispose();
+                powerSchemeSelectorDlg?.Dispose();
                 notifyIcon.Dispose();
                 powerManager.Dispose();
                 processMonitor.Dispose();

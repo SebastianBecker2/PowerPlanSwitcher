@@ -1,6 +1,6 @@
-﻿namespace PowerPlanSwitcher
+namespace PowerPlanSwitcher
 {
-    partial class Popup
+    partial class PowerSchemeSelectorDlg
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(Popup));
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PowerSchemeSelectorDlg));
             this.TlpPowerSchemes = new System.Windows.Forms.TableLayoutPanel();
             this.SuspendLayout();
             // 
@@ -56,9 +56,9 @@
             this.Controls.Add(this.TlpPowerSchemes);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
             this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "Popup";
+            this.Name = "PowerSchemeSelectorDlg";
             this.ShowInTaskbar = false;
-            this.Text = "Popup";
+            this.Text = "PowerPlanSwitcher - Selector";
             this.ResumeLayout(false);
 
         }

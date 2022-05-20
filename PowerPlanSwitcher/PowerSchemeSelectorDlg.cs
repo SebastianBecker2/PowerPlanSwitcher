@@ -1,6 +1,6 @@
 namespace PowerPlanSwitcher
 {
-    public partial class Popup : Form
+    public partial class PowerSchemeSelectorDlg : Form
     {
         private static readonly Color ButtonBackgroundColor =
             Color.FromArgb(0x15, 0x15, 0x14);
@@ -10,7 +10,7 @@ namespace PowerPlanSwitcher
         private const int ButtonHeight = 50;
         private const int ButtonWidth = 360;
 
-        public Popup() => InitializeComponent();
+        public PowerSchemeSelectorDlg() => InitializeComponent();
 
         private Button CreateButton(
             Guid guid,
