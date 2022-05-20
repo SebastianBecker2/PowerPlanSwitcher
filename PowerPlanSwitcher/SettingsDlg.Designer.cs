@@ -49,8 +49,12 @@ namespace PowerPlanSwitcher
             this.BtnDeletePowerRule = new System.Windows.Forms.Button();
             this.ChbActivateInitialPowerScheme = new System.Windows.Forms.CheckBox();
             this.CmbInitialPowerScheme = new System.Windows.Forms.ComboBox();
+            this.label1 = new System.Windows.Forms.Label();
+            this.NudPowerRuleCheckInterval = new System.Windows.Forms.NumericUpDown();
+            this.label2 = new System.Windows.Forms.Label();
             ((System.ComponentModel.ISupportInitialize)(this.DgvPowerSchemes)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvPowerRules)).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NudPowerRuleCheckInterval)).BeginInit();
             this.SuspendLayout();
             // 
             // DgvPowerSchemes
@@ -271,6 +275,36 @@ namespace PowerPlanSwitcher
             this.CmbInitialPowerScheme.Size = new System.Drawing.Size(269, 23);
             this.CmbInitialPowerScheme.TabIndex = 12;
             // 
+            // label1
+            // 
+            this.label1.AutoSize = true;
+            this.label1.Location = new System.Drawing.Point(491, 63);
+            this.label1.Name = "label1";
+            this.label1.Size = new System.Drawing.Size(169, 15);
+            this.label1.TabIndex = 13;
+            this.label1.Text = "Check for Rules to apply every:";
+            // 
+            // NudPowerRuleCheckInterval
+            // 
+            this.NudPowerRuleCheckInterval.Location = new System.Drawing.Point(491, 81);
+            this.NudPowerRuleCheckInterval.Maximum = new decimal(new int[] {
+            600,
+            0,
+            0,
+            0});
+            this.NudPowerRuleCheckInterval.Name = "NudPowerRuleCheckInterval";
+            this.NudPowerRuleCheckInterval.Size = new System.Drawing.Size(84, 23);
+            this.NudPowerRuleCheckInterval.TabIndex = 14;
+            // 
+            // label2
+            // 
+            this.label2.AutoSize = true;
+            this.label2.Location = new System.Drawing.Point(581, 89);
+            this.label2.Name = "label2";
+            this.label2.Size = new System.Drawing.Size(51, 15);
+            this.label2.TabIndex = 13;
+            this.label2.Text = "Seconds";
+            // 
             // SettingsDlg
             // 
             this.AcceptButton = this.BtnOk;
@@ -278,6 +312,9 @@ namespace PowerPlanSwitcher
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.BtnCancel;
             this.ClientSize = new System.Drawing.Size(1096, 553);
+            this.Controls.Add(this.NudPowerRuleCheckInterval);
+            this.Controls.Add(this.label2);
+            this.Controls.Add(this.label1);
             this.Controls.Add(this.CmbInitialPowerScheme);
             this.Controls.Add(this.ChbActivateInitialPowerScheme);
             this.Controls.Add(this.BtnDescentPowerRule);
@@ -295,6 +332,7 @@ namespace PowerPlanSwitcher
             this.Text = "PowerPlanSwitcher - Settings";
             ((System.ComponentModel.ISupportInitialize)(this.DgvPowerSchemes)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvPowerRules)).EndInit();
+            ((System.ComponentModel.ISupportInitialize)(this.NudPowerRuleCheckInterval)).EndInit();
             this.ResumeLayout(false);
             this.PerformLayout();
 
@@ -322,5 +360,8 @@ namespace PowerPlanSwitcher
         private Button BtnDeletePowerRule;
         private CheckBox ChbActivateInitialPowerScheme;
         private ComboBox CmbInitialPowerScheme;
+        private Label label1;
+        private NumericUpDown NudPowerRuleCheckInterval;
+        private Label label2;
     }
 }

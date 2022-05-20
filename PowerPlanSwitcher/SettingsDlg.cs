@@ -40,6 +40,9 @@ namespace PowerPlanSwitcher
             CmbInitialPowerScheme.Enabled =
                 ChbActivateInitialPowerScheme.Checked;
 
+            NudPowerRuleCheckInterval.Value =
+                Settings.Default.PowerRuleCheckInterval;
+
             base.OnLoad(e);
         }
 
@@ -223,6 +226,9 @@ namespace PowerPlanSwitcher
                 ChbActivateInitialPowerScheme.Checked;
             Settings.Default.InitialPowerSchemeGuid =
                 GetPowerSchemeGuid(GetSelectedString(CmbInitialPowerScheme));
+
+            Settings.Default.PowerRuleCheckInterval =
+                (int)NudPowerRuleCheckInterval.Value;
             Settings.Default.Save();
 
             DialogResult = DialogResult.OK;

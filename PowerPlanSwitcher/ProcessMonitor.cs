@@ -2,16 +2,17 @@ namespace PowerPlanSwitcher
 {
     using System.ComponentModel;
     using System.Diagnostics;
+    using Properties;
     using Timer = System.Threading.Timer;
 
     internal class ProcessMonitor : IDisposable
     {
-        private const int UpdateTimerInterval = 2000;
+        private const int UpdateTimerInterval = 1000;
+        private DateTime lastUpdate;
         private readonly Timer? updateTimer;
         private bool disposedValue;
         private readonly Guid baselinePowerSchemeGuid;
         private PowerRule? previouslyAppliedPowerRule;
-        //private static readonly List<string> ProcessBlacklist = new();
 
 
         public ProcessMonitor()
@@ -31,6 +32,15 @@ namespace PowerPlanSwitcher
         {
             try
             {
+                if (DateTime.Now - lastUpdate <
+                    TimeSpan.FromSeconds(Settings.Default.PowerRuleCheckInterval))
+                {
+                    Debug.Print("No check");
+                    return;
+                }
+                lastUpdate = DateTime.Now;
+                Debug.Print("Checking");
+
                 var processes = GetOwnedProcesses();
 
                 var applicableRule = PowerRule.GetPowerRules()
@@ -54,7 +64,9 @@ namespace PowerPlanSwitcher
             }
             finally
             {
-                _ = updateTimer!.Change(UpdateTimerInterval, Timeout.Infinite);
+                _ = updateTimer!.Change(
+                    UpdateTimerInterval,
+                    Timeout.Infinite);
             }
         }
 
