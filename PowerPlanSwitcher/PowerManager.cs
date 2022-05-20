@@ -214,6 +214,7 @@ namespace PowerPlanSwitcher
         {
 #if DEBUG
             return;
+#pragma warning disable CS0162 // Unreachable code detected
 #endif
             var callback =
                 new DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS
@@ -234,6 +235,9 @@ namespace PowerPlanSwitcher
                     "Unable to register callback for Power Setting " +
                     "Notifications.");
             }
+#if DEBUG
+#pragma warning restore CS0162 // Unreachable code detected
+#endif
         }
 
         private int HandlePowerSettingsChanged(
