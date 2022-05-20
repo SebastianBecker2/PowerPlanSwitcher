@@ -23,6 +23,15 @@ namespace PowerPlanSwitcher
             AddAboutButton();
             _ = Items.Add(new ToolStripSeparator());
             AddCloseButton();
+
+#if DEBUG
+            using var dlg = new SettingsDlg();
+            if (dlg.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+            OnSettingsChanged();
+#endif
         }
 
         private void AddPowerSchemes()
@@ -39,7 +48,7 @@ namespace PowerPlanSwitcher
                 var button = new ToolStripMenuItem
                 {
                     Image = setting?.Icon,
-                    Text = (activeSchemeGuid == guid ? "(Active) " : "")
+                    Text = (activeSchemeGuid == guid ? "(Active) " : string.Empty)
                         + (name ?? guid.ToString()),
                 };
 

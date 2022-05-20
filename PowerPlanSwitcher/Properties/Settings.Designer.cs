@@ -46,5 +46,17 @@ namespace PowerPlanSwitcher.Properties {
                 this["UpgradeRequired"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PowerRules {
+            get {
+                return ((string)(this["PowerRules"]));
+            }
+            set {
+                this["PowerRules"] = value;
+            }
+        }
     }
 }

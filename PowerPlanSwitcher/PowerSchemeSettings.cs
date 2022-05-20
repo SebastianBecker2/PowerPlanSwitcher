@@ -39,7 +39,7 @@ namespace PowerPlanSwitcher
             {
                 if (value is not Image image)
                 {
-                    writer.WriteValue("");
+                    writer.WriteValue(string.Empty);
                     return;
                 }
 
@@ -61,6 +61,7 @@ namespace PowerPlanSwitcher
         }
 
         private static Dictionary<Guid, Setting>? settings;
+        private static readonly object SettingsLock = new();
 
         public static Setting? GetSetting(Guid schemaGuid)
         {
@@ -93,9 +94,17 @@ namespace PowerPlanSwitcher
                 return;
             }
 
-            settings = JsonConvert.DeserializeObject<Dictionary<Guid, Setting>>(
-                    Settings.Default.PowerSchemeSettings) ??
-                new Dictionary<Guid, Setting>();
+            lock (SettingsLock)
+            {
+                if (settings is not null)
+                {
+                    return;
+                }
+
+                settings = JsonConvert.DeserializeObject<Dictionary<Guid, Setting>>(
+                        Settings.Default.PowerSchemeSettings) ??
+                    new Dictionary<Guid, Setting>();
+            }
         }
     }
 }

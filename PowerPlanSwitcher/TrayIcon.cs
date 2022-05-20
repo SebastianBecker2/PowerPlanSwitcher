@@ -15,6 +15,7 @@ namespace PowerPlanSwitcher
             Visible = true,
         };
         private readonly PowerManager powerManager = new();
+        private readonly ProcessMonitor processMonitor = new();
         private bool isPopupDlgVisible;
 
         public TrayIcon()
@@ -52,11 +53,11 @@ namespace PowerPlanSwitcher
         private void UpdateIcon()
         {
             var activeSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
-            if (activeSchemeGuid is null)
+            if (activeSchemeGuid == Guid.Empty)
             {
                 return;
             }
-            UpdateIcon(activeSchemeGuid.Value);
+            UpdateIcon(activeSchemeGuid);
         }
 
         private void UpdateIcon(Guid guid)
@@ -124,6 +125,7 @@ namespace PowerPlanSwitcher
             {
                 notifyIcon.Dispose();
                 powerManager.Dispose();
+                processMonitor.Dispose();
             }
             disposedValue = true;
         }

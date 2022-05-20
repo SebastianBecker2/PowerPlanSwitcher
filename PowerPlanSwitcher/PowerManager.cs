@@ -178,7 +178,7 @@ namespace PowerPlanSwitcher
             }
         }
 
-        public static Guid? GetActivePowerSchemeGuid()
+        public static Guid GetActivePowerSchemeGuid()
         {
             var activeSchemeGuidPtr = IntPtr.Zero;
             try
@@ -189,7 +189,7 @@ namespace PowerPlanSwitcher
                     ref activeSchemeGuidPtr);
                 if (res != ERROR_SUCCESS)
                 {
-                    return null;
+                    return Guid.Empty;
                 }
 
                 return Marshal.PtrToStructure<Guid>(activeSchemeGuidPtr);

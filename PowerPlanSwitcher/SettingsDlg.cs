@@ -4,13 +4,13 @@ namespace PowerPlanSwitcher
     {
         public SettingsDlg() => InitializeComponent();
 
-        //private PowerManager pm;
-
         protected override void OnLoad(EventArgs e)
         {
             DgvPowerSchemes.Rows.AddRange(PowerManager.GetPowerSchemes()
                 .Select(SchemeToRow)
                 .ToArray());
+
+            UpdatePowerRules();
 
             base.OnLoad(e);
         }
@@ -31,6 +31,7 @@ namespace PowerPlanSwitcher
                 new DataGridViewImageCell
                 {
                     Value = setting?.Icon,
+                    ImageLayout = DataGridViewImageCellLayout.Zoom,
                 });
 
             return row;
@@ -110,7 +111,7 @@ namespace PowerPlanSwitcher
             }
         }
 
-        private void BtnOk_Click(object sender, EventArgs e)
+        private void HandleBtnOkClick(object sender, EventArgs e)
         {
             foreach (DataGridViewRow row in DgvPowerSchemes.Rows)
             {
@@ -123,7 +124,178 @@ namespace PowerPlanSwitcher
                     });
             }
             PowerSchemeSettings.SaveSettings();
+
+            PowerRule.SetPowerRules(DgvPowerRules.Rows
+                .Cast<DataGridViewRow>()
+                .Select(r => r.Tag as PowerRule)
+                .Cast<PowerRule>());
+            PowerRule.SavePowerRules();
+
             DialogResult = DialogResult.OK;
+        }
+
+        private void HandleBtnCreateRuleFromProcessClick(
+            object sender,
+            EventArgs e)
+        {
+            using var processSelectionDlg = new ProcessSelectionDlg();
+            if (processSelectionDlg.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            using var powerRuleDlg = new PowerRuleDlg
+            {
+                PowerRule = new PowerRule
+                {
+                    FilePath = processSelectionDlg.SelectedProcess!.FileName,
+                    Type = RuleType.Exact,
+                },
+            };
+            if (powerRuleDlg.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            powerRuleDlg.PowerRule!.Index = DgvPowerRules.RowCount;
+            _ = DgvPowerRules.Rows.Add(PowerRuleToRow(powerRuleDlg.PowerRule));
+        }
+
+        private static DataGridViewRow PowerRuleToRow(PowerRule powerRule)
+        {
+            var row = new DataGridViewRow { Tag = powerRule, };
+            var setting = PowerSchemeSettings.GetSetting(powerRule.SchemeGuid);
+            row.Cells.AddRange(
+                new DataGridViewTextBoxCell
+                {
+                    Value = powerRule.Index,
+                },
+                new DataGridViewTextBoxCell
+                {
+                    Value = PowerRule.RuleTypeToText(powerRule.Type),
+                },
+                new DataGridViewTextBoxCell
+                {
+                    Value = powerRule.FilePath,
+                },
+                new DataGridViewImageCell
+                {
+                    Value = setting?.Icon,
+                    ImageLayout = DataGridViewImageCellLayout.Zoom,
+                },
+                new DataGridViewTextBoxCell
+                {
+                    Value = PowerManager.GetPowerSchemeName(powerRule.SchemeGuid)
+                        ?? "Power Plan is missing!",
+                });
+
+            return row;
+        }
+
+        private void UpdatePowerRules() =>
+            DgvPowerRules.Rows.AddRange(PowerRule.GetPowerRules()
+                .OrderBy(r => r.Index)
+                .Select(PowerRuleToRow)
+                .ToArray());
+
+        private void HandleBtnAddPowerRuleClick(object sender, EventArgs e)
+        {
+            using var dlg = new PowerRuleDlg();
+            if (dlg.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            dlg.PowerRule!.Index = DgvPowerRules.RowCount;
+            _ = DgvPowerRules.Rows.Add(PowerRuleToRow(dlg.PowerRule));
+        }
+
+        private void HandleBtnEditPowerRuleClick(object sender, EventArgs e)
+        {
+            if (DgvPowerRules.SelectedRows.Count == 0)
+            {
+                return;
+            }
+
+            using var dlg = new PowerRuleDlg
+            {
+                PowerRule = DgvPowerRules.SelectedRows[0].Tag as PowerRule,
+            };
+            if (dlg.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            DgvPowerRules.Rows.RemoveAt(dlg.PowerRule!.Index);
+            DgvPowerRules.Rows.Insert(
+                dlg.PowerRule!.Index,
+                PowerRuleToRow(dlg.PowerRule));
+            DgvPowerRules.Rows[dlg.PowerRule!.Index].Selected = true;
+        }
+
+        private void HandleBtnDeletePowerRuleClick(object sender, EventArgs e)
+        {
+            if (DgvPowerRules.SelectedRows.Count == 0)
+            {
+                return;
+            }
+
+            var index = DgvPowerRules.SelectedRows[0].Index;
+            DgvPowerRules.Rows.RemoveAt(index);
+            for (; index < DgvPowerRules.Rows.Count; index++)
+            {
+                var row = DgvPowerRules.Rows[index];
+                (row.Tag as PowerRule)!.Index = index;
+                row.Cells[0].Value = index;
+            }
+        }
+
+        private void HandleBtnAscentPowerRuleClick(object sender, EventArgs e)
+        {
+            if (DgvPowerRules.SelectedRows.Count == 0)
+            {
+                return;
+            }
+
+            var row = DgvPowerRules.SelectedRows[0];
+            var powerRule = row.Tag as PowerRule;
+            if (powerRule!.Index == 0)
+            {
+                return;
+            }
+
+            DgvPowerRules.Rows.Remove(row);
+            DgvPowerRules.Rows.Insert(powerRule!.Index - 1, row);
+
+            var otherRow = DgvPowerRules.Rows[powerRule.Index];
+            otherRow.Cells[0].Value = ++(otherRow.Tag as PowerRule)!.Index;
+            row.Cells[0].Value = --(row.Tag as PowerRule)!.Index;
+
+            row.Selected = true;
+        }
+
+        private void HandleBtnDescentPowerRuleClick(object sender, EventArgs e)
+        {
+            if (DgvPowerRules.SelectedRows.Count == 0)
+            {
+                return;
+            }
+
+            var row = DgvPowerRules.SelectedRows[0];
+            var powerRule = row.Tag as PowerRule;
+            if (powerRule!.Index == DgvPowerRules.RowCount - 1)
+            {
+                return;
+            }
+
+            DgvPowerRules.Rows.Remove(row);
+            DgvPowerRules.Rows.Insert(powerRule!.Index + 1, row);
+
+            var otherRow = DgvPowerRules.Rows[powerRule.Index];
+            otherRow.Cells[0].Value = --(otherRow.Tag as PowerRule)!.Index;
+            row.Cells[0].Value = ++(row.Tag as PowerRule)!.Index;
+
+            row.Selected = true;
         }
     }
 }
