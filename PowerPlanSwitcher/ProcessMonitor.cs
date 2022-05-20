@@ -35,11 +35,9 @@ namespace PowerPlanSwitcher
                 if (DateTime.Now - lastUpdate <
                     TimeSpan.FromSeconds(Settings.Default.PowerRuleCheckInterval))
                 {
-                    Debug.Print("No check");
                     return;
                 }
                 lastUpdate = DateTime.Now;
-                Debug.Print("Checking");
 
                 var processes = GetOwnedProcesses();
 
