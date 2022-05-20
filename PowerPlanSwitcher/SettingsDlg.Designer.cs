@@ -195,10 +195,11 @@ namespace PowerPlanSwitcher
             // 
             // DgcRuleSchemeName
             // 
-            this.DgcRuleSchemeName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
+            this.DgcRuleSchemeName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
             this.DgcRuleSchemeName.HeaderText = "Power Plan";
             this.DgcRuleSchemeName.Name = "DgcRuleSchemeName";
             this.DgcRuleSchemeName.ReadOnly = true;
+            this.DgcRuleSchemeName.Width = 91;
             // 
             // BtnAddPowerRule
             // 
@@ -350,11 +351,6 @@ namespace PowerPlanSwitcher
         private DataGridView DgvPowerRules;
         private Button BtnAddPowerRule;
         private Button BtnEditPowerRule;
-        private DataGridViewTextBoxColumn DgcRuleIndex;
-        private DataGridViewTextBoxColumn DgcRuleType;
-        private DataGridViewTextBoxColumn DgcRulePath;
-        private DataGridViewImageColumn DgcRuleSchemeIcon;
-        private DataGridViewTextBoxColumn DgcRuleSchemeName;
         private Button BtnAscentPowerRule;
         private Button BtnDescentPowerRule;
         private Button BtnDeletePowerRule;
@@ -363,5 +359,10 @@ namespace PowerPlanSwitcher
         private Label label1;
         private NumericUpDown NudPowerRuleCheckInterval;
         private Label label2;
+        private DataGridViewTextBoxColumn DgcRuleIndex;
+        private DataGridViewTextBoxColumn DgcRuleType;
+        private DataGridViewTextBoxColumn DgcRulePath;
+        private DataGridViewImageColumn DgcRuleSchemeIcon;
+        private DataGridViewTextBoxColumn DgcRuleSchemeName;
     }
 }
