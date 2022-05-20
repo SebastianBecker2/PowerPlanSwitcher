@@ -1,5 +1,7 @@
 namespace PowerPlanSwitcher
 {
+    using System.Drawing.Drawing2D;
+
     public partial class SettingsDlg : Form
     {
         public SettingsDlg() => InitializeComponent();
@@ -75,9 +77,64 @@ namespace PowerPlanSwitcher
                     return;
                 }
 
+                var image = Image.FromFile(dlg.FileName);
+                if (image.Size.Height > 32 || image.Size.Width > 32)
+                {
+                    image = ResizeImage(
+                        image,
+                        Rescale(image.Size, new Size(32, 32)));
+                }
+
                 DgvPowerSchemes.Rows[e.RowIndex].Cells[e.ColumnIndex].Value =
-                    Image.FromFile(dlg.FileName);
+                    image;
             }
+        }
+
+        private static Size Rescale(
+            Size originalSize,
+            Size containerSize)
+        {
+            var width = originalSize.Width;
+            var height = originalSize.Height;
+
+            if (width > height)
+            {
+                height = (int)(height / ((double)width / containerSize.Width));
+                return containerSize with {Height = height};
+            }
+
+            width = (int)(width / ((double)height / containerSize.Height));
+            return containerSize with {Width = width};
+        }
+
+        private static Image ResizeImage(Image original,
+            Size size,
+            InterpolationMode interpolationMode = InterpolationMode.HighQualityBicubic,
+            SmoothingMode smoothingMode = SmoothingMode.HighQuality,
+            PixelOffsetMode pixelOffsetMode = PixelOffsetMode.HighQuality) =>
+            ResizeImage(
+                original,
+                size.Width,
+                size.Height,
+                interpolationMode,
+                smoothingMode,
+                pixelOffsetMode);
+
+        public static Image ResizeImage(
+            Image original,
+            int width,
+            int height,
+            InterpolationMode interpolationMode = InterpolationMode.HighQualityBicubic,
+            SmoothingMode smoothingMode = SmoothingMode.HighQuality,
+            PixelOffsetMode pixelOffsetMode = PixelOffsetMode.HighQuality)
+        {
+            var result = new Bitmap(width, height);
+            using var graphics = Graphics.FromImage(result);
+            graphics.SmoothingMode = smoothingMode;
+            graphics.InterpolationMode = interpolationMode;
+            graphics.PixelOffsetMode = pixelOffsetMode;
+            graphics.DrawImage(original, 0, 0, width, height);
+            return result;
         }
 
         private void HandleDlgPowerSchemesVisibleCellClick(

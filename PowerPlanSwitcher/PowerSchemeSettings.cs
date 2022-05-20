@@ -2,6 +2,7 @@ namespace PowerPlanSwitcher
 {
     using System;
     using System.Collections.Generic;
+    using System.Drawing.Imaging;
     using Newtonsoft.Json;
     using Properties;
 
@@ -44,7 +45,13 @@ namespace PowerPlanSwitcher
                 }
 
                 var ms = new MemoryStream();
-                image.Save(ms, image.RawFormat);
+                var format = image.RawFormat;
+                if (Equals(image.RawFormat, ImageFormat.Bmp)
+                    || Equals(image.RawFormat, ImageFormat.MemoryBmp))
+                {
+                    format = ImageFormat.Png;
+                }
+                image.Save(ms, format);
                 var imageBytes = ms.ToArray();
                 writer.WriteValue(imageBytes);
             }
