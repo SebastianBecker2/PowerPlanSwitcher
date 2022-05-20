@@ -5,16 +5,17 @@ namespace PowerPlanSwitcher
 
     public partial class SettingsDlg : Form
     {
-        private readonly List<KeyValuePair<Guid, string?>> powerSchemes =
+        private readonly List<(Guid guid, string name)> powerSchemes =
             PowerManager.GetPowerSchemes()
-                .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Value))
+                .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
+                .Cast<(Guid schemeGuid, string name)>()
                 .ToList();
 
         public SettingsDlg() => InitializeComponent();
 
         protected override void OnLoad(EventArgs e)
         {
-            DgvPowerSchemes.Rows.AddRange(PowerManager.GetPowerSchemes()
+            DgvPowerSchemes.Rows.AddRange(powerSchemes
                 .Select(SchemeToRow)
                 .ToArray());
 
@@ -23,7 +24,7 @@ namespace PowerPlanSwitcher
             ChbActivateInitialPowerScheme.Checked =
                 Settings.Default.ActivateInitialPowerScheme;
             CmbInitialPowerScheme.Items.AddRange(powerSchemes
-                .Select(kvp => kvp.Value)
+                .Select(scheme => scheme.name)
                 .Cast<object>()
                 .ToArray());
             if (Settings.Default.InitialPowerSchemeGuid == Guid.Empty)
@@ -33,7 +34,8 @@ namespace PowerPlanSwitcher
             else
             {
                 CmbInitialPowerScheme.SelectedIndex = powerSchemes.FindIndex(
-                    kvp => kvp.Key == Settings.Default.InitialPowerSchemeGuid);
+                    scheme => scheme.guid
+                        == Settings.Default.InitialPowerSchemeGuid);
             }
             CmbInitialPowerScheme.Enabled =
                 ChbActivateInitialPowerScheme.Checked;
@@ -41,19 +43,18 @@ namespace PowerPlanSwitcher
             base.OnLoad(e);
         }
 
-        private DataGridViewRow SchemeToRow(KeyValuePair<Guid, string?> scheme)
+        private DataGridViewRow SchemeToRow((Guid guid, string name) scheme)
         {
-            var (guid, name) = scheme;
-            var setting = PowerSchemeSettings.GetSetting(guid);
+            var setting = PowerSchemeSettings.GetSetting(scheme.guid);
 
-            var row = new DataGridViewRow { Tag = guid, };
+            var row = new DataGridViewRow { Tag = scheme.guid, };
 
             row.Cells.AddRange(
                 new DataGridViewCheckBoxCell
                 {
                     Value = setting is null || setting.Visible,
                 },
-                new DataGridViewTextBoxCell { Value = name, },
+                new DataGridViewTextBoxCell { Value = scheme.guid, },
                 new DataGridViewImageCell
                 {
                     Value = setting?.Icon,
@@ -216,7 +217,7 @@ namespace PowerPlanSwitcher
                 cmb.Items[cmb.SelectedIndex].ToString() ?? string.Empty;
 
             Guid GetPowerSchemeGuid(string name) =>
-                powerSchemes.First(kvp => kvp.Value == name).Key;
+                powerSchemes.First(scheme => scheme.name == name).guid;
 
             Settings.Default.ActivateInitialPowerScheme =
                 ChbActivateInitialPowerScheme.Checked;

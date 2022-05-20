@@ -170,11 +170,11 @@ namespace PowerPlanSwitcher
             }
         }
 
-        public static IEnumerable<KeyValuePair<Guid, string?>> GetPowerSchemes()
+        public static IEnumerable<(Guid guid, string? name)> GetPowerSchemes()
         {
             foreach (var guid in GetPowerSchemeGuids())
             {
-                yield return KeyValuePair.Create(guid, GetPowerSchemeName(guid));
+                yield return (guid, GetPowerSchemeName(guid));
             }
         }
 

@@ -14,12 +14,13 @@ namespace PowerPlanSwitcher
         public RuleType Type { get; set; }
         public Guid SchemeGuid { get; set; }
 
-        private static readonly List<Tuple<RuleType, string>> RuleTypeTexts = new()
-        {
-            Tuple.Create(RuleType.Exact, "Match exact Path"),
-            Tuple.Create(RuleType.StartsWith, "Path starts with"),
-            Tuple.Create(RuleType.EndsWith, "Path ends with"),
-        };
+        private static readonly List<(RuleType type, string text)> RuleTypeTexts
+            = new()
+            {
+                (RuleType.Exact, "Match exact Path"),
+                (RuleType.StartsWith, "Path starts with"),
+                (RuleType.EndsWith, "Path ends with"),
+            };
 
         private static List<PowerRule>? powerRules;
         private string filePath = string.Empty;
@@ -62,20 +63,16 @@ namespace PowerPlanSwitcher
 
         public static string RuleTypeToText(RuleType ruleType)
         {
-            var text = RuleTypeTexts
-                .FirstOrDefault(rtt => rtt.Item1 == ruleType)?.Item2;
-            return text ?? string.Empty;
+            (RuleType type, string text)? type = RuleTypeTexts
+                .FirstOrDefault(rtt => rtt.type == ruleType);
+            return type?.text ?? string.Empty;
         }
 
         public static RuleType TextToRuleType(string text)
         {
-            var type = RuleTypeTexts
-                .FirstOrDefault(rtt => rtt.Item2 == text)?.Item1;
-            if (type != null)
-            {
-                return (RuleType)type;
-            }
-            throw new InvalidOperationException(
+            (RuleType type, string text)? type = RuleTypeTexts
+                .FirstOrDefault(rtt => rtt.text == text);
+            return type?.type ?? throw new InvalidOperationException(
                 "No RuleType matches the provided text. " +
                 "Unable to convert to RuleType!");
         }

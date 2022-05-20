@@ -3,9 +3,10 @@ namespace PowerPlanSwitcher
     public partial class PowerRuleDlg : Form
     {
         public PowerRule? PowerRule { get; set; }
-        private readonly List<KeyValuePair<Guid, string?>> powerSchemes =
+        private readonly List<(Guid guid, string name)> powerSchemes =
             PowerManager.GetPowerSchemes()
-                .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Value))
+                .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
+                .Cast<(Guid schemeGuid, string name)>()
                 .ToList();
 
         private readonly List<RuleType> ruleTypes =
@@ -31,13 +32,13 @@ namespace PowerPlanSwitcher
             TxtPath.Text = PowerRule?.FilePath;
 
             CmbPowerScheme.Items.AddRange(powerSchemes
-                .Select(kvp => kvp.Value)
+                .Select(scheme => scheme.name)
                 .Cast<object>()
                 .ToArray());
             if (PowerRule is not null && PowerRule.SchemeGuid != Guid.Empty)
             {
                 CmbPowerScheme.SelectedIndex = powerSchemes.FindIndex(
-                    kvp => kvp.Key == PowerRule.SchemeGuid);
+                    scheme => scheme.guid == PowerRule.SchemeGuid);
             }
             else
             {
@@ -63,7 +64,7 @@ namespace PowerPlanSwitcher
                 cmb.Items[cmb.SelectedIndex].ToString() ?? string.Empty;
 
             Guid GetPowerSchemeGuid(string name) =>
-                powerSchemes.First(kvp => kvp.Value == name).Key;
+                powerSchemes.First(scheme => scheme.name == name).guid;
 
             PowerRule ??= new PowerRule();
             PowerRule.Type =
