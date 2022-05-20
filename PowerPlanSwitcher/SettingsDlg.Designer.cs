@@ -47,6 +47,8 @@ namespace PowerPlanSwitcher
             this.BtnAscentPowerRule = new System.Windows.Forms.Button();
             this.BtnDescentPowerRule = new System.Windows.Forms.Button();
             this.BtnDeletePowerRule = new System.Windows.Forms.Button();
+            this.ChbActivateInitialPowerScheme = new System.Windows.Forms.CheckBox();
+            this.CmbInitialPowerScheme = new System.Windows.Forms.ComboBox();
             ((System.ComponentModel.ISupportInitialize)(this.DgvPowerSchemes)).BeginInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvPowerRules)).BeginInit();
             this.SuspendLayout();
@@ -70,7 +72,7 @@ namespace PowerPlanSwitcher
             this.DgvPowerSchemes.RowHeadersVisible = false;
             this.DgvPowerSchemes.RowTemplate.Height = 26;
             this.DgvPowerSchemes.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DgvPowerSchemes.Size = new System.Drawing.Size(485, 229);
+            this.DgvPowerSchemes.Size = new System.Drawing.Size(473, 229);
             this.DgvPowerSchemes.TabIndex = 0;
             this.DgvPowerSchemes.CellMouseDown += new System.Windows.Forms.DataGridViewCellMouseEventHandler(this.HandleDgvPowerSchemesCellMouseDown);
             // 
@@ -101,7 +103,7 @@ namespace PowerPlanSwitcher
             // BtnOk
             // 
             this.BtnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnOk.Location = new System.Drawing.Point(786, 518);
+            this.BtnOk.Location = new System.Drawing.Point(928, 518);
             this.BtnOk.Name = "BtnOk";
             this.BtnOk.Size = new System.Drawing.Size(75, 23);
             this.BtnOk.TabIndex = 1;
@@ -113,7 +115,7 @@ namespace PowerPlanSwitcher
             // 
             this.BtnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
             this.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.BtnCancel.Location = new System.Drawing.Point(867, 518);
+            this.BtnCancel.Location = new System.Drawing.Point(1009, 518);
             this.BtnCancel.Name = "BtnCancel";
             this.BtnCancel.Size = new System.Drawing.Size(75, 23);
             this.BtnCancel.TabIndex = 2;
@@ -123,7 +125,7 @@ namespace PowerPlanSwitcher
             // BtnCreateRuleFromProcess
             // 
             this.BtnCreateRuleFromProcess.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnCreateRuleFromProcess.Location = new System.Drawing.Point(624, 12);
+            this.BtnCreateRuleFromProcess.Location = new System.Drawing.Point(766, 12);
             this.BtnCreateRuleFromProcess.Name = "BtnCreateRuleFromProcess";
             this.BtnCreateRuleFromProcess.Size = new System.Drawing.Size(156, 59);
             this.BtnCreateRuleFromProcess.TabIndex = 6;
@@ -153,7 +155,7 @@ namespace PowerPlanSwitcher
             this.DgvPowerRules.RowHeadersVisible = false;
             this.DgvPowerRules.RowTemplate.Height = 26;
             this.DgvPowerRules.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DgvPowerRules.Size = new System.Drawing.Size(930, 265);
+            this.DgvPowerRules.Size = new System.Drawing.Size(1072, 265);
             this.DgvPowerRules.TabIndex = 7;
             // 
             // DgcRuleIndex
@@ -197,7 +199,7 @@ namespace PowerPlanSwitcher
             // BtnAddPowerRule
             // 
             this.BtnAddPowerRule.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnAddPowerRule.Location = new System.Drawing.Point(786, 12);
+            this.BtnAddPowerRule.Location = new System.Drawing.Point(928, 12);
             this.BtnAddPowerRule.Name = "BtnAddPowerRule";
             this.BtnAddPowerRule.Size = new System.Drawing.Size(156, 59);
             this.BtnAddPowerRule.TabIndex = 8;
@@ -208,7 +210,7 @@ namespace PowerPlanSwitcher
             // BtnEditPowerRule
             // 
             this.BtnEditPowerRule.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnEditPowerRule.Location = new System.Drawing.Point(786, 77);
+            this.BtnEditPowerRule.Location = new System.Drawing.Point(928, 77);
             this.BtnEditPowerRule.Name = "BtnEditPowerRule";
             this.BtnEditPowerRule.Size = new System.Drawing.Size(156, 59);
             this.BtnEditPowerRule.TabIndex = 9;
@@ -219,7 +221,7 @@ namespace PowerPlanSwitcher
             // BtnAscentPowerRule
             // 
             this.BtnAscentPowerRule.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnAscentPowerRule.Location = new System.Drawing.Point(624, 77);
+            this.BtnAscentPowerRule.Location = new System.Drawing.Point(766, 77);
             this.BtnAscentPowerRule.Name = "BtnAscentPowerRule";
             this.BtnAscentPowerRule.Size = new System.Drawing.Size(156, 59);
             this.BtnAscentPowerRule.TabIndex = 10;
@@ -230,7 +232,7 @@ namespace PowerPlanSwitcher
             // BtnDescentPowerRule
             // 
             this.BtnDescentPowerRule.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnDescentPowerRule.Location = new System.Drawing.Point(624, 142);
+            this.BtnDescentPowerRule.Location = new System.Drawing.Point(766, 142);
             this.BtnDescentPowerRule.Name = "BtnDescentPowerRule";
             this.BtnDescentPowerRule.Size = new System.Drawing.Size(156, 59);
             this.BtnDescentPowerRule.TabIndex = 10;
@@ -241,7 +243,7 @@ namespace PowerPlanSwitcher
             // BtnDeletePowerRule
             // 
             this.BtnDeletePowerRule.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnDeletePowerRule.Location = new System.Drawing.Point(786, 142);
+            this.BtnDeletePowerRule.Location = new System.Drawing.Point(928, 142);
             this.BtnDeletePowerRule.Name = "BtnDeletePowerRule";
             this.BtnDeletePowerRule.Size = new System.Drawing.Size(156, 59);
             this.BtnDeletePowerRule.TabIndex = 9;
@@ -249,13 +251,35 @@ namespace PowerPlanSwitcher
             this.BtnDeletePowerRule.UseVisualStyleBackColor = true;
             this.BtnDeletePowerRule.Click += new System.EventHandler(this.HandleBtnDeletePowerRuleClick);
             // 
+            // ChbActivateInitialPowerScheme
+            // 
+            this.ChbActivateInitialPowerScheme.AutoSize = true;
+            this.ChbActivateInitialPowerScheme.Location = new System.Drawing.Point(491, 12);
+            this.ChbActivateInitialPowerScheme.Name = "ChbActivateInitialPowerScheme";
+            this.ChbActivateInitialPowerScheme.Size = new System.Drawing.Size(199, 19);
+            this.ChbActivateInitialPowerScheme.TabIndex = 11;
+            this.ChbActivateInitialPowerScheme.Text = "Activate this Power Plan on start:";
+            this.ChbActivateInitialPowerScheme.UseVisualStyleBackColor = true;
+            this.ChbActivateInitialPowerScheme.CheckedChanged += new System.EventHandler(this.HandleChbActivateInitialPowerSchemeCheckedChanged);
+            // 
+            // CmbInitialPowerScheme
+            // 
+            this.CmbInitialPowerScheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
+            this.CmbInitialPowerScheme.FormattingEnabled = true;
+            this.CmbInitialPowerScheme.Location = new System.Drawing.Point(491, 37);
+            this.CmbInitialPowerScheme.Name = "CmbInitialPowerScheme";
+            this.CmbInitialPowerScheme.Size = new System.Drawing.Size(269, 23);
+            this.CmbInitialPowerScheme.TabIndex = 12;
+            // 
             // SettingsDlg
             // 
             this.AcceptButton = this.BtnOk;
             this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
             this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
             this.CancelButton = this.BtnCancel;
-            this.ClientSize = new System.Drawing.Size(954, 553);
+            this.ClientSize = new System.Drawing.Size(1096, 553);
+            this.Controls.Add(this.CmbInitialPowerScheme);
+            this.Controls.Add(this.ChbActivateInitialPowerScheme);
             this.Controls.Add(this.BtnDescentPowerRule);
             this.Controls.Add(this.BtnAscentPowerRule);
             this.Controls.Add(this.BtnDeletePowerRule);
@@ -272,6 +296,7 @@ namespace PowerPlanSwitcher
             ((System.ComponentModel.ISupportInitialize)(this.DgvPowerSchemes)).EndInit();
             ((System.ComponentModel.ISupportInitialize)(this.DgvPowerRules)).EndInit();
             this.ResumeLayout(false);
+            this.PerformLayout();
 
         }
 
@@ -295,5 +320,7 @@ namespace PowerPlanSwitcher
         private Button BtnAscentPowerRule;
         private Button BtnDescentPowerRule;
         private Button BtnDeletePowerRule;
+        private CheckBox ChbActivateInitialPowerScheme;
+        private ComboBox CmbInitialPowerScheme;
     }
 }

@@ -20,6 +20,14 @@ namespace PowerPlanSwitcher
             // To customize application configuration such as set high DPI settings or default font,
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
+
+            if (Settings.Default.ActivateInitialPowerScheme &&
+                Settings.Default.InitialPowerSchemeGuid != Guid.Empty)
+            {
+                PowerManager.SetActivePowerScheme(
+                    Settings.Default.InitialPowerSchemeGuid);
+            }
+
             using var trayIcon = new TrayIcon();
             Application.Run();
         }

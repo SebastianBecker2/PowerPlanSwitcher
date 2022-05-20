@@ -58,5 +58,29 @@ namespace PowerPlanSwitcher.Properties {
                 this["PowerRules"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ActivateInitialPowerScheme {
+            get {
+                return ((bool)(this["ActivateInitialPowerScheme"]));
+            }
+            set {
+                this["ActivateInitialPowerScheme"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("00000000-0000-0000-0000-000000000000")]
+        public global::System.Guid InitialPowerSchemeGuid {
+            get {
+                return ((global::System.Guid)(this["InitialPowerSchemeGuid"]));
+            }
+            set {
+                this["InitialPowerSchemeGuid"] = value;
+            }
+        }
     }
 }

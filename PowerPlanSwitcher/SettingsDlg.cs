@@ -1,9 +1,15 @@
 namespace PowerPlanSwitcher
 {
     using System.Drawing.Drawing2D;
+    using Properties;
 
     public partial class SettingsDlg : Form
     {
+        private readonly List<KeyValuePair<Guid, string?>> powerSchemes =
+            PowerManager.GetPowerSchemes()
+                .Where(kvp => !string.IsNullOrWhiteSpace(kvp.Value))
+                .ToList();
+
         public SettingsDlg() => InitializeComponent();
 
         protected override void OnLoad(EventArgs e)
@@ -13,6 +19,24 @@ namespace PowerPlanSwitcher
                 .ToArray());
 
             UpdatePowerRules();
+
+            ChbActivateInitialPowerScheme.Checked =
+                Settings.Default.ActivateInitialPowerScheme;
+            CmbInitialPowerScheme.Items.AddRange(powerSchemes
+                .Select(kvp => kvp.Value)
+                .Cast<object>()
+                .ToArray());
+            if (Settings.Default.InitialPowerSchemeGuid == Guid.Empty)
+            {
+                CmbInitialPowerScheme.SelectedIndex = 0;
+            }
+            else
+            {
+                CmbInitialPowerScheme.SelectedIndex = powerSchemes.FindIndex(
+                    kvp => kvp.Key == Settings.Default.InitialPowerSchemeGuid);
+            }
+            CmbInitialPowerScheme.Enabled =
+                ChbActivateInitialPowerScheme.Checked;
 
             base.OnLoad(e);
         }
@@ -100,11 +124,11 @@ namespace PowerPlanSwitcher
             if (width > height)
             {
                 height = (int)(height / ((double)width / containerSize.Width));
-                return containerSize with {Height = height};
+                return containerSize with { Height = height };
             }
 
             width = (int)(width / ((double)height / containerSize.Height));
-            return containerSize with {Width = width};
+            return containerSize with { Width = width };
         }
 
         private static Image ResizeImage(Image original,
@@ -187,6 +211,18 @@ namespace PowerPlanSwitcher
                 .Select(r => r.Tag as PowerRule)
                 .Cast<PowerRule>());
             PowerRule.SavePowerRules();
+
+            string GetSelectedString(ComboBox cmb) =>
+                cmb.Items[cmb.SelectedIndex].ToString() ?? string.Empty;
+
+            Guid GetPowerSchemeGuid(string name) =>
+                powerSchemes.First(kvp => kvp.Value == name).Key;
+
+            Settings.Default.ActivateInitialPowerScheme =
+                ChbActivateInitialPowerScheme.Checked;
+            Settings.Default.InitialPowerSchemeGuid =
+                GetPowerSchemeGuid(GetSelectedString(CmbInitialPowerScheme));
+            Settings.Default.Save();
 
             DialogResult = DialogResult.OK;
         }
@@ -354,5 +390,11 @@ namespace PowerPlanSwitcher
 
             row.Selected = true;
         }
+
+        private void HandleChbActivateInitialPowerSchemeCheckedChanged(
+            object sender,
+            EventArgs e) =>
+            CmbInitialPowerScheme.Enabled =
+                ChbActivateInitialPowerScheme.Checked;
     }
 }
