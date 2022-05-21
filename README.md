@@ -10,5 +10,3 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
 - [Newtonsoft.Json](https://www.newtonsoft.com/json)
 - The amazing [FatCow IconPack](https://www.fatcow.com/free-icons)
 - [WindowsAPICodePack](https://github.com/contre/Windows-API-Code-Pack-1.1)
-
-test
