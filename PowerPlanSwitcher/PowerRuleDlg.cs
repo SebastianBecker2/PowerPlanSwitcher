@@ -1,5 +1,7 @@
 namespace PowerPlanSwitcher
 {
+    using Microsoft.WindowsAPICodePack.Dialogs;
+
     public partial class PowerRuleDlg : Form
     {
         public PowerRule? PowerRule { get; set; }
@@ -60,7 +62,7 @@ namespace PowerPlanSwitcher
                 return;
             }
 
-            string GetSelectedString(ComboBox cmb) =>
+            static string GetSelectedString(ComboBox cmb) =>
                 cmb.Items[cmb.SelectedIndex].ToString() ?? string.Empty;
 
             Guid GetPowerSchemeGuid(string name) =>
@@ -74,6 +76,32 @@ namespace PowerPlanSwitcher
                 GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme));
 
             DialogResult = DialogResult.OK;
+        }
+
+        private void HandleBtnSelectPathClick(object sender, EventArgs e)
+        {
+            static string GetSelectedString(ComboBox cmb) =>
+                cmb.Items[cmb.SelectedIndex].ToString() ?? string.Empty;
+
+            var type = PowerRule.TextToRuleType(GetSelectedString(CmbRuleType));
+
+            using var dlg = new CommonOpenFileDialog
+            {
+                IsFolderPicker = type == RuleType.StartsWith,
+            };
+
+            if (dlg.ShowDialog() != CommonFileDialogResult.Ok)
+            {
+                return;
+            }
+
+            if (type == RuleType.EndsWith)
+            {
+                TxtPath.Text = Path.GetFileName(dlg.FileName);
+                return;
+            }
+
+            TxtPath.Text = dlg.FileName;
         }
     }
 }

@@ -216,7 +216,7 @@ namespace PowerPlanSwitcher
                 .Cast<PowerRule>());
             PowerRule.SavePowerRules();
 
-            string GetSelectedString(ComboBox cmb) =>
+            static string GetSelectedString(ComboBox cmb) =>
                 cmb.Items[cmb.SelectedIndex].ToString() ?? string.Empty;
 
             Guid GetPowerSchemeGuid(string name) =>

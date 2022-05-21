@@ -1,4 +1,4 @@
-﻿namespace PowerPlanSwitcher
+namespace PowerPlanSwitcher
 {
     partial class PowerRuleDlg
     {
@@ -37,7 +37,7 @@
             this.label2 = new System.Windows.Forms.Label();
             this.label3 = new System.Windows.Forms.Label();
             this.CmbPowerScheme = new System.Windows.Forms.ComboBox();
-            this.TxtSelectPath = new System.Windows.Forms.Button();
+            this.BtnSelectPath = new System.Windows.Forms.Button();
             this.tableLayoutPanel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -106,7 +106,7 @@
             this.tableLayoutPanel1.Controls.Add(this.CmbRuleType, 1, 0);
             this.tableLayoutPanel1.Controls.Add(this.label3, 0, 1);
             this.tableLayoutPanel1.Controls.Add(this.CmbPowerScheme, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.TxtSelectPath, 2, 1);
+            this.tableLayoutPanel1.Controls.Add(this.BtnSelectPath, 2, 1);
             this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
             this.tableLayoutPanel1.Name = "tableLayoutPanel1";
             this.tableLayoutPanel1.RowCount = 3;
@@ -146,15 +146,16 @@
             this.CmbPowerScheme.Size = new System.Drawing.Size(401, 23);
             this.CmbPowerScheme.TabIndex = 5;
             // 
-            // TxtSelectPath
+            // BtnSelectPath
             // 
-            this.TxtSelectPath.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.TxtSelectPath.Location = new System.Drawing.Point(516, 44);
-            this.TxtSelectPath.Name = "TxtSelectPath";
-            this.TxtSelectPath.Size = new System.Drawing.Size(25, 23);
-            this.TxtSelectPath.TabIndex = 8;
-            this.TxtSelectPath.Text = "...";
-            this.TxtSelectPath.UseVisualStyleBackColor = true;
+            this.BtnSelectPath.Anchor = System.Windows.Forms.AnchorStyles.Left;
+            this.BtnSelectPath.Location = new System.Drawing.Point(516, 44);
+            this.BtnSelectPath.Name = "BtnSelectPath";
+            this.BtnSelectPath.Size = new System.Drawing.Size(25, 23);
+            this.BtnSelectPath.TabIndex = 8;
+            this.BtnSelectPath.Text = "...";
+            this.BtnSelectPath.UseVisualStyleBackColor = true;
+            this.BtnSelectPath.Click += new System.EventHandler(this.HandleBtnSelectPathClick);
             // 
             // PowerRuleDlg
             // 
@@ -185,6 +186,6 @@
         private Label label2;
         private Label label3;
         private ComboBox CmbPowerScheme;
-        private Button TxtSelectPath;
+        private Button BtnSelectPath;
     }
 }
