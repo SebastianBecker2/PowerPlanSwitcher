@@ -9,6 +9,16 @@ namespace PowerPlanSwitcher
         private bool disposedValue;
         private readonly IntPtr powerSettingsChangedCallbackHandler;
 
+        // This variable must not be a local but instead have a lifetime
+        // exceeding the registration of the callback initialized with
+        // PowerSettingRegisterNotification and removed with
+        // PowerSettingUnregisterNotification.
+        // In other words, the lifetime must extend until the PowerManager is
+        // disposed properly.
+        // ReSharper disable once PrivateFieldCanBeConvertedToLocalVariable
+        private readonly DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS
+            powerSettingsChangedCallback;
+
         public event EventHandler<ActivePowerSchemeChangedEventArgs>?
             ActivePowerSchemeChanged;
         protected virtual void OnActivePowerSchemeChanged(Guid activeSchemeGuid) =>
@@ -212,11 +222,7 @@ namespace PowerPlanSwitcher
 
         public PowerManager()
         {
-#if DEBUG
-            return;
-#pragma warning disable CS0162 // Unreachable code detected
-#endif
-            var callback =
+            powerSettingsChangedCallback =
                 new DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS
                 {
                     Callback = HandlePowerSettingsChanged,
@@ -226,7 +232,7 @@ namespace PowerPlanSwitcher
             var result = PowerSettingRegisterNotification(
                 ref GUID_POWERSCHEME_PERSONALITY,
                 DEVICE_NOTIFY_CALLBACK,
-                ref callback,
+                ref powerSettingsChangedCallback,
                 ref powerSettingsChangedCallbackHandler);
 
             if (result != ERROR_SUCCESS)
@@ -235,9 +241,6 @@ namespace PowerPlanSwitcher
                     "Unable to register callback for Power Setting " +
                     "Notifications.");
             }
-#if DEBUG
-#pragma warning restore CS0162 // Unreachable code detected
-#endif
         }
 
         private int HandlePowerSettingsChanged(
