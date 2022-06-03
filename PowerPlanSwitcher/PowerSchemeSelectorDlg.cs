@@ -89,6 +89,19 @@ namespace PowerPlanSwitcher
             base.OnLoad(e);
         }
 
+        protected override void OnShown(EventArgs e)
+        {
+            // Brute force the dialog to frontmostestest topmostest
+            WindowState = FormWindowState.Minimized;
+            Show();
+            WindowState = FormWindowState.Normal;
+            BringToFront();
+            Activate();
+            _ = Focus();
+
+            base.OnShown(e);
+        }
+
         private void SetPositionToTaskbar()
         {
             switch (Taskbar.Position)
