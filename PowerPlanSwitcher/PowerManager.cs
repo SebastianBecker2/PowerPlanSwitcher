@@ -36,8 +36,8 @@ namespace PowerPlanSwitcher
         private const int DEVICE_NOTIFY_CALLBACK = 0x2;
         private const int PBT_POWERSETTINGCHANGE = 0x8013;
 
-        private static Guid GUID_POWERSCHEME_PERSONALITY =
-            Guid.Parse("245d8541-3943-4422-b025-13A784F679B7");
+        private static Guid GUID_ACTIVE_POWERSCHEME =
+            Guid.Parse("31F9F286-5084-42FE-B720-2B0264993763");
 
         [DllImport("PowrProf.dll")]
         private static extern uint PowerEnumerate(
@@ -230,7 +230,7 @@ namespace PowerPlanSwitcher
                 };
 
             var result = PowerSettingRegisterNotification(
-                ref GUID_POWERSCHEME_PERSONALITY,
+                ref GUID_ACTIVE_POWERSCHEME,
                 DEVICE_NOTIFY_CALLBACK,
                 ref powerSettingsChangedCallback,
                 ref powerSettingsChangedCallbackHandler);
@@ -255,7 +255,7 @@ namespace PowerPlanSwitcher
 
             var (powerSetting, _, schemeGuid) =
                 Marshal.PtrToStructure<POWERBROADCAST_SETTING>(setting);
-            if (powerSetting != GUID_POWERSCHEME_PERSONALITY)
+            if (powerSetting != GUID_ACTIVE_POWERSCHEME)
             {
                 return 0;
             }
