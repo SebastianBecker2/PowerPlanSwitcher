@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Include>
+  <?define Manufacturer = "Sebastian Becker" ?>
+  <?define ProductName = "PowerPlanSwitcher" ?>
+  <?define UpgradeCode = "32732083-A70E-4487-B807-64D00A375112" ?>
+  <?define ProductComponent = "PowerPlanSwitcher" ?>
+  <?define ProductComponentId = "9EE4A056-7C31-4282-B743-F9F73731C037" ?>
+</Include>

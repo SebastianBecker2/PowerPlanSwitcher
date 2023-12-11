@@ -3,18 +3,24 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio Version 17
 VisualStudioVersion = 17.1.32421.90
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerPlanSwitcher", "PowerPlanSwitcher\PowerPlanSwitcher.csproj", "{E7FB44A5-1F4E-49F7-A497-EFCF67AA7B61}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PowerPlanSwitcher", "PowerPlanSwitcher\PowerPlanSwitcher.csproj", "{E7FB44A5-1F4E-49F7-A497-EFCF67AA7B61}"
+EndProject
+Project("{930C7802-8A8C-48F9-8165-68863BCCD9DD}") = "Setup", "Setup\Setup.wixproj", "{B3CDE6DA-C803-4E89-B851-207F64567533}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
-		Debug|Any CPU = Debug|Any CPU
-		Release|Any CPU = Release|Any CPU
+		Debug|x64 = Debug|x64
+		Release|x64 = Release|x64
 	EndGlobalSection
 	GlobalSection(ProjectConfigurationPlatforms) = postSolution
-		{E7FB44A5-1F4E-49F7-A497-EFCF67AA7B61}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{E7FB44A5-1F4E-49F7-A497-EFCF67AA7B61}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{E7FB44A5-1F4E-49F7-A497-EFCF67AA7B61}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{E7FB44A5-1F4E-49F7-A497-EFCF67AA7B61}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E7FB44A5-1F4E-49F7-A497-EFCF67AA7B61}.Debug|x64.ActiveCfg = Debug|x64
+		{E7FB44A5-1F4E-49F7-A497-EFCF67AA7B61}.Debug|x64.Build.0 = Debug|x64
+		{E7FB44A5-1F4E-49F7-A497-EFCF67AA7B61}.Release|x64.ActiveCfg = Release|x64
+		{E7FB44A5-1F4E-49F7-A497-EFCF67AA7B61}.Release|x64.Build.0 = Release|x64
+		{B3CDE6DA-C803-4E89-B851-207F64567533}.Debug|x64.ActiveCfg = Debug|x64
+		{B3CDE6DA-C803-4E89-B851-207F64567533}.Debug|x64.Build.0 = Debug|x64
+		{B3CDE6DA-C803-4E89-B851-207F64567533}.Release|x64.ActiveCfg = Release|x64
+		{B3CDE6DA-C803-4E89-B851-207F64567533}.Release|x64.Build.0 = Release|x64
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

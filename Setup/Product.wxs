@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+    <?include $(sys.CURRENTDIR)\Config.wxi?>
+
+    <Product Id="*"
+             Name="$(var.ProductName)"
+             Language="1033"
+             Version="!(bind.FileVersion.Product.exe)"
+             Manufacturer="$(var.Manufacturer)"
+             UpgradeCode="$(var.UpgradeCode)">
+
+        <Package InstallerVersion="200"
+                 Compressed="yes"
+                 InstallScope="perMachine" />
+
+        <MajorUpgrade AllowSameVersionUpgrades="yes"
+                      DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+        <MediaTemplate />
+
+        <?if $(var.Platform) = x64 ?>
+        <?define Win64 = "yes" ?>
+        <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
+        <?else ?>
+        <?define Win64 = "no" ?>
+        <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
+        <?endif ?>
+
+        <Feature Id="ProductFeature" Title="$(var.ProductComponent)" Level="1">
+            <ComponentGroupRef Id="ProductComponents" />
+        </Feature>
+
+        <UIRef Id="UISequence" />
+    </Product>
+
+    <!-- Directory definitions -->
+    <Fragment>
+        <Directory Id="TARGETDIR" Name="SourceDir">
+            <Directory Id="$(var.PlatformProgramFilesFolder)">
+                <Directory Id="PRODUCTFOLDER" Name="$(var.ProductComponent)">
+                </Directory>
+            </Directory>
+
+            <Directory Id="ProgramMenuFolder"/>
+        </Directory>
+    </Fragment>
+
+    <!-- Icon definition -->
+    <Fragment>
+        <Icon Id="ProductIcon.exe" SourceFile="$(var.PowerPlanSwitcher.TargetPath)" />
+        <Property Id="ARPPRODUCTICON" Value="ProductIcon.exe" />
+    </Fragment>
+
+    <!-- File actions -->
+    <Fragment>
+        <ComponentGroup Id="ProductComponents" Directory="PRODUCTFOLDER">
+            <Component Id="ProductComponent" Win64="$(var.Win64)" Guid="EC4DAFD1-0E6C-4FDE-AF27-BBBFE3C11770">
+                <File Id="Product.exe"
+                      Source="$(var.PowerPlanSwitcher.TargetDir)..\publish\PowerPlanSwitcher.exe" />
+
+                <Shortcut Id="ClientStartMenuShortcut"
+                          Directory="ProgramMenuFolder"
+                          Name="$(var.ProductName)"
+                          Icon="ProductIcon.exe"
+                          WorkingDirectory="INSTALLFOLDER"
+                          Advertise="yes" />
+
+            </Component>
+        </ComponentGroup>
+    </Fragment>
+
+    <!-- UI Sequence -->
+    <Fragment>
+        <UI Id="UISequence">
+            <UIRef Id="WixUI_FeatureTree" />
+            <!--Skip license dialog-->
+            <Publish Dialog="WelcomeDlg"
+                     Control="Next"
+                     Event="NewDialog"
+                     Value="CustomizeDlg"
+                     Order="2">1</Publish>
+            <Publish Dialog="CustomizeDlg"
+                     Control="Back"
+                     Event="NewDialog"
+                     Value="WelcomeDlg"
+                     Order="2">1</Publish>
+        </UI>
+    </Fragment>
+    
+</Wix>
