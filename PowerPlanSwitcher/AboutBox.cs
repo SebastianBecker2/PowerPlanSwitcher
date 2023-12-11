@@ -8,9 +8,9 @@ namespace PowerPlanSwitcher
         public AboutBox()
         {
             InitializeComponent();
-            Text = $"About { AssemblyTitle ?? ""}";
+            Text = $"About {AssemblyTitle ?? ""}";
             labelProductName.Text = AssemblyProduct;
-            labelVersion.Text = $"Version { AssemblyVersion ?? ""}";
+            labelVersion.Text = $"Version {AssemblyVersion ?? ""}";
             labelCopyright.Text = AssemblyCopyright;
             labelCompanyName.Text = AssemblyCompany;
             textBoxDescription.Text = AssemblyDescription;
