@@ -1,13 +1,13 @@
 namespace PowerPlanSwitcher
 {
-    using System.Runtime.InteropServices;
+    using Vanara.Extensions;
+    using Vanara.PInvoke;
+    using static Vanara.PInvoke.PowrProf;
 
     internal class PowerManager : IDisposable
     {
-        private const uint DefaultBufferSize = 64;
-
         private bool disposedValue;
-        private readonly IntPtr powerSettingsChangedCallbackHandler;
+        private readonly SafeHPOWERNOTIFY powerSettingsChangedCallbackHandler;
 
         // This variable must not be a local but instead have a lifetime
         // exceeding the registration of the callback initialized with
@@ -26,159 +26,18 @@ namespace PowerPlanSwitcher
                 this,
                 new ActivePowerSchemeChangedEventArgs(activeSchemeGuid));
 
-        // WinAPI compliant identifier naming
-        // ReSharper disable InconsistentNaming
-        // ReSharper disable IdentifierTypo
-#pragma warning disable IDE1006 // Naming Styles
-        private const uint ERROR_SUCCESS = 0;
-        private const uint ERROR_MORE_DATA = 234;
-
-        private const int DEVICE_NOTIFY_CALLBACK = 0x2;
-        private const int PBT_POWERSETTINGCHANGE = 0x8013;
-
-        private static Guid GUID_ACTIVE_POWERSCHEME =
-            Guid.Parse("31F9F286-5084-42FE-B720-2B0264993763");
-
-        [DllImport("PowrProf.dll")]
-        private static extern uint PowerEnumerate(
-            IntPtr RootPowerKey,
-            IntPtr SchemeGuid,
-            IntPtr SubGroupOfPowerSettingsGuid,
-            uint AccessFlags,
-            uint Index,
-            ref Guid Buffer,
-            ref uint BufferSize);
-
-        [DllImport("PowrProf.dll")]
-        private static extern uint PowerReadFriendlyName(
-            IntPtr RootPowerKey,
-            ref Guid SchemeGuid,
-            IntPtr SubGroupOfPowerSettingsGuid,
-            IntPtr PowerSettingGuid,
-            IntPtr Buffer,
-            ref uint BufferSize);
-
-        [DllImport("powrprof.dll")]
-        private static extern uint PowerGetActiveScheme(
-            IntPtr UserRootPowerKey,
-            ref IntPtr ActivePolicyGuid);
-
-        [DllImport("kernel32.dll")]
-        private static extern IntPtr LocalFree(
-            IntPtr hMem);
-
-        [DllImport("powrprof.dll")]
-        private static extern uint PowerSetActiveScheme(
-            IntPtr UserRootPowerKey,
-            ref Guid SchemeGuid);
-
-        [DllImport("powrprof.dll")]
-        private static extern uint PowerSettingRegisterNotification(
-            ref Guid SettingGuid,
-            uint Flags,
-            ref DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS Recipient,
-            ref IntPtr RegistrationHandle);
-
-        [DllImport("powrprof.dll")]
-        private static extern uint PowerSettingUnregisterNotification(
-            IntPtr RegistrationHandle);
-
-        private delegate int DeviceNotifyCallback(
-            IntPtr context,
-            int type,
-            IntPtr setting);
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS
+        public static string? GetPowerSchemeName(Guid schemeGuid)
         {
-            public DeviceNotifyCallback Callback;
-            public IntPtr Context;
-        }
-
-        [StructLayout(LayoutKind.Sequential)]
-        private struct POWERBROADCAST_SETTING
-        {
-            public readonly Guid PowerSetting;
-            public readonly uint DataLength;
-            [MarshalAs(UnmanagedType.ByValArray, SizeConst = 16)]
-            public readonly byte[] Data;
-
-            public void Deconstruct(
-                out Guid powerSettings,
-                out uint dataLength,
-                out byte[] data)
+            var friendlyName = PowerReadFriendlyName(schemeGuid, null, null);
+            if (string.IsNullOrWhiteSpace(friendlyName))
             {
-                powerSettings = PowerSetting;
-                dataLength = DataLength;
-                data = Data;
-            }
-        }
-
-        private enum AccessFlags : uint
-        {
-            ACCESS_SCHEME = 16,
-            ACCESS_SUBGROUP = 17,
-            ACCESS_INDIVIDUAL_SETTING = 18
-        }
-#pragma warning restore IDE1006 // Naming Styles
-        // ReSharper restore IdentifierTypo
-        // ReSharper restore InconsistentNaming
-
-        public static string? GetPowerSchemeName(Guid schemeGuid) =>
-            ReadFriendlyName(schemeGuid, DefaultBufferSize);
-
-        private static string? ReadFriendlyName(
-            Guid schemeGuid,
-            uint bufferSize)
-        {
-            var pSizeName = Marshal.AllocHGlobal((int)bufferSize);
-            try
-            {
-                var res = PowerReadFriendlyName(
-                    IntPtr.Zero,
-                    ref schemeGuid,
-                    IntPtr.Zero,
-                    IntPtr.Zero,
-                    pSizeName,
-                    ref bufferSize);
-
-                if (ERROR_MORE_DATA == res)
-                {
-                    return ReadFriendlyName(schemeGuid, bufferSize);
-                }
-
-                if (ERROR_SUCCESS == res)
-                {
-                    return Marshal.PtrToStringUni(pSizeName);
-                }
-
                 return null;
             }
-            finally
-            {
-                Marshal.FreeHGlobal(pSizeName);
-            }
+            return friendlyName;
         }
 
-        public static IEnumerable<Guid> GetPowerSchemeGuids()
-        {
-            var schemeGuid = Guid.Empty;
-            var sizeSchemeGuid = (uint)Marshal.SizeOf(typeof(Guid));
-
-            for (uint schemeIndex = 0;
-                 PowerEnumerate(
-                     IntPtr.Zero,
-                     IntPtr.Zero,
-                     IntPtr.Zero,
-                     (uint)AccessFlags.ACCESS_SCHEME,
-                     schemeIndex,
-                     ref schemeGuid,
-                     ref sizeSchemeGuid) == ERROR_SUCCESS;
-                 schemeIndex++)
-            {
-                yield return schemeGuid;
-            }
-        }
+        public static IEnumerable<Guid> GetPowerSchemeGuids() =>
+            PowerEnumerate<Guid>(null, null, POWER_DATA_ACCESSOR.ACCESS_SCHEME);
 
         public static IEnumerable<(Guid guid, string? name)> GetPowerSchemes()
         {
@@ -190,30 +49,16 @@ namespace PowerPlanSwitcher
 
         public static Guid GetActivePowerSchemeGuid()
         {
-            var activeSchemeGuidPtr = IntPtr.Zero;
-            try
+            if (PowerGetActiveScheme(out var activeScheme).Failed)
             {
-
-                var res = PowerGetActiveScheme(
-                    IntPtr.Zero,
-                    ref activeSchemeGuidPtr);
-                if (res != ERROR_SUCCESS)
-                {
-                    return Guid.Empty;
-                }
-
-                return Marshal.PtrToStructure<Guid>(activeSchemeGuidPtr);
+                return Guid.Empty;
             }
-            finally
-            {
-                _ = LocalFree(activeSchemeGuidPtr);
-            }
+            return activeScheme;
         }
 
         public static void SetActivePowerScheme(Guid schemeGuid)
         {
-            if (PowerSetActiveScheme(IntPtr.Zero, ref schemeGuid)
-                != ERROR_SUCCESS)
+            if (PowerSetActiveScheme(HKEY.NULL, schemeGuid).Failed)
             {
                 throw new InvalidOperationException(
                     $"Unable to set the active power scheme to {schemeGuid}");
@@ -222,20 +67,17 @@ namespace PowerPlanSwitcher
 
         public PowerManager()
         {
-            powerSettingsChangedCallback =
-                new DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS
-                {
-                    Callback = HandlePowerSettingsChanged,
-                    Context = IntPtr.Zero
-                };
+            powerSettingsChangedCallback = new DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS
+            {
+                Callback = HandlePowerSettingsChanged,
+                Context = IntPtr.Zero
+            };
 
-            var result = PowerSettingRegisterNotification(
-                ref GUID_ACTIVE_POWERSCHEME,
-                DEVICE_NOTIFY_CALLBACK,
-                ref powerSettingsChangedCallback,
-                ref powerSettingsChangedCallbackHandler);
-
-            if (result != ERROR_SUCCESS)
+            if (PowerSettingRegisterNotification(
+                GUID_ACTIVE_POWERSCHEME,
+                DEVICE_NOTIFY.DEVICE_NOTIFY_CALLBACK,
+                powerSettingsChangedCallback,
+                out powerSettingsChangedCallbackHandler).Failed)
             {
                 throw new InvalidOperationException(
                     "Unable to register callback for Power Setting " +
@@ -243,25 +85,28 @@ namespace PowerPlanSwitcher
             }
         }
 
-        private int HandlePowerSettingsChanged(
+        private Win32Error HandlePowerSettingsChanged(
             IntPtr context,
-            int eventType,
-            IntPtr setting)
+            uint eventType,
+            IntPtr settingPtr)
         {
-            if (eventType != PBT_POWERSETTINGCHANGE || setting == IntPtr.Zero)
+            if (eventType != (uint)User32.PowerBroadcastType.PBT_POWERSETTINGCHANGE || settingPtr == IntPtr.Zero)
             {
-                return 0;
+                return Win32Error.NO_ERROR;
             }
 
-            var (powerSetting, _, schemeGuid) =
-                Marshal.PtrToStructure<POWERBROADCAST_SETTING>(setting);
-            if (powerSetting != GUID_ACTIVE_POWERSCHEME)
+            var setting = settingPtr.ToStructure<User32.POWERBROADCAST_SETTING>();
+            if (setting.PowerSetting != GUID_ACTIVE_POWERSCHEME)
             {
-                return 0;
+                return Win32Error.NO_ERROR;
             }
 
-            OnActivePowerSchemeChanged(new Guid(schemeGuid));
-            return 0;
+            try
+            {
+                OnActivePowerSchemeChanged(new Guid(setting.Data));
+            }
+            catch (ArgumentException) { }
+            return Win32Error.NO_ERROR;
         }
 
         protected virtual void Dispose(bool disposing)
