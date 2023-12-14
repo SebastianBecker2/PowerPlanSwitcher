@@ -2,6 +2,7 @@ version: 1.0.{build}
 image:
 - Visual Studio 2022
 configuration: Release
+platform: x64
 install:
 - ps: nuget restore
 before_build:
