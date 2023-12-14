@@ -43,8 +43,8 @@
                 </Directory>
             </Directory>
 
-            <Directory Id="ProgramMenuFolder"/>
-            <Directory Id="StartupFolder"/>
+            <Directory Id="ProgramMenuFolder" />
+            <Directory Id="StartupFolder" />
         </Directory>
     </Fragment>
 
@@ -90,26 +90,26 @@
                       BinaryKey="WixCA"
                       DllEntry="CAQuietExec"
                       Execute="immediate"
-                      Return="ignore"/>
+                      Return="ignore" />
 
         <CustomAction Id="UpdateCmdToKill"
                       Property="QtExecCmdLine"
                       Value='"[WindowsFolder]\System32\taskkill.exe" /F /IM PowerPlanSwitcher.exe'
                       Execute='immediate'
-                      Return="check"/>
+                      Return="check" />
 
         <CustomAction Id="KillProduct"
                       BinaryKey="WixCA"
                       DllEntry="CAQuietExec"
                       Execute="immediate"
                       Return="ignore"
-                      Impersonate="no"/>
+                      Impersonate="no" />
 
         <InstallExecuteSequence>
-            <Custom Action="LaunchProduct" After="InstallFinalize"/>
-            <Custom Action="CloseProduct" Before="LaunchConditions"/>
-            <Custom Action="UpdateCmdToKill" After="CloseProduct"/>
-            <Custom Action='KillProduct' After="UpdateCmdToKill"/>
+            <Custom Action="LaunchProduct" After="InstallFinalize" />
+            <Custom Action="CloseProduct" Before="LaunchConditions" />
+            <Custom Action="UpdateCmdToKill" After="CloseProduct" />
+            <Custom Action='KillProduct' After="UpdateCmdToKill" />
         </InstallExecuteSequence>
     </Fragment>
     
