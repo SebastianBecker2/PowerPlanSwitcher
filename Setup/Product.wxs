@@ -16,7 +16,8 @@
 
         <MajorUpgrade AllowSameVersionUpgrades="yes"
                       DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
-        <MediaTemplate />
+        
+        <MediaTemplate EmbedCab="yes" />
 
         <?if $(var.Platform) = x64 ?>
         <?define Win64 = "yes" ?>
