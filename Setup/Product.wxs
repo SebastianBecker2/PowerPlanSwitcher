@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi">
+<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
+     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
     <?include $(sys.CURRENTDIR)\Config.wxi?>
 
     <Product Id="*"
@@ -29,6 +30,8 @@
             <ComponentGroupRef Id="ProductComponents" />
         </Feature>
 
+        <CustomActionRef Id="LaunchProduct" />
+        
         <UIRef Id="UISequence" />
     </Product>
 
@@ -41,6 +44,7 @@
             </Directory>
 
             <Directory Id="ProgramMenuFolder"/>
+            <Directory Id="StartupFolder"/>
         </Directory>
     </Fragment>
 
@@ -57,8 +61,15 @@
                 <File Id="Product.exe"
                       Source="$(var.PowerPlanSwitcher.TargetDir)..\publish\PowerPlanSwitcher.exe" />
 
-                <Shortcut Id="ClientStartMenuShortcut"
+                <Shortcut Id="ProductStartMenuShortcut"
                           Directory="ProgramMenuFolder"
+                          Name="$(var.ProductName)"
+                          Icon="ProductIcon.exe"
+                          WorkingDirectory="INSTALLFOLDER"
+                          Advertise="yes" />
+
+                <Shortcut Id="ProductAutoStartShortcut"
+                          Directory="StartupFolder"
                           Name="$(var.ProductName)"
                           Icon="ProductIcon.exe"
                           WorkingDirectory="INSTALLFOLDER"
@@ -68,11 +79,46 @@
         </ComponentGroup>
     </Fragment>
 
+    <!-- Custom Actions -->
+    <Fragment>
+        <Property Id="WixShellExecTarget" Value="[#Product.exe]" />
+        <CustomAction Id="LaunchProduct" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+
+        <Property Id="QtExecCmdLine"
+          Value='"[WindowsFolder]\System32\taskkill.exe" /IM PowerPlanSwitcher.exe'/>
+        <CustomAction Id="CloseProduct"
+                      BinaryKey="WixCA"
+                      DllEntry="CAQuietExec"
+                      Execute="immediate"
+                      Return="ignore"/>
+
+        <CustomAction Id="UpdateCmdToKill"
+                      Property="QtExecCmdLine"
+                      Value='"[WindowsFolder]\System32\taskkill.exe" /F /IM PowerPlanSwitcher.exe'
+                      Execute='immediate'
+                      Return="check"/>
+
+        <CustomAction Id="KillProduct"
+                      BinaryKey="WixCA"
+                      DllEntry="CAQuietExec"
+                      Execute="immediate"
+                      Return="ignore"
+                      Impersonate="no"/>
+
+        <InstallExecuteSequence>
+            <Custom Action="LaunchProduct" After="InstallFinalize"/>
+            <Custom Action="CloseProduct" Before="LaunchConditions"/>
+            <Custom Action="UpdateCmdToKill" After="CloseProduct"/>
+            <Custom Action='KillProduct' After="UpdateCmdToKill"/>
+        </InstallExecuteSequence>
+    </Fragment>
+    
     <!-- UI Sequence -->
     <Fragment>
         <UI Id="UISequence">
             <UIRef Id="WixUI_FeatureTree" />
-            <!--Skip license dialog-->
+            
+            <!-- Skip license dialog -->
             <Publish Dialog="WelcomeDlg"
                      Control="Next"
                      Event="NewDialog"
@@ -85,5 +131,5 @@
                      Order="2">1</Publish>
         </UI>
     </Fragment>
-    
+
 </Wix>

@@ -1,5 +1,6 @@
 namespace PowerPlanSwitcher
 {
+    using Microsoft.Win32;
     using Properties;
     using Serilog;
 
@@ -7,7 +8,8 @@ namespace PowerPlanSwitcher
     {
         private static readonly string AssemblyTitle =
             AboutBox.AssemblyTitle ?? "";
-        private static readonly string LogFileName = $"{AssemblyTitle}.log";
+        private static readonly string LogFileName =
+            $"{AssemblyTitle}.log";
         private static readonly string LocalAppDataPath =
             Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
         private static readonly string LogPath =
@@ -48,6 +50,7 @@ namespace PowerPlanSwitcher
             }
 
             using var trayIcon = new TrayIcon();
+            SystemEvents.EventsThreadShutdown += (s, e) => Application.Exit();
             Application.Run();
         }
     }
