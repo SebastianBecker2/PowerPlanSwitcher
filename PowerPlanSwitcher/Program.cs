@@ -11,7 +11,8 @@ namespace PowerPlanSwitcher
         private static readonly string LogFileName =
             $"{AssemblyTitle}.log";
         private static readonly string LocalAppDataPath =
-            Environment.GetFolderPath(Environment.SpecialFolder.LocalApplicationData);
+            Environment.GetFolderPath(
+                Environment.SpecialFolder.LocalApplicationData);
         private static readonly string LogPath =
             Path.Combine(LocalAppDataPath, AssemblyTitle, LogFileName);
 
