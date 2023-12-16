@@ -30,13 +30,13 @@
         {
             var resources = new System.ComponentModel.ComponentResourceManager(typeof(ProcessSelectionDlg));
             DgvProcesses = new DataGridView();
+            BtnCancel = new Button();
+            BtnOk = new Button();
             DgcProcessIcon = new DataGridViewImageColumn();
             DgcProcessId = new DataGridViewTextBoxColumn();
             DgcProcessName = new DataGridViewTextBoxColumn();
             DgcProcessStartTime = new DataGridViewTextBoxColumn();
             DgcProcessPath = new DataGridViewTextBoxColumn();
-            BtnCancel = new Button();
-            BtnOk = new Button();
             ((System.ComponentModel.ISupportInitialize)DgvProcesses).BeginInit();
             SuspendLayout();
             // 
@@ -59,41 +59,6 @@
             DgvProcesses.CellDoubleClick += HandleDgvProcessesCellDoubleClick;
             DgvProcesses.SortCompare += HandleDgvProcessesSortCompare;
             // 
-            // DgcProcessIcon
-            // 
-            DgcProcessIcon.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            DgcProcessIcon.HeaderText = "";
-            DgcProcessIcon.Name = "DgcProcessIcon";
-            DgcProcessIcon.ReadOnly = true;
-            DgcProcessIcon.Width = 5;
-            // 
-            // DgcProcessId
-            // 
-            DgcProcessId.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            DgcProcessId.HeaderText = "PID";
-            DgcProcessId.Name = "DgcProcessId";
-            DgcProcessId.ReadOnly = true;
-            DgcProcessId.Width = 50;
-            // 
-            // DgcProcessName
-            // 
-            DgcProcessName.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            DgcProcessName.HeaderText = "Name";
-            DgcProcessName.Name = "DgcProcessName";
-            DgcProcessName.ReadOnly = true;
-            // 
-            // DgcProcessStartTime
-            // 
-            DgcProcessStartTime.HeaderText = "Start Time";
-            DgcProcessStartTime.Name = "DgcProcessStartTime";
-            DgcProcessStartTime.ReadOnly = true;
-            // 
-            // DgcProcessPath
-            // 
-            DgcProcessPath.HeaderText = "Path";
-            DgcProcessPath.Name = "DgcProcessPath";
-            DgcProcessPath.ReadOnly = true;
-            // 
             // BtnCancel
             // 
             BtnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
@@ -115,6 +80,46 @@
             BtnOk.Text = "OK";
             BtnOk.UseVisualStyleBackColor = true;
             BtnOk.Click += HandleBtnOkClick;
+            // 
+            // DgcProcessIcon
+            // 
+            DgcProcessIcon.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcProcessIcon.HeaderText = "";
+            DgcProcessIcon.Name = "DgcProcessIcon";
+            DgcProcessIcon.ReadOnly = true;
+            DgcProcessIcon.Width = 5;
+            // 
+            // DgcProcessId
+            // 
+            DgcProcessId.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcProcessId.HeaderText = "PID";
+            DgcProcessId.Name = "DgcProcessId";
+            DgcProcessId.ReadOnly = true;
+            DgcProcessId.Width = 50;
+            // 
+            // DgcProcessName
+            // 
+            DgcProcessName.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcProcessName.HeaderText = "Name";
+            DgcProcessName.Name = "DgcProcessName";
+            DgcProcessName.ReadOnly = true;
+            DgcProcessName.Width = 64;
+            // 
+            // DgcProcessStartTime
+            // 
+            DgcProcessStartTime.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcProcessStartTime.HeaderText = "Start Time";
+            DgcProcessStartTime.Name = "DgcProcessStartTime";
+            DgcProcessStartTime.ReadOnly = true;
+            DgcProcessStartTime.Width = 85;
+            // 
+            // DgcProcessPath
+            // 
+            DgcProcessPath.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcProcessPath.HeaderText = "Path";
+            DgcProcessPath.Name = "DgcProcessPath";
+            DgcProcessPath.ReadOnly = true;
+            DgcProcessPath.Width = 56;
             // 
             // ProcessSelectionDlg
             // 
