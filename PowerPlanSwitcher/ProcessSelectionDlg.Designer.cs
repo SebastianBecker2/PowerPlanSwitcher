@@ -28,115 +28,109 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.DgvProcesses = new System.Windows.Forms.DataGridView();
-            this.DgcProcessIcon = new System.Windows.Forms.DataGridViewImageColumn();
-            this.DgcProcessId = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DgcProcessName = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DgcProcessStartTime = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.DgcProcessPath = new System.Windows.Forms.DataGridViewTextBoxColumn();
-            this.BtnCancel = new System.Windows.Forms.Button();
-            this.BtnOk = new System.Windows.Forms.Button();
-            ((System.ComponentModel.ISupportInitialize)(this.DgvProcesses)).BeginInit();
-            this.SuspendLayout();
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(ProcessSelectionDlg));
+            DgvProcesses = new DataGridView();
+            DgcProcessIcon = new DataGridViewImageColumn();
+            DgcProcessId = new DataGridViewTextBoxColumn();
+            DgcProcessName = new DataGridViewTextBoxColumn();
+            DgcProcessStartTime = new DataGridViewTextBoxColumn();
+            DgcProcessPath = new DataGridViewTextBoxColumn();
+            BtnCancel = new Button();
+            BtnOk = new Button();
+            ((System.ComponentModel.ISupportInitialize)DgvProcesses).BeginInit();
+            SuspendLayout();
             // 
             // DgvProcesses
             // 
-            this.DgvProcesses.AllowUserToAddRows = false;
-            this.DgvProcesses.AllowUserToDeleteRows = false;
-            this.DgvProcesses.AllowUserToResizeRows = false;
-            this.DgvProcesses.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.DgvProcesses.ColumnHeadersHeightSizeMode = System.Windows.Forms.DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            this.DgvProcesses.Columns.AddRange(new System.Windows.Forms.DataGridViewColumn[] {
-            this.DgcProcessIcon,
-            this.DgcProcessId,
-            this.DgcProcessName,
-            this.DgcProcessStartTime,
-            this.DgcProcessPath});
-            this.DgvProcesses.Location = new System.Drawing.Point(12, 12);
-            this.DgvProcesses.MultiSelect = false;
-            this.DgvProcesses.Name = "DgvProcesses";
-            this.DgvProcesses.RowHeadersVisible = false;
-            this.DgvProcesses.RowTemplate.Height = 26;
-            this.DgvProcesses.SelectionMode = System.Windows.Forms.DataGridViewSelectionMode.FullRowSelect;
-            this.DgvProcesses.Size = new System.Drawing.Size(776, 397);
-            this.DgvProcesses.TabIndex = 4;
-            this.DgvProcesses.CellDoubleClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.HandleDgvProcessesCellDoubleClick);
-            this.DgvProcesses.SortCompare += new System.Windows.Forms.DataGridViewSortCompareEventHandler(this.HandleDgvProcessesSortCompare);
+            DgvProcesses.AllowUserToAddRows = false;
+            DgvProcesses.AllowUserToDeleteRows = false;
+            DgvProcesses.AllowUserToResizeRows = false;
+            DgvProcesses.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            DgvProcesses.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            DgvProcesses.Columns.AddRange(new DataGridViewColumn[] { DgcProcessIcon, DgcProcessId, DgcProcessName, DgcProcessStartTime, DgcProcessPath });
+            DgvProcesses.Location = new Point(12, 12);
+            DgvProcesses.MultiSelect = false;
+            DgvProcesses.Name = "DgvProcesses";
+            DgvProcesses.RowHeadersVisible = false;
+            DgvProcesses.RowTemplate.Height = 26;
+            DgvProcesses.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            DgvProcesses.Size = new Size(776, 397);
+            DgvProcesses.TabIndex = 4;
+            DgvProcesses.CellDoubleClick += HandleDgvProcessesCellDoubleClick;
+            DgvProcesses.SortCompare += HandleDgvProcessesSortCompare;
             // 
             // DgcProcessIcon
             // 
-            this.DgcProcessIcon.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.DgcProcessIcon.HeaderText = "";
-            this.DgcProcessIcon.Name = "DgcProcessIcon";
-            this.DgcProcessIcon.ReadOnly = true;
-            this.DgcProcessIcon.Width = 5;
+            DgcProcessIcon.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcProcessIcon.HeaderText = "";
+            DgcProcessIcon.Name = "DgcProcessIcon";
+            DgcProcessIcon.ReadOnly = true;
+            DgcProcessIcon.Width = 5;
             // 
             // DgcProcessId
             // 
-            this.DgcProcessId.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.AllCells;
-            this.DgcProcessId.HeaderText = "PID";
-            this.DgcProcessId.Name = "DgcProcessId";
-            this.DgcProcessId.ReadOnly = true;
-            this.DgcProcessId.Width = 50;
+            DgcProcessId.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcProcessId.HeaderText = "PID";
+            DgcProcessId.Name = "DgcProcessId";
+            DgcProcessId.ReadOnly = true;
+            DgcProcessId.Width = 50;
             // 
             // DgcProcessName
             // 
-            this.DgcProcessName.AutoSizeMode = System.Windows.Forms.DataGridViewAutoSizeColumnMode.Fill;
-            this.DgcProcessName.HeaderText = "Name";
-            this.DgcProcessName.Name = "DgcProcessName";
-            this.DgcProcessName.ReadOnly = true;
+            DgcProcessName.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            DgcProcessName.HeaderText = "Name";
+            DgcProcessName.Name = "DgcProcessName";
+            DgcProcessName.ReadOnly = true;
             // 
             // DgcProcessStartTime
             // 
-            this.DgcProcessStartTime.HeaderText = "Start Time";
-            this.DgcProcessStartTime.Name = "DgcProcessStartTime";
-            this.DgcProcessStartTime.ReadOnly = true;
+            DgcProcessStartTime.HeaderText = "Start Time";
+            DgcProcessStartTime.Name = "DgcProcessStartTime";
+            DgcProcessStartTime.ReadOnly = true;
             // 
             // DgcProcessPath
             // 
-            this.DgcProcessPath.HeaderText = "Path";
-            this.DgcProcessPath.Name = "DgcProcessPath";
-            this.DgcProcessPath.ReadOnly = true;
+            DgcProcessPath.HeaderText = "Path";
+            DgcProcessPath.Name = "DgcProcessPath";
+            DgcProcessPath.ReadOnly = true;
             // 
             // BtnCancel
             // 
-            this.BtnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.BtnCancel.Location = new System.Drawing.Point(713, 415);
-            this.BtnCancel.Name = "BtnCancel";
-            this.BtnCancel.Size = new System.Drawing.Size(75, 23);
-            this.BtnCancel.TabIndex = 6;
-            this.BtnCancel.Text = "Cancel";
-            this.BtnCancel.UseVisualStyleBackColor = true;
+            BtnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            BtnCancel.DialogResult = DialogResult.Cancel;
+            BtnCancel.Location = new Point(713, 415);
+            BtnCancel.Name = "BtnCancel";
+            BtnCancel.Size = new Size(75, 23);
+            BtnCancel.TabIndex = 6;
+            BtnCancel.Text = "Cancel";
+            BtnCancel.UseVisualStyleBackColor = true;
             // 
             // BtnOk
             // 
-            this.BtnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnOk.Location = new System.Drawing.Point(632, 415);
-            this.BtnOk.Name = "BtnOk";
-            this.BtnOk.Size = new System.Drawing.Size(75, 23);
-            this.BtnOk.TabIndex = 5;
-            this.BtnOk.Text = "OK";
-            this.BtnOk.UseVisualStyleBackColor = true;
-            this.BtnOk.Click += new System.EventHandler(this.HandleBtnOkClick);
+            BtnOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            BtnOk.Location = new Point(632, 415);
+            BtnOk.Name = "BtnOk";
+            BtnOk.Size = new Size(75, 23);
+            BtnOk.TabIndex = 5;
+            BtnOk.Text = "OK";
+            BtnOk.UseVisualStyleBackColor = true;
+            BtnOk.Click += HandleBtnOkClick;
             // 
             // ProcessSelectionDlg
             // 
-            this.AcceptButton = this.BtnOk;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.BtnCancel;
-            this.ClientSize = new System.Drawing.Size(800, 450);
-            this.Controls.Add(this.BtnCancel);
-            this.Controls.Add(this.BtnOk);
-            this.Controls.Add(this.DgvProcesses);
-            this.Name = "ProcessSelectionDlg";
-            this.Text = "PowerPlanSwitcher - Select Process";
-            ((System.ComponentModel.ISupportInitialize)(this.DgvProcesses)).EndInit();
-            this.ResumeLayout(false);
-
+            AcceptButton = BtnOk;
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            CancelButton = BtnCancel;
+            ClientSize = new Size(800, 450);
+            Controls.Add(BtnCancel);
+            Controls.Add(BtnOk);
+            Controls.Add(DgvProcesses);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Name = "ProcessSelectionDlg";
+            Text = "PowerPlanSwitcher - Select Process";
+            ((System.ComponentModel.ISupportInitialize)DgvProcesses).EndInit();
+            ResumeLayout(false);
         }
 
         #endregion

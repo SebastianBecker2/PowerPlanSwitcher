@@ -28,151 +28,150 @@ namespace PowerPlanSwitcher
         /// </summary>
         private void InitializeComponent()
         {
-            this.BtnCancel = new System.Windows.Forms.Button();
-            this.BtnOk = new System.Windows.Forms.Button();
-            this.CmbRuleType = new System.Windows.Forms.ComboBox();
-            this.TxtPath = new System.Windows.Forms.TextBox();
-            this.label1 = new System.Windows.Forms.Label();
-            this.tableLayoutPanel1 = new System.Windows.Forms.TableLayoutPanel();
-            this.label2 = new System.Windows.Forms.Label();
-            this.label3 = new System.Windows.Forms.Label();
-            this.CmbPowerScheme = new System.Windows.Forms.ComboBox();
-            this.BtnSelectPath = new System.Windows.Forms.Button();
-            this.tableLayoutPanel1.SuspendLayout();
-            this.SuspendLayout();
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(PowerRuleDlg));
+            BtnCancel = new Button();
+            BtnOk = new Button();
+            CmbRuleType = new ComboBox();
+            TxtPath = new TextBox();
+            label1 = new Label();
+            tableLayoutPanel1 = new TableLayoutPanel();
+            label2 = new Label();
+            label3 = new Label();
+            CmbPowerScheme = new ComboBox();
+            BtnSelectPath = new Button();
+            tableLayoutPanel1.SuspendLayout();
+            SuspendLayout();
             // 
             // BtnCancel
             // 
-            this.BtnCancel.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnCancel.DialogResult = System.Windows.Forms.DialogResult.Cancel;
-            this.BtnCancel.Location = new System.Drawing.Point(481, 130);
-            this.BtnCancel.Name = "BtnCancel";
-            this.BtnCancel.Size = new System.Drawing.Size(75, 23);
-            this.BtnCancel.TabIndex = 4;
-            this.BtnCancel.Text = "Cancel";
-            this.BtnCancel.UseVisualStyleBackColor = true;
+            BtnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            BtnCancel.DialogResult = DialogResult.Cancel;
+            BtnCancel.Location = new Point(481, 130);
+            BtnCancel.Name = "BtnCancel";
+            BtnCancel.Size = new Size(75, 23);
+            BtnCancel.TabIndex = 4;
+            BtnCancel.Text = "Cancel";
+            BtnCancel.UseVisualStyleBackColor = true;
             // 
             // BtnOk
             // 
-            this.BtnOk.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Bottom | System.Windows.Forms.AnchorStyles.Right)));
-            this.BtnOk.Location = new System.Drawing.Point(400, 130);
-            this.BtnOk.Name = "BtnOk";
-            this.BtnOk.Size = new System.Drawing.Size(75, 23);
-            this.BtnOk.TabIndex = 3;
-            this.BtnOk.Text = "OK";
-            this.BtnOk.UseVisualStyleBackColor = true;
-            this.BtnOk.Click += new System.EventHandler(this.BtnOk_Click);
+            BtnOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
+            BtnOk.Location = new Point(400, 130);
+            BtnOk.Name = "BtnOk";
+            BtnOk.Size = new Size(75, 23);
+            BtnOk.TabIndex = 3;
+            BtnOk.Text = "OK";
+            BtnOk.UseVisualStyleBackColor = true;
+            BtnOk.Click += BtnOk_Click;
             // 
             // CmbRuleType
             // 
-            this.CmbRuleType.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.CmbRuleType.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.CmbRuleType.FormattingEnabled = true;
-            this.CmbRuleType.Location = new System.Drawing.Point(109, 7);
-            this.CmbRuleType.Name = "CmbRuleType";
-            this.CmbRuleType.Size = new System.Drawing.Size(401, 23);
-            this.CmbRuleType.TabIndex = 5;
+            CmbRuleType.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            CmbRuleType.DropDownStyle = ComboBoxStyle.DropDownList;
+            CmbRuleType.FormattingEnabled = true;
+            CmbRuleType.Location = new Point(109, 7);
+            CmbRuleType.Name = "CmbRuleType";
+            CmbRuleType.Size = new Size(401, 23);
+            CmbRuleType.TabIndex = 5;
             // 
             // TxtPath
             // 
-            this.TxtPath.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.TxtPath.Location = new System.Drawing.Point(109, 44);
-            this.TxtPath.Name = "TxtPath";
-            this.TxtPath.Size = new System.Drawing.Size(401, 23);
-            this.TxtPath.TabIndex = 6;
+            TxtPath.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            TxtPath.Location = new Point(109, 44);
+            TxtPath.Name = "TxtPath";
+            TxtPath.Size = new Size(401, 23);
+            TxtPath.TabIndex = 6;
             // 
             // label1
             // 
-            this.label1.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label1.Location = new System.Drawing.Point(3, 74);
-            this.label1.Name = "label1";
-            this.label1.Size = new System.Drawing.Size(100, 38);
-            this.label1.TabIndex = 7;
-            this.label1.Text = "Power Plan:";
-            this.label1.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            label1.Dock = DockStyle.Fill;
+            label1.Location = new Point(3, 74);
+            label1.Name = "label1";
+            label1.Size = new Size(100, 38);
+            label1.TabIndex = 7;
+            label1.Text = "Power Plan:";
+            label1.TextAlign = ContentAlignment.MiddleRight;
             // 
             // tableLayoutPanel1
             // 
-            this.tableLayoutPanel1.Anchor = ((System.Windows.Forms.AnchorStyles)((((System.Windows.Forms.AnchorStyles.Top | System.Windows.Forms.AnchorStyles.Bottom) 
-            | System.Windows.Forms.AnchorStyles.Left) 
-            | System.Windows.Forms.AnchorStyles.Right)));
-            this.tableLayoutPanel1.ColumnCount = 3;
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 100F));
-            this.tableLayoutPanel1.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle());
-            this.tableLayoutPanel1.Controls.Add(this.label2, 0, 0);
-            this.tableLayoutPanel1.Controls.Add(this.TxtPath, 1, 1);
-            this.tableLayoutPanel1.Controls.Add(this.label1, 0, 2);
-            this.tableLayoutPanel1.Controls.Add(this.CmbRuleType, 1, 0);
-            this.tableLayoutPanel1.Controls.Add(this.label3, 0, 1);
-            this.tableLayoutPanel1.Controls.Add(this.CmbPowerScheme, 1, 2);
-            this.tableLayoutPanel1.Controls.Add(this.BtnSelectPath, 2, 1);
-            this.tableLayoutPanel1.Location = new System.Drawing.Point(12, 12);
-            this.tableLayoutPanel1.Name = "tableLayoutPanel1";
-            this.tableLayoutPanel1.RowCount = 3;
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel1.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 33.33333F));
-            this.tableLayoutPanel1.Size = new System.Drawing.Size(544, 112);
-            this.tableLayoutPanel1.TabIndex = 8;
+            tableLayoutPanel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            tableLayoutPanel1.ColumnCount = 3;
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel1.Controls.Add(label2, 0, 0);
+            tableLayoutPanel1.Controls.Add(TxtPath, 1, 1);
+            tableLayoutPanel1.Controls.Add(label1, 0, 2);
+            tableLayoutPanel1.Controls.Add(CmbRuleType, 1, 0);
+            tableLayoutPanel1.Controls.Add(label3, 0, 1);
+            tableLayoutPanel1.Controls.Add(CmbPowerScheme, 1, 2);
+            tableLayoutPanel1.Controls.Add(BtnSelectPath, 2, 1);
+            tableLayoutPanel1.Location = new Point(12, 12);
+            tableLayoutPanel1.Name = "tableLayoutPanel1";
+            tableLayoutPanel1.RowCount = 3;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33333F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33333F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.33333F));
+            tableLayoutPanel1.Size = new Size(544, 112);
+            tableLayoutPanel1.TabIndex = 8;
             // 
             // label2
             // 
-            this.label2.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label2.Location = new System.Drawing.Point(3, 0);
-            this.label2.Name = "label2";
-            this.label2.Size = new System.Drawing.Size(100, 37);
-            this.label2.TabIndex = 7;
-            this.label2.Text = "Type:";
-            this.label2.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            label2.Dock = DockStyle.Fill;
+            label2.Location = new Point(3, 0);
+            label2.Name = "label2";
+            label2.Size = new Size(100, 37);
+            label2.TabIndex = 7;
+            label2.Text = "Type:";
+            label2.TextAlign = ContentAlignment.MiddleRight;
             // 
             // label3
             // 
-            this.label3.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.label3.Location = new System.Drawing.Point(3, 37);
-            this.label3.Name = "label3";
-            this.label3.Size = new System.Drawing.Size(100, 37);
-            this.label3.TabIndex = 7;
-            this.label3.Text = "Path/File:";
-            this.label3.TextAlign = System.Drawing.ContentAlignment.MiddleRight;
+            label3.Dock = DockStyle.Fill;
+            label3.Location = new Point(3, 37);
+            label3.Name = "label3";
+            label3.Size = new Size(100, 37);
+            label3.TabIndex = 7;
+            label3.Text = "Path/File:";
+            label3.TextAlign = ContentAlignment.MiddleRight;
             // 
             // CmbPowerScheme
             // 
-            this.CmbPowerScheme.Anchor = ((System.Windows.Forms.AnchorStyles)((System.Windows.Forms.AnchorStyles.Left | System.Windows.Forms.AnchorStyles.Right)));
-            this.CmbPowerScheme.DropDownStyle = System.Windows.Forms.ComboBoxStyle.DropDownList;
-            this.CmbPowerScheme.FormattingEnabled = true;
-            this.CmbPowerScheme.Location = new System.Drawing.Point(109, 81);
-            this.CmbPowerScheme.Name = "CmbPowerScheme";
-            this.CmbPowerScheme.Size = new System.Drawing.Size(401, 23);
-            this.CmbPowerScheme.TabIndex = 5;
+            CmbPowerScheme.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            CmbPowerScheme.DropDownStyle = ComboBoxStyle.DropDownList;
+            CmbPowerScheme.FormattingEnabled = true;
+            CmbPowerScheme.Location = new Point(109, 81);
+            CmbPowerScheme.Name = "CmbPowerScheme";
+            CmbPowerScheme.Size = new Size(401, 23);
+            CmbPowerScheme.TabIndex = 5;
             // 
             // BtnSelectPath
             // 
-            this.BtnSelectPath.Anchor = System.Windows.Forms.AnchorStyles.Left;
-            this.BtnSelectPath.Location = new System.Drawing.Point(516, 44);
-            this.BtnSelectPath.Name = "BtnSelectPath";
-            this.BtnSelectPath.Size = new System.Drawing.Size(25, 23);
-            this.BtnSelectPath.TabIndex = 8;
-            this.BtnSelectPath.Text = "...";
-            this.BtnSelectPath.UseVisualStyleBackColor = true;
-            this.BtnSelectPath.Click += new System.EventHandler(this.HandleBtnSelectPathClick);
+            BtnSelectPath.Anchor = AnchorStyles.Left;
+            BtnSelectPath.Location = new Point(516, 44);
+            BtnSelectPath.Name = "BtnSelectPath";
+            BtnSelectPath.Size = new Size(25, 23);
+            BtnSelectPath.TabIndex = 8;
+            BtnSelectPath.Text = "...";
+            BtnSelectPath.UseVisualStyleBackColor = true;
+            BtnSelectPath.Click += HandleBtnSelectPathClick;
             // 
             // PowerRuleDlg
             // 
-            this.AcceptButton = this.BtnOk;
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.CancelButton = this.BtnCancel;
-            this.ClientSize = new System.Drawing.Size(568, 165);
-            this.Controls.Add(this.tableLayoutPanel1);
-            this.Controls.Add(this.BtnCancel);
-            this.Controls.Add(this.BtnOk);
-            this.Name = "PowerRuleDlg";
-            this.Text = "PowerPlanSwitcher - Rule";
-            this.tableLayoutPanel1.ResumeLayout(false);
-            this.tableLayoutPanel1.PerformLayout();
-            this.ResumeLayout(false);
-
+            AcceptButton = BtnOk;
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            CancelButton = BtnCancel;
+            ClientSize = new Size(568, 165);
+            Controls.Add(tableLayoutPanel1);
+            Controls.Add(BtnCancel);
+            Controls.Add(BtnOk);
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Name = "PowerRuleDlg";
+            Text = "PowerPlanSwitcher - Rule";
+            tableLayoutPanel1.ResumeLayout(false);
+            tableLayoutPanel1.PerformLayout();
+            ResumeLayout(false);
         }
 
         #endregion
