@@ -74,7 +74,23 @@ namespace PowerPlanSwitcher
         {
             LoadSettings();
             _ = settings!.TryGetValue(schemaGuid, out var setting);
-            return setting;
+            if (setting is not null)
+            {
+                return setting;
+            }
+            if (schemaGuid == Vanara.PInvoke.PowrProf.GUID_MAX_POWER_SAVINGS)
+            {
+                return new Setting { Visible = true, Icon = Resources.green };
+            }
+            if (schemaGuid == Vanara.PInvoke.PowrProf.GUID_MIN_POWER_SAVINGS)
+            {
+                return new Setting { Visible = true, Icon = Resources.red };
+            }
+            if (schemaGuid == Vanara.PInvoke.PowrProf.GUID_TYPICAL_POWER_SAVINGS)
+            {
+                return new Setting { Visible = true, Icon = Resources.yellow };
+            }
+            return null;
         }
 
         public static void SetSetting(Guid schemaGuid, Setting setting)
