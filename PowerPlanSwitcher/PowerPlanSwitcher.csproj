@@ -6,11 +6,17 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
     <ApplicationIcon>Resources\power_surge.ico</ApplicationIcon>
-    <Description>Using the following libraries:
+    <Description>Tray-Icon tool to show the currently selected windows power plan, switch it manually and automatically.
 
-    Newtonsoft.Json
-    FatCow IconPack (http://www.fatcow.com/free-icons)
+PowerPlanSwitcher is using the following tools, resources and libraries:
 
+- [.NET 8](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8)
+- [Newtonsoft.Json](https://www.newtonsoft.com/json)
+- The amazing [FatCow IconPack](https://www.fatcow.com/free-icons)
+- [WindowsAPICodePack](https://github.com/contre/Windows-API-Code-Pack-1.1)
+- [Vanara](https://github.com/dahall/Vanara)
+- [Serilog](https://serilog.net/)
+- [WiX Toolset 3.1](https://wixtoolset.org/)
 </Description>
     <Authors>Sebastian Becker</Authors>
     <AssemblyVersion>1.0.3.0</AssemblyVersion>
