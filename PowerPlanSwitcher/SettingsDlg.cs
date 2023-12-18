@@ -81,31 +81,15 @@ namespace PowerPlanSwitcher
 
             if (e.Button == MouseButtons.Left)
             {
-                var typeFilters = new[]
-                {
-                    "All image types " +
-                    "(*.png; *.jpg; *.jpeg; *.bmp; *.tiff; *.tif; *.gif)" +
-                    "|*.png;*.jpg;*.jpeg;*.bmp;*.tiff;*.tif;*.gif",
-                    "PNG (*.png)|*.png",
-                    "JPEG (*.jpg; *.jpeg)|*.jpg;*.jpeg",
-                    "BMP (*.bmp)|*.bmp",
-                    "TIFF (*.tiff; *.tif)|*.tiff;*.tif",
-                    "GIF (*.gif)|*.gif",
-                    "All files (*.*)|*.*",
-                };
 
-                using var dlg = new OpenFileDialog
-                {
-                    Filter = string.Join("|", typeFilters),
-                    FilterIndex = 0,
-                    RestoreDirectory = true,
-                };
-                if (dlg.ShowDialog() != DialogResult.OK)
+                using var dlg = new IconSelectionDlg();
+                if (dlg.ShowDialog() != DialogResult.OK
+                    || dlg.SelectedIcon is null)
                 {
                     return;
                 }
 
-                var image = Image.FromFile(dlg.FileName);
+                var image = dlg.SelectedIcon;
                 if (image.Size.Height > 32 || image.Size.Width > 32)
                 {
                     image = ResizeImage(
