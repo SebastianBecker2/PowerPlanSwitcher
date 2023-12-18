@@ -18,6 +18,7 @@ namespace PowerPlanSwitcher
             Image? icon,
             bool active)
         {
+            name ??= guid.ToString();
             var button = new Button
             {
                 FlatStyle = FlatStyle.Popup,
@@ -31,7 +32,7 @@ namespace PowerPlanSwitcher
                     ? SelectedButtonBackgroundColor
                     : ButtonBackgroundColor,
                 Margin = Padding.Empty,
-                Text = name ?? guid.ToString(),
+                Text = active ? "(Active) " + name : name,
                 Font = new Font(Font.FontFamily, 12),
                 Tag = guid,
                 Dock = DockStyle.Fill,
