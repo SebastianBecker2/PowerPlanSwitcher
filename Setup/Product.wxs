@@ -103,8 +103,7 @@
                       BinaryKey="WixCA"
                       DllEntry="CAQuietExec"
                       Execute="immediate"
-                      Return="ignore"
-                      Impersonate="no" />
+                      Return="ignore" />
 
         <InstallExecuteSequence>
             <Custom Action="LaunchProduct" After="InstallFinalize" />
