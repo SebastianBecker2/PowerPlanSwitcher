@@ -63,7 +63,7 @@ namespace PowerPlanSwitcher
             }
 
             static string GetSelectedString(ComboBox cmb) =>
-                cmb.Items[cmb.SelectedIndex].ToString() ?? string.Empty;
+                cmb.Items[cmb.SelectedIndex]?.ToString() ?? string.Empty;
 
             Guid GetPowerSchemeGuid(string name) =>
                 powerSchemes.First(scheme => scheme.name == name).guid;
@@ -81,7 +81,7 @@ namespace PowerPlanSwitcher
         private void HandleBtnSelectPathClick(object sender, EventArgs e)
         {
             static string GetSelectedString(ComboBox cmb) =>
-                cmb.Items[cmb.SelectedIndex].ToString() ?? string.Empty;
+                cmb.Items[cmb.SelectedIndex]?.ToString() ?? string.Empty;
 
             var type = PowerRule.TextToRuleType(GetSelectedString(CmbRuleType));
 

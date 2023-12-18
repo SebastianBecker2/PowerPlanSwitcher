@@ -8,7 +8,7 @@ namespace PowerPlanSwitcher
 
     internal static class PowerSchemeSettings
     {
-        private class ImageConverter : JsonConverter
+        private sealed class ImageConverter : JsonConverter
         {
             public override object? ReadJson(
                 JsonReader reader,
@@ -126,7 +126,7 @@ namespace PowerPlanSwitcher
 
                 settings = JsonConvert.DeserializeObject<Dictionary<Guid, Setting>>(
                         Settings.Default.PowerSchemeSettings) ??
-                    new Dictionary<Guid, Setting>();
+                    [];
             }
         }
     }

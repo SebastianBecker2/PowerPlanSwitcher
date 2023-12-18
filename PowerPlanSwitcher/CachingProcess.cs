@@ -8,16 +8,10 @@ namespace PowerPlanSwitcher
 
     public class CachingProcess : IDisposable
     {
-        private class CacheKey
+        private sealed class CacheKey(Process process)
         {
-            private string ProcessName { get; }
-            private int ProcessId { get; }
-
-            public CacheKey(Process process)
-            {
-                ProcessName = process.ProcessName;
-                ProcessId = process.Id;
-            }
+            private string ProcessName { get; } = process.ProcessName;
+            private int ProcessId { get; } = process.Id;
 
             public override bool Equals(object? obj) => Equals(obj as CacheKey);
 

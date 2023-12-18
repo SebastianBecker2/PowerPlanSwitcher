@@ -3,7 +3,7 @@ namespace PowerPlanSwitcher
     using System.Reflection;
     using System.Windows.Forms;
 
-    internal partial class AboutBox : Form
+    internal sealed partial class AboutBox : Form
     {
         public AboutBox()
         {
