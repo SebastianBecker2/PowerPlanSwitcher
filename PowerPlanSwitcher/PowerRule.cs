@@ -13,14 +13,14 @@ namespace PowerPlanSwitcher
         }
         public RuleType Type { get; set; }
         public Guid SchemeGuid { get; set; }
+        public bool Active { get; set; }
 
-        private static readonly List<(RuleType type, string text)> RuleTypeTexts
-            = new()
-            {
+        private static readonly List<(RuleType type, string text)> RuleTypeTexts =
+            [
                 (RuleType.Exact, "Match exact Path"),
                 (RuleType.StartsWith, "Path starts with"),
                 (RuleType.EndsWith, "Path ends with"),
-            };
+            ];
 
         private static List<PowerRule>? powerRules;
         private string filePath = string.Empty;
@@ -29,7 +29,7 @@ namespace PowerPlanSwitcher
         public static IEnumerable<PowerRule> GetPowerRules()
         {
             LoadPowerRules();
-            return powerRules ?? new List<PowerRule>();
+            return powerRules ?? [];
         }
 
         public static void SetPowerRules(IEnumerable<PowerRule> newPowerRules) =>
@@ -57,7 +57,7 @@ namespace PowerPlanSwitcher
                 }
 
                 powerRules = JsonConvert.DeserializeObject<List<PowerRule>>(
-                    Settings.Default.PowerRules) ?? new List<PowerRule>();
+                    Settings.Default.PowerRules) ?? [];
             }
         }
 

@@ -270,7 +270,11 @@ namespace PowerPlanSwitcher
                 new DataGridViewTextBoxCell
                 {
                     Value = PowerManager.GetPowerSchemeName(powerRule.SchemeGuid)
-                        ?? "Power Plan is missing!",
+                        ?? powerRule.SchemeGuid.ToString(),
+                },
+                new DataGridViewCheckBoxCell
+                {
+                    Value = powerRule.Active,
                 });
 
             return row;

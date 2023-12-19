@@ -37,11 +37,6 @@ namespace PowerPlanSwitcher
             BtnCancel = new Button();
             BtnCreateRuleFromProcess = new Button();
             DgvPowerRules = new DataGridView();
-            DgcRuleIndex = new DataGridViewTextBoxColumn();
-            DgcRuleType = new DataGridViewTextBoxColumn();
-            DgcRulePath = new DataGridViewTextBoxColumn();
-            DgcRuleSchemeIcon = new DataGridViewImageColumn();
-            DgcRuleSchemeName = new DataGridViewTextBoxColumn();
             BtnAddPowerRule = new Button();
             BtnEditPowerRule = new Button();
             BtnAscentPowerRule = new Button();
@@ -54,6 +49,12 @@ namespace PowerPlanSwitcher
             label2 = new Label();
             label3 = new Label();
             label4 = new Label();
+            DgcRuleIndex = new DataGridViewTextBoxColumn();
+            DgcRuleType = new DataGridViewTextBoxColumn();
+            DgcRulePath = new DataGridViewTextBoxColumn();
+            DgcRuleSchemeIcon = new DataGridViewImageColumn();
+            DgcRuleSchemeName = new DataGridViewTextBoxColumn();
+            DgcActive = new DataGridViewCheckBoxColumn();
             ((System.ComponentModel.ISupportInitialize)DgvPowerSchemes).BeginInit();
             ((System.ComponentModel.ISupportInitialize)DgvPowerRules).BeginInit();
             ((System.ComponentModel.ISupportInitialize)NudPowerRuleCheckInterval).BeginInit();
@@ -143,7 +144,7 @@ namespace PowerPlanSwitcher
             DgvPowerRules.AllowUserToResizeRows = false;
             DgvPowerRules.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
             DgvPowerRules.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            DgvPowerRules.Columns.AddRange(new DataGridViewColumn[] { DgcRuleIndex, DgcRuleType, DgcRulePath, DgcRuleSchemeIcon, DgcRuleSchemeName });
+            DgvPowerRules.Columns.AddRange(new DataGridViewColumn[] { DgcRuleIndex, DgcRuleType, DgcRulePath, DgcRuleSchemeIcon, DgcRuleSchemeName, DgcActive });
             DgvPowerRules.Location = new Point(12, 237);
             DgvPowerRules.MultiSelect = false;
             DgvPowerRules.Name = "DgvPowerRules";
@@ -152,45 +153,6 @@ namespace PowerPlanSwitcher
             DgvPowerRules.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             DgvPowerRules.Size = new Size(914, 157);
             DgvPowerRules.TabIndex = 7;
-            // 
-            // DgcRuleIndex
-            // 
-            DgcRuleIndex.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            DgcRuleIndex.HeaderText = "Index";
-            DgcRuleIndex.Name = "DgcRuleIndex";
-            DgcRuleIndex.ReadOnly = true;
-            DgcRuleIndex.Width = 61;
-            // 
-            // DgcRuleType
-            // 
-            DgcRuleType.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            DgcRuleType.HeaderText = "Type";
-            DgcRuleType.Name = "DgcRuleType";
-            DgcRuleType.ReadOnly = true;
-            DgcRuleType.Width = 56;
-            // 
-            // DgcRulePath
-            // 
-            DgcRulePath.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            DgcRulePath.HeaderText = "Path/File";
-            DgcRulePath.Name = "DgcRulePath";
-            DgcRulePath.ReadOnly = true;
-            // 
-            // DgcRuleSchemeIcon
-            // 
-            DgcRuleSchemeIcon.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            DgcRuleSchemeIcon.HeaderText = "Icon";
-            DgcRuleSchemeIcon.Name = "DgcRuleSchemeIcon";
-            DgcRuleSchemeIcon.ReadOnly = true;
-            DgcRuleSchemeIcon.Width = 36;
-            // 
-            // DgcRuleSchemeName
-            // 
-            DgcRuleSchemeName.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            DgcRuleSchemeName.HeaderText = "Power Plan";
-            DgcRuleSchemeName.Name = "DgcRuleSchemeName";
-            DgcRuleSchemeName.ReadOnly = true;
-            DgcRuleSchemeName.Width = 91;
             // 
             // BtnAddPowerRule
             // 
@@ -316,6 +278,55 @@ namespace PowerPlanSwitcher
             label4.TabIndex = 15;
             label4.Text = "Rules:";
             // 
+            // DgcRuleIndex
+            // 
+            DgcRuleIndex.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcRuleIndex.Frozen = true;
+            DgcRuleIndex.HeaderText = "Index";
+            DgcRuleIndex.Name = "DgcRuleIndex";
+            DgcRuleIndex.ReadOnly = true;
+            DgcRuleIndex.Width = 61;
+            // 
+            // DgcRuleType
+            // 
+            DgcRuleType.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcRuleType.Frozen = true;
+            DgcRuleType.HeaderText = "Type";
+            DgcRuleType.Name = "DgcRuleType";
+            DgcRuleType.ReadOnly = true;
+            DgcRuleType.Width = 56;
+            // 
+            // DgcRulePath
+            // 
+            DgcRulePath.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            DgcRulePath.HeaderText = "Path/File";
+            DgcRulePath.Name = "DgcRulePath";
+            DgcRulePath.ReadOnly = true;
+            // 
+            // DgcRuleSchemeIcon
+            // 
+            DgcRuleSchemeIcon.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcRuleSchemeIcon.HeaderText = "Icon";
+            DgcRuleSchemeIcon.Name = "DgcRuleSchemeIcon";
+            DgcRuleSchemeIcon.ReadOnly = true;
+            DgcRuleSchemeIcon.Width = 36;
+            // 
+            // DgcRuleSchemeName
+            // 
+            DgcRuleSchemeName.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcRuleSchemeName.HeaderText = "Power Plan";
+            DgcRuleSchemeName.Name = "DgcRuleSchemeName";
+            DgcRuleSchemeName.ReadOnly = true;
+            DgcRuleSchemeName.Width = 91;
+            // 
+            // DgcActive
+            // 
+            DgcActive.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcActive.HeaderText = "Active";
+            DgcActive.Name = "DgcActive";
+            DgcActive.ReadOnly = true;
+            DgcActive.Width = 46;
+            // 
             // SettingsDlg
             // 
             AcceptButton = BtnOk;
@@ -370,12 +381,13 @@ namespace PowerPlanSwitcher
         private Label label1;
         private NumericUpDown NudPowerRuleCheckInterval;
         private Label label2;
+        private Label label3;
+        private Label label4;
         private DataGridViewTextBoxColumn DgcRuleIndex;
         private DataGridViewTextBoxColumn DgcRuleType;
         private DataGridViewTextBoxColumn DgcRulePath;
         private DataGridViewImageColumn DgcRuleSchemeIcon;
         private DataGridViewTextBoxColumn DgcRuleSchemeName;
-        private Label label3;
-        private Label label4;
+        private DataGridViewCheckBoxColumn DgcActive;
     }
 }

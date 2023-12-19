@@ -59,6 +59,10 @@ namespace PowerPlanSwitcher
                     baselinePowerSchemeGuid =
                         PowerManager.GetActivePowerSchemeGuid();
                 }
+                else
+                {
+                    previouslyAppliedPowerRule.Active = false;
+                }
 
                 previouslyAppliedPowerRule = applicableRule;
 
@@ -68,6 +72,8 @@ namespace PowerPlanSwitcher
                     return;
                 }
 
+
+                applicableRule.Active = true;
                 PowerManager.SetActivePowerScheme(applicableRule.SchemeGuid);
             }
             finally
