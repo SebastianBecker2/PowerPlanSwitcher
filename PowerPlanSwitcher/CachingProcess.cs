@@ -66,7 +66,7 @@ namespace PowerPlanSwitcher
             {
                 if (string.IsNullOrWhiteSpace(fileName))
                 {
-                    fileName = process.MainModule!.FileName?.ToLowerInvariant()
+                    fileName = process.MainModule?.FileName?.ToLowerInvariant()
                         ?? "";
                 }
 
