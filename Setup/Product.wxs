@@ -83,7 +83,11 @@
     <!-- Custom Actions -->
     <Fragment>
         <Property Id="WixShellExecTarget" Value="[#Product.exe]" />
-        <CustomAction Id="LaunchProduct" BinaryKey="WixCA" DllEntry="WixShellExec" Impersonate="yes" />
+        <CustomAction Id="LaunchProduct"
+                      BinaryKey="WixCA"
+                      DllEntry="WixShellExec"
+                      Impersonate="yes"
+                      Return="ignore" />
 
         <Property Id="QtExecCmdLine"
           Value='"[WindowsFolder]\System32\taskkill.exe" /IM PowerPlanSwitcher.exe'/>
