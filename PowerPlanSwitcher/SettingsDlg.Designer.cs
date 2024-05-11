@@ -37,6 +37,12 @@ namespace PowerPlanSwitcher
             BtnCancel = new Button();
             BtnCreateRuleFromProcess = new Button();
             DgvPowerRules = new DataGridView();
+            DgcRuleIndex = new DataGridViewTextBoxColumn();
+            DgcRuleType = new DataGridViewTextBoxColumn();
+            DgcRulePath = new DataGridViewTextBoxColumn();
+            DgcRuleSchemeIcon = new DataGridViewImageColumn();
+            DgcRuleSchemeName = new DataGridViewTextBoxColumn();
+            DgcActive = new DataGridViewCheckBoxColumn();
             BtnAddPowerRule = new Button();
             BtnEditPowerRule = new Button();
             BtnAscentPowerRule = new Button();
@@ -49,12 +55,8 @@ namespace PowerPlanSwitcher
             label2 = new Label();
             label3 = new Label();
             label4 = new Label();
-            DgcRuleIndex = new DataGridViewTextBoxColumn();
-            DgcRuleType = new DataGridViewTextBoxColumn();
-            DgcRulePath = new DataGridViewTextBoxColumn();
-            DgcRuleSchemeIcon = new DataGridViewImageColumn();
-            DgcRuleSchemeName = new DataGridViewTextBoxColumn();
-            DgcActive = new DataGridViewCheckBoxColumn();
+            label5 = new Label();
+            CmbColorTheme = new ComboBox();
             ((System.ComponentModel.ISupportInitialize)DgvPowerSchemes).BeginInit();
             ((System.ComponentModel.ISupportInitialize)DgvPowerRules).BeginInit();
             ((System.ComponentModel.ISupportInitialize)NudPowerRuleCheckInterval).BeginInit();
@@ -75,7 +77,7 @@ namespace PowerPlanSwitcher
             DgvPowerSchemes.RowHeadersVisible = false;
             DgvPowerSchemes.RowTemplate.Height = 26;
             DgvPowerSchemes.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            DgvPowerSchemes.Size = new Size(315, 189);
+            DgvPowerSchemes.Size = new Size(337, 189);
             DgvPowerSchemes.TabIndex = 0;
             DgvPowerSchemes.CellMouseDown += HandleDgvPowerSchemesCellMouseDown;
             // 
@@ -106,7 +108,7 @@ namespace PowerPlanSwitcher
             // BtnOk
             // 
             BtnOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            BtnOk.Location = new Point(770, 400);
+            BtnOk.Location = new Point(792, 423);
             BtnOk.Name = "BtnOk";
             BtnOk.Size = new Size(75, 23);
             BtnOk.TabIndex = 1;
@@ -118,7 +120,7 @@ namespace PowerPlanSwitcher
             // 
             BtnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             BtnCancel.DialogResult = DialogResult.Cancel;
-            BtnCancel.Location = new Point(851, 400);
+            BtnCancel.Location = new Point(873, 423);
             BtnCancel.Name = "BtnCancel";
             BtnCancel.Size = new Size(75, 23);
             BtnCancel.TabIndex = 2;
@@ -128,7 +130,7 @@ namespace PowerPlanSwitcher
             // BtnCreateRuleFromProcess
             // 
             BtnCreateRuleFromProcess.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            BtnCreateRuleFromProcess.Location = new Point(608, 27);
+            BtnCreateRuleFromProcess.Location = new Point(630, 27);
             BtnCreateRuleFromProcess.Name = "BtnCreateRuleFromProcess";
             BtnCreateRuleFromProcess.Size = new Size(156, 59);
             BtnCreateRuleFromProcess.TabIndex = 6;
@@ -151,132 +153,8 @@ namespace PowerPlanSwitcher
             DgvPowerRules.RowHeadersVisible = false;
             DgvPowerRules.RowTemplate.Height = 26;
             DgvPowerRules.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            DgvPowerRules.Size = new Size(914, 157);
+            DgvPowerRules.Size = new Size(936, 180);
             DgvPowerRules.TabIndex = 7;
-            // 
-            // BtnAddPowerRule
-            // 
-            BtnAddPowerRule.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            BtnAddPowerRule.Location = new Point(770, 27);
-            BtnAddPowerRule.Name = "BtnAddPowerRule";
-            BtnAddPowerRule.Size = new Size(156, 59);
-            BtnAddPowerRule.TabIndex = 8;
-            BtnAddPowerRule.Text = "Create new Rule";
-            BtnAddPowerRule.UseVisualStyleBackColor = true;
-            BtnAddPowerRule.Click += HandleBtnAddPowerRuleClick;
-            // 
-            // BtnEditPowerRule
-            // 
-            BtnEditPowerRule.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            BtnEditPowerRule.Location = new Point(770, 92);
-            BtnEditPowerRule.Name = "BtnEditPowerRule";
-            BtnEditPowerRule.Size = new Size(156, 59);
-            BtnEditPowerRule.TabIndex = 9;
-            BtnEditPowerRule.Text = "Edit selected Rule";
-            BtnEditPowerRule.UseVisualStyleBackColor = true;
-            BtnEditPowerRule.Click += HandleBtnEditPowerRuleClick;
-            // 
-            // BtnAscentPowerRule
-            // 
-            BtnAscentPowerRule.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            BtnAscentPowerRule.Location = new Point(608, 92);
-            BtnAscentPowerRule.Name = "BtnAscentPowerRule";
-            BtnAscentPowerRule.Size = new Size(156, 59);
-            BtnAscentPowerRule.TabIndex = 10;
-            BtnAscentPowerRule.Text = "Move Rule up";
-            BtnAscentPowerRule.UseVisualStyleBackColor = true;
-            BtnAscentPowerRule.Click += HandleBtnAscentPowerRuleClick;
-            // 
-            // BtnDescentPowerRule
-            // 
-            BtnDescentPowerRule.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            BtnDescentPowerRule.Location = new Point(608, 157);
-            BtnDescentPowerRule.Name = "BtnDescentPowerRule";
-            BtnDescentPowerRule.Size = new Size(156, 59);
-            BtnDescentPowerRule.TabIndex = 10;
-            BtnDescentPowerRule.Text = "Move Rule down";
-            BtnDescentPowerRule.UseVisualStyleBackColor = true;
-            BtnDescentPowerRule.Click += HandleBtnDescentPowerRuleClick;
-            // 
-            // BtnDeletePowerRule
-            // 
-            BtnDeletePowerRule.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            BtnDeletePowerRule.Location = new Point(770, 157);
-            BtnDeletePowerRule.Name = "BtnDeletePowerRule";
-            BtnDeletePowerRule.Size = new Size(156, 59);
-            BtnDeletePowerRule.TabIndex = 9;
-            BtnDeletePowerRule.Text = "Delete selected Rule";
-            BtnDeletePowerRule.UseVisualStyleBackColor = true;
-            BtnDeletePowerRule.Click += HandleBtnDeletePowerRuleClick;
-            // 
-            // ChbActivateInitialPowerScheme
-            // 
-            ChbActivateInitialPowerScheme.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            ChbActivateInitialPowerScheme.AutoSize = true;
-            ChbActivateInitialPowerScheme.Location = new Point(333, 27);
-            ChbActivateInitialPowerScheme.Name = "ChbActivateInitialPowerScheme";
-            ChbActivateInitialPowerScheme.Size = new Size(199, 19);
-            ChbActivateInitialPowerScheme.TabIndex = 11;
-            ChbActivateInitialPowerScheme.Text = "Activate this Power Plan on start:";
-            ChbActivateInitialPowerScheme.UseVisualStyleBackColor = true;
-            ChbActivateInitialPowerScheme.CheckedChanged += HandleChbActivateInitialPowerSchemeCheckedChanged;
-            // 
-            // CmbInitialPowerScheme
-            // 
-            CmbInitialPowerScheme.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            CmbInitialPowerScheme.DropDownStyle = ComboBoxStyle.DropDownList;
-            CmbInitialPowerScheme.FormattingEnabled = true;
-            CmbInitialPowerScheme.Location = new Point(333, 52);
-            CmbInitialPowerScheme.Name = "CmbInitialPowerScheme";
-            CmbInitialPowerScheme.Size = new Size(269, 23);
-            CmbInitialPowerScheme.TabIndex = 12;
-            // 
-            // label1
-            // 
-            label1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label1.AutoSize = true;
-            label1.Location = new Point(333, 78);
-            label1.Name = "label1";
-            label1.Size = new Size(169, 15);
-            label1.TabIndex = 13;
-            label1.Text = "Check for Rules to apply every:";
-            // 
-            // NudPowerRuleCheckInterval
-            // 
-            NudPowerRuleCheckInterval.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            NudPowerRuleCheckInterval.Location = new Point(333, 96);
-            NudPowerRuleCheckInterval.Maximum = new decimal(new int[] { 600, 0, 0, 0 });
-            NudPowerRuleCheckInterval.Name = "NudPowerRuleCheckInterval";
-            NudPowerRuleCheckInterval.Size = new Size(84, 23);
-            NudPowerRuleCheckInterval.TabIndex = 14;
-            // 
-            // label2
-            // 
-            label2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            label2.AutoSize = true;
-            label2.Location = new Point(423, 104);
-            label2.Name = "label2";
-            label2.Size = new Size(51, 15);
-            label2.TabIndex = 13;
-            label2.Text = "Seconds";
-            // 
-            // label3
-            // 
-            label3.AutoSize = true;
-            label3.Location = new Point(12, 9);
-            label3.Name = "label3";
-            label3.Size = new Size(74, 15);
-            label3.TabIndex = 15;
-            label3.Text = "Power Plans:";
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Location = new Point(12, 219);
-            label4.Name = "label4";
-            label4.Size = new Size(38, 15);
-            label4.TabIndex = 15;
-            label4.Text = "Rules:";
             // 
             // DgcRuleIndex
             // 
@@ -327,13 +205,159 @@ namespace PowerPlanSwitcher
             DgcActive.ReadOnly = true;
             DgcActive.Width = 46;
             // 
+            // BtnAddPowerRule
+            // 
+            BtnAddPowerRule.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            BtnAddPowerRule.Location = new Point(792, 27);
+            BtnAddPowerRule.Name = "BtnAddPowerRule";
+            BtnAddPowerRule.Size = new Size(156, 59);
+            BtnAddPowerRule.TabIndex = 8;
+            BtnAddPowerRule.Text = "Create new Rule";
+            BtnAddPowerRule.UseVisualStyleBackColor = true;
+            BtnAddPowerRule.Click += HandleBtnAddPowerRuleClick;
+            // 
+            // BtnEditPowerRule
+            // 
+            BtnEditPowerRule.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            BtnEditPowerRule.Location = new Point(792, 92);
+            BtnEditPowerRule.Name = "BtnEditPowerRule";
+            BtnEditPowerRule.Size = new Size(156, 59);
+            BtnEditPowerRule.TabIndex = 9;
+            BtnEditPowerRule.Text = "Edit selected Rule";
+            BtnEditPowerRule.UseVisualStyleBackColor = true;
+            BtnEditPowerRule.Click += HandleBtnEditPowerRuleClick;
+            // 
+            // BtnAscentPowerRule
+            // 
+            BtnAscentPowerRule.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            BtnAscentPowerRule.Location = new Point(630, 92);
+            BtnAscentPowerRule.Name = "BtnAscentPowerRule";
+            BtnAscentPowerRule.Size = new Size(156, 59);
+            BtnAscentPowerRule.TabIndex = 10;
+            BtnAscentPowerRule.Text = "Move Rule up";
+            BtnAscentPowerRule.UseVisualStyleBackColor = true;
+            BtnAscentPowerRule.Click += HandleBtnAscentPowerRuleClick;
+            // 
+            // BtnDescentPowerRule
+            // 
+            BtnDescentPowerRule.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            BtnDescentPowerRule.Location = new Point(630, 157);
+            BtnDescentPowerRule.Name = "BtnDescentPowerRule";
+            BtnDescentPowerRule.Size = new Size(156, 59);
+            BtnDescentPowerRule.TabIndex = 10;
+            BtnDescentPowerRule.Text = "Move Rule down";
+            BtnDescentPowerRule.UseVisualStyleBackColor = true;
+            BtnDescentPowerRule.Click += HandleBtnDescentPowerRuleClick;
+            // 
+            // BtnDeletePowerRule
+            // 
+            BtnDeletePowerRule.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            BtnDeletePowerRule.Location = new Point(792, 157);
+            BtnDeletePowerRule.Name = "BtnDeletePowerRule";
+            BtnDeletePowerRule.Size = new Size(156, 59);
+            BtnDeletePowerRule.TabIndex = 9;
+            BtnDeletePowerRule.Text = "Delete selected Rule";
+            BtnDeletePowerRule.UseVisualStyleBackColor = true;
+            BtnDeletePowerRule.Click += HandleBtnDeletePowerRuleClick;
+            // 
+            // ChbActivateInitialPowerScheme
+            // 
+            ChbActivateInitialPowerScheme.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            ChbActivateInitialPowerScheme.AutoSize = true;
+            ChbActivateInitialPowerScheme.Location = new Point(355, 27);
+            ChbActivateInitialPowerScheme.Name = "ChbActivateInitialPowerScheme";
+            ChbActivateInitialPowerScheme.Size = new Size(199, 19);
+            ChbActivateInitialPowerScheme.TabIndex = 11;
+            ChbActivateInitialPowerScheme.Text = "Activate this Power Plan on start:";
+            ChbActivateInitialPowerScheme.UseVisualStyleBackColor = true;
+            ChbActivateInitialPowerScheme.CheckedChanged += HandleChbActivateInitialPowerSchemeCheckedChanged;
+            // 
+            // CmbInitialPowerScheme
+            // 
+            CmbInitialPowerScheme.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            CmbInitialPowerScheme.DropDownStyle = ComboBoxStyle.DropDownList;
+            CmbInitialPowerScheme.FormattingEnabled = true;
+            CmbInitialPowerScheme.Location = new Point(355, 52);
+            CmbInitialPowerScheme.Name = "CmbInitialPowerScheme";
+            CmbInitialPowerScheme.Size = new Size(269, 23);
+            CmbInitialPowerScheme.TabIndex = 12;
+            // 
+            // label1
+            // 
+            label1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label1.AutoSize = true;
+            label1.Location = new Point(355, 78);
+            label1.Name = "label1";
+            label1.Size = new Size(169, 15);
+            label1.TabIndex = 13;
+            label1.Text = "Check for Rules to apply every:";
+            // 
+            // NudPowerRuleCheckInterval
+            // 
+            NudPowerRuleCheckInterval.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            NudPowerRuleCheckInterval.Location = new Point(355, 96);
+            NudPowerRuleCheckInterval.Maximum = new decimal(new int[] { 600, 0, 0, 0 });
+            NudPowerRuleCheckInterval.Name = "NudPowerRuleCheckInterval";
+            NudPowerRuleCheckInterval.Size = new Size(84, 23);
+            NudPowerRuleCheckInterval.TabIndex = 14;
+            // 
+            // label2
+            // 
+            label2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            label2.AutoSize = true;
+            label2.Location = new Point(445, 104);
+            label2.Name = "label2";
+            label2.Size = new Size(51, 15);
+            label2.TabIndex = 13;
+            label2.Text = "Seconds";
+            // 
+            // label3
+            // 
+            label3.AutoSize = true;
+            label3.Location = new Point(12, 9);
+            label3.Name = "label3";
+            label3.Size = new Size(74, 15);
+            label3.TabIndex = 15;
+            label3.Text = "Power Plans:";
+            // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Location = new Point(12, 219);
+            label4.Name = "label4";
+            label4.Size = new Size(38, 15);
+            label4.TabIndex = 15;
+            label4.Text = "Rules:";
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.Location = new Point(355, 122);
+            label5.Name = "label5";
+            label5.Size = new Size(78, 15);
+            label5.TabIndex = 16;
+            label5.Text = "Color Theme:";
+            // 
+            // CmbColorTheme
+            // 
+            CmbColorTheme.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            CmbColorTheme.DropDownStyle = ComboBoxStyle.DropDownList;
+            CmbColorTheme.FormattingEnabled = true;
+            CmbColorTheme.Items.AddRange(new object[] { "Dark Mode", "Light Mode" });
+            CmbColorTheme.Location = new Point(355, 140);
+            CmbColorTheme.Name = "CmbColorTheme";
+            CmbColorTheme.Size = new Size(269, 23);
+            CmbColorTheme.TabIndex = 17;
+            // 
             // SettingsDlg
             // 
             AcceptButton = BtnOk;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = BtnCancel;
-            ClientSize = new Size(938, 435);
+            ClientSize = new Size(960, 458);
+            Controls.Add(CmbColorTheme);
+            Controls.Add(label5);
             Controls.Add(label4);
             Controls.Add(label3);
             Controls.Add(NudPowerRuleCheckInterval);
@@ -389,5 +413,7 @@ namespace PowerPlanSwitcher
         private DataGridViewImageColumn DgcRuleSchemeIcon;
         private DataGridViewTextBoxColumn DgcRuleSchemeName;
         private DataGridViewCheckBoxColumn DgcActive;
+        private Label label5;
+        private ComboBox CmbColorTheme;
     }
 }

@@ -1,11 +1,23 @@
 namespace PowerPlanSwitcher
 {
+    using PowerPlanSwitcher.Properties;
+
     public partial class PowerSchemeSelectorDlg : Form
     {
-        private static readonly Color ButtonBackgroundColor =
-            Color.FromArgb(0x15, 0x15, 0x14);
-        private static readonly Color SelectedButtonBackgroundColor =
-            Color.FromArgb(0x25, 0x25, 0x25);
+        private static bool IsLightMode() =>
+            Settings.Default.ColorTheme == "Light Mode";
+        private static Color ButtonBackgroundColor =>
+            IsLightMode()
+            ? SystemColors.Control
+            : Color.FromArgb(0x15, 0x15, 0x14);
+        private static Color SelectedButtonBackgroundColor =>
+            IsLightMode()
+            ? SystemColors.ControlLight
+            : Color.FromArgb(0x25, 0x25, 0x25);
+        private static Color ForegroundColor =>
+            IsLightMode()
+            ? SystemColors.ControlText
+            : SystemColors.HighlightText;
 
         private const int ButtonHeight = 50;
         private const int ButtonWidth = 360;
@@ -27,7 +39,7 @@ namespace PowerPlanSwitcher
                 TextImageRelation = TextImageRelation.ImageBeforeText,
                 TextAlign = ContentAlignment.MiddleLeft,
                 Padding = new Padding(20, 0, 0, 0),
-                ForeColor = SystemColors.HighlightText,
+                ForeColor = ForegroundColor,
                 BackColor = active
                     ? SelectedButtonBackgroundColor
                     : ButtonBackgroundColor,
@@ -41,15 +53,6 @@ namespace PowerPlanSwitcher
             button.Click += (_, _) =>
             {
                 PowerManager.SetActivePowerScheme((Guid)button.Tag);
-                button.BackColor = SelectedButtonBackgroundColor;
-                foreach (Button b in TlpPowerSchemes.Controls)
-                {
-                    if (b == button)
-                    {
-                        continue;
-                    }
-                    b.BackColor = ButtonBackgroundColor;
-                }
                 Close();
             };
 
@@ -58,6 +61,8 @@ namespace PowerPlanSwitcher
 
         protected override void OnLoad(EventArgs e)
         {
+            BackColor = ButtonBackgroundColor;
+
             var activeSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
 
             foreach (var (guid, name) in PowerManager.GetPowerSchemes())

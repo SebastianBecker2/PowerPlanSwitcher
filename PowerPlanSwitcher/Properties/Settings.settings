@@ -20,5 +20,8 @@
     <Setting Name="PowerRuleCheckInterval" Type="System.Int32" Scope="User">
       <Value Profile="(Default)">5</Value>
     </Setting>
+    <Setting Name="ColorTheme" Type="System.String" Scope="User">
+      <Value Profile="(Default)">Dark Mode</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

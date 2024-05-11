@@ -43,6 +43,16 @@ namespace PowerPlanSwitcher
             NudPowerRuleCheckInterval.Value =
                 Settings.Default.PowerRuleCheckInterval;
 
+            var index = CmbColorTheme.Items.IndexOf(Settings.Default.ColorTheme);
+            if (index != -1 && index < CmbColorTheme.Items.Count)
+            {
+                CmbColorTheme.SelectedIndex = index;
+            }
+            else
+            {
+                CmbColorTheme.SelectedIndex = 0;
+            }
+
             base.OnLoad(e);
         }
 
@@ -213,6 +223,9 @@ namespace PowerPlanSwitcher
 
             Settings.Default.PowerRuleCheckInterval =
                 (int)NudPowerRuleCheckInterval.Value;
+
+            Settings.Default.ColorTheme = CmbColorTheme.SelectedItem as string;
+
             Settings.Default.Save();
 
             DialogResult = DialogResult.OK;
