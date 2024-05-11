@@ -28,39 +28,38 @@ namespace PowerPlanSwitcher
         /// </summary>
         private void InitializeComponent()
         {
-            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(PowerSchemeSelectorDlg));
-            this.TlpPowerSchemes = new System.Windows.Forms.TableLayoutPanel();
-            this.SuspendLayout();
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(PowerSchemeSelectorDlg));
+            TlpPowerSchemes = new TableLayoutPanel();
+            SuspendLayout();
             // 
             // TlpPowerSchemes
             // 
-            this.TlpPowerSchemes.ColumnCount = 1;
-            this.TlpPowerSchemes.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.TlpPowerSchemes.ColumnStyles.Add(new System.Windows.Forms.ColumnStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.TlpPowerSchemes.Dock = System.Windows.Forms.DockStyle.Fill;
-            this.TlpPowerSchemes.Location = new System.Drawing.Point(0, 0);
-            this.TlpPowerSchemes.Margin = new System.Windows.Forms.Padding(0);
-            this.TlpPowerSchemes.Name = "TlpPowerSchemes";
-            this.TlpPowerSchemes.RowCount = 1;
-            this.TlpPowerSchemes.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.TlpPowerSchemes.RowStyles.Add(new System.Windows.Forms.RowStyle(System.Windows.Forms.SizeType.Percent, 50F));
-            this.TlpPowerSchemes.Size = new System.Drawing.Size(569, 344);
-            this.TlpPowerSchemes.TabIndex = 0;
+            TlpPowerSchemes.ColumnCount = 1;
+            TlpPowerSchemes.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            TlpPowerSchemes.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            TlpPowerSchemes.Dock = DockStyle.Fill;
+            TlpPowerSchemes.Location = new Point(0, 0);
+            TlpPowerSchemes.Margin = new Padding(0);
+            TlpPowerSchemes.Name = "TlpPowerSchemes";
+            TlpPowerSchemes.RowCount = 1;
+            TlpPowerSchemes.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            TlpPowerSchemes.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            TlpPowerSchemes.Size = new Size(569, 344);
+            TlpPowerSchemes.TabIndex = 0;
             // 
-            // Popup
+            // PowerSchemeSelectorDlg
             // 
-            this.AutoScaleDimensions = new System.Drawing.SizeF(7F, 15F);
-            this.AutoScaleMode = System.Windows.Forms.AutoScaleMode.Font;
-            this.BackColor = System.Drawing.Color.Black;
-            this.ClientSize = new System.Drawing.Size(569, 344);
-            this.Controls.Add(this.TlpPowerSchemes);
-            this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.None;
-            this.Icon = ((System.Drawing.Icon)(resources.GetObject("$this.Icon")));
-            this.Name = "PowerSchemeSelectorDlg";
-            this.ShowInTaskbar = false;
-            this.Text = "PowerPlanSwitcher - Selector";
-            this.ResumeLayout(false);
-
+            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleMode = AutoScaleMode.Font;
+            BackColor = Color.Black;
+            ClientSize = new Size(569, 344);
+            Controls.Add(TlpPowerSchemes);
+            FormBorderStyle = FormBorderStyle.None;
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            Name = "PowerSchemeSelectorDlg";
+            ShowInTaskbar = false;
+            Text = "PowerPlanSwitcher - Selector";
+            ResumeLayout(false);
         }
 
         #endregion

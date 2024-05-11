@@ -22,6 +22,8 @@ namespace PowerPlanSwitcher
         private const int ButtonHeight = 50;
         private const int ButtonWidth = 360;
 
+        private bool shownTriggered;
+
         public PowerSchemeSelectorDlg() => InitializeComponent();
 
         private Button CreateButton(
@@ -105,7 +107,24 @@ namespace PowerPlanSwitcher
             Activate();
             _ = Focus();
 
+            shownTriggered = true;
+
             base.OnShown(e);
+        }
+
+        protected override void OnDeactivate(EventArgs e)
+        {
+            // For some reason, with version .Net 8.0, the OnDeactivate
+            // event is called when the dialog is shown for the first time.
+            // It triggeres OnActivate, OnDeactivate and then OnActivate again.
+            // Couldn't figure out why. Didn't seem to happen in .Net 5.0.
+            // So we check if the Shown event was triggered before. Because
+            // it cames last when showing the dialog.
+            if (shownTriggered)
+            {
+                DialogResult = DialogResult.Cancel;
+            }
+            base.OnDeactivate(e);
         }
 
         private void SetPositionToTaskbar()
