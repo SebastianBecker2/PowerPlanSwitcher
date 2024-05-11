@@ -77,7 +77,7 @@ namespace PowerPlanSwitcher
             DgvPowerSchemes.RowHeadersVisible = false;
             DgvPowerSchemes.RowTemplate.Height = 26;
             DgvPowerSchemes.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            DgvPowerSchemes.Size = new Size(337, 189);
+            DgvPowerSchemes.Size = new Size(372, 189);
             DgvPowerSchemes.TabIndex = 0;
             DgvPowerSchemes.CellMouseDown += HandleDgvPowerSchemesCellMouseDown;
             // 
@@ -108,7 +108,7 @@ namespace PowerPlanSwitcher
             // BtnOk
             // 
             BtnOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            BtnOk.Location = new Point(792, 423);
+            BtnOk.Location = new Point(827, 464);
             BtnOk.Name = "BtnOk";
             BtnOk.Size = new Size(75, 23);
             BtnOk.TabIndex = 1;
@@ -120,7 +120,7 @@ namespace PowerPlanSwitcher
             // 
             BtnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             BtnCancel.DialogResult = DialogResult.Cancel;
-            BtnCancel.Location = new Point(873, 423);
+            BtnCancel.Location = new Point(908, 464);
             BtnCancel.Name = "BtnCancel";
             BtnCancel.Size = new Size(75, 23);
             BtnCancel.TabIndex = 2;
@@ -130,7 +130,7 @@ namespace PowerPlanSwitcher
             // BtnCreateRuleFromProcess
             // 
             BtnCreateRuleFromProcess.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            BtnCreateRuleFromProcess.Location = new Point(630, 27);
+            BtnCreateRuleFromProcess.Location = new Point(665, 27);
             BtnCreateRuleFromProcess.Name = "BtnCreateRuleFromProcess";
             BtnCreateRuleFromProcess.Size = new Size(156, 59);
             BtnCreateRuleFromProcess.TabIndex = 6;
@@ -153,7 +153,7 @@ namespace PowerPlanSwitcher
             DgvPowerRules.RowHeadersVisible = false;
             DgvPowerRules.RowTemplate.Height = 26;
             DgvPowerRules.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            DgvPowerRules.Size = new Size(936, 180);
+            DgvPowerRules.Size = new Size(971, 221);
             DgvPowerRules.TabIndex = 7;
             // 
             // DgcRuleIndex
@@ -208,7 +208,7 @@ namespace PowerPlanSwitcher
             // BtnAddPowerRule
             // 
             BtnAddPowerRule.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            BtnAddPowerRule.Location = new Point(792, 27);
+            BtnAddPowerRule.Location = new Point(827, 27);
             BtnAddPowerRule.Name = "BtnAddPowerRule";
             BtnAddPowerRule.Size = new Size(156, 59);
             BtnAddPowerRule.TabIndex = 8;
@@ -219,7 +219,7 @@ namespace PowerPlanSwitcher
             // BtnEditPowerRule
             // 
             BtnEditPowerRule.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            BtnEditPowerRule.Location = new Point(792, 92);
+            BtnEditPowerRule.Location = new Point(827, 92);
             BtnEditPowerRule.Name = "BtnEditPowerRule";
             BtnEditPowerRule.Size = new Size(156, 59);
             BtnEditPowerRule.TabIndex = 9;
@@ -230,7 +230,7 @@ namespace PowerPlanSwitcher
             // BtnAscentPowerRule
             // 
             BtnAscentPowerRule.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            BtnAscentPowerRule.Location = new Point(630, 92);
+            BtnAscentPowerRule.Location = new Point(665, 92);
             BtnAscentPowerRule.Name = "BtnAscentPowerRule";
             BtnAscentPowerRule.Size = new Size(156, 59);
             BtnAscentPowerRule.TabIndex = 10;
@@ -241,7 +241,7 @@ namespace PowerPlanSwitcher
             // BtnDescentPowerRule
             // 
             BtnDescentPowerRule.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            BtnDescentPowerRule.Location = new Point(630, 157);
+            BtnDescentPowerRule.Location = new Point(665, 157);
             BtnDescentPowerRule.Name = "BtnDescentPowerRule";
             BtnDescentPowerRule.Size = new Size(156, 59);
             BtnDescentPowerRule.TabIndex = 10;
@@ -252,7 +252,7 @@ namespace PowerPlanSwitcher
             // BtnDeletePowerRule
             // 
             BtnDeletePowerRule.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            BtnDeletePowerRule.Location = new Point(792, 157);
+            BtnDeletePowerRule.Location = new Point(827, 157);
             BtnDeletePowerRule.Name = "BtnDeletePowerRule";
             BtnDeletePowerRule.Size = new Size(156, 59);
             BtnDeletePowerRule.TabIndex = 9;
@@ -264,7 +264,7 @@ namespace PowerPlanSwitcher
             // 
             ChbActivateInitialPowerScheme.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             ChbActivateInitialPowerScheme.AutoSize = true;
-            ChbActivateInitialPowerScheme.Location = new Point(355, 27);
+            ChbActivateInitialPowerScheme.Location = new Point(390, 27);
             ChbActivateInitialPowerScheme.Name = "ChbActivateInitialPowerScheme";
             ChbActivateInitialPowerScheme.Size = new Size(199, 19);
             ChbActivateInitialPowerScheme.TabIndex = 11;
@@ -277,7 +277,7 @@ namespace PowerPlanSwitcher
             CmbInitialPowerScheme.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             CmbInitialPowerScheme.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbInitialPowerScheme.FormattingEnabled = true;
-            CmbInitialPowerScheme.Location = new Point(355, 52);
+            CmbInitialPowerScheme.Location = new Point(390, 52);
             CmbInitialPowerScheme.Name = "CmbInitialPowerScheme";
             CmbInitialPowerScheme.Size = new Size(269, 23);
             CmbInitialPowerScheme.TabIndex = 12;
@@ -286,7 +286,7 @@ namespace PowerPlanSwitcher
             // 
             label1.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label1.AutoSize = true;
-            label1.Location = new Point(355, 78);
+            label1.Location = new Point(390, 78);
             label1.Name = "label1";
             label1.Size = new Size(169, 15);
             label1.TabIndex = 13;
@@ -295,7 +295,7 @@ namespace PowerPlanSwitcher
             // NudPowerRuleCheckInterval
             // 
             NudPowerRuleCheckInterval.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            NudPowerRuleCheckInterval.Location = new Point(355, 96);
+            NudPowerRuleCheckInterval.Location = new Point(390, 96);
             NudPowerRuleCheckInterval.Maximum = new decimal(new int[] { 600, 0, 0, 0 });
             NudPowerRuleCheckInterval.Name = "NudPowerRuleCheckInterval";
             NudPowerRuleCheckInterval.Size = new Size(84, 23);
@@ -305,7 +305,7 @@ namespace PowerPlanSwitcher
             // 
             label2.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label2.AutoSize = true;
-            label2.Location = new Point(445, 104);
+            label2.Location = new Point(480, 104);
             label2.Name = "label2";
             label2.Size = new Size(51, 15);
             label2.TabIndex = 13;
@@ -331,8 +331,9 @@ namespace PowerPlanSwitcher
             // 
             // label5
             // 
+            label5.Anchor = AnchorStyles.Top | AnchorStyles.Right;
             label5.AutoSize = true;
-            label5.Location = new Point(355, 122);
+            label5.Location = new Point(390, 122);
             label5.Name = "label5";
             label5.Size = new Size(78, 15);
             label5.TabIndex = 16;
@@ -344,7 +345,7 @@ namespace PowerPlanSwitcher
             CmbColorTheme.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbColorTheme.FormattingEnabled = true;
             CmbColorTheme.Items.AddRange(new object[] { "Dark Mode", "Light Mode" });
-            CmbColorTheme.Location = new Point(355, 140);
+            CmbColorTheme.Location = new Point(390, 140);
             CmbColorTheme.Name = "CmbColorTheme";
             CmbColorTheme.Size = new Size(269, 23);
             CmbColorTheme.TabIndex = 17;
@@ -355,7 +356,7 @@ namespace PowerPlanSwitcher
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = BtnCancel;
-            ClientSize = new Size(960, 458);
+            ClientSize = new Size(995, 499);
             Controls.Add(CmbColorTheme);
             Controls.Add(label5);
             Controls.Add(label4);
