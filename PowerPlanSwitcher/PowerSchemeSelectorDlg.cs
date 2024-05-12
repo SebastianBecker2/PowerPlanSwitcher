@@ -1,14 +1,11 @@
 using Microsoft.Win32;
-using System;
-using System.Drawing;
-using System.Windows.Forms;
 namespace PowerPlanSwitcher
 {
     using PowerPlanSwitcher.Properties;
     
     public partial class PowerSchemeSelectorDlg : Form
     {
-        private static int? theme; // 将theme提升到类的级别
+        private static int? theme;
         
         private void LoadThemeSettings()
         {
