@@ -8,7 +8,7 @@ Switch your windows power plan easily and quickly with this tray-icon tool.
 
 Or let it automatically switch between power plans depending on what you do.
 
-![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/0c11f04f-b8bc-4d8b-8aea-e9651242b0ba)
+![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/4ba8f3c8-e0a9-4161-89b7-57d405b52221)
 
 Create rules easily by selecting an active process.
 

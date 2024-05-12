@@ -18,6 +18,14 @@ namespace PowerPlanSwitcher
             IsLightMode()
             ? SystemColors.ControlText
             : SystemColors.HighlightText;
+        private static Color FBCColor =>
+            IsLightMode()
+            ? SystemColors.HighlightText
+            : SystemColors.MenuText;
+        private static Color FAMOBColor =>
+            IsLightMode()
+            ? Color.FromArgb(0xD8, 0xD8, 0xD8)
+            : Color.FromArgb(0x35, 0x35, 0x35);
 
         private const int ButtonHeight = 50;
         private const int ButtonWidth = 360;
@@ -35,7 +43,7 @@ namespace PowerPlanSwitcher
             name ??= guid.ToString();
             var button = new Button
             {
-                FlatStyle = FlatStyle.Popup,
+                FlatStyle = FlatStyle.Flat,
                 Image = icon,
                 ImageAlign = ContentAlignment.MiddleLeft,
                 TextImageRelation = TextImageRelation.ImageBeforeText,
@@ -51,7 +59,12 @@ namespace PowerPlanSwitcher
                 Tag = guid,
                 Dock = DockStyle.Fill,
             };
-
+            button.FlatAppearance.BorderSize = 0;
+            button.FlatAppearance.BorderColor =
+                    FBCColor;
+            button.FlatAppearance.MouseOverBackColor =
+                    FAMOBColor;
+                    
             button.Click += (_, _) =>
             {
                 PowerManager.SetActivePowerScheme((Guid)button.Tag);

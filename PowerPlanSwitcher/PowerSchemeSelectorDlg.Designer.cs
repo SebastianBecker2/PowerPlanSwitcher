@@ -34,6 +34,7 @@ namespace PowerPlanSwitcher
             // 
             // TlpPowerSchemes
             // 
+            TlpPowerSchemes.BackColor = Color.LightGray;
             TlpPowerSchemes.ColumnCount = 1;
             TlpPowerSchemes.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             TlpPowerSchemes.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
@@ -41,18 +42,20 @@ namespace PowerPlanSwitcher
             TlpPowerSchemes.Location = new Point(0, 0);
             TlpPowerSchemes.Margin = new Padding(0);
             TlpPowerSchemes.Name = "TlpPowerSchemes";
+            TlpPowerSchemes.Padding = new Padding(1);
             TlpPowerSchemes.RowCount = 1;
             TlpPowerSchemes.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             TlpPowerSchemes.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            TlpPowerSchemes.Size = new Size(569, 344);
+            TlpPowerSchemes.Size = new Size(569, 390);
             TlpPowerSchemes.TabIndex = 0;
             // 
             // PowerSchemeSelectorDlg
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.Black;
-            ClientSize = new Size(569, 344);
+            CausesValidation = false;
+            ClientSize = new Size(569, 390);
             Controls.Add(TlpPowerSchemes);
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");
