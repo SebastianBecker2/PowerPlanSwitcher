@@ -1,7 +1,5 @@
 namespace PowerPlanSwitcher
 {
-    using PowerPlanSwitcher.Properties;
-
     public partial class PowerSchemeSelectorDlg : Form
     {
         private static Color ButtonBackgroundColor =>
