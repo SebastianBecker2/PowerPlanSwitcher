@@ -65,7 +65,7 @@ namespace PowerPlanSwitcher
 
         protected override void OnLoad(EventArgs e)
         {
-            BackColor = ButtonBackgroundColor;
+            TlpPowerSchemes.BackColor = ButtonBackgroundColor;
 
             var activeSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
 
