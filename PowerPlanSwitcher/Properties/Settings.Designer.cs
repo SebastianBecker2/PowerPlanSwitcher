@@ -97,7 +97,7 @@ namespace PowerPlanSwitcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("Dark Mode")]
+        [global::System.Configuration.DefaultSettingValueAttribute("Use System Setting")]
         public string ColorTheme {
             get {
                 return ((string)(this["ColorTheme"]));

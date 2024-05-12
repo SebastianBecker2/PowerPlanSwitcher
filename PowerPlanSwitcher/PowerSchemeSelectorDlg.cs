@@ -4,26 +4,24 @@ namespace PowerPlanSwitcher
 
     public partial class PowerSchemeSelectorDlg : Form
     {
-        private static bool IsLightMode() =>
-            Settings.Default.ColorTheme == "Light Mode";
         private static Color ButtonBackgroundColor =>
-            IsLightMode()
+            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
             ? SystemColors.Control
             : Color.FromArgb(0x15, 0x15, 0x14);
         private static Color SelectedButtonBackgroundColor =>
-            IsLightMode()
+            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
             ? SystemColors.ControlLight
             : Color.FromArgb(0x25, 0x25, 0x25);
         private static Color ForegroundColor =>
-            IsLightMode()
+            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
             ? SystemColors.ControlText
             : SystemColors.HighlightText;
         private static Color FBCColor =>
-            IsLightMode()
+            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
             ? SystemColors.HighlightText
             : SystemColors.MenuText;
         private static Color FAMOBColor =>
-            IsLightMode()
+            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
             ? Color.FromArgb(0xD8, 0xD8, 0xD8)
             : Color.FromArgb(0x35, 0x35, 0x35);
 
@@ -60,11 +58,9 @@ namespace PowerPlanSwitcher
                 Dock = DockStyle.Fill,
             };
             button.FlatAppearance.BorderSize = 0;
-            button.FlatAppearance.BorderColor =
-                    FBCColor;
-            button.FlatAppearance.MouseOverBackColor =
-                    FAMOBColor;
-                    
+            button.FlatAppearance.BorderColor = FBCColor;
+            button.FlatAppearance.MouseOverBackColor = FAMOBColor;
+
             button.Click += (_, _) =>
             {
                 PowerManager.SetActivePowerScheme((Guid)button.Tag);

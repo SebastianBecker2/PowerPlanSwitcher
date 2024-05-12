@@ -338,7 +338,6 @@ namespace PowerPlanSwitcher
             // 
             CmbColorTheme.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbColorTheme.FormattingEnabled = true;
-            CmbColorTheme.Items.AddRange(new object[] { "Dark Mode", "Light Mode" });
             CmbColorTheme.Location = new Point(9, 132);
             CmbColorTheme.Name = "CmbColorTheme";
             CmbColorTheme.Size = new Size(269, 23);

@@ -21,7 +21,7 @@
       <Value Profile="(Default)">5</Value>
     </Setting>
     <Setting Name="ColorTheme" Type="System.String" Scope="User">
-      <Value Profile="(Default)">Dark Mode</Value>
+      <Value Profile="(Default)">Use System Setting</Value>
     </Setting>
   </Settings>
 </SettingsFile>
