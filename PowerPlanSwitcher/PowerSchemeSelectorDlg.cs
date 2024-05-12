@@ -1,11 +1,40 @@
+using Microsoft.Win32;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
 namespace PowerPlanSwitcher
 {
     using PowerPlanSwitcher.Properties;
-
+    
     public partial class PowerSchemeSelectorDlg : Form
     {
-        private static bool IsLightMode() =>
-            Settings.Default.ColorTheme == "Light Mode";
+        private static int? theme; // 将theme提升到类的级别
+        
+        private void LoadThemeSettings()
+        {
+            theme = -1;
+            if (Settings.Default.ColorTheme == "Auto")
+            {
+                using (RegistryKey key = Registry.CurrentUser.OpenSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Themes\Personalize"))
+                {
+                    theme = key?.GetValue("SystemUsesLightTheme", -1) as int? ?? -1;
+                }
+            }
+            else if (Settings.Default.ColorTheme == "Light Mode")
+            {
+                theme = 1; // 如果设置是Light Mode，则直接设置theme为1
+            }
+            // 其他情况下，theme保持为null，可能表示暗色模式
+        }
+
+        private static bool IsLightMode()
+        {
+            // 检查theme是否有值且为1，以确定是否为浅色模式
+            return theme.HasValue && theme.Value == 1;
+        }
+ 
+        // private static bool IsLightMode() =>
+            // Settings.Default.ColorTheme == "Light Mode";
         private static Color ButtonBackgroundColor =>
             IsLightMode()
             ? SystemColors.Control
@@ -32,7 +61,11 @@ namespace PowerPlanSwitcher
 
         private bool shownTriggered;
 
-        public PowerSchemeSelectorDlg() => InitializeComponent();
+        public PowerSchemeSelectorDlg()
+        {
+            InitializeComponent(); // 确保在构造函数中调用InitializeComponent
+            LoadThemeSettings(); // 加载主题设置
+        }
 
         private Button CreateButton(
             Guid guid,
