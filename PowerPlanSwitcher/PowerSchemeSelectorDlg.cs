@@ -16,10 +16,6 @@ namespace PowerPlanSwitcher
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
             ? SystemColors.ControlText
             : SystemColors.HighlightText;
-        private static Color FBCColor =>
-            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? SystemColors.HighlightText
-            : SystemColors.MenuText;
         private static Color FAMOBColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
             ? Color.FromArgb(0xD8, 0xD8, 0xD8)
@@ -58,7 +54,6 @@ namespace PowerPlanSwitcher
                 Dock = DockStyle.Fill,
             };
             button.FlatAppearance.BorderSize = 0;
-            button.FlatAppearance.BorderColor = FBCColor;
             button.FlatAppearance.MouseOverBackColor = FAMOBColor;
 
             button.Click += (_, _) =>
