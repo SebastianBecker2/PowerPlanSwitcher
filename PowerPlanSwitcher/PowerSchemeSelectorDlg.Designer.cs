@@ -53,13 +53,14 @@ namespace PowerPlanSwitcher
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.Black;
+            BackColor = Color.DarkGray;
             CausesValidation = false;
             ClientSize = new Size(569, 344);
             Controls.Add(TlpPowerSchemes);
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "PowerSchemeSelectorDlg";
+            Padding = new Padding(1);
             ShowInTaskbar = false;
             Text = "PowerPlanSwitcher - Selector";
             ResumeLayout(false);

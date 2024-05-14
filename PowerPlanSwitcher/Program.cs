@@ -22,6 +22,13 @@ namespace PowerPlanSwitcher
         [STAThread]
         private static void Main()
         {
+            HotKey.HotKeyGuid();
+            // 初始化HotKey类并开始监听热键
+            HotKey.StartListening();
+
+            // 保持程序运行以监听热键
+            Console.WriteLine("Press Enter to exit...");
+            Console.ReadLine();
             if (Settings.Default.UpgradeRequired)
             {
                 Settings.Default.Upgrade();

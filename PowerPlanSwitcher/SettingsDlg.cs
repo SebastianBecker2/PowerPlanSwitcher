@@ -232,6 +232,7 @@ namespace PowerPlanSwitcher
             Settings.Default.Save();
 
             DialogResult = DialogResult.OK;
+            HotKey.HotKeyGuid();
         }
 
         private void HandleBtnCreateRuleFromProcessClick(
