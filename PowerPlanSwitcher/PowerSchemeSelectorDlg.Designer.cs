@@ -39,27 +39,28 @@ namespace PowerPlanSwitcher
             TlpPowerSchemes.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             TlpPowerSchemes.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             TlpPowerSchemes.Dock = DockStyle.Fill;
-            TlpPowerSchemes.Location = new Point(0, 0);
+            TlpPowerSchemes.Location = new Point(1, 1);
             TlpPowerSchemes.Margin = new Padding(0);
             TlpPowerSchemes.Name = "TlpPowerSchemes";
             TlpPowerSchemes.Padding = new Padding(1);
             TlpPowerSchemes.RowCount = 1;
             TlpPowerSchemes.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             TlpPowerSchemes.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            TlpPowerSchemes.Size = new Size(569, 344);
+            TlpPowerSchemes.Size = new Size(567, 342);
             TlpPowerSchemes.TabIndex = 0;
             // 
             // PowerSchemeSelectorDlg
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            BackColor = Color.Black;
+            BackColor = Color.DarkGray;
             CausesValidation = false;
             ClientSize = new Size(569, 344);
             Controls.Add(TlpPowerSchemes);
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "PowerSchemeSelectorDlg";
+            Padding = new Padding(1);
             ShowInTaskbar = false;
             Text = "PowerPlanSwitcher - Selector";
             ResumeLayout(false);
