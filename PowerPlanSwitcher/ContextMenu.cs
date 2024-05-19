@@ -68,12 +68,20 @@ namespace PowerPlanSwitcher
 
             button.Click += (_, _) =>
             {
-                using var dlg = new SettingsDlg();
-                if (dlg.ShowDialog() != DialogResult.OK)
+                Program.HotkeyManager.RemoveAllHotkeys();
+                try
                 {
-                    return;
+                    using var dlg = new SettingsDlg();
+                    if (dlg.ShowDialog() != DialogResult.OK)
+                    {
+                        return;
+                    }
+                    OnSettingsChanged();
                 }
-                OnSettingsChanged();
+                finally
+                {
+                    Program.RegisterHotkeys();
+                }
             };
 
             _ = Items.Add(button);

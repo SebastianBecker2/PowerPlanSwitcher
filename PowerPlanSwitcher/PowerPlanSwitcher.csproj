@@ -28,6 +28,7 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
     <Content Include="Resources\power_surge.ico" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="HotkeyManager" Version="1.0.1" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
     <PackageReference Include="Serilog" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
