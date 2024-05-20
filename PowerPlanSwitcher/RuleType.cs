@@ -5,5 +5,7 @@ namespace PowerPlanSwitcher
         StartsWith,
         Exact,
         EndsWith,
+        Battery,
+        PowerSupply,
     }
 }

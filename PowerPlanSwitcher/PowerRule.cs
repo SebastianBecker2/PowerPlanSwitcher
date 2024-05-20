@@ -16,10 +16,12 @@ namespace PowerPlanSwitcher
         public bool Active { get; set; }
 
         private static readonly List<(RuleType type, string text)> RuleTypeTexts =
-            [
+           [
                 (RuleType.Exact, "Match exact Path"),
                 (RuleType.StartsWith, "Path starts with"),
                 (RuleType.EndsWith, "Path ends with"),
+                (RuleType.Battery,"Battery"),
+                (RuleType.PowerSupply,"Power AC"),
             ];
 
         private static List<PowerRule>? powerRules;

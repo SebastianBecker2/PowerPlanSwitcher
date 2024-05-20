@@ -46,16 +46,16 @@ namespace PowerPlanSwitcher
             TlpPowerSchemes.RowCount = 1;
             TlpPowerSchemes.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             TlpPowerSchemes.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            TlpPowerSchemes.Size = new Size(567, 342);
+            TlpPowerSchemes.Size = new Size(567, 388);
             TlpPowerSchemes.TabIndex = 0;
             // 
             // PowerSchemeSelectorDlg
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.DarkGray;
             CausesValidation = false;
-            ClientSize = new Size(569, 344);
+            ClientSize = new Size(569, 390);
             Controls.Add(TlpPowerSchemes);
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");

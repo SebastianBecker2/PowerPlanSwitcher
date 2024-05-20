@@ -1,13 +1,44 @@
 namespace PowerPlanSwitcher
 {
-    using System.Data;
     using System.Drawing.Drawing2D;
-    using Hotkeys;
     using Properties;
-    using Hotkey = PowerSchemeSettings.Hotkey;
 
     public partial class SettingsDlg : Form
     {
+        private (bool SDListAC, bool SDListBattery) SDListTwoBool()
+        {
+            // 根据实际情况确定这两个布尔值的来源
+            bool SDListAC = false; // 这里是您想要传递的布尔值
+            bool SDListBattery = false;
+
+            for (int index = 0; index < DgvPowerRules.Rows.Count; index++)
+            {
+                var row = DgvPowerRules.Rows[index].Cells[1].Value;
+                // 检查第二列（索引为1）的单元格是否包含"Power AC"
+                if (row != null && DgvPowerRules.Rows[index].Cells[1].Value.ToString().Contains("Power AC"))
+                {
+                    SDListAC = true; // 如果找到，设置标记为true
+                }
+                if (row != null && row.ToString().Contains("Battery"))
+                {
+                    SDListBattery = true; // 如果找到，设置标记为true
+                }
+                if (SDListAC && SDListBattery)
+                {
+                    break;
+                }
+            }
+            return (SDListAC,SDListBattery);
+            // bool SDListAC = DgvPowerRules.Rows.Cast<DataGridViewRow>()
+                // .Any(row => row.Cells[1].Value != null && row.Cells[1].Value.ToString().Contains("Power AC"));
+
+            // bool SDListBattery = DgvPowerRules.Rows.Cast<DataGridViewRow>()
+                // .Any(row => row.Cells[1].Value != null && row.Cells[1].Value.ToString().Contains("Battery"));
+
+            // return (SDListAC, SDListBattery);
+            
+        }
+        
         private readonly List<(Guid guid, string name)> powerSchemes =
             PowerManager.GetPowerSchemes()
                 .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
@@ -65,16 +96,6 @@ namespace PowerPlanSwitcher
         private DataGridViewRow SchemeToRow((Guid guid, string name) scheme)
         {
             var setting = PowerSchemeSettings.GetSetting(scheme.guid);
-            static string getHotkeyText(PowerSchemeSettings.Setting? setting)
-            {
-                if (setting?.Hotkey is null)
-                {
-                    return "-";
-                }
-                return HotkeyManager.ToString(
-                    setting.Hotkey.Key,
-                    setting.Hotkey.Modifier);
-            }
 
             var row = new DataGridViewRow { Tag = scheme.guid, };
 
@@ -83,19 +104,49 @@ namespace PowerPlanSwitcher
                 {
                     Value = setting is null || setting.Visible,
                 },
+                new DataGridViewTextBoxCell { Value = scheme.name, },
                 new DataGridViewImageCell
                 {
                     Value = setting?.Icon,
                     ImageLayout = DataGridViewImageCellLayout.Zoom,
-                },
-                new DataGridViewTextBoxCell { Value = scheme.name, },
-                new DataGridViewTextBoxCell
-                {
-                    Value = getHotkeyText(setting),
-                    Tag = setting?.Hotkey
                 });
 
             return row;
+        }
+
+        private void HandleDlgPowerSchemesImageCellClick(
+            object sender,
+            DataGridViewCellMouseEventArgs e)
+        {
+            var cell = DgvPowerSchemes.Rows[e.RowIndex].Cells[e.ColumnIndex];
+
+            if (e.Button == MouseButtons.Right)
+            {
+                cell.Value = null;
+                return;
+            }
+
+            if (e.Button == MouseButtons.Left)
+            {
+
+                using var dlg = new IconSelectionDlg();
+                if (dlg.ShowDialog() != DialogResult.OK
+                    || dlg.SelectedIcon is null)
+                {
+                    return;
+                }
+
+                var image = dlg.SelectedIcon;
+                if (image.Size.Height > 32 || image.Size.Width > 32)
+                {
+                    image = ResizeImage(
+                        image,
+                        Rescale(image.Size, new Size(32, 32)));
+                }
+
+                DgvPowerSchemes.Rows[e.RowIndex].Cells[e.ColumnIndex].Value =
+                    image;
+            }
         }
 
         private static Size Rescale(
@@ -162,6 +213,13 @@ namespace PowerPlanSwitcher
                 return;
             }
 
+            // Handle image cell click
+            if (e.ColumnIndex == 2)
+            {
+                HandleDlgPowerSchemesImageCellClick(sender, e);
+                return;
+            }
+
             // Handle visible checkbox cell click
             if (e.ColumnIndex == 0)
             {
@@ -169,7 +227,7 @@ namespace PowerPlanSwitcher
             }
         }
 
-        private void HandleBtnOkClick(object sender, EventArgs e)
+        async void HandleBtnOkClick(object sender, EventArgs e)
         {
             foreach (DataGridViewRow row in DgvPowerSchemes.Rows)
             {
@@ -177,18 +235,17 @@ namespace PowerPlanSwitcher
                 PowerSchemeSettings.SetSetting(schemeGuid,
                     new PowerSchemeSettings.Setting
                     {
-                        Visible = (bool)row.Cells["DgcVisible"].Value,
-                        Icon = row.Cells["DgcIcon"].Value as Image,
-                        Hotkey = row.Cells["DgcHotkey"].Tag as Hotkey,
+                        Visible = (bool)row.Cells[0].Value,
+                        Icon = row.Cells[2].Value as Image,
                     });
             }
-            PowerSchemeSettings.SaveSettings();
+            // PowerSchemeSettings.SaveSettings();
 
             PowerRule.SetPowerRules(DgvPowerRules.Rows
                 .Cast<DataGridViewRow>()
                 .Select(r => r.Tag as PowerRule)
                 .Cast<PowerRule>());
-            PowerRule.SavePowerRules();
+            // PowerRule.SavePowerRules();
 
             static string GetSelectedString(ComboBox cmb) =>
                 cmb.Items[cmb.SelectedIndex]?.ToString() ?? string.Empty;
@@ -207,6 +264,15 @@ namespace PowerPlanSwitcher
             Settings.Default.ColorTheme = CmbColorTheme.SelectedItem as string;
 
             Settings.Default.Save();
+            
+            await Task.Run(() =>
+            {
+                PowerSchemeSettings.SaveSettings();
+                PowerRule.SavePowerRules();
+                HotKey.HotKeyGuid(); // 将耗时操作放在这里
+                BatteryMonitor.PlanValue();
+                BatteryMonitor.MonitorBatterySwitc();
+            });
 
             DialogResult = DialogResult.OK;
         }
@@ -220,8 +286,11 @@ namespace PowerPlanSwitcher
             {
                 return;
             }
+            
+            var (value1, value2) = SDListTwoBool();
+            bool SDNotEdit = true;
 
-            using var powerRuleDlg = new PowerRuleDlg
+            using var powerRuleDlg = new PowerRuleDlg(value1, value2, SDNotEdit)
             {
                 PowerRule = new PowerRule
                 {
@@ -281,7 +350,11 @@ namespace PowerPlanSwitcher
 
         private void HandleBtnAddPowerRuleClick(object sender, EventArgs e)
         {
-            using var dlg = new PowerRuleDlg();
+            var (value1, value2) = SDListTwoBool();
+            bool SDNotEdit = true;
+            
+            using var dlg = new PowerRuleDlg(value1, value2, SDNotEdit); // 通过构造函数传递布尔值
+            // using var dlg = new PowerRuleDlg();
             if (dlg.ShowDialog() != DialogResult.OK)
             {
                 return;
@@ -297,8 +370,12 @@ namespace PowerPlanSwitcher
             {
                 return;
             }
-
-            using var dlg = new PowerRuleDlg
+            
+            var (value1, value2) = SDListTwoBool();
+            bool SDNotEdit = false;
+            // DgvPowerRules.Rows[index].Cells[1].Value.ToString()
+            
+            using var dlg = new PowerRuleDlg(value1, value2, SDNotEdit)
             {
                 PowerRule = DgvPowerRules.SelectedRows[0].Tag as PowerRule,
             };
@@ -327,7 +404,7 @@ namespace PowerPlanSwitcher
             {
                 var row = DgvPowerRules.Rows[index];
                 (row.Tag as PowerRule)!.Index = index;
-                row.Cells["DgcRuleIndex"].Value = index;
+                row.Cells[0].Value = index;
             }
         }
 
@@ -349,9 +426,8 @@ namespace PowerPlanSwitcher
             DgvPowerRules.Rows.Insert(powerRule!.Index - 1, row);
 
             var otherRow = DgvPowerRules.Rows[powerRule.Index];
-            otherRow.Cells["DgcRuleIndex"].Value =
-                ++(otherRow.Tag as PowerRule)!.Index;
-            row.Cells["DgcRuleIndex"].Value = --(row.Tag as PowerRule)!.Index;
+            otherRow.Cells[0].Value = ++(otherRow.Tag as PowerRule)!.Index;
+            row.Cells[0].Value = --(row.Tag as PowerRule)!.Index;
 
             row.Selected = true;
         }
@@ -374,9 +450,8 @@ namespace PowerPlanSwitcher
             DgvPowerRules.Rows.Insert(powerRule!.Index + 1, row);
 
             var otherRow = DgvPowerRules.Rows[powerRule.Index];
-            otherRow.Cells["DgcRuleIndex"].Value =
-                --(otherRow.Tag as PowerRule)!.Index;
-            row.Cells["DgcRuleIndex"].Value = ++(row.Tag as PowerRule)!.Index;
+            otherRow.Cells[0].Value = --(otherRow.Tag as PowerRule)!.Index;
+            row.Cells[0].Value = ++(row.Tag as PowerRule)!.Index;
 
             row.Selected = true;
         }
@@ -387,118 +462,9 @@ namespace PowerPlanSwitcher
             CmbInitialPowerScheme.Enabled =
                 ChbActivateInitialPowerScheme.Checked;
 
-        private void BtnRemoveIcon_Click(object sender, EventArgs e)
+        private void DgvPowerRules_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-            if (DgvPowerSchemes.SelectedRows.Count == 0)
-            {
-                return;
-            }
 
-            var row = DgvPowerSchemes.SelectedRows[0];
-            row.Cells["DgcIcon"].Value = null;
-            var guid = (Guid)row.Tag!;
-
-            foreach (var r in DgvPowerRules.Rows
-                .Cast<DataGridViewRow>()
-                .Where(r => (r.Tag as PowerRule)!.SchemeGuid == guid))
-            {
-                r.Cells["DgcRuleSchemeIcon"].Value = null;
-            }
-        }
-
-        private void BtnSetIcon_Click(object sender, EventArgs e)
-        {
-            if (DgvPowerSchemes.SelectedRows.Count == 0)
-            {
-                return;
-            }
-
-            using var dlg = new IconSelectionDlg();
-            if (dlg.ShowDialog() != DialogResult.OK
-                || dlg.SelectedIcon is null)
-            {
-                return;
-            }
-
-            var image = dlg.SelectedIcon;
-            if (image.Size.Height > 32 || image.Size.Width > 32)
-            {
-                image = ResizeImage(
-                    image,
-                    Rescale(image.Size, new Size(32, 32)));
-            }
-
-            var row = DgvPowerSchemes.SelectedRows[0];
-            row.Cells["DgcIcon"].Value = image;
-            var guid = (Guid)row.Tag!;
-
-            foreach (var r in DgvPowerRules.Rows
-                .Cast<DataGridViewRow>()
-                .Where(r => (r.Tag as PowerRule)!.SchemeGuid == guid))
-            {
-                r.Cells["DgcRuleSchemeIcon"].Value = image;
-            }
-        }
-
-        private void BtnSetHotkey_Click(object sender, EventArgs e)
-        {
-            if (DgvPowerSchemes.SelectedRows.Count == 0)
-            {
-                return;
-            }
-            var row = DgvPowerSchemes.SelectedRows[0];
-
-            using var dlg = new HotkeySelectionDlg();
-            if (dlg.ShowDialog() != DialogResult.OK)
-            {
-                return;
-            }
-            var hotkey = new Hotkey
-            {
-                Key = dlg.Key,
-                Modifier = dlg.Modifier,
-            };
-
-            var duplicate = DgvPowerSchemes.Rows
-                .Cast<DataGridViewRow>()
-                .FirstOrDefault(r =>
-                    r != row
-                    && hotkey.Equals(r.Cells["DgcHotkey"].Tag));
-            if (duplicate is not null)
-            {
-                var name = row.Cells["DgcName"].Value;
-                var duplicateName = duplicate.Cells["DgcName"].Value;
-                if (MessageBox.Show(
-                    "Hotkey already assigned to Power Plan " +
-                    $"'{duplicateName}'.{Environment.NewLine}Do you want to " +
-                    $"rebind to '{name}'?",
-                    "Hotkey already in use",
-                    MessageBoxButtons.YesNo) == DialogResult.No)
-                {
-                    return;
-                }
-                var duplicateCell = duplicate.Cells["DgcHotkey"];
-                duplicateCell.Value = "-";
-                duplicateCell.Tag = null;
-            }
-
-            var cell = row.Cells["DgcHotkey"];
-
-            cell.Value = HotkeyManager.ToString(dlg.Key, dlg.Modifier);
-            cell.Tag = hotkey;
-        }
-
-        private void BtnRemoveHotkey_Click(object sender, EventArgs e)
-        {
-            if (DgvPowerSchemes.SelectedRows.Count == 0)
-            {
-                return;
-            }
-
-            var cell = DgvPowerSchemes.SelectedRows[0].Cells["DgcHotkey"];
-
-            cell.Value = "-";
-            cell.Tag = null;
         }
     }
 }
