@@ -18,6 +18,10 @@ namespace PowerPlanSwitcher
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
             ? Color.FromArgb(0xD8, 0xD8, 0xD8)
             : Color.FromArgb(0x35, 0x35, 0x35);
+        private static Color FormBackgroundColor =>
+            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
+            ? Color.DarkGray
+            : Color.Black;
 
         private const int ButtonHeight = 50;
         private const int ButtonWidth = 360;
@@ -65,6 +69,7 @@ namespace PowerPlanSwitcher
 
         protected override void OnLoad(EventArgs e)
         {
+            BackColor = FormBackgroundColor;
             TlpPowerSchemes.BackColor = ButtonBackgroundColor;
 
             var activeSchemeGuid = PowerManager.GetActivePowerSchemeGuid();

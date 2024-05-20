@@ -1,11 +1,14 @@
 namespace PowerPlanSwitcher
 {
     using Microsoft.Win32;
+    using Hotkeys;
     using Properties;
     using Serilog;
 
     internal static class Program
     {
+        public static readonly HotkeyManager HotkeyManager = new();
+
         private static readonly string AssemblyTitle =
             AboutBox.AssemblyTitle ?? "";
         private static readonly string LogFileName =
@@ -15,6 +18,41 @@ namespace PowerPlanSwitcher
                 Environment.SpecialFolder.LocalApplicationData);
         private static readonly string LogPath =
             Path.Combine(LocalAppDataPath, AssemblyTitle, LogFileName);
+
+        public static void RegisterHotkeys()
+        {
+            foreach (var hotkey in PowerManager.GetPowerSchemes()
+                .Select(ps => PowerSchemeSettings.GetSetting(ps.guid)?.Hotkey)
+                .Where(h => h is not null))
+            {
+                _ = HotkeyManager.AddHotkey(hotkey!.Key, hotkey!.Modifier);
+            }
+        }
+
+        private static void HotkeyManager_HotkeyPressed(
+            object? sender,
+            HotkeyPressedEventArgs e)
+        {
+            var (guid, _) = PowerManager.GetPowerSchemes()
+                .FirstOrDefault(ps =>
+                {
+                    var setting = PowerSchemeSettings.GetSetting(ps.guid);
+                    if (setting?.Hotkey is null)
+                    {
+                        return false;
+                    }
+                    var res = setting.Hotkey.Key == e.PressedKey
+                        && setting.Hotkey.Modifier == e.ModifierKeys;
+                    return res;
+                });
+
+            if (guid == Guid.Empty)
+            {
+                return;
+            }
+
+            PowerManager.SetActivePowerScheme(guid);
+        }
 
         /// <summary>
         ///  The main entry point for the application.
@@ -56,6 +94,10 @@ namespace PowerPlanSwitcher
                 PowerManager.SetActivePowerScheme(
                     Settings.Default.InitialPowerSchemeGuid);
             }
+
+            RegisterHotkeys();
+
+            HotkeyManager.HotkeyPressed += HotkeyManager_HotkeyPressed;
 
             using var trayIcon = new TrayIcon();
             SystemEvents.EventsThreadShutdown += (s, e) => Application.Exit();

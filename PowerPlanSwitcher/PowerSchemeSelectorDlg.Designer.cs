@@ -39,14 +39,14 @@ namespace PowerPlanSwitcher
             TlpPowerSchemes.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             TlpPowerSchemes.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             TlpPowerSchemes.Dock = DockStyle.Fill;
-            TlpPowerSchemes.Location = new Point(0, 0);
+            TlpPowerSchemes.Location = new Point(1, 1);
             TlpPowerSchemes.Margin = new Padding(0);
             TlpPowerSchemes.Name = "TlpPowerSchemes";
             TlpPowerSchemes.Padding = new Padding(1);
             TlpPowerSchemes.RowCount = 1;
             TlpPowerSchemes.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             TlpPowerSchemes.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            TlpPowerSchemes.Size = new Size(569, 344);
+            TlpPowerSchemes.Size = new Size(567, 342);
             TlpPowerSchemes.TabIndex = 0;
             // 
             // PowerSchemeSelectorDlg
