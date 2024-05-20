@@ -106,5 +106,29 @@ namespace PowerPlanSwitcher.Properties {
                 this["ColorTheme"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string CyclePowerSchemeHotkey {
+            get {
+                return ((string)(this["CyclePowerSchemeHotkey"]));
+            }
+            set {
+                this["CyclePowerSchemeHotkey"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool CycleOnlyVisible {
+            get {
+                return ((bool)(this["CycleOnlyVisible"]));
+            }
+            set {
+                this["CycleOnlyVisible"] = value;
+            }
+        }
     }
 }

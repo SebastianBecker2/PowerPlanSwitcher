@@ -4,6 +4,7 @@ namespace PowerPlanSwitcher
     using Hotkeys;
     using Properties;
     using Serilog;
+    using Newtonsoft.Json;
 
     internal static class Program
     {
@@ -21,6 +22,15 @@ namespace PowerPlanSwitcher
 
         public static void RegisterHotkeys()
         {
+            var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
+                Settings.Default.CyclePowerSchemeHotkey);
+            if (cycleHotkey is not null)
+            {
+                _ = HotkeyManager.AddHotkey(
+                    cycleHotkey.Key,
+                    cycleHotkey.Modifier);
+            }
+
             foreach (var hotkey in PowerManager.GetPowerSchemes()
                 .Select(ps => PowerSchemeSettings.GetSetting(ps.guid)?.Hotkey)
                 .Where(h => h is not null))
@@ -33,18 +43,29 @@ namespace PowerPlanSwitcher
             object? sender,
             HotkeyPressedEventArgs e)
         {
+            var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
+                Settings.Default.CyclePowerSchemeHotkey);
+            if (cycleHotkey?.Key == e.PressedKey
+                && cycleHotkey?.Modifier == e.ModifierKeys)
+            {
+                var schemes = PowerManager.GetPowerSchemeGuids()
+                    .Where(ps => !Settings.Default.CycleOnlyVisible
+                        || (PowerSchemeSettings.GetSetting(ps)?.Visible ?? false))
+                    .ToList();
+                var index = schemes.IndexOf(
+                    PowerManager.GetActivePowerSchemeGuid());
+                index = (index + 1) % schemes.Count;
+                PowerManager.SetActivePowerScheme(schemes[index]);
+                return;
+            }
+
             var (guid, _) = PowerManager.GetPowerSchemes()
-                .FirstOrDefault(ps =>
-                {
-                    var setting = PowerSchemeSettings.GetSetting(ps.guid);
-                    if (setting?.Hotkey is null)
-                    {
-                        return false;
-                    }
-                    var res = setting.Hotkey.Key == e.PressedKey
-                        && setting.Hotkey.Modifier == e.ModifierKeys;
-                    return res;
-                });
+            .FirstOrDefault(ps =>
+            {
+                var setting = PowerSchemeSettings.GetSetting(ps.guid);
+                return setting?.Hotkey?.Key == e.PressedKey
+                    && setting?.Hotkey?.Modifier == e.ModifierKeys;
+            });
 
             if (guid == Guid.Empty)
             {

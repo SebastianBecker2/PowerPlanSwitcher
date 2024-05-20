@@ -6,8 +6,7 @@ namespace PowerPlanSwitcher
 
     public partial class HotkeySelectionDlg : Form
     {
-        public Keys Key { get; set; } = Keys.None;
-        public ModifierKeys Modifier { get; set; } = Hotkeys.ModifierKeys.None;
+        public Hotkey? Hotkey { get; set; }
 
         public HotkeySelectionDlg() => InitializeComponent();
 
@@ -27,11 +26,13 @@ namespace PowerPlanSwitcher
             object? sender,
             KeyPressedEventArgs e)
         {
-            Key = e.PressedKey;
-            Modifier = e.ModifierKeys;
+            Hotkey = new Hotkey
+            {
+                Key = e.PressedKey,
+                Modifier = e.ModifierKeys,
+            };
 
-            Invoke(new Action(() =>
-                LblHotkeyPreview.Text = HotkeyManager.ToString(Key, Modifier)));
+            Invoke(new Action(() => LblHotkeyPreview.Text = Hotkey.ToString()));
         }
     }
 }

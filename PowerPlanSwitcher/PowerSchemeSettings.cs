@@ -4,7 +4,6 @@ namespace PowerPlanSwitcher
     using System.Collections.Generic;
     using System.Drawing.Imaging;
     using Newtonsoft.Json;
-    using Hotkeys;
     using Properties;
 
     internal static class PowerSchemeSettings
@@ -59,22 +58,6 @@ namespace PowerPlanSwitcher
 
             public override bool CanConvert(Type objectType) =>
                 objectType == typeof(Image);
-        }
-
-        public class Hotkey : IEquatable<Hotkey>
-        {
-            public Keys Key { get; set; }
-            public ModifierKeys Modifier { get; set; }
-
-            public override bool Equals(object? obj) =>
-                Equals(obj as Hotkey);
-            public bool Equals(Hotkey? other) =>
-                other is not null
-                && Key == other.Key
-                && Modifier == other.Modifier;
-
-            public override int GetHashCode() =>
-                HashCode.Combine(Key, Modifier);
         }
 
         public class Setting

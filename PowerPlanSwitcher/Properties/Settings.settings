@@ -23,5 +23,11 @@
     <Setting Name="ColorTheme" Type="System.String" Scope="User">
       <Value Profile="(Default)">Use System Setting</Value>
     </Setting>
+    <Setting Name="CyclePowerSchemeHotkey" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="CycleOnlyVisible" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
   </Settings>
 </SettingsFile>

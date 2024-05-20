@@ -2,9 +2,8 @@ namespace PowerPlanSwitcher
 {
     using System.Data;
     using System.Drawing.Drawing2D;
-    using Hotkeys;
+    using Newtonsoft.Json;
     using Properties;
-    using Hotkey = PowerSchemeSettings.Hotkey;
 
     public partial class SettingsDlg : Form
     {
@@ -46,6 +45,14 @@ namespace PowerPlanSwitcher
             NudPowerRuleCheckInterval.Value =
                 Settings.Default.PowerRuleCheckInterval;
 
+            var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
+                Settings.Default.CyclePowerSchemeHotkey);
+            LblCycleHotkey.Text = cycleHotkey?.ToString() ?? "-";
+            LblCycleHotkey.Tag = cycleHotkey;
+
+            RdbCycleAll.Checked = !Settings.Default.CycleOnlyVisible;
+            RdbCycleVisible.Checked = Settings.Default.CycleOnlyVisible;
+
             CmbColorTheme.Items.AddRange(ColorThemeHelper.GetDisplayNames()
                 .Cast<object>()
                 .ToArray());
@@ -71,9 +78,7 @@ namespace PowerPlanSwitcher
                 {
                     return "-";
                 }
-                return HotkeyManager.ToString(
-                    setting.Hotkey.Key,
-                    setting.Hotkey.Modifier);
+                return setting!.Hotkey.ToString();
             }
 
             var row = new DataGridViewRow { Tag = scheme.guid, };
@@ -203,6 +208,10 @@ namespace PowerPlanSwitcher
 
             Settings.Default.PowerRuleCheckInterval =
                 (int)NudPowerRuleCheckInterval.Value;
+
+            Settings.Default.CyclePowerSchemeHotkey =
+                JsonConvert.SerializeObject(LblCycleHotkey.Tag);
+            Settings.Default.CycleOnlyVisible = RdbCycleVisible.Checked;
 
             Settings.Default.ColorTheme = CmbColorTheme.SelectedItem as string;
 
@@ -447,26 +456,29 @@ namespace PowerPlanSwitcher
                 return;
             }
             var row = DgvPowerSchemes.SelectedRows[0];
+            var cell = row.Cells["DgcHotkey"];
+            var name = row.Cells["DgcName"].Value;
 
             using var dlg = new HotkeySelectionDlg();
             if (dlg.ShowDialog() != DialogResult.OK)
             {
                 return;
             }
-            var hotkey = new Hotkey
+
+            if (dlg.Hotkey is null)
             {
-                Key = dlg.Key,
-                Modifier = dlg.Modifier,
-            };
+                cell.Value = "-";
+                cell.Tag = null;
+                return;
+            }
 
             var duplicate = DgvPowerSchemes.Rows
                 .Cast<DataGridViewRow>()
                 .FirstOrDefault(r =>
                     r != row
-                    && hotkey.Equals(r.Cells["DgcHotkey"].Tag));
+                    && dlg.Hotkey.Equals(r.Cells["DgcHotkey"].Tag));
             if (duplicate is not null)
             {
-                var name = row.Cells["DgcName"].Value;
                 var duplicateName = duplicate.Cells["DgcName"].Value;
                 if (MessageBox.Show(
                     "Hotkey already assigned to Power Plan " +
@@ -481,11 +493,23 @@ namespace PowerPlanSwitcher
                 duplicateCell.Value = "-";
                 duplicateCell.Tag = null;
             }
+            else if (dlg.Hotkey.Equals(LblCycleHotkey.Tag))
+            {
+                if (MessageBox.Show(
+                    "Hotkey already assigned to cycle through Power Plans." +
+                    $"{Environment.NewLine}Do you want to " +
+                    $"rebind to '{name}'?",
+                    "Hotkey already in use",
+                    MessageBoxButtons.YesNo) == DialogResult.No)
+                {
+                    return;
+                }
+                LblCycleHotkey.Text = "-";
+                LblCycleHotkey.Tag = null;
+            }
 
-            var cell = row.Cells["DgcHotkey"];
-
-            cell.Value = HotkeyManager.ToString(dlg.Key, dlg.Modifier);
-            cell.Tag = hotkey;
+            cell.Value = dlg.Hotkey.ToString();
+            cell.Tag = dlg.Hotkey;
         }
 
         private void BtnRemoveHotkey_Click(object sender, EventArgs e)
@@ -497,8 +521,53 @@ namespace PowerPlanSwitcher
 
             var cell = DgvPowerSchemes.SelectedRows[0].Cells["DgcHotkey"];
 
-            cell.Value = "-";
             cell.Tag = null;
+            cell.Value = "-";
+        }
+
+        private void BtnSetCycleHotkey_Click(object sender, EventArgs e)
+        {
+            using var dlg = new HotkeySelectionDlg();
+            if (dlg.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            if (dlg.Hotkey is null)
+            {
+                LblCycleHotkey.Text = "-";
+                LblCycleHotkey.Tag = null;
+                return;
+            }
+
+            var duplicate = DgvPowerSchemes.Rows
+                .Cast<DataGridViewRow>()
+                .FirstOrDefault(r => dlg.Hotkey.Equals(r.Cells["DgcHotkey"].Tag));
+            if (duplicate is not null)
+            {
+                var duplicateName = duplicate.Cells["DgcName"].Value;
+                if (MessageBox.Show(
+                    "Hotkey already assigned to Power Plan " +
+                    $"'{duplicateName}'.{Environment.NewLine}Do you want to " +
+                    $"rebind to cycle through Power Plans?",
+                    "Hotkey already in use",
+                    MessageBoxButtons.YesNo) == DialogResult.No)
+                {
+                    return;
+                }
+                var duplicateCell = duplicate.Cells["DgcHotkey"];
+                duplicateCell.Value = "-";
+                duplicateCell.Tag = null;
+            }
+
+            LblCycleHotkey.Tag = dlg.Hotkey;
+            LblCycleHotkey.Text = dlg.Hotkey?.ToString() ?? "-";
+        }
+
+        private void BtnRemoveCycleHotkey_Click(object sender, EventArgs e)
+        {
+            LblCycleHotkey.Text = "-";
+            LblCycleHotkey.Tag = null;
         }
     }
 }
