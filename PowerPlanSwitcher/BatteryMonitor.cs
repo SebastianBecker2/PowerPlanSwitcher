@@ -20,12 +20,7 @@ namespace PowerPlanSwitcher
         [DllImport("kernel32.dll")] //和GetSystemPowerStatus有关
         public static extern bool GetSystemPowerStatus(out SYSTEM_POWER_STATUS lpSystemPowerStatus);
 
-        // private static Guid _batteryPlanGuid = new Guid("381b4222-f694-41f0-9685-ff5bb260df2e"); // 电池供电时的电源计划GUID
-        // private static Guid _acPlanGuid = new Guid("512a6ac6-efc1-4441-85c9-cccf29b69cd2"); // 插电时的电源计划GUID
-        // private static Guid _batteryPlanGuid; // 电池供电时的电源计划GUID
-        // private static Guid _acPlanGuid; // 插电时的电源计划GUID
         private static bool ToggleMark = true; // 切换标记
-        // // private static bool BootMark = true; // 开机标记
         private static PowerRule ACListData;
         private static PowerRule BatteryListData;
         
@@ -34,26 +29,10 @@ namespace PowerPlanSwitcher
             PowerStatus BatteryNull = SystemInformation.PowerStatus;
             if (BatteryNull.BatteryChargeStatus != BatteryChargeStatus.NoSystemBattery)
             {  
-                // var applicableRule = default(PowerRule); // 初始化applicableRule为PowerRule类型的默认值（对于引用类型是null）
-                // var rules = PowerRule.GetPowerRules(); // 先获取所有规则
-
-                // foreach (var rule in rules) // 遍历规则集合
-                // {
-                    // if (rule.Type.ToString() == "PowerSupply") // 检查规则类型是否为"Power AC"
-                    // {
-                        // applicableRule = rule; // 如果是，将当前规则赋值给applicableRule
-                        // break; // 找到后退出循环，因为只需要第一个匹配的规则
-                    // }
-                // }
                 ACListData = PowerRule.GetPowerRules()
                     .FirstOrDefault(r => r.Type.ToString() == "PowerSupply");
-                    
-                // _acPlanGuid = ACListData.SchemeGuid;
-                
                 BatteryListData = PowerRule.GetPowerRules()
                     .FirstOrDefault(r => r.Type.ToString() == "Battery");
-                    
-                // _batteryPlanGuid = BatteryListData.SchemeGuid; 
             }
         }
 
@@ -65,27 +44,7 @@ namespace PowerPlanSwitcher
             if (BatteryNull.BatteryChargeStatus != BatteryChargeStatus.NoSystemBattery)
             {
                 GetSystemPowerStatus(out powerStatus);
-                    // if (BatteryListData != null && powerStatus.ACLineStatus == 0 && ProcessMonitor.baselinePowerSchemeGuid != BatteryListData.SchemeGuid)
-                    // {
-                        // ProcessMonitor.baselinePowerSchemeGuid = BatteryListData.SchemeGuid;
-                    // }
-                    // if (BatteryListData != null && powerStatus.ACLineStatus == 0 && BatteryListData.SchemeGuid!=当前激活) // 电池供电
-                    // {
-
-                    // }
-                    
-                // if (ACListData != null && BatteryListData != null)
-                // {
-                    // HaploidDoubles = true;
-                // }
-                // if ((ACListData != null) ^ (BatteryListData != null))
-                // {
-                    // HaploidDoubles = false;
-                // }
-                var PMGAPSG = PowerManager.GetActivePowerSchemeGuid();
-                
-                
-                
+                var PMGAPSG = PowerManager.GetActivePowerSchemeGuid(); 
                 if (!ToggleMark && ACListData != null && powerStatus.ACLineStatus == 1 && PMGAPSG != ACListData.SchemeGuid) // 插电状态 01 03
                 {
                     PowerManager.SetActivePowerScheme(ACListData.SchemeGuid); // 激活插电时的电源计划
