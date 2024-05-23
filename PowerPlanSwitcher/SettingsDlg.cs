@@ -27,7 +27,7 @@ namespace PowerPlanSwitcher
             {
                 // 获取被点击的列名
                 string columnName = this.DgvPowerSchemes.Columns[e.ColumnIndex].Name;
-                
+
                 // 遍历该列的所有单元格
                 foreach (DataGridViewRow row in this.DgvPowerSchemes.Rows)
                 {
@@ -43,12 +43,12 @@ namespace PowerPlanSwitcher
                         }
                     }
                 }
-                
+
                 // 确保被点击的单元格被选中
                 this.DgvPowerSchemes.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = true;
             }
         }
-        
+
         private void SettingsDlg_Load(object sender, EventArgs e)
         {
             // 检查电池状态并隐藏复选框列
@@ -58,18 +58,18 @@ namespace PowerPlanSwitcher
                 this.DgvPowerSchemes.Columns["AcPowerCheckBox"].Visible = false;
                 // 隐藏 BatteryCheckBox 列
                 this.DgvPowerSchemes.Columns["BatteryCheckBox"].Visible = false;
-                
+
                 // foreach (DataGridViewRow row in this.DgvPowerSchemes.Rows)
                 // {
-                    // // 忽略未绑定的行或Header行
-                    // if (!row.IsNewRow)
-                    // {
-                        // DataGridViewCheckBoxCell acCheckBox = (DataGridViewCheckBoxCell)row.Cells["AcPowerCheckBox"];
-                        // acCheckBox.Value = false; // 取消勾选
+                // // 忽略未绑定的行或Header行
+                // if (!row.IsNewRow)
+                // {
+                // DataGridViewCheckBoxCell acCheckBox = (DataGridViewCheckBoxCell)row.Cells["AcPowerCheckBox"];
+                // acCheckBox.Value = false; // 取消勾选
 
-                        // DataGridViewCheckBoxCell batteryCheckBox = (DataGridViewCheckBoxCell)row.Cells["BatteryCheckBox"];
-                        // batteryCheckBox.Value = false; // 取消勾选
-                    // }
+                // DataGridViewCheckBoxCell batteryCheckBox = (DataGridViewCheckBoxCell)row.Cells["BatteryCheckBox"];
+                // batteryCheckBox.Value = false; // 取消勾选
+                // }
                 // }
             }
         }
@@ -106,7 +106,7 @@ namespace PowerPlanSwitcher
 
             var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
                 Settings.Default.CyclePowerSchemeHotkey);
-            LblCycleHotkey.Text = cycleHotkey?.ToString() ?? "[ ------- ]";
+            LblCycleHotkey.Text = cycleHotkey?.ToString() ?? "[ ---------- ]";
             LblCycleHotkey.Tag = cycleHotkey;
 
             RdbCycleAll.Checked = !Settings.Default.CycleOnlyVisible;
@@ -135,7 +135,7 @@ namespace PowerPlanSwitcher
             {
                 if (setting?.Hotkey is null)
                 {
-                    return "[ ------- ]";
+                    return "[ ---------- ]";
                 }
                 return setting!.Hotkey.ToString();
             }
@@ -540,7 +540,7 @@ namespace PowerPlanSwitcher
 
             if (dlg.Hotkey is null)
             {
-                cell.Value = "[ ------- ]";
+                cell.Value = "[ ---------- ]";
                 cell.Tag = null;
                 return;
             }
@@ -563,7 +563,7 @@ namespace PowerPlanSwitcher
                     return;
                 }
                 var duplicateCell = duplicate.Cells["DgcHotkey"];
-                duplicateCell.Value = "[ ------- ]";
+                duplicateCell.Value = "[ ---------- ]";
                 duplicateCell.Tag = null;
             }
             else if (dlg.Hotkey.Equals(LblCycleHotkey.Tag))
@@ -577,7 +577,7 @@ namespace PowerPlanSwitcher
                 {
                     return;
                 }
-                LblCycleHotkey.Text = "[ ------- ]";
+                LblCycleHotkey.Text = "[ ---------- ]";
                 LblCycleHotkey.Tag = null;
             }
 
@@ -595,7 +595,7 @@ namespace PowerPlanSwitcher
             var cell = DgvPowerSchemes.SelectedRows[0].Cells["DgcHotkey"];
 
             cell.Tag = null;
-            cell.Value = "[ ------- ]";
+            cell.Value = "[ ---------- ]";
         }
 
         private void BtnSetCycleHotkey_Click(object sender, EventArgs e)
@@ -608,7 +608,7 @@ namespace PowerPlanSwitcher
 
             if (dlg.Hotkey is null)
             {
-                LblCycleHotkey.Text = "[ ------- ]";
+                LblCycleHotkey.Text = "[ ---------- ]";
                 LblCycleHotkey.Tag = null;
                 return;
             }
@@ -629,18 +629,23 @@ namespace PowerPlanSwitcher
                     return;
                 }
                 var duplicateCell = duplicate.Cells["DgcHotkey"];
-                duplicateCell.Value = "[ ------- ]";
+                duplicateCell.Value = "[ ---------- ]";
                 duplicateCell.Tag = null;
             }
 
             LblCycleHotkey.Tag = dlg.Hotkey;
-            LblCycleHotkey.Text = dlg.Hotkey?.ToString() ?? "[ ------- ]";
+            LblCycleHotkey.Text = dlg.Hotkey?.ToString() ?? "[ ---------- ]";
         }
 
         private void BtnRemoveCycleHotkey_Click(object sender, EventArgs e)
         {
-            LblCycleHotkey.Text = "[ ------- ]";
+            LblCycleHotkey.Text = "[ ---------- ]";
             LblCycleHotkey.Tag = null;
+        }
+
+        private void textBox1_TextChanged(object sender, EventArgs e)
+        {
+
         }
     }
 }
