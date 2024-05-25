@@ -130,5 +130,29 @@ namespace PowerPlanSwitcher.Properties {
                 this["CycleOnlyVisible"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("00000000-0000-0000-0000-000000000000")]
+        public global::System.Guid AcPowerSchemeGuid {
+            get {
+                return ((global::System.Guid)(this["AcPowerSchemeGuid"]));
+            }
+            set {
+                this["AcPowerSchemeGuid"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("00000000-0000-0000-0000-000000000000")]
+        public global::System.Guid BatterPowerSchemeGuid {
+            get {
+                return ((global::System.Guid)(this["BatterPowerSchemeGuid"]));
+            }
+            set {
+                this["BatterPowerSchemeGuid"] = value;
+            }
+        }
     }
 }

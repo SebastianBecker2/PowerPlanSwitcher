@@ -13,66 +13,7 @@ namespace PowerPlanSwitcher
                 .Cast<(Guid schemeGuid, string name)>()
                 .ToList();
 
-        public SettingsDlg()
-        {
-            InitializeComponent();
-            this.DgvPowerSchemes.CellClick += new System.Windows.Forms.DataGridViewCellEventHandler(this.dgvPowerSchemes_CellClick);
-        }
-
-        private void dgvPowerSchemes_CellClick(object sender, DataGridViewCellEventArgs e)
-        {
-            // 确保点击的是复选框列
-            if (e.ColumnIndex == this.DgvPowerSchemes.Columns["AcPowerCheckBox"].Index ||
-                e.ColumnIndex == this.DgvPowerSchemes.Columns["BatteryCheckBox"].Index)
-            {
-                // 获取被点击的列名
-                string columnName = this.DgvPowerSchemes.Columns[e.ColumnIndex].Name;
-
-                // 遍历该列的所有单元格
-                foreach (DataGridViewRow row in this.DgvPowerSchemes.Rows)
-                {
-                    // 忽略未绑定的行或Header行
-                    if (!row.IsNewRow && e.RowIndex != row.Index)
-                    {
-                        // 检查单元格是否在同一个列，并且是否被选中
-                        if (row.Cells[columnName] is DataGridViewCheckBoxCell checkBoxCell &&
-                            (bool)checkBoxCell.FormattedValue == true)
-                        {
-                            // 取消选中除了被点击的单元格之外的所有单元格
-                            row.Cells[columnName].Value = false;
-                        }
-                    }
-                }
-
-                // 确保被点击的单元格被选中
-                this.DgvPowerSchemes.Rows[e.RowIndex].Cells[e.ColumnIndex].Value = true;
-            }
-        }
-
-        private void SettingsDlg_Load(object sender, EventArgs e)
-        {
-            // 检查电池状态并隐藏复选框列
-            if (BatteryMonitor.BatteryNull.BatteryChargeStatus == BatteryChargeStatus.NoSystemBattery)
-            {
-                // 隐藏 AcPowerCheckBox 列
-                this.DgvPowerSchemes.Columns["AcPowerCheckBox"].Visible = false;
-                // 隐藏 BatteryCheckBox 列
-                this.DgvPowerSchemes.Columns["BatteryCheckBox"].Visible = false;
-
-                // foreach (DataGridViewRow row in this.DgvPowerSchemes.Rows)
-                // {
-                // // 忽略未绑定的行或Header行
-                // if (!row.IsNewRow)
-                // {
-                // DataGridViewCheckBoxCell acCheckBox = (DataGridViewCheckBoxCell)row.Cells["AcPowerCheckBox"];
-                // acCheckBox.Value = false; // 取消勾选
-
-                // DataGridViewCheckBoxCell batteryCheckBox = (DataGridViewCheckBoxCell)row.Cells["BatteryCheckBox"];
-                // batteryCheckBox.Value = false; // 取消勾选
-                // }
-                // }
-            }
-        }
+        public SettingsDlg() => InitializeComponent();
 
         protected override void OnLoad(EventArgs e)
         {
@@ -125,6 +66,37 @@ namespace PowerPlanSwitcher
                 CmbColorTheme.SelectedIndex = 0;
             }
 
+            GrbBatteryManagement.Visible = BatteryMonitor.HasSystemBattery();
+
+            CmbAcPowerScheme.Items.AddRange(powerSchemes
+                .Select(scheme => scheme.name)
+                .Cast<object>()
+                .ToArray());
+            if (Settings.Default.InitialPowerSchemeGuid == Guid.Empty)
+            {
+                CmbAcPowerScheme.SelectedIndex = 0;
+            }
+            else
+            {
+                CmbAcPowerScheme.SelectedIndex = powerSchemes.FindIndex(
+                    scheme => scheme.guid
+                        == Settings.Default.InitialPowerSchemeGuid);
+            }
+
+            CmbBatteryPowerScheme.Items.AddRange(powerSchemes
+                .Select(scheme => scheme.name)
+                .Cast<object>()
+                .ToArray());
+            if (Settings.Default.InitialPowerSchemeGuid == Guid.Empty)
+            {
+                CmbAcPowerScheme.SelectedIndex = 0;
+            }
+            else
+            {
+                CmbAcPowerScheme.SelectedIndex = powerSchemes.FindIndex(
+                    scheme => scheme.guid
+                        == Settings.Default.InitialPowerSchemeGuid);
+            }
             base.OnLoad(e);
         }
 
@@ -153,15 +125,6 @@ namespace PowerPlanSwitcher
                     ImageLayout = DataGridViewImageCellLayout.Zoom,
                 },
                 new DataGridViewTextBoxCell { Value = scheme.name, },
-
-                new DataGridViewCheckBoxCell
-                {
-                    Value = setting is null || setting.AcPowerVisible,
-                },
-                new DataGridViewCheckBoxCell
-                {
-                    Value = setting is null || setting.BatteryVisible,
-                },
 
                 new DataGridViewTextBoxCell
                 {
@@ -251,8 +214,6 @@ namespace PowerPlanSwitcher
                 PowerSchemeSettings.SetSetting(schemeGuid,
                     new PowerSchemeSettings.Setting
                     {
-                        AcPowerVisible = (bool)row.Cells["AcPowerCheckBox"].Value,
-                        BatteryVisible = (bool)row.Cells["BatteryCheckBox"].Value,
                         Visible = (bool)row.Cells["DgcVisible"].Value,
                         Icon = row.Cells["DgcIcon"].Value as Image,
                         Hotkey = row.Cells["DgcHotkey"].Tag as Hotkey,
@@ -286,9 +247,14 @@ namespace PowerPlanSwitcher
 
             Settings.Default.ColorTheme = CmbColorTheme.SelectedItem as string;
 
+            Settings.Default.AcPowerSchemeGuid =
+                GetPowerSchemeGuid(GetSelectedString(CmbAcPowerScheme));
+            Settings.Default.BatterPowerSchemeGuid =
+                GetPowerSchemeGuid(GetSelectedString(CmbBatteryPowerScheme));
+
             Settings.Default.Save();
 
-            BatteryMonitor.BatteryMonitorInitialization();
+            BatteryMonitor.Initialize();
 
             DialogResult = DialogResult.OK;
         }
@@ -641,11 +607,6 @@ namespace PowerPlanSwitcher
         {
             LblCycleHotkey.Text = "[ ---------- ]";
             LblCycleHotkey.Tag = null;
-        }
-
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-
         }
     }
 }

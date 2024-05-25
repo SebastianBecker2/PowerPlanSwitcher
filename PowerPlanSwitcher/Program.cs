@@ -112,7 +112,6 @@ namespace PowerPlanSwitcher
             RegisterHotkeys();
 
             HotkeyManager.HotkeyPressed += HotkeyManager_HotkeyPressed;
-            BatteryMonitor.PlanValue();
 
             using var trayIcon = new TrayIcon();
             SystemEvents.EventsThreadShutdown += (s, e) => Application.Exit();

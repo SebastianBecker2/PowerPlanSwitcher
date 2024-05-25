@@ -11,7 +11,7 @@ namespace PowerPlanSwitcher
         private DateTime lastUpdate;
         private readonly Timer? updateTimer;
         private bool disposedValue;
-        public static Guid baselinePowerSchemeGuid;
+        private static Guid baselinePowerSchemeGuid;
         private PowerRule? previouslyAppliedPowerRule;
 
 
@@ -32,8 +32,8 @@ namespace PowerPlanSwitcher
         {
             try
             {
-                BatteryMonitor.MonitorBatterySwitc();
-                
+                baselinePowerSchemeGuid = BatteryMonitor.GetPowerPlanGuid();
+
                 if (DateTime.Now - lastUpdate <
                     TimeSpan.FromSeconds(Settings.Default.PowerRuleCheckInterval))
                 {

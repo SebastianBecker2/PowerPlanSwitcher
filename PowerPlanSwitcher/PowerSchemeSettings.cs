@@ -62,8 +62,6 @@ namespace PowerPlanSwitcher
 
         public class Setting
         {
-            public bool AcPowerVisible { get; set; } = false;
-            public bool BatteryVisible { get; set; } = false;
             public bool Visible { get; set; } = true;
             [JsonConverter(typeof(ImageConverter))]
             public Image? Icon { get; set; }
@@ -95,26 +93,14 @@ namespace PowerPlanSwitcher
             }
             return null;
         }
-        
-        public static (Guid? AcPowerGuid, Guid? BatteryGuid) GetGuidsWithVisibility()
-        {
-            LoadSettings(); // 确保设置已经被加载
-
-            Guid? acPowerGuid = settings
-                .Where(kvp => kvp.Value != null && kvp.Value.AcPowerVisible)
-                .Select(kvp => kvp.Key)
-                .FirstOrDefault();
-
-            Guid? batteryGuid = settings
-                .Where(kvp => kvp.Value != null && kvp.Value.BatteryVisible)
-                .Select(kvp => kvp.Key)
-                .FirstOrDefault();
-
-            return (acPowerGuid, batteryGuid);
-        }
 
         public static void SetSetting(Guid schemaGuid, Setting setting)
         {
+            if (schemaGuid == Guid.Empty)
+            {
+                return;
+            }
+
             LoadSettings();
             settings![schemaGuid] = setting;
         }
