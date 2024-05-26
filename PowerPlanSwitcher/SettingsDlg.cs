@@ -152,7 +152,7 @@ namespace PowerPlanSwitcher
             return containerSize with { Width = width };
         }
 
-        private static Image ResizeImage(Image original,
+        private static Bitmap ResizeImage(Image original,
             Size size,
             InterpolationMode interpolationMode = InterpolationMode.HighQualityBicubic,
             SmoothingMode smoothingMode = SmoothingMode.HighQuality,
@@ -165,7 +165,7 @@ namespace PowerPlanSwitcher
                 smoothingMode,
                 pixelOffsetMode);
 
-        public static Image ResizeImage(
+        private static Bitmap ResizeImage(
             Image original,
             int width,
             int height,
