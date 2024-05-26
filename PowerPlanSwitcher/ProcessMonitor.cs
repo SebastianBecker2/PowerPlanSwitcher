@@ -32,7 +32,7 @@ namespace PowerPlanSwitcher
         {
             try
             {
-                baselinePowerSchemeGuid = BatteryMonitor.GetPowerPlanGuid();
+                baselinePowerSchemeGuid = BatteryMonitor.GetPowerSchemeGuid();
 
                 if (DateTime.Now - lastUpdate <
                     TimeSpan.FromSeconds(Settings.Default.PowerRuleCheckInterval))

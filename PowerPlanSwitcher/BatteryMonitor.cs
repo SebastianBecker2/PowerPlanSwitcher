@@ -40,7 +40,7 @@ namespace PowerPlanSwitcher
             }
         }
 
-        public static Guid GetPowerPlanGuid()
+        public static Guid GetPowerSchemeGuid()
         {
             if (!HasSystemBattery())
             {
