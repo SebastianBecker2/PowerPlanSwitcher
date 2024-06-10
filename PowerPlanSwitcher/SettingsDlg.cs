@@ -97,6 +97,10 @@ namespace PowerPlanSwitcher
                     scheme => scheme.guid
                         == Settings.Default.InitialPowerSchemeGuid);
             }
+
+            ChbShowToastNotifications.Checked =
+                Settings.Default.ShowToastNotifications;
+
             base.OnLoad(e);
         }
 
@@ -257,6 +261,9 @@ namespace PowerPlanSwitcher
                 GetPowerSchemeGuid(GetSelectedString(CmbAcPowerScheme));
             Settings.Default.BatterPowerSchemeGuid =
                 GetPowerSchemeGuid(GetSelectedString(CmbBatteryPowerScheme));
+
+            Settings.Default.ShowToastNotifications =
+                ChbShowToastNotifications.Checked;
 
             Settings.Default.Save();
 
