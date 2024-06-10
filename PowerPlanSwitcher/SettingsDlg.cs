@@ -227,11 +227,17 @@ namespace PowerPlanSwitcher
                 .Cast<PowerRule>());
             PowerRule.SavePowerRules();
 
-            static string GetSelectedString(ComboBox cmb) =>
-                cmb.Items[cmb.SelectedIndex]?.ToString() ?? string.Empty;
+            static string GetSelectedString(ComboBox cmb)
+            {
+                if (cmb.SelectedIndex == -1)
+                {
+                    return string.Empty;
+                }
+                return cmb.Items[cmb.SelectedIndex]?.ToString() ?? string.Empty;
+            }
 
             Guid GetPowerSchemeGuid(string name) =>
-                powerSchemes.First(scheme => scheme.name == name).guid;
+                powerSchemes.FirstOrDefault(scheme => scheme.name == name).guid;
 
             Settings.Default.ActivateInitialPowerScheme =
                 ChbActivateInitialPowerScheme.Checked;
