@@ -37,6 +37,7 @@ namespace PowerPlanSwitcher
             tableLayoutPanel2 = new TableLayoutPanel();
             LblPowerSchemeName = new Label();
             PibPowerSchemeIcon = new PictureBox();
+            LblReason = new Label();
             tableLayoutPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)PibAppIcon).BeginInit();
             tableLayoutPanel2.SuspendLayout();
@@ -59,14 +60,15 @@ namespace PowerPlanSwitcher
             tableLayoutPanel1.Controls.Add(LblTitle, 2, 0);
             tableLayoutPanel1.Controls.Add(PibAppIcon, 1, 0);
             tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 0, 1);
+            tableLayoutPanel1.Controls.Add(LblReason, 0, 2);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 2;
+            tableLayoutPanel1.RowCount = 3;
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel1.Size = new Size(337, 65);
+            tableLayoutPanel1.Size = new Size(337, 84);
             tableLayoutPanel1.TabIndex = 1;
             tableLayoutPanel1.Click += Any_Click;
             // 
@@ -104,7 +106,7 @@ namespace PowerPlanSwitcher
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel2.Controls.Add(LblPowerSchemeName, 1, 0);
             tableLayoutPanel2.Controls.Add(PibPowerSchemeIcon, 0, 0);
-            tableLayoutPanel2.Location = new Point(67, 23);
+            tableLayoutPanel2.Location = new Point(67, 22);
             tableLayoutPanel2.Margin = new Padding(0);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
@@ -138,11 +140,22 @@ namespace PowerPlanSwitcher
             PibPowerSchemeIcon.TabStop = false;
             PibPowerSchemeIcon.Click += Any_Click;
             // 
+            // LblReason
+            // 
+            LblReason.Anchor = AnchorStyles.None;
+            LblReason.AutoSize = true;
+            tableLayoutPanel1.SetColumnSpan(LblReason, 4);
+            LblReason.Location = new Point(149, 66);
+            LblReason.Name = "LblReason";
+            LblReason.Size = new Size(38, 15);
+            LblReason.TabIndex = 6;
+            LblReason.Text = "label1";
+            // 
             // ToastDlg
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(337, 65);
+            ClientSize = new Size(337, 84);
             Controls.Add(tableLayoutPanel1);
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");
@@ -168,5 +181,6 @@ namespace PowerPlanSwitcher
         private PictureBox PibPowerSchemeIcon;
         private Label LblPowerSchemeName;
         private TableLayoutPanel tableLayoutPanel2;
+        private Label LblReason;
     }
 }

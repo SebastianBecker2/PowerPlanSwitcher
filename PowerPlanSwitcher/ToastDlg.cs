@@ -16,27 +16,28 @@ namespace PowerPlanSwitcher
 
         public string PowerSchemeName { get; set; } = "";
         public Image? PowerSchemeIcon { get; set; }
+        public string Reason { get; set; } = "";
 
         public ToastDlg() => InitializeComponent();
 
         protected override void OnLoad(EventArgs e)
         {
-#if DEBUG
-            DisplayTimer.Interval = 20000;
-#endif
+            LblTitle.ForeColor = ForegroundColor;
+            LblTitle.BackColor = ButtonBackgroundColor;
+            PibAppIcon.BackColor = ButtonBackgroundColor;
+
+            BackColor = ButtonBackgroundColor;
+
+            PibPowerSchemeIcon.Image = PowerSchemeIcon;
+            PibPowerSchemeIcon.BackColor = ButtonBackgroundColor;
 
             LblPowerSchemeName.Text = PowerSchemeName;
             LblPowerSchemeName.ForeColor = ForegroundColor;
             LblPowerSchemeName.BackColor = ButtonBackgroundColor;
 
-            PibPowerSchemeIcon.Image = PowerSchemeIcon;
-            PibPowerSchemeIcon.BackColor = ButtonBackgroundColor;
-
-            BackColor = ButtonBackgroundColor;
-
-            LblTitle.ForeColor = ForegroundColor;
-            LblTitle.BackColor = ButtonBackgroundColor;
-            PibAppIcon.BackColor = ButtonBackgroundColor;
+            LblReason.Text = Reason;
+            LblReason.ForeColor = ForegroundColor;
+            LblReason.BackColor = ButtonBackgroundColor;
 
             SetPositionToTaskbar();
 

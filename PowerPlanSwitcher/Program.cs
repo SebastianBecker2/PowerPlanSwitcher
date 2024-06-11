@@ -20,6 +20,42 @@ namespace PowerPlanSwitcher
         private static readonly string LogPath =
             Path.Combine(LocalAppDataPath, AssemblyTitle, LogFileName);
 
+        private static ToastDlg? toastDlg;
+        private static readonly object ToastDlgLock = new();
+
+        public static void ShowToastNotification(
+            Guid activeSchemeGuid,
+            string activationReason)
+        {
+            var t = new Task(() =>
+            {
+                if (toastDlg is not null)
+                {
+                    toastDlg?.Invoke(new Action(() =>
+                        toastDlg.DialogResult = DialogResult.OK));
+                }
+
+                lock (ToastDlgLock)
+                {
+                    toastDlg = new ToastDlg
+                    {
+                        PowerSchemeName =
+                            PowerManager.GetPowerSchemeName(activeSchemeGuid)
+                            ?? "",
+                        PowerSchemeIcon =
+                            PowerSchemeSettings.GetSetting(activeSchemeGuid)
+                            ?.Icon,
+                        Reason = activationReason,
+                    };
+
+                    _ = toastDlg.ShowDialog();
+                    toastDlg.Dispose();
+                    toastDlg = null;
+                }
+            });
+            t.Start();
+        }
+
         public static void RegisterHotkeys()
         {
             var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
@@ -56,6 +92,7 @@ namespace PowerPlanSwitcher
                     PowerManager.GetActivePowerSchemeGuid());
                 index = (index + 1) % schemes.Count;
                 PowerManager.SetActivePowerScheme(schemes[index]);
+                ShowToastNotification(schemes[index], "Cycle hotkey pressed");
                 return;
             }
 
@@ -73,6 +110,7 @@ namespace PowerPlanSwitcher
             }
 
             PowerManager.SetActivePowerScheme(guid);
+            ShowToastNotification(guid, "Power Plan hotkey pressed");
         }
 
         /// <summary>

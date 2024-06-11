@@ -14,7 +14,6 @@ namespace PowerPlanSwitcher
         private static Guid baselinePowerSchemeGuid;
         private PowerRule? previouslyAppliedPowerRule;
 
-
         public ProcessMonitor()
         {
             baselinePowerSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
@@ -76,12 +75,18 @@ namespace PowerPlanSwitcher
                 if (applicableRule is null)
                 {
                     PowerManager.SetActivePowerScheme(baselinePowerSchemeGuid);
+                    Program.ShowToastNotification(
+                        baselinePowerSchemeGuid,
+                        "No rule applies");
                     return;
                 }
 
 
                 applicableRule.Active = true;
                 PowerManager.SetActivePowerScheme(applicableRule.SchemeGuid);
+                Program.ShowToastNotification(
+                    applicableRule.SchemeGuid,
+                    $"Rule {applicableRule.Index} applies");
             }
             finally
             {

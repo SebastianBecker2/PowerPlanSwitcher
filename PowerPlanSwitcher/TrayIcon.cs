@@ -16,8 +16,6 @@ namespace PowerPlanSwitcher
         };
         private readonly PowerManager powerManager = new();
         private readonly ProcessMonitor processMonitor = new();
-        private ToastDlg? toastDlg;
-        private readonly object toastDlgLock = new();
 
         public TrayIcon()
         {
@@ -35,13 +33,6 @@ namespace PowerPlanSwitcher
 
         private void NotifyIcon_MouseClick(object? sender, MouseEventArgs e)
         {
-//#if DEBUG
-//            PowerManager_ActivePowerSchemeChanged(
-//                null,
-//                new ActivePowerSchemeChangedEventArgs(
-//                    PowerManager.GetActivePowerSchemeGuid()));
-//            return;
-//#endif
             if (e.Button != MouseButtons.Left)
             {
                 return;
@@ -60,37 +51,7 @@ namespace PowerPlanSwitcher
                 return;
             }
 
-            var t = new Task(() =>
-            {
-                UpdateIcon(e.ActiveSchemeGuid);
-
-                ShowToastNotification(e.ActiveSchemeGuid);
-            });
-            t.Start();
-        }
-
-        private void ShowToastNotification(Guid activeSchemeGuid)
-        {
-            if (toastDlg is not null)
-            {
-                toastDlg?.Invoke(new Action(() =>
-                    toastDlg.DialogResult = DialogResult.OK));
-            }
-
-            lock (toastDlgLock)
-            {
-                toastDlg = new ToastDlg
-                {
-                    PowerSchemeName =
-                        PowerManager.GetPowerSchemeName(activeSchemeGuid) ?? "",
-                    PowerSchemeIcon =
-                        PowerSchemeSettings.GetSetting(activeSchemeGuid)?.Icon,
-                };
-
-                _ = toastDlg.ShowDialog();
-                toastDlg.Dispose();
-                toastDlg = null;
-            }
+            UpdateIcon(e.ActiveSchemeGuid);
         }
 
         private void UpdateIcon()
