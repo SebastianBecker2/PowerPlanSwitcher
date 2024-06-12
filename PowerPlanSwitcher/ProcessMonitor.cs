@@ -86,7 +86,7 @@ namespace PowerPlanSwitcher
                 PowerManager.SetActivePowerScheme(applicableRule.SchemeGuid);
                 Program.ShowToastNotification(
                     applicableRule.SchemeGuid,
-                    $"Rule {applicableRule.Index} applies");
+                    $"Rule {applicableRule.Index + 1} applies");
             }
             finally
             {

@@ -306,7 +306,7 @@ namespace PowerPlanSwitcher
             row.Cells.AddRange(
                 new DataGridViewTextBoxCell
                 {
-                    Value = powerRule.Index,
+                    Value = powerRule.Index + 1,
                 },
                 new DataGridViewTextBoxCell
                 {
