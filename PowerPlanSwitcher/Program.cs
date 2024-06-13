@@ -31,8 +31,15 @@ namespace PowerPlanSwitcher
             {
                 if (toastDlg is not null)
                 {
-                    toastDlg?.Invoke(new Action(() =>
-                        toastDlg.DialogResult = DialogResult.OK));
+                    try
+                    {
+                        toastDlg?.Invoke(new Action(() =>
+                            toastDlg.DialogResult = DialogResult.OK));
+                    }
+                    catch (ObjectDisposedException)
+                    {
+
+                    }
                 }
 
                 lock (ToastDlgLock)
