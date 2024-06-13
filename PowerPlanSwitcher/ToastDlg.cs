@@ -2,6 +2,8 @@ namespace PowerPlanSwitcher
 {
     using System;
     using System.Windows.Forms;
+    using Vanara.PInvoke;
+    using static Vanara.PInvoke.User32;
 
     public partial class ToastDlg : Form
     {
@@ -40,6 +42,7 @@ namespace PowerPlanSwitcher
             LblReason.BackColor = ButtonBackgroundColor;
 
             Location = GetPositionOnTaskbar(Size);
+            MakeTopMost(Handle);
 
             DisplayTimer.Stop();
             DisplayTimer.Start();
@@ -59,6 +62,16 @@ namespace PowerPlanSwitcher
 
             base.OnShown(e);
         }
+
+        private static void MakeTopMost(HWND hWND) =>
+            SetWindowPos(
+                hWND,
+                HWND.HWND_TOPMOST,
+                0,
+                0,
+                0,
+                0,
+                SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_NOMOVE);
 
         private static Point GetPositionOnTaskbar(Size windowSize)
         {
