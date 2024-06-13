@@ -57,13 +57,15 @@ namespace PowerPlanSwitcher
                     return;
                 }
 
+                var activePowerSchemeGuid =
+                    PowerManager.GetActivePowerSchemeGuid();
+
                 // If no rule was active and the user changed the power
                 // scheme, we use the newly set power scheme as the new
                 // baseline.
                 if (previouslyAppliedPowerRule is null)
                 {
-                    baselinePowerSchemeGuid =
-                        PowerManager.GetActivePowerSchemeGuid();
+                    baselinePowerSchemeGuid = activePowerSchemeGuid;
                 }
                 else
                 {
@@ -74,6 +76,11 @@ namespace PowerPlanSwitcher
 
                 if (applicableRule is null)
                 {
+                    if (baselinePowerSchemeGuid == activePowerSchemeGuid)
+                    {
+                        return;
+                    }
+
                     PowerManager.SetActivePowerScheme(baselinePowerSchemeGuid);
                     Program.ShowToastNotification(
                         baselinePowerSchemeGuid,
@@ -81,8 +88,16 @@ namespace PowerPlanSwitcher
                     return;
                 }
 
-
+                // We need to make sure the rule has it's flag active.
+                // Even if we don't set an active power scheme or show a toast
+                // notification because the power scheme is already active.
                 applicableRule.Active = true;
+
+                if (applicableRule.SchemeGuid == activePowerSchemeGuid)
+                {
+                    return;
+                }
+
                 PowerManager.SetActivePowerScheme(applicableRule.SchemeGuid);
                 Program.ShowToastNotification(
                     applicableRule.SchemeGuid,
