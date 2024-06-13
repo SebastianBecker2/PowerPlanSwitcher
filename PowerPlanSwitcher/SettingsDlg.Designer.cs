@@ -415,6 +415,7 @@ namespace PowerPlanSwitcher
             ChbActivateInitialPowerScheme.TabIndex = 24;
             ChbActivateInitialPowerScheme.Text = "Activate this Power Plan on start:";
             ChbActivateInitialPowerScheme.UseVisualStyleBackColor = true;
+            ChbActivateInitialPowerScheme.CheckedChanged += HandleChbActivateInitialPowerSchemeCheckedChanged;
             // 
             // BtnRemoveIcon
             // 
@@ -625,6 +626,7 @@ namespace PowerPlanSwitcher
             BtnRemoveCycleHotkey.Text = "Remove Hotkey";
             BtnRemoveCycleHotkey.TextImageRelation = TextImageRelation.ImageAboveText;
             BtnRemoveCycleHotkey.UseVisualStyleBackColor = true;
+            BtnRemoveCycleHotkey.Click += BtnRemoveCycleHotkey_Click;
             // 
             // BtnSetCycleHotkey
             // 
@@ -638,6 +640,7 @@ namespace PowerPlanSwitcher
             BtnSetCycleHotkey.Text = "Set Hotkey";
             BtnSetCycleHotkey.TextImageRelation = TextImageRelation.ImageAboveText;
             BtnSetCycleHotkey.UseVisualStyleBackColor = true;
+            BtnSetCycleHotkey.Click += BtnSetCycleHotkey_Click;
             // 
             // groupBox1
             // 
