@@ -141,6 +141,7 @@ namespace PowerPlanSwitcher
             AcceptButton = okButton;
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
+            CancelButton = okButton;
             ClientSize = new Size(624, 418);
             Controls.Add(tableLayoutPanel);
             FormBorderStyle = FormBorderStyle.FixedDialog;
