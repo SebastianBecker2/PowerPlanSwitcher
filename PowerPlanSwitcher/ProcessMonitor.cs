@@ -33,13 +33,6 @@ namespace PowerPlanSwitcher
         {
             try
             {
-                var batteryMonitorPowerSchemeGuid =
-                    BatteryMonitor.GetPowerSchemeGuid();
-                if (batteryMonitorPowerSchemeGuid != Guid.Empty)
-                {
-                    baselinePowerSchemeGuid = batteryMonitorPowerSchemeGuid;
-                }
-
                 if (DateTime.Now - lastUpdate <
                     TimeSpan.FromSeconds(Settings.Default.PowerRuleCheckInterval))
                 {
@@ -47,7 +40,14 @@ namespace PowerPlanSwitcher
                 }
                 lastUpdate = DateTime.Now;
 
-                var processes = GetOwnedProcesses();
+                var batteryMonitorPowerSchemeGuid =
+                    BatteryMonitor.GetPowerSchemeGuid();
+                if (batteryMonitorPowerSchemeGuid != Guid.Empty)
+                {
+                    baselinePowerSchemeGuid = batteryMonitorPowerSchemeGuid;
+                }
+
+                var processes = GetUsersProcesses();
 
                 var applicableRule = PowerRule.GetPowerRules()
                     .FirstOrDefault(r => CheckRule(r, processes));
@@ -122,7 +122,7 @@ namespace PowerPlanSwitcher
         {
             if (processes is null)
             {
-                processes = GetOwnedProcesses();
+                processes = GetUsersProcesses();
                 return CheckRule(powerRule, processes);
             }
 
@@ -158,7 +158,6 @@ namespace PowerPlanSwitcher
                 }
                 catch (Win32Exception)
                 {
-                    //ProcessBlacklist.Add(p.ProcessName);
                     return false;
                 }
                 catch (InvalidOperationException)
@@ -168,7 +167,7 @@ namespace PowerPlanSwitcher
             });
         }
 
-        public static IEnumerable<CachingProcess> GetOwnedProcesses() =>
+        public static IEnumerable<CachingProcess> GetUsersProcesses() =>
             Process.GetProcesses()
                 .Select(CachingProcess.Create)
                 .Where(p => p is not null)
