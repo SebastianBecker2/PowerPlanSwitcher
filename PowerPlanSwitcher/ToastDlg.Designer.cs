@@ -156,12 +156,16 @@ namespace PowerPlanSwitcher
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             ClientSize = new Size(337, 84);
+            ControlBox = false;
             Controls.Add(tableLayoutPanel1);
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "ToastDlg";
+            ShowIcon = false;
             ShowInTaskbar = false;
+            StartPosition = FormStartPosition.Manual;
             Text = "ToastDlg";
+            TopMost = true;
             Click += Any_Click;
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();

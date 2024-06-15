@@ -2,11 +2,19 @@ namespace PowerPlanSwitcher
 {
     using System;
     using System.Windows.Forms;
-    using Vanara.PInvoke;
     using static Vanara.PInvoke.User32;
 
     public partial class ToastDlg : Form
     {
+#if DEBUG
+        private static readonly int DisplayDuration = 20000;
+#else
+        private static readonly int DisplayDuration = 2000;
+#endif
+
+        private static SynchronizationContext? syncContext;
+        private static ToastDlg? toastDlg;
+
         private static Color ButtonBackgroundColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
             ? SystemColors.Control
@@ -16,33 +24,26 @@ namespace PowerPlanSwitcher
             ? SystemColors.ControlText
             : SystemColors.HighlightText;
 
-        public string PowerSchemeName { get; set; } = "";
-        public Image? PowerSchemeIcon { get; set; }
-        public string Reason { get; set; } = "";
-
         public ToastDlg() => InitializeComponent();
 
         protected override void OnLoad(EventArgs e)
         {
-            LblTitle.ForeColor = ForegroundColor;
-            LblTitle.BackColor = ButtonBackgroundColor;
-            PibAppIcon.BackColor = ButtonBackgroundColor;
+            DisplayTimer.Interval = DisplayDuration;
 
             BackColor = ButtonBackgroundColor;
 
-            PibPowerSchemeIcon.Image = PowerSchemeIcon;
-            PibPowerSchemeIcon.BackColor = ButtonBackgroundColor;
+            PibAppIcon.BackColor = ButtonBackgroundColor;
+            LblTitle.ForeColor = ForegroundColor;
+            LblTitle.BackColor = ButtonBackgroundColor;
 
-            LblPowerSchemeName.Text = PowerSchemeName;
+            PibPowerSchemeIcon.BackColor = ButtonBackgroundColor;
             LblPowerSchemeName.ForeColor = ForegroundColor;
             LblPowerSchemeName.BackColor = ButtonBackgroundColor;
 
-            LblReason.Text = Reason;
             LblReason.ForeColor = ForegroundColor;
             LblReason.BackColor = ButtonBackgroundColor;
 
             Location = GetPositionOnTaskbar(Size);
-            MakeTopMost(Handle);
 
             DisplayTimer.Stop();
             DisplayTimer.Start();
@@ -50,28 +51,18 @@ namespace PowerPlanSwitcher
             base.OnLoad(e);
         }
 
-        protected override void OnShown(EventArgs e)
+        protected override CreateParams CreateParams
         {
-            // Brute force the dialog to frontmostestest topmostest
-            WindowState = FormWindowState.Minimized;
-            Show();
-            WindowState = FormWindowState.Normal;
-            BringToFront();
-            Activate();
-            _ = Focus();
-
-            base.OnShown(e);
+            get
+            {
+                var cp = base.CreateParams;
+                // turn on WS_EX_TOOLWINDOW style bit
+                // Used to hide the banner from alt+tab
+                // source: https://www.csharp411.com/hide-form-from-alttab/
+                cp.ExStyle |= (int)WindowStylesEx.WS_EX_TOOLWINDOW;
+                return cp;
+            }
         }
-
-        private static void MakeTopMost(HWND hWND) =>
-            SetWindowPos(
-                hWND,
-                HWND.HWND_TOPMOST,
-                0,
-                0,
-                0,
-                0,
-                SetWindowPosFlags.SWP_NOSIZE | SetWindowPosFlags.SWP_NOMOVE);
 
         private static Point GetPositionOnTaskbar(Size windowSize)
         {
@@ -96,14 +87,53 @@ namespace PowerPlanSwitcher
 
                 case TaskbarPosition.Unknown:
                 default:
-                    return new Point(0,0);
+                    return new Point(0, 0);
             }
         }
 
-        private void Any_Click(object sender, EventArgs e) =>
-            DialogResult = DialogResult.OK;
+        private void Any_Click(object sender, EventArgs e) => Dispose();
 
-        private void DisplayTimer_Tick(object sender, EventArgs e) =>
-            DialogResult = DialogResult.OK;
+        private void DisplayTimer_Tick(object sender, EventArgs e) => Dispose();
+
+        public static void Initialize()
+        {
+            syncContext = SynchronizationContext.Current;
+            if (syncContext is not WindowsFormsSynchronizationContext)
+            {
+                throw new InvalidOperationException(
+                    "Initialize must be called from an UI thread");
+            }
+        }
+
+        public static void ShowToastNotification(
+            Guid activeSchemeGuid,
+            string activationReason)
+        {
+            if (syncContext is null)
+            {
+                throw new InvalidOperationException(
+                    "ToastNotification was not initialized before use");
+            }
+
+            syncContext.Send(_ =>
+            {
+                if (toastDlg == null)
+                {
+                    toastDlg = new ToastDlg();
+                    toastDlg.Disposed += (_, _) => toastDlg = null;
+                }
+
+                toastDlg.PibPowerSchemeIcon.Image =
+                    PowerSchemeSettings.GetSetting(activeSchemeGuid)?.Icon;
+                toastDlg.LblPowerSchemeName.Text =
+                    PowerManager.GetPowerSchemeName(activeSchemeGuid);
+                toastDlg.LblReason.Text = activationReason;
+
+                toastDlg.DisplayTimer.Stop();
+                toastDlg.DisplayTimer.Start();
+
+                toastDlg.Show();
+            }, null);
+        }
     }
 }

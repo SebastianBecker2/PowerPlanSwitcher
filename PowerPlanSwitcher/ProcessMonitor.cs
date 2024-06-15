@@ -14,7 +14,10 @@ namespace PowerPlanSwitcher
         private static Guid baselinePowerSchemeGuid;
         private PowerRule? previouslyAppliedPowerRule;
 
-        public ProcessMonitor()
+        public ProcessMonitor() =>
+            updateTimer = new Timer(HandleUpdateTimerTick);
+
+        public void StartMonitoring()
         {
             baselinePowerSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
             if (baselinePowerSchemeGuid == Guid.Empty)
@@ -23,8 +26,7 @@ namespace PowerPlanSwitcher
                     "Unable to determine active power scheme");
             }
 
-            updateTimer = new Timer(HandleUpdateTimerTick);
-            _ = updateTimer.Change(0, Timeout.Infinite);
+            _ = updateTimer!.Change(0, Timeout.Infinite);
         }
 
         private void HandleUpdateTimerTick(object? _)
@@ -82,7 +84,7 @@ namespace PowerPlanSwitcher
                     }
 
                     PowerManager.SetActivePowerScheme(baselinePowerSchemeGuid);
-                    Program.ShowToastNotification(
+                    ToastDlg.ShowToastNotification(
                         baselinePowerSchemeGuid,
                         "No rule applies");
                     return;
@@ -99,7 +101,7 @@ namespace PowerPlanSwitcher
                 }
 
                 PowerManager.SetActivePowerScheme(applicableRule.SchemeGuid);
-                Program.ShowToastNotification(
+                ToastDlg.ShowToastNotification(
                     applicableRule.SchemeGuid,
                     $"Rule {applicableRule.Index + 1} applies");
             }

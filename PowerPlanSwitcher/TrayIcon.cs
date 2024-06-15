@@ -14,8 +14,6 @@ namespace PowerPlanSwitcher
             Text = "PowerPlanSwitcher",
             Visible = true,
         };
-        private readonly PowerManager powerManager = new();
-        private readonly ProcessMonitor processMonitor = new();
 
         public TrayIcon()
         {
@@ -24,9 +22,6 @@ namespace PowerPlanSwitcher
             contextMenu.SettingsChanged += (_, _) => UpdateIcon();
 
             notifyIcon.MouseClick += NotifyIcon_MouseClick;
-
-            powerManager.ActivePowerSchemeChanged +=
-                PowerManager_ActivePowerSchemeChanged;
 
             UpdateIcon();
         }
@@ -42,19 +37,7 @@ namespace PowerPlanSwitcher
             _ = dlg.ShowDialog();
         }
 
-        private void PowerManager_ActivePowerSchemeChanged(
-            object? sender,
-            ActivePowerSchemeChangedEventArgs e)
-        {
-            if (!Settings.Default.ShowToastNotifications)
-            {
-                return;
-            }
-
-            UpdateIcon(e.ActiveSchemeGuid);
-        }
-
-        private void UpdateIcon()
+        public void UpdateIcon()
         {
             var activeSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
             if (activeSchemeGuid == Guid.Empty)
@@ -64,9 +47,9 @@ namespace PowerPlanSwitcher
             UpdateIcon(activeSchemeGuid);
         }
 
-        private void UpdateIcon(Guid guid)
+        public void UpdateIcon(Guid powerSchemeGuid)
         {
-            var setting = PowerSchemeSettings.GetSetting(guid);
+            var setting = PowerSchemeSettings.GetSetting(powerSchemeGuid);
             if (setting?.Icon is null)
             {
                 notifyIcon.Icon = DefaultIcon;
@@ -128,8 +111,6 @@ namespace PowerPlanSwitcher
             if (disposing)
             {
                 notifyIcon.Dispose();
-                powerManager.Dispose();
-                processMonitor.Dispose();
             }
             disposedValue = true;
         }
