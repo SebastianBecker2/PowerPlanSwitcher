@@ -67,7 +67,10 @@ namespace PowerPlanSwitcher
                 // baseline.
                 if (previouslyAppliedPowerRule is null)
                 {
-                    baselinePowerSchemeGuid = activePowerSchemeGuid;
+                    if (activePowerSchemeGuid != Guid.Empty)
+                    {
+                        baselinePowerSchemeGuid = activePowerSchemeGuid;
+                    }
                 }
                 else
                 {
