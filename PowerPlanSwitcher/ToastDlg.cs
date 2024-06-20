@@ -6,11 +6,7 @@ namespace PowerPlanSwitcher
 
     public partial class ToastDlg : Form
     {
-#if DEBUG
-        private static readonly int DisplayDuration = 20000;
-#else
         private static readonly int DisplayDuration = 2000;
-#endif
 
         private static SynchronizationContext? syncContext;
         private static ToastDlg? toastDlg;
