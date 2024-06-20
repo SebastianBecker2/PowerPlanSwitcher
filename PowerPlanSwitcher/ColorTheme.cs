@@ -40,8 +40,7 @@ namespace PowerPlanSwitcher
             }
 
             using var key = Registry.CurrentUser.OpenSubKey(WindowsColorThemeKey);
-            if ((key?.GetValue("AppsUseLightTheme") as int?
-                ?? key?.GetValue("SystemUsesLightTheme") as int?
+            if ((key?.GetValue("SystemUsesLightTheme") as int?
                 ?? 1)
                 == 1)
             {
