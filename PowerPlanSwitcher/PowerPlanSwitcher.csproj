@@ -18,6 +18,7 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
 - [Vanara](https://github.com/dahall/Vanara)
 - [Serilog](https://serilog.net/)
 - [WiX Toolset 3.1](https://wixtoolset.org/)
+- [HotkeyManager](https://github.com/SebastianBecker2/HotkeyManager)
 </Description>
     <Authors>Sebastian Becker</Authors>
     <AssemblyVersion></AssemblyVersion>
@@ -32,11 +33,11 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
   <ItemGroup>
     <PackageReference Include="HotkeyManager" Version="1.0.1" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
-    <PackageReference Include="Serilog" Version="3.1.1" />
+    <PackageReference Include="Serilog" Version="4.0.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
-    <PackageReference Include="Vanara.PInvoke.PowrProf" Version="3.4.17" />
+    <PackageReference Include="Vanara.PInvoke.PowrProf" Version="4.0.1" />
     <PackageReference Include="Vanara.PInvoke.Security" Version="4.0.1" />
-    <PackageReference Include="Vanara.PInvoke.User32" Version="3.4.17" />
+    <PackageReference Include="Vanara.PInvoke.User32" Version="4.0.1" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Management" Version="8.0.0" />
   </ItemGroup>
