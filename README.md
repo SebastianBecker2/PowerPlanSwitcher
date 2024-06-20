@@ -2,22 +2,34 @@
 
 [![Build status](https://ci.appveyor.com/api/projects/status/k4umrwnp4grsp164/branch/main?svg=true)](https://ci.appveyor.com/project/SebastianBecker2/powerplanswitcher/branch/main)
 
-Switch your windows power plan easily and quickly with this tray-icon tool.
+Configure visibility, icon and global hotkey for your Windows power plans in the settings dialog.
 
-![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/62602cc2-0a5b-4736-9ba6-0ba5581dba4a)
+![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/5553a7c0-ca54-41cc-bff8-b3b0b76a58ae)
 
-Or let it automatically switch between power plans depending on what you do.
+Switch your power plan easily and quickly by clicking the tray-icon.
 
-![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/4ba8f3c8-e0a9-4161-89b7-57d405b52221)
+![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/11c841d8-c375-473e-965d-94838261f41b)
+
+Or let PowerPlanSwitcher automatically switch between power plans depending on what you do.
+
+![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/a9f6a8e8-77d9-47af-b9cf-a70cf97f2bd2)
 
 Create rules easily by selecting an active process.
 
 ![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/08d490dd-b4db-4758-b539-f6fc551985cf)
 
-Or define the rule manually by matching the path of the executable as "Match exact path", "Path starts with" or "Path ends with.
+Or define the rule manually by matching the path of the executable as "Match exact path", "Path starts with" or "Path ends with".
 
 ![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/93bb14bb-becc-4143-a79a-3ab1131bc531)
 
+Furher settings allow you to:
+- Configure a global hotkey to cycle through your power plans.
+- Set your prefered color theme.
+- Specify the display of notifications when a power plan is switched by a rule or a hotkey press.
+- Determine the interval in which your rules are checked.
+- Define the default power plans to use when your laptop is plugged in or using the battery.
+
+![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/ac23edd2-fc03-446f-b43a-48fc544eda30)
 
 PowerPlanSwitcher is using the following tools, resources and libraries:
 
