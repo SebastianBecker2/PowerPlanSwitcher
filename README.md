@@ -28,3 +28,4 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
 - [Vanara](https://github.com/dahall/Vanara)
 - [Serilog](https://serilog.net/)
 - [WiX Toolset 3.0](https://wixtoolset.org/)
+- [HotkeyManager](https://github.com/SebastianBecker2/HotkeyManager)
