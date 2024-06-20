@@ -97,6 +97,10 @@ namespace PowerPlanSwitcher
                     scheme => scheme.guid
                         == Settings.Default.InitialPowerSchemeGuid);
             }
+
+            ChbShowToastNotifications.Checked =
+                Settings.Default.ShowToastNotifications;
+
             base.OnLoad(e);
         }
 
@@ -258,6 +262,9 @@ namespace PowerPlanSwitcher
             Settings.Default.BatterPowerSchemeGuid =
                 GetPowerSchemeGuid(GetSelectedString(CmbBatteryPowerScheme));
 
+            Settings.Default.ShowToastNotifications =
+                ChbShowToastNotifications.Checked;
+
             Settings.Default.Save();
 
             BatteryMonitor.Initialize();
@@ -299,7 +306,7 @@ namespace PowerPlanSwitcher
             row.Cells.AddRange(
                 new DataGridViewTextBoxCell
                 {
-                    Value = powerRule.Index,
+                    Value = powerRule.Index + 1,
                 },
                 new DataGridViewTextBoxCell
                 {

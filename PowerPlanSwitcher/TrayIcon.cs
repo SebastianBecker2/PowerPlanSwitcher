@@ -14,8 +14,6 @@ namespace PowerPlanSwitcher
             Text = "PowerPlanSwitcher",
             Visible = true,
         };
-        private readonly PowerManager powerManager = new();
-        private readonly ProcessMonitor processMonitor = new();
 
         public TrayIcon()
         {
@@ -23,24 +21,23 @@ namespace PowerPlanSwitcher
             notifyIcon.ContextMenuStrip = contextMenu;
             contextMenu.SettingsChanged += (_, _) => UpdateIcon();
 
-            notifyIcon.MouseClick += (_, e) =>
-            {
-                if (e.Button != MouseButtons.Left)
-                {
-                    return;
-                }
-
-                using var dlg = new PowerSchemeSelectorDlg();
-                _ = dlg.ShowDialog();
-            };
-
-            powerManager.ActivePowerSchemeChanged += (_, e) =>
-                UpdateIcon(e.ActiveSchemeGuid);
+            notifyIcon.MouseClick += NotifyIcon_MouseClick;
 
             UpdateIcon();
         }
 
-        private void UpdateIcon()
+        private void NotifyIcon_MouseClick(object? sender, MouseEventArgs e)
+        {
+            if (e.Button != MouseButtons.Left)
+            {
+                return;
+            }
+
+            using var dlg = new PowerSchemeSelectorDlg();
+            _ = dlg.ShowDialog();
+        }
+
+        public void UpdateIcon()
         {
             var activeSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
             if (activeSchemeGuid == Guid.Empty)
@@ -50,9 +47,9 @@ namespace PowerPlanSwitcher
             UpdateIcon(activeSchemeGuid);
         }
 
-        private void UpdateIcon(Guid guid)
+        public void UpdateIcon(Guid powerSchemeGuid)
         {
-            var setting = PowerSchemeSettings.GetSetting(guid);
+            var setting = PowerSchemeSettings.GetSetting(powerSchemeGuid);
             if (setting?.Icon is null)
             {
                 notifyIcon.Icon = DefaultIcon;
@@ -114,8 +111,6 @@ namespace PowerPlanSwitcher
             if (disposing)
             {
                 notifyIcon.Dispose();
-                powerManager.Dispose();
-                processMonitor.Dispose();
             }
             disposedValue = true;
         }

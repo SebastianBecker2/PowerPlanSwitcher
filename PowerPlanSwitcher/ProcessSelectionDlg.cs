@@ -19,7 +19,7 @@ namespace PowerPlanSwitcher
         {
             DgvProcesses.Rows.Clear();
 
-            var processes = ProcessMonitor.GetOwnedProcesses()
+            var processes = ProcessMonitor.GetUsersProcesses()
                 .OrderByDescending(p =>
                 {
                     try

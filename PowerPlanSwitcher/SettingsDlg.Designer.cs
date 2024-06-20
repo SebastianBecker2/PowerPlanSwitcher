@@ -83,6 +83,9 @@ namespace PowerPlanSwitcher
             label1 = new Label();
             label3 = new Label();
             CmbBatteryPowerScheme = new ComboBox();
+            groupBox3 = new GroupBox();
+            tableLayoutPanel8 = new TableLayoutPanel();
+            ChbShowToastNotifications = new CheckBox();
             ((System.ComponentModel.ISupportInitialize)DgvPowerSchemes).BeginInit();
             ((System.ComponentModel.ISupportInitialize)DgvPowerRules).BeginInit();
             ((System.ComponentModel.ISupportInitialize)NudPowerRuleCheckInterval).BeginInit();
@@ -101,6 +104,8 @@ namespace PowerPlanSwitcher
             tableLayoutPanel7.SuspendLayout();
             GrbBatteryManagement.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
+            groupBox3.SuspendLayout();
+            tableLayoutPanel8.SuspendLayout();
             SuspendLayout();
             // 
             // DgvPowerSchemes
@@ -323,17 +328,17 @@ namespace PowerPlanSwitcher
             // NudPowerRuleCheckInterval
             // 
             NudPowerRuleCheckInterval.Anchor = AnchorStyles.Right;
-            NudPowerRuleCheckInterval.Location = new Point(80, 8);
+            NudPowerRuleCheckInterval.Location = new Point(3, 8);
             NudPowerRuleCheckInterval.Maximum = new decimal(new int[] { 600, 0, 0, 0 });
             NudPowerRuleCheckInterval.Name = "NudPowerRuleCheckInterval";
-            NudPowerRuleCheckInterval.Size = new Size(84, 23);
+            NudPowerRuleCheckInterval.Size = new Size(82, 23);
             NudPowerRuleCheckInterval.TabIndex = 14;
             // 
             // label2
             // 
             label2.Anchor = AnchorStyles.Left;
             label2.AutoSize = true;
-            label2.Location = new Point(170, 12);
+            label2.Location = new Point(91, 12);
             label2.Name = "label2";
             label2.Size = new Size(51, 15);
             label2.TabIndex = 13;
@@ -344,9 +349,9 @@ namespace PowerPlanSwitcher
             CmbColorTheme.Anchor = AnchorStyles.None;
             CmbColorTheme.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbColorTheme.FormattingEnabled = true;
-            CmbColorTheme.Location = new Point(65, 8);
+            CmbColorTheme.Location = new Point(3, 8);
             CmbColorTheme.Name = "CmbColorTheme";
-            CmbColorTheme.Size = new Size(202, 23);
+            CmbColorTheme.Size = new Size(170, 23);
             CmbColorTheme.TabIndex = 17;
             // 
             // tableLayoutPanel1
@@ -410,6 +415,7 @@ namespace PowerPlanSwitcher
             ChbActivateInitialPowerScheme.TabIndex = 24;
             ChbActivateInitialPowerScheme.Text = "Activate this Power Plan on start:";
             ChbActivateInitialPowerScheme.UseVisualStyleBackColor = true;
+            ChbActivateInitialPowerScheme.CheckedChanged += HandleChbActivateInitialPowerSchemeCheckedChanged;
             // 
             // BtnRemoveIcon
             // 
@@ -518,13 +524,15 @@ namespace PowerPlanSwitcher
             // 
             // tableLayoutPanel5
             // 
-            tableLayoutPanel5.ColumnCount = 2;
-            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel5.ColumnCount = 3;
+            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 27.27273F));
+            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 45.4545479F));
+            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 27.27273F));
             tableLayoutPanel5.Controls.Add(groupBox4, 0, 0);
             tableLayoutPanel5.Controls.Add(groupBox1, 0, 1);
-            tableLayoutPanel5.Controls.Add(groupBox2, 1, 1);
+            tableLayoutPanel5.Controls.Add(groupBox2, 2, 1);
             tableLayoutPanel5.Controls.Add(GrbBatteryManagement, 0, 2);
+            tableLayoutPanel5.Controls.Add(groupBox3, 1, 1);
             tableLayoutPanel5.Dock = DockStyle.Fill;
             tableLayoutPanel5.Location = new Point(3, 3);
             tableLayoutPanel5.Name = "tableLayoutPanel5";
@@ -537,7 +545,7 @@ namespace PowerPlanSwitcher
             // 
             // groupBox4
             // 
-            tableLayoutPanel5.SetColumnSpan(groupBox4, 2);
+            tableLayoutPanel5.SetColumnSpan(groupBox4, 3);
             groupBox4.Controls.Add(tableLayoutPanel4);
             groupBox4.Dock = DockStyle.Fill;
             groupBox4.Location = new Point(3, 3);
@@ -618,6 +626,7 @@ namespace PowerPlanSwitcher
             BtnRemoveCycleHotkey.Text = "Remove Hotkey";
             BtnRemoveCycleHotkey.TextImageRelation = TextImageRelation.ImageAboveText;
             BtnRemoveCycleHotkey.UseVisualStyleBackColor = true;
+            BtnRemoveCycleHotkey.Click += BtnRemoveCycleHotkey_Click;
             // 
             // BtnSetCycleHotkey
             // 
@@ -631,6 +640,7 @@ namespace PowerPlanSwitcher
             BtnSetCycleHotkey.Text = "Set Hotkey";
             BtnSetCycleHotkey.TextImageRelation = TextImageRelation.ImageAboveText;
             BtnSetCycleHotkey.UseVisualStyleBackColor = true;
+            BtnSetCycleHotkey.Click += BtnSetCycleHotkey_Click;
             // 
             // groupBox1
             // 
@@ -638,7 +648,7 @@ namespace PowerPlanSwitcher
             groupBox1.Dock = DockStyle.Fill;
             groupBox1.Location = new Point(3, 111);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(339, 62);
+            groupBox1.Size = new Size(182, 62);
             groupBox1.TabIndex = 30;
             groupBox1.TabStop = false;
             groupBox1.Text = "Color Theme";
@@ -655,16 +665,16 @@ namespace PowerPlanSwitcher
             tableLayoutPanel6.RowCount = 1;
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel6.Size = new Size(333, 40);
+            tableLayoutPanel6.Size = new Size(176, 40);
             tableLayoutPanel6.TabIndex = 0;
             // 
             // groupBox2
             // 
             groupBox2.Controls.Add(tableLayoutPanel7);
             groupBox2.Dock = DockStyle.Fill;
-            groupBox2.Location = new Point(348, 111);
+            groupBox2.Location = new Point(505, 111);
             groupBox2.Name = "groupBox2";
-            groupBox2.Size = new Size(340, 62);
+            groupBox2.Size = new Size(183, 62);
             groupBox2.TabIndex = 31;
             groupBox2.TabStop = false;
             groupBox2.Text = "Check for Rules to apply every";
@@ -682,12 +692,12 @@ namespace PowerPlanSwitcher
             tableLayoutPanel7.RowCount = 1;
             tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel7.Size = new Size(334, 40);
+            tableLayoutPanel7.Size = new Size(177, 40);
             tableLayoutPanel7.TabIndex = 0;
             // 
             // GrbBatteryManagement
             // 
-            tableLayoutPanel5.SetColumnSpan(GrbBatteryManagement, 2);
+            tableLayoutPanel5.SetColumnSpan(GrbBatteryManagement, 3);
             GrbBatteryManagement.Controls.Add(tableLayoutPanel3);
             GrbBatteryManagement.Dock = DockStyle.Fill;
             GrbBatteryManagement.Location = new Point(3, 179);
@@ -761,6 +771,41 @@ namespace PowerPlanSwitcher
             CmbBatteryPowerScheme.Size = new Size(152, 23);
             CmbBatteryPowerScheme.TabIndex = 26;
             // 
+            // groupBox3
+            // 
+            groupBox3.Controls.Add(tableLayoutPanel8);
+            groupBox3.Dock = DockStyle.Fill;
+            groupBox3.Location = new Point(191, 111);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(308, 62);
+            groupBox3.TabIndex = 33;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "Notifications";
+            // 
+            // tableLayoutPanel8
+            // 
+            tableLayoutPanel8.ColumnCount = 1;
+            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel8.Controls.Add(ChbShowToastNotifications, 0, 0);
+            tableLayoutPanel8.Dock = DockStyle.Fill;
+            tableLayoutPanel8.Location = new Point(3, 19);
+            tableLayoutPanel8.Name = "tableLayoutPanel8";
+            tableLayoutPanel8.RowCount = 1;
+            tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel8.Size = new Size(302, 40);
+            tableLayoutPanel8.TabIndex = 0;
+            // 
+            // ChbShowToastNotifications
+            // 
+            ChbShowToastNotifications.Anchor = AnchorStyles.None;
+            ChbShowToastNotifications.AutoSize = true;
+            ChbShowToastNotifications.Location = new Point(17, 10);
+            ChbShowToastNotifications.Name = "ChbShowToastNotifications";
+            ChbShowToastNotifications.Size = new Size(267, 19);
+            ChbShowToastNotifications.TabIndex = 0;
+            ChbShowToastNotifications.Text = "Show notification when switching Power Plan";
+            ChbShowToastNotifications.UseVisualStyleBackColor = true;
+            // 
             // SettingsDlg
             // 
             AcceptButton = BtnOk;
@@ -797,6 +842,9 @@ namespace PowerPlanSwitcher
             GrbBatteryManagement.ResumeLayout(false);
             tableLayoutPanel3.ResumeLayout(false);
             tableLayoutPanel3.PerformLayout();
+            groupBox3.ResumeLayout(false);
+            tableLayoutPanel8.ResumeLayout(false);
+            tableLayoutPanel8.PerformLayout();
             ResumeLayout(false);
         }
 
@@ -855,5 +903,8 @@ namespace PowerPlanSwitcher
         private DataGridViewImageColumn DgcIcon;
         private DataGridViewTextBoxColumn DgcName;
         private DataGridViewTextBoxColumn DgcHotkey;
+        private GroupBox groupBox3;
+        private TableLayoutPanel tableLayoutPanel8;
+        private CheckBox ChbShowToastNotifications;
     }
 }

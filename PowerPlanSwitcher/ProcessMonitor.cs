@@ -14,8 +14,10 @@ namespace PowerPlanSwitcher
         private static Guid baselinePowerSchemeGuid;
         private PowerRule? previouslyAppliedPowerRule;
 
+        public ProcessMonitor() =>
+            updateTimer = new Timer(HandleUpdateTimerTick);
 
-        public ProcessMonitor()
+        public void StartMonitoring()
         {
             baselinePowerSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
             if (baselinePowerSchemeGuid == Guid.Empty)
@@ -24,21 +26,13 @@ namespace PowerPlanSwitcher
                     "Unable to determine active power scheme");
             }
 
-            updateTimer = new Timer(HandleUpdateTimerTick);
-            _ = updateTimer.Change(0, Timeout.Infinite);
+            _ = updateTimer!.Change(0, Timeout.Infinite);
         }
 
         private void HandleUpdateTimerTick(object? _)
         {
             try
             {
-                var batteryMonitorPowerSchemeGuid =
-                    BatteryMonitor.GetPowerSchemeGuid();
-                if (batteryMonitorPowerSchemeGuid != Guid.Empty)
-                {
-                    baselinePowerSchemeGuid = batteryMonitorPowerSchemeGuid;
-                }
-
                 if (DateTime.Now - lastUpdate <
                     TimeSpan.FromSeconds(Settings.Default.PowerRuleCheckInterval))
                 {
@@ -46,7 +40,14 @@ namespace PowerPlanSwitcher
                 }
                 lastUpdate = DateTime.Now;
 
-                var processes = GetOwnedProcesses();
+                var batteryMonitorPowerSchemeGuid =
+                    BatteryMonitor.GetPowerSchemeGuid();
+                if (batteryMonitorPowerSchemeGuid != Guid.Empty)
+                {
+                    baselinePowerSchemeGuid = batteryMonitorPowerSchemeGuid;
+                }
+
+                var processes = GetUsersProcesses();
 
                 var applicableRule = PowerRule.GetPowerRules()
                     .FirstOrDefault(r => CheckRule(r, processes));
@@ -58,13 +59,18 @@ namespace PowerPlanSwitcher
                     return;
                 }
 
+                var activePowerSchemeGuid =
+                    PowerManager.GetActivePowerSchemeGuid();
+
                 // If no rule was active and the user changed the power
                 // scheme, we use the newly set power scheme as the new
                 // baseline.
                 if (previouslyAppliedPowerRule is null)
                 {
-                    baselinePowerSchemeGuid =
-                        PowerManager.GetActivePowerSchemeGuid();
+                    if (activePowerSchemeGuid != Guid.Empty)
+                    {
+                        baselinePowerSchemeGuid = activePowerSchemeGuid;
+                    }
                 }
                 else
                 {
@@ -75,13 +81,32 @@ namespace PowerPlanSwitcher
 
                 if (applicableRule is null)
                 {
+                    if (baselinePowerSchemeGuid == activePowerSchemeGuid)
+                    {
+                        return;
+                    }
+
                     PowerManager.SetActivePowerScheme(baselinePowerSchemeGuid);
+                    ToastDlg.ShowToastNotification(
+                        baselinePowerSchemeGuid,
+                        "No rule applies");
                     return;
                 }
 
-
+                // We need to make sure the rule has it's flag active.
+                // Even if we don't set an active power scheme or show a toast
+                // notification because the power scheme is already active.
                 applicableRule.Active = true;
+
+                if (applicableRule.SchemeGuid == activePowerSchemeGuid)
+                {
+                    return;
+                }
+
                 PowerManager.SetActivePowerScheme(applicableRule.SchemeGuid);
+                ToastDlg.ShowToastNotification(
+                    applicableRule.SchemeGuid,
+                    $"Rule {applicableRule.Index + 1} applies");
             }
             finally
             {
@@ -97,7 +122,7 @@ namespace PowerPlanSwitcher
         {
             if (processes is null)
             {
-                processes = GetOwnedProcesses();
+                processes = GetUsersProcesses();
                 return CheckRule(powerRule, processes);
             }
 
@@ -133,7 +158,6 @@ namespace PowerPlanSwitcher
                 }
                 catch (Win32Exception)
                 {
-                    //ProcessBlacklist.Add(p.ProcessName);
                     return false;
                 }
                 catch (InvalidOperationException)
@@ -143,7 +167,7 @@ namespace PowerPlanSwitcher
             });
         }
 
-        public static IEnumerable<CachingProcess> GetOwnedProcesses() =>
+        public static IEnumerable<CachingProcess> GetUsersProcesses() =>
             Process.GetProcesses()
                 .Select(CachingProcess.Create)
                 .Where(p => p is not null)

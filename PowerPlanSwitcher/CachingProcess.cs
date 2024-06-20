@@ -3,8 +3,9 @@ namespace PowerPlanSwitcher
     using System;
     using System.Collections.Concurrent;
     using System.Diagnostics;
-    using System.Runtime.InteropServices;
     using System.Security.Principal;
+    using static Vanara.PInvoke.AdvApi32;
+    using static Vanara.PInvoke.Kernel32;
 
     public class CachingProcess : IDisposable
     {
@@ -91,15 +92,27 @@ namespace PowerPlanSwitcher
 
         private static string? GetProcessOwner(Process process)
         {
-            var processHandle = IntPtr.Zero;
+            SafeHTOKEN processHandle;
             try
             {
-                if (!OpenProcessToken(process.Handle, TOKEN_QUERY, out processHandle))
+                processHandle = SafeHTOKEN.FromProcess(
+                    process.Handle,
+                    TokenAccess.TOKEN_QUERY);
+                if (processHandle.IsInvalid)
                 {
                     return null;
                 }
+            }
+            catch (Exception)
+            {
+                return null;
+            }
 
-                using var wi = new WindowsIdentity(processHandle);
+            try
+            {
+                using var wi = new WindowsIdentity(
+                    processHandle.DangerousGetHandle());
+
                 return wi.Name;
             }
             catch (Exception)
@@ -108,31 +121,12 @@ namespace PowerPlanSwitcher
             }
             finally
             {
-                if (processHandle != IntPtr.Zero)
+                if (processHandle.IsInvalid)
                 {
-                    _ = CloseHandle(processHandle);
+                    _ = CloseHandle(processHandle.DangerousGetHandle());
                 }
             }
         }
-
-        // WinAPI compliant identifier naming
-        // ReSharper disable InconsistentNaming
-        // ReSharper disable IdentifierTypo
-#pragma warning disable IDE1006 // Naming Styles
-        private const int TOKEN_QUERY = 8;
-
-        [DllImport("advapi32.dll", SetLastError = true)]
-        private static extern bool OpenProcessToken(
-            IntPtr ProcessHandle,
-            uint DesiredAccess,
-            out IntPtr TokenHandle);
-
-        [DllImport("kernel32.dll", SetLastError = true)]
-        [return: MarshalAs(UnmanagedType.Bool)]
-        private static extern bool CloseHandle(IntPtr hObject);
-#pragma warning restore IDE1006 // Naming Styles
-        // ReSharper restore IdentifierTypo
-        // ReSharper restore InconsistentNaming
 
         protected virtual void Dispose(bool disposing)
         {
