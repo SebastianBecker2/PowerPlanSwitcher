@@ -68,7 +68,7 @@ namespace PowerPlanSwitcher
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel1.Size = new Size(337, 84);
+            tableLayoutPanel1.Size = new Size(270, 84);
             tableLayoutPanel1.TabIndex = 1;
             tableLayoutPanel1.Click += Any_Click;
             // 
@@ -76,7 +76,7 @@ namespace PowerPlanSwitcher
             // 
             LblTitle.AutoSize = true;
             LblTitle.Dock = DockStyle.Fill;
-            LblTitle.Location = new Point(61, 0);
+            LblTitle.Location = new Point(27, 0);
             LblTitle.Name = "LblTitle";
             LblTitle.Size = new Size(237, 22);
             LblTitle.TabIndex = 1;
@@ -88,7 +88,7 @@ namespace PowerPlanSwitcher
             // 
             PibAppIcon.Dock = DockStyle.Fill;
             PibAppIcon.Image = Properties.Resources.power_surge;
-            PibAppIcon.Location = new Point(39, 3);
+            PibAppIcon.Location = new Point(5, 3);
             PibAppIcon.Name = "PibAppIcon";
             PibAppIcon.Size = new Size(16, 16);
             PibAppIcon.SizeMode = PictureBoxSizeMode.Zoom;
@@ -106,7 +106,7 @@ namespace PowerPlanSwitcher
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel2.Controls.Add(LblPowerSchemeName, 1, 0);
             tableLayoutPanel2.Controls.Add(PibPowerSchemeIcon, 0, 0);
-            tableLayoutPanel2.Location = new Point(67, 22);
+            tableLayoutPanel2.Location = new Point(33, 22);
             tableLayoutPanel2.Margin = new Padding(0);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
@@ -145,7 +145,7 @@ namespace PowerPlanSwitcher
             LblReason.Anchor = AnchorStyles.None;
             LblReason.AutoSize = true;
             tableLayoutPanel1.SetColumnSpan(LblReason, 4);
-            LblReason.Location = new Point(149, 66);
+            LblReason.Location = new Point(116, 66);
             LblReason.Name = "LblReason";
             LblReason.Size = new Size(38, 15);
             LblReason.TabIndex = 6;
@@ -155,7 +155,7 @@ namespace PowerPlanSwitcher
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(337, 84);
+            ClientSize = new Size(270, 84);
             ControlBox = false;
             Controls.Add(tableLayoutPanel1);
             FormBorderStyle = FormBorderStyle.None;
