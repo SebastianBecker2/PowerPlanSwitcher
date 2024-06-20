@@ -1,10 +1,8 @@
 namespace PowerPlanSwitcher
 {
-    public class ActivePowerSchemeChangedEventArgs : EventArgs
+    public class ActivePowerSchemeChangedEventArgs(Guid activeSchemeGuid)
+        : EventArgs
     {
-        public Guid ActiveSchemeGuid { get; }
-
-        public ActivePowerSchemeChangedEventArgs(Guid activeSchemeGuid) =>
-            ActiveSchemeGuid = activeSchemeGuid;
+        public Guid ActiveSchemeGuid { get; } = activeSchemeGuid;
     }
 }

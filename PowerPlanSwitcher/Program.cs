@@ -39,32 +39,62 @@ namespace PowerPlanSwitcher
             }
         }
 
+        private static bool AreHotkeyEqual(
+            HotkeyPressedEventArgs left,
+            Hotkey right) =>
+            left.PressedKey == right.Key
+            && left.ModifierKeys == right.Modifier;
+
         private static void HotkeyManager_HotkeyPressed(
             object? sender,
             HotkeyPressedEventArgs e)
         {
             var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
                 Settings.Default.CyclePowerSchemeHotkey);
-            if (cycleHotkey?.Key == e.PressedKey
-                && cycleHotkey?.Modifier == e.ModifierKeys)
+            if (cycleHotkey is null)
             {
-                var schemes = PowerManager.GetPowerSchemeGuids()
-                    .Where(ps => !Settings.Default.CycleOnlyVisible
-                        || (PowerSchemeSettings.GetSetting(ps)?.Visible ?? false))
-                    .ToList();
-                var index = schemes.IndexOf(
-                    PowerManager.GetActivePowerSchemeGuid());
-                index = (index + 1) % schemes.Count;
-                PowerManager.SetActivePowerScheme(schemes[index]);
                 return;
             }
 
+            if (AreHotkeyEqual(e, cycleHotkey))
+            {
+                HandleCycleHotkeyPressed();
+                return;
+            }
+
+            HandlePowerSchemeHotkeyPressed(e);
+        }
+
+        private static void HandleCycleHotkeyPressed()
+        {
+            var schemes = PowerManager.GetPowerSchemeGuids()
+                .Where(ps => !Settings.Default.CycleOnlyVisible
+                    || (PowerSchemeSettings.GetSetting(ps)?.Visible ?? false))
+                .ToList();
+
+            var active = PowerManager.GetActivePowerSchemeGuid();
+
+            var index = active == Guid.Empty ? 0 : schemes.IndexOf(active);
+            index = (index + 1) % schemes.Count;
+
+            PowerManager.SetActivePowerScheme(schemes[index]);
+            ToastDlg.ShowToastNotification(
+                schemes[index],
+                "Cycle hotkey pressed");
+        }
+
+        private static void HandlePowerSchemeHotkeyPressed(
+            HotkeyPressedEventArgs e)
+        {
             var (guid, _) = PowerManager.GetPowerSchemes()
             .FirstOrDefault(ps =>
             {
                 var setting = PowerSchemeSettings.GetSetting(ps.guid);
-                return setting?.Hotkey?.Key == e.PressedKey
-                    && setting?.Hotkey?.Modifier == e.ModifierKeys;
+                if (setting is null || setting.Hotkey is null)
+                {
+                    return false;
+                }
+                return AreHotkeyEqual(e, setting.Hotkey);
             });
 
             if (guid == Guid.Empty)
@@ -73,6 +103,7 @@ namespace PowerPlanSwitcher
             }
 
             PowerManager.SetActivePowerScheme(guid);
+            ToastDlg.ShowToastNotification(guid, "Power Plan hotkey pressed");
         }
 
         /// <summary>
@@ -112,11 +143,9 @@ namespace PowerPlanSwitcher
             RegisterHotkeys();
 
             HotkeyManager.HotkeyPressed += HotkeyManager_HotkeyPressed;
-            BatteryMonitor.PlanValue();
 
-            using var trayIcon = new TrayIcon();
             SystemEvents.EventsThreadShutdown += (s, e) => Application.Exit();
-            Application.Run();
+            Application.Run(new AppContext());
         }
     }
 }

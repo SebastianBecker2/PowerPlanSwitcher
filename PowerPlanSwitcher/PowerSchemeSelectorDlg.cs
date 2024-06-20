@@ -99,7 +99,7 @@ namespace PowerPlanSwitcher
             Height = TlpPowerSchemes.Controls.Count * ButtonHeight;
             Width = ButtonWidth;
 
-            SetPositionToTaskbar();
+            Location = GetPositionOnTaskbar(Size);
 
             base.OnLoad(e);
         }
@@ -134,40 +134,30 @@ namespace PowerPlanSwitcher
             base.OnDeactivate(e);
         }
 
-        private void SetPositionToTaskbar()
+        private static Point GetPositionOnTaskbar(Size windowSize)
         {
+            var bounds = Taskbar.CurrentBounds;
             switch (Taskbar.Position)
             {
                 case TaskbarPosition.Left:
-                    Location = Taskbar.CurrentBounds.Location +
-                        Taskbar.CurrentBounds.Size;
-                    Location = new Point(Location.X, Location.Y - Size.Height);
-                    break;
+                    bounds.Location += bounds.Size;
+                    return new Point(bounds.X, bounds.Y - windowSize.Height);
 
                 case TaskbarPosition.Top:
-                    Location = Taskbar.CurrentBounds.Location +
-                        Taskbar.CurrentBounds.Size;
-                    Location = new Point(Location.X - Size.Width, Location.Y);
-                    break;
+                    bounds.Location += bounds.Size;
+                    return new Point(bounds.X - windowSize.Width, bounds.Y);
 
                 case TaskbarPosition.Right:
-                    Location = Taskbar.CurrentBounds.Location - Size;
-                    Location = new Point(
-                        Location.X,
-                        Location.Y + Taskbar.CurrentBounds.Height);
-                    break;
+                    bounds.Location -= windowSize;
+                    return new Point(bounds.X, bounds.Y + bounds.Height);
 
                 case TaskbarPosition.Bottom:
-                    Location = Taskbar.CurrentBounds.Location - Size;
-                    Location = new Point(
-                        Location.X + Taskbar.CurrentBounds.Width,
-                        Location.Y);
-                    break;
+                    bounds.Location -= windowSize;
+                    return new Point(bounds.X + bounds.Width, bounds.Y);
 
                 case TaskbarPosition.Unknown:
                 default:
-                    StartPosition = FormStartPosition.WindowsDefaultLocation;
-                    break;
+                    return new Point(0, 0);
             }
         }
     }

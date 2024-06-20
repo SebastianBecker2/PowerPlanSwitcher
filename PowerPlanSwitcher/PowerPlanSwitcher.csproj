@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <VersionPrefix>1.0.8</VersionPrefix>
+    <VersionPrefix>1.0.12</VersionPrefix>
     <ApplicationIcon>Resources\power_surge.ico</ApplicationIcon>
     <Description>Tray-Icon tool to show the currently selected windows power plan, switch it manually and automatically.
 
@@ -24,6 +24,7 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
     <FileVersion></FileVersion>
     <PlatformTarget>x64</PlatformTarget>
     <Platforms>x64</Platforms>
+    <NeutralLanguage>en</NeutralLanguage>
   </PropertyGroup>
   <ItemGroup>
     <Content Include="Resources\power_surge.ico" />
@@ -34,6 +35,7 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
     <PackageReference Include="Serilog" Version="3.1.1" />
     <PackageReference Include="Serilog.Sinks.File" Version="5.0.0" />
     <PackageReference Include="Vanara.PInvoke.PowrProf" Version="3.4.17" />
+    <PackageReference Include="Vanara.PInvoke.Security" Version="4.0.1" />
     <PackageReference Include="Vanara.PInvoke.User32" Version="3.4.17" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Management" Version="8.0.0" />
