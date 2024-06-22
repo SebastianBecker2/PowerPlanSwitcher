@@ -66,7 +66,7 @@ namespace PowerPlanSwitcher
                 CmbColorTheme.SelectedIndex = 0;
             }
 
-            GrbBatteryManagement.Visible = BatteryMonitor.HasSystemBattery();
+            GrbBatteryManagement.Visible = BatteryMonitor.HasSystemBattery;
 
             CmbAcPowerScheme.Items.AddRange(powerSchemes
                 .Select(scheme => scheme.name)
@@ -267,8 +267,6 @@ namespace PowerPlanSwitcher
 
             Settings.Default.Save();
 
-            BatteryMonitor.Initialize();
-
             DialogResult = DialogResult.OK;
         }
 
@@ -286,7 +284,7 @@ namespace PowerPlanSwitcher
             {
                 PowerRule = new PowerRule
                 {
-                    FilePath = processSelectionDlg.SelectedProcess!.FileName,
+                    FilePath = processSelectionDlg.SelectedProcess!.ExecutablePath,
                     Type = RuleType.Exact,
                 },
             };
@@ -328,7 +326,7 @@ namespace PowerPlanSwitcher
                 },
                 new DataGridViewCheckBoxCell
                 {
-                    Value = powerRule.Active,
+                    Value = powerRule.ActivationCount,
                 });
 
             return row;

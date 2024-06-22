@@ -3,7 +3,7 @@ namespace PowerPlanSwitcher
     internal class AppContext : ApplicationContext
     {
         private readonly PowerManager powerManager = new();
-        private readonly ProcessMonitor processMonitor = new();
+        private readonly RuleManager ruleManager = new();
         private readonly TrayIcon trayIcon = new();
 
         public AppContext()
@@ -13,7 +13,7 @@ namespace PowerPlanSwitcher
             powerManager.ActivePowerSchemeChanged +=
                 (s, e) => trayIcon.UpdateIcon(e.ActiveSchemeGuid);
 
-            processMonitor.StartMonitoring();
+            ruleManager.StartEngine();
         }
 
         protected override void Dispose(bool disposing)
@@ -21,7 +21,7 @@ namespace PowerPlanSwitcher
             if (disposing)
             {
                 powerManager.Dispose();
-                processMonitor.Dispose();
+                ruleManager.Dispose();
                 trayIcon.Dispose();
             }
             base.Dispose(disposing);

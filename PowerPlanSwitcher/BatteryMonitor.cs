@@ -1,80 +1,40 @@
 namespace PowerPlanSwitcher
 {
-    using PowerPlanSwitcher.Properties;
-    using static Vanara.PInvoke.Kernel32;
+    using Microsoft.Win32;
 
     public class BatteryMonitor
     {
-        private static Guid AcPowerSchemeGuid =>
-            Settings.Default.AcPowerSchemeGuid;
-        private static Guid BatterPowerSchemeGuid =>
-            Settings.Default.BatterPowerSchemeGuid;
+        public event EventHandler<EventArgs>? PowerLineStatusChanged;
+        protected virtual void OnPowerLineStatusChanged(EventArgs e) =>
+            PowerLineStatusChanged?.Invoke(this, e);
+        protected virtual void OnPowerLineStatusChanged() =>
+            OnPowerLineStatusChanged(new EventArgs());
 
-        private static bool toggleMark = true;
+        public BatteryMonitor() =>
+            SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
 
-        public static bool HasSystemBattery() =>
+        public static bool HasSystemBattery =>
             SystemInformation.PowerStatus.BatteryChargeStatus
             != BatteryChargeStatus.NoSystemBattery;
 
-        public static void Initialize()
+        public static PowerLineStatus PowerLineStatus =>
+            SystemInformation.PowerStatus.PowerLineStatus;
+
+        private void SystemEvents_PowerModeChanged(
+            object sender,
+            PowerModeChangedEventArgs e)
         {
-            if (!GetSystemPowerStatus(out var powerStatus))
+            if (e.Mode != PowerModes.StatusChange)
             {
                 return;
             }
 
-            if (!toggleMark
-                && BatterPowerSchemeGuid != Guid.Empty
-                && AcPowerSchemeGuid == Guid.Empty
-                && powerStatus.ACLineStatus == AC_STATUS.AC_ONLINE)
+            if (PowerLineStatus == PowerLineStatus.Unknown)
             {
-                toggleMark = true;
+                return;
             }
 
-            if (toggleMark
-                && AcPowerSchemeGuid != Guid.Empty
-                && BatterPowerSchemeGuid == Guid.Empty
-                && powerStatus.ACLineStatus == AC_STATUS.AC_OFFLINE)
-            {
-                toggleMark = false;
-            }
-        }
-
-        public static Guid GetPowerSchemeGuid()
-        {
-            if (!HasSystemBattery())
-            {
-                return Guid.Empty;
-            }
-
-            if (!GetSystemPowerStatus(out var powerStatus))
-            {
-                return Guid.Empty;
-            }
-
-            var activePowerSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
-
-            if (!toggleMark
-                && AcPowerSchemeGuid != Guid.Empty
-                && powerStatus.ACLineStatus == AC_STATUS.AC_ONLINE
-                && activePowerSchemeGuid != AcPowerSchemeGuid)
-            {
-                toggleMark = true;
-                return AcPowerSchemeGuid;
-            }
-
-            if (toggleMark
-                && BatterPowerSchemeGuid != Guid.Empty
-                && powerStatus.ACLineStatus == AC_STATUS.AC_OFFLINE
-                && activePowerSchemeGuid != BatterPowerSchemeGuid)
-            {
-                toggleMark = false;
-                return BatterPowerSchemeGuid;
-            }
-
-            Initialize();
-
-            return Guid.Empty;
+            OnPowerLineStatusChanged();
         }
     }
 }

@@ -14,7 +14,7 @@ namespace PowerPlanSwitcher
         public RuleType Type { get; set; }
         public Guid SchemeGuid { get; set; }
         [JsonIgnore]
-        public bool Active { get; set; }
+        public int ActivationCount { get; set; }
 
         private static readonly List<(RuleType type, string text)> RuleTypeTexts =
             [
