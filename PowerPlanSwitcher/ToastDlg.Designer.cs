@@ -53,22 +53,22 @@ namespace PowerPlanSwitcher
             // 
             tableLayoutPanel1.AutoSize = true;
             tableLayoutPanel1.ColumnCount = 4;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel1.Controls.Add(LblTitle, 2, 0);
             tableLayoutPanel1.Controls.Add(PibAppIcon, 1, 0);
             tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 0, 1);
             tableLayoutPanel1.Controls.Add(LblReason, 0, 2);
             tableLayoutPanel1.Dock = DockStyle.Fill;
-            tableLayoutPanel1.Location = new Point(0, 0);
+            tableLayoutPanel1.Location = new Point(1, 1);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 3;
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel1.Size = new Size(270, 84);
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 23F));
+            tableLayoutPanel1.Size = new Size(283, 93);
             tableLayoutPanel1.TabIndex = 1;
             tableLayoutPanel1.Click += Any_Click;
             // 
@@ -76,9 +76,9 @@ namespace PowerPlanSwitcher
             // 
             LblTitle.AutoSize = true;
             LblTitle.Dock = DockStyle.Fill;
-            LblTitle.Location = new Point(27, 0);
+            LblTitle.Location = new Point(25, 0);
             LblTitle.Name = "LblTitle";
-            LblTitle.Size = new Size(237, 22);
+            LblTitle.Size = new Size(257, 24);
             LblTitle.TabIndex = 1;
             LblTitle.Text = "PowerPlanSwitcher switched Power Plan to:";
             LblTitle.TextAlign = ContentAlignment.MiddleCenter;
@@ -88,9 +88,9 @@ namespace PowerPlanSwitcher
             // 
             PibAppIcon.Dock = DockStyle.Fill;
             PibAppIcon.Image = Properties.Resources.power_surge;
-            PibAppIcon.Location = new Point(5, 3);
+            PibAppIcon.Location = new Point(3, 3);
             PibAppIcon.Name = "PibAppIcon";
-            PibAppIcon.Size = new Size(16, 16);
+            PibAppIcon.Size = new Size(16, 18);
             PibAppIcon.SizeMode = PictureBoxSizeMode.Zoom;
             PibAppIcon.TabIndex = 2;
             PibAppIcon.TabStop = false;
@@ -106,12 +106,12 @@ namespace PowerPlanSwitcher
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel2.Controls.Add(LblPowerSchemeName, 1, 0);
             tableLayoutPanel2.Controls.Add(PibPowerSchemeIcon, 0, 0);
-            tableLayoutPanel2.Location = new Point(33, 22);
+            tableLayoutPanel2.Location = new Point(40, 24);
             tableLayoutPanel2.Margin = new Padding(0);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Size = new Size(203, 41);
+            tableLayoutPanel2.Size = new Size(203, 46);
             tableLayoutPanel2.TabIndex = 5;
             tableLayoutPanel2.Click += Any_Click;
             // 
@@ -120,7 +120,7 @@ namespace PowerPlanSwitcher
             LblPowerSchemeName.Anchor = AnchorStyles.Left;
             LblPowerSchemeName.AutoSize = true;
             LblPowerSchemeName.Font = new Font("Segoe UI", 12F);
-            LblPowerSchemeName.Location = new Point(42, 10);
+            LblPowerSchemeName.Location = new Point(42, 12);
             LblPowerSchemeName.Name = "LblPowerSchemeName";
             LblPowerSchemeName.Size = new Size(158, 21);
             LblPowerSchemeName.TabIndex = 4;
@@ -134,7 +134,7 @@ namespace PowerPlanSwitcher
             PibPowerSchemeIcon.Location = new Point(0, 0);
             PibPowerSchemeIcon.Margin = new Padding(0);
             PibPowerSchemeIcon.Name = "PibPowerSchemeIcon";
-            PibPowerSchemeIcon.Size = new Size(39, 41);
+            PibPowerSchemeIcon.Size = new Size(39, 46);
             PibPowerSchemeIcon.SizeMode = PictureBoxSizeMode.CenterImage;
             PibPowerSchemeIcon.TabIndex = 2;
             PibPowerSchemeIcon.TabStop = false;
@@ -145,25 +145,26 @@ namespace PowerPlanSwitcher
             LblReason.Anchor = AnchorStyles.None;
             LblReason.AutoSize = true;
             tableLayoutPanel1.SetColumnSpan(LblReason, 4);
-            LblReason.Location = new Point(116, 66);
+            LblReason.Location = new Point(120, 73);
             LblReason.Name = "LblReason";
-            LblReason.Size = new Size(38, 15);
+            LblReason.Size = new Size(43, 17);
             LblReason.TabIndex = 6;
             LblReason.Text = "label1";
             // 
             // ToastDlg
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(270, 84);
+            ClientSize = new Size(285, 95);
             ControlBox = false;
             Controls.Add(tableLayoutPanel1);
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "ToastDlg";
+            Padding = new Padding(1);
             ShowIcon = false;
             ShowInTaskbar = false;
-            StartPosition = FormStartPosition.Manual;
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "ToastDlg";
             TopMost = true;
             Click += Any_Click;

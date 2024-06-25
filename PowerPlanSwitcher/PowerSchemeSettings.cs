@@ -91,7 +91,8 @@ namespace PowerPlanSwitcher
             {
                 return new Setting { Visible = true, Icon = Resources.yellow };
             }
-            return null;
+            // return null;
+            return new Setting { Visible = true, Icon = TrayIcon.DefaultIcon.ToBitmap() };
         }
 
         public static void SetSetting(Guid schemaGuid, Setting setting)

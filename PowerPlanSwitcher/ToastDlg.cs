@@ -13,20 +13,26 @@ namespace PowerPlanSwitcher
 
         private static Color ButtonBackgroundColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? SystemColors.Control
-            : Color.FromArgb(0x15, 0x15, 0x14);
+            ? SystemColors.Menu
+            : Color.FromArgb(0x15, 0x15, 0x15);
         private static Color ForegroundColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? SystemColors.ControlText
+            ? SystemColors.WindowText
             : SystemColors.HighlightText;
+        private static Color TlpPowerSchemesBackColor =>
+            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
+            ? SystemColors.ScrollBar
+            : SystemColors.WindowFrame;
 
         public ToastDlg() => InitializeComponent();
 
         protected override void OnLoad(EventArgs e)
         {
+            // BackColor = TlpPowerSchemesBackColor;
             DisplayTimer.Interval = DisplayDuration;
 
-            BackColor = ButtonBackgroundColor;
+            BackColor = TlpPowerSchemesBackColor;
+            tableLayoutPanel1.BackColor = ButtonBackgroundColor;
 
             PibAppIcon.BackColor = ButtonBackgroundColor;
             LblTitle.ForeColor = ForegroundColor;
@@ -62,29 +68,49 @@ namespace PowerPlanSwitcher
 
         private static Point GetPositionOnTaskbar(Size windowSize)
         {
-            var bounds = Taskbar.CurrentBounds;
-            switch (Taskbar.Position)
-            {
-                case TaskbarPosition.Left:
-                    bounds.Location += bounds.Size;
-                    return new Point(bounds.X, bounds.Y - windowSize.Height);
+            //1. 
+            // var bounds = Taskbar.CurrentBounds;
+            // switch (Taskbar.Position)
+            // {
+                // case TaskbarPosition.Left:
+                    // bounds.Location += bounds.Size;
+                    // return new Point(bounds.X, bounds.Y - windowSize.Height);
 
-                case TaskbarPosition.Top:
-                    bounds.Location += bounds.Size;
-                    return new Point(bounds.X - windowSize.Width, bounds.Y);
+                // case TaskbarPosition.Top:
+                    // bounds.Location += bounds.Size;
+                    // return new Point(bounds.X - windowSize.Width, bounds.Y);
 
-                case TaskbarPosition.Right:
-                    bounds.Location -= windowSize;
-                    return new Point(bounds.X, bounds.Y + bounds.Height);
+                // case TaskbarPosition.Right:
+                    // bounds.Location -= windowSize;
+                    // return new Point(bounds.X, bounds.Y + bounds.Height);
 
-                case TaskbarPosition.Bottom:
-                    bounds.Location -= windowSize;
-                    return new Point(bounds.X + bounds.Width, bounds.Y);
+                // case TaskbarPosition.Bottom:
+                    // bounds.Location -= windowSize;
+                    // return new Point(bounds.X + bounds.Width, bounds.Y);
 
-                case TaskbarPosition.Unknown:
-                default:
-                    return new Point(0, 0);
-            }
+                // case TaskbarPosition.Unknown:
+                // default:
+                    // return new Point(0, 0);
+            // }
+
+
+
+            //2. center the screen
+            // Rectangle workArea = Screen.PrimaryScreen.WorkingArea;
+
+            // int x = workArea.Left + (workArea.Width - windowSize.Width) / 2;
+            // int y = workArea.Top + (workArea.Height - windowSize.Height) / 2;
+
+            // return new Point(x, y);
+
+
+
+            //3. follow system
+            Rectangle workArea = Screen.PrimaryScreen.WorkingArea;
+
+            int y = workArea.Top + (workArea.Height - windowSize.Height) / 2;
+
+            return new Point(workArea.Left + (workArea.Width - windowSize.Width), y);
         }
 
         private void Any_Click(object sender, EventArgs e) => Dispose();
