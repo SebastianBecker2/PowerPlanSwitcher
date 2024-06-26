@@ -4,24 +4,29 @@ namespace PowerPlanSwitcher
     {
         private static Color ButtonBackgroundColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? SystemColors.Control
-            : Color.FromArgb(0x15, 0x15, 0x14);
+            ? SystemColors.Menu
+            : Color.FromArgb(0x15, 0x15, 0x15);
         private static Color SelectedButtonBackgroundColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
             ? SystemColors.ControlLight
-            : Color.FromArgb(0x25, 0x25, 0x25);
+            : Color.FromArgb(0x20, 0x20, 0x20);
         private static Color ForegroundColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? SystemColors.ControlText
+            ? SystemColors.WindowText
             : SystemColors.HighlightText;
+        private static Color PenColor =>
+            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
+            ? SystemColors.ButtonHighlight
+            : SystemColors.ButtonShadow;
         private static Color FAMOBColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? Color.FromArgb(0xD8, 0xD8, 0xD8)
-            : Color.FromArgb(0x35, 0x35, 0x35);
-        private static Color FormBackgroundColor =>
+            ? SystemColors.ButtonHighlight
+            : SystemColors.Desktop;
+        private static Color TlpPowerSchemesBackColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? Color.DarkGray
-            : Color.Black;
+            ? SystemColors.ScrollBar
+            : SystemColors.WindowFrame;
+            
 
         private const int ButtonHeight = 50;
         private const int ButtonWidth = 360;
@@ -40,6 +45,8 @@ namespace PowerPlanSwitcher
             var button = new Button
             {
                 FlatStyle = FlatStyle.Flat,
+                // Image = icon ?? PowerSchemeSettings.GetSetting(guid)?.Icon,
+                // Image = icon ?? TrayIcon.DefaultIcon.ToBitmap(),
                 Image = icon,
                 ImageAlign = ContentAlignment.MiddleLeft,
                 TextImageRelation = TextImageRelation.ImageBeforeText,
@@ -50,7 +57,7 @@ namespace PowerPlanSwitcher
                     ? SelectedButtonBackgroundColor
                     : ButtonBackgroundColor,
                 Margin = Padding.Empty,
-                Text = active ? "(Active) " + name : name,
+                Text = active ? "(Active) " + name : " " + name,
                 Font = new Font(Font.FontFamily, 12),
                 Tag = guid,
                 Dock = DockStyle.Fill,
@@ -69,8 +76,7 @@ namespace PowerPlanSwitcher
 
         protected override void OnLoad(EventArgs e)
         {
-            BackColor = FormBackgroundColor;
-            TlpPowerSchemes.BackColor = ButtonBackgroundColor;
+            TlpPowerSchemes.BackColor = TlpPowerSchemesBackColor;
 
             var activeSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
 
@@ -99,7 +105,7 @@ namespace PowerPlanSwitcher
             Height = TlpPowerSchemes.Controls.Count * ButtonHeight;
             Width = ButtonWidth;
 
-            Location = GetPositionOnTaskbar(Size);
+            SetPositionToTaskbar();
 
             base.OnLoad(e);
         }
@@ -134,30 +140,40 @@ namespace PowerPlanSwitcher
             base.OnDeactivate(e);
         }
 
-        private static Point GetPositionOnTaskbar(Size windowSize)
+        private void SetPositionToTaskbar()
         {
-            var bounds = Taskbar.CurrentBounds;
             switch (Taskbar.Position)
             {
                 case TaskbarPosition.Left:
-                    bounds.Location += bounds.Size;
-                    return new Point(bounds.X, bounds.Y - windowSize.Height);
+                    Location = Taskbar.CurrentBounds.Location +
+                        Taskbar.CurrentBounds.Size;
+                    Location = new Point(Location.X, Location.Y - Size.Height);
+                    break;
 
                 case TaskbarPosition.Top:
-                    bounds.Location += bounds.Size;
-                    return new Point(bounds.X - windowSize.Width, bounds.Y);
+                    Location = Taskbar.CurrentBounds.Location +
+                        Taskbar.CurrentBounds.Size;
+                    Location = new Point(Location.X - Size.Width, Location.Y);
+                    break;
 
                 case TaskbarPosition.Right:
-                    bounds.Location -= windowSize;
-                    return new Point(bounds.X, bounds.Y + bounds.Height);
+                    Location = Taskbar.CurrentBounds.Location - Size;
+                    Location = new Point(
+                        Location.X,
+                        Location.Y + Taskbar.CurrentBounds.Height);
+                    break;
 
                 case TaskbarPosition.Bottom:
-                    bounds.Location -= windowSize;
-                    return new Point(bounds.X + bounds.Width, bounds.Y);
+                    Location = Taskbar.CurrentBounds.Location - Size;
+                    Location = new Point(
+                        Location.X + Taskbar.CurrentBounds.Width,
+                        Location.Y);
+                    break;
 
                 case TaskbarPosition.Unknown:
                 default:
-                    return new Point(0, 0);
+                    StartPosition = FormStartPosition.WindowsDefaultLocation;
+                    break;
             }
         }
     }
