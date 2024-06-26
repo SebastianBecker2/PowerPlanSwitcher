@@ -77,7 +77,8 @@ namespace PowerPlanSwitcher
             _ = settings!.TryGetValue(schemaGuid, out var setting);
             if (setting is not null)
             {
-                return setting;
+                // return setting;
+                return new Setting{ Visible = setting.Visible, Icon = setting.Icon ?? Resources.power_surge };
             }
             if (schemaGuid == Vanara.PInvoke.PowrProf.GUID_MAX_POWER_SAVINGS)
             {
@@ -91,7 +92,8 @@ namespace PowerPlanSwitcher
             {
                 return new Setting { Visible = true, Icon = Resources.yellow };
             }
-            return null;
+            // return null;
+            return new Setting { Visible = true, Icon = Resources.power_surge };
         }
 
         public static void SetSetting(Guid schemaGuid, Setting setting)
