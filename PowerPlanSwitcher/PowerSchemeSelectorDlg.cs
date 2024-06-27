@@ -1,5 +1,7 @@
 namespace PowerPlanSwitcher
 {
+    using PowerPlanSwitcher.Properties;
+
     public partial class PowerSchemeSelectorDlg : Form
     {
         private static Color ButtonBackgroundColor =>
@@ -22,6 +24,10 @@ namespace PowerPlanSwitcher
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
             ? Color.DarkGray
             : Color.Black;
+        private static Image DefaultIcon =>
+            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
+            ? Resources.NullLight
+            : Resources.NullBlack;
 
         private const int ButtonHeight = 50;
         private const int ButtonWidth = 360;
@@ -40,7 +46,7 @@ namespace PowerPlanSwitcher
             var button = new Button
             {
                 FlatStyle = FlatStyle.Flat,
-                Image = icon,
+                Image = icon ?? DefaultIcon,
                 ImageAlign = ContentAlignment.MiddleLeft,
                 TextImageRelation = TextImageRelation.ImageBeforeText,
                 TextAlign = ContentAlignment.MiddleLeft,
