@@ -50,7 +50,7 @@ namespace PowerPlanSwitcher
                     ? SelectedButtonBackgroundColor
                     : ButtonBackgroundColor,
                 Margin = Padding.Empty,
-                Text = active ? "(Active) " + name : name,
+                Text = active ? "(Active) " + name : " " + name,
                 Font = new Font(Font.FontFamily, 12),
                 Tag = guid,
                 Dock = DockStyle.Fill,
