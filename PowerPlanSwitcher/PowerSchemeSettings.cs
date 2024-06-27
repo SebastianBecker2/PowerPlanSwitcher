@@ -70,6 +70,10 @@ namespace PowerPlanSwitcher
 
         private static Dictionary<Guid, Setting>? settings;
         private static readonly object SettingsLock = new();
+        private static Image DefaultIcon =>
+            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
+            ? Resources.NullLight
+            : Resources.NullBlack;
 
         public static Setting? GetSetting(Guid schemaGuid)
         {
@@ -77,7 +81,7 @@ namespace PowerPlanSwitcher
             _ = settings!.TryGetValue(schemaGuid, out var setting);
             if (setting is not null)
             {
-                return setting;
+                return new Setting { Visible = setting.Visible, Icon = setting.Icon ?? DefaultIcon };
             }
             if (schemaGuid == Vanara.PInvoke.PowrProf.GUID_MAX_POWER_SAVINGS)
             {
@@ -91,7 +95,7 @@ namespace PowerPlanSwitcher
             {
                 return new Setting { Visible = true, Icon = Resources.yellow };
             }
-            return null;
+            return new Setting { Visible = true, Icon = DefaultIcon };
         }
 
         public static void SetSetting(Guid schemaGuid, Setting setting)
