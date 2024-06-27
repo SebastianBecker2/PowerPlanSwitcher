@@ -72,7 +72,7 @@ namespace PowerPlanSwitcher
                 .Select(scheme => scheme.name)
                 .Cast<object>()
                 .ToArray());
-            if (Settings.Default.InitialPowerSchemeGuid == Guid.Empty)
+            if (Settings.Default.AcPowerSchemeGuid == Guid.Empty)
             {
                 CmbAcPowerScheme.SelectedIndex = 0;
             }
@@ -80,22 +80,22 @@ namespace PowerPlanSwitcher
             {
                 CmbAcPowerScheme.SelectedIndex = powerSchemes.FindIndex(
                     scheme => scheme.guid
-                        == Settings.Default.InitialPowerSchemeGuid);
+                        == Settings.Default.AcPowerSchemeGuid);
             }
 
             CmbBatteryPowerScheme.Items.AddRange(powerSchemes
                 .Select(scheme => scheme.name)
                 .Cast<object>()
                 .ToArray());
-            if (Settings.Default.InitialPowerSchemeGuid == Guid.Empty)
+            if (Settings.Default.BatterPowerSchemeGuid == Guid.Empty)
             {
-                CmbAcPowerScheme.SelectedIndex = 0;
+                CmbBatteryPowerScheme.SelectedIndex = 0;
             }
             else
             {
-                CmbAcPowerScheme.SelectedIndex = powerSchemes.FindIndex(
+                CmbBatteryPowerScheme.SelectedIndex = powerSchemes.FindIndex(
                     scheme => scheme.guid
-                        == Settings.Default.InitialPowerSchemeGuid);
+                        == Settings.Default.BatterPowerSchemeGuid);
             }
 
             ChbShowToastNotifications.Checked =
