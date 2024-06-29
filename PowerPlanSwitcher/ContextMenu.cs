@@ -1,5 +1,7 @@
 namespace PowerPlanSwitcher
 {
+    using PowerPlanSwitcher.PowerManagement;
+
     internal class ContextMenu : ContextMenuStrip
     {
 
@@ -36,8 +38,8 @@ namespace PowerPlanSwitcher
 
         private void AddPowerSchemes()
         {
-            var activeSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
-            foreach (var (guid, name) in PowerManager.GetPowerSchemes())
+            var activeSchemeGuid = PowerManager.Static.GetActivePowerSchemeGuid();
+            foreach (var (guid, name) in PowerManager.Static.GetPowerSchemes())
             {
                 var setting = PowerSchemeSettings.GetSetting(guid);
                 if (setting is not null && !setting.Visible)
@@ -53,7 +55,7 @@ namespace PowerPlanSwitcher
                 };
 
                 button.Click += (_, _) =>
-                    PowerManager.SetActivePowerScheme(guid);
+                    PowerManager.Static.SetActivePowerScheme(guid);
 
                 _ = Items.Add(button);
             }

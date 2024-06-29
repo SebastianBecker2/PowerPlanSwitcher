@@ -1,5 +1,7 @@
 namespace PowerPlanSwitcher
 {
+    using PowerPlanSwitcher.PowerManagement;
+
     public partial class PowerSchemeSelectorDlg : Form
     {
         private static Color ButtonBackgroundColor =>
@@ -60,7 +62,7 @@ namespace PowerPlanSwitcher
 
             button.Click += (_, _) =>
             {
-                PowerManager.SetActivePowerScheme((Guid)button.Tag);
+                PowerManager.Static.SetActivePowerScheme((Guid)button.Tag);
                 Close();
             };
 
@@ -72,9 +74,9 @@ namespace PowerPlanSwitcher
             BackColor = FormBackgroundColor;
             TlpPowerSchemes.BackColor = ButtonBackgroundColor;
 
-            var activeSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
+            var activeSchemeGuid = PowerManager.Static.GetActivePowerSchemeGuid();
 
-            foreach (var (guid, name) in PowerManager.GetPowerSchemes())
+            foreach (var (guid, name) in PowerManager.Static.GetPowerSchemes())
             {
                 var setting = PowerSchemeSettings.GetSetting(guid);
                 if (setting is not null && !setting.Visible)

@@ -1,25 +1,31 @@
-namespace PowerPlanSwitcher
+namespace PowerPlanSwitcher.ProcessManagement
 {
     using System.Diagnostics;
     using System.Management;
 
-    internal class ProcessEventArgs(CachedProcess process) : EventArgs
+    public class ProcessMonitor : IDisposable, IProcessMonitor
     {
-        public CachedProcess Process { get; set; } = process;
-    }
+#pragma warning disable CA1716 // Identifiers should not match keywords
+        public static class Static
+#pragma warning restore CA1716 // Identifiers should not match keywords
+        {
+            public static IEnumerable<ICachedProcess> GetUsersProcesses() =>
+            Process.GetProcesses()
+                .Select(CachedProcess.CreateFromProcess)
+                .Where(p => p is not null && !p.IsOwnProcess)
+                .Cast<CachedProcess>();
+        }
 
-    internal class ProcessMonitor : IDisposable
-    {
         public event EventHandler<ProcessEventArgs>? ProcessCreated;
         protected virtual void OnProcessCreated(ProcessEventArgs e) =>
             ProcessCreated?.Invoke(this, e);
-        protected virtual void OnProcessCreated(CachedProcess process) =>
+        protected virtual void OnProcessCreated(ICachedProcess process) =>
             OnProcessCreated(new ProcessEventArgs(process));
 
         public event EventHandler<ProcessEventArgs>? ProcessTerminated;
         protected virtual void OnProcessTerminated(ProcessEventArgs e) =>
             ProcessTerminated?.Invoke(this, e);
-        protected virtual void OnProcessTerminated(CachedProcess process) =>
+        protected virtual void OnProcessTerminated(ICachedProcess process) =>
             OnProcessTerminated(new ProcessEventArgs(process));
 
         private bool disposedValue;
@@ -85,11 +91,8 @@ namespace PowerPlanSwitcher
             OnProcessTerminated(cachedProcess);
         }
 
-        public static IEnumerable<CachedProcess> GetUsersProcesses() =>
-            Process.GetProcesses()
-                .Select(CachedProcess.CreateFromProcess)
-                .Where(p => p is not null && !p.IsOwnProcess)
-                .Cast<CachedProcess>();
+        public IEnumerable<ICachedProcess> GetUsersProcesses() =>
+            Static.GetUsersProcesses();
 
         protected virtual void Dispose(bool disposing)
         {

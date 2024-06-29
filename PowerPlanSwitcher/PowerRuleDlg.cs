@@ -1,12 +1,14 @@
 namespace PowerPlanSwitcher
 {
     using Microsoft.WindowsAPICodePack.Dialogs;
+    using PowerPlanSwitcher.PowerManagement;
+    using PowerPlanSwitcher.RuleManagement;
 
     public partial class PowerRuleDlg : Form
     {
         public PowerRule? PowerRule { get; set; }
         private readonly List<(Guid guid, string name)> powerSchemes =
-            PowerManager.GetPowerSchemes()
+            PowerManager.Static.GetPowerSchemes()
                 .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
                 .Cast<(Guid schemeGuid, string name)>()
                 .ToList();

@@ -1,88 +1,187 @@
-namespace PowerPlanSwitcher
+namespace PowerPlanSwitcher.RuleManagement
 {
     using System.ComponentModel;
-    using System.Globalization;
+    using PowerPlanSwitcher.PowerManagement;
+    using PowerPlanSwitcher.ProcessManagement;
     using PowerPlanSwitcher.Properties;
 
-    internal class RuleManager : IDisposable
+    public class RuleManager
     {
-        private readonly object syncObj = new();
-        private readonly BatteryMonitor batteryMonitor = new();
-        private readonly ProcessMonitor processMonitor = new();
-        private readonly IEnumerable<PowerRule> rules = PowerRule.GetPowerRules();
-        private static Guid baselinePowerSchemeGuid;
-        private bool disposedValue;
+        public event EventHandler<RuleApplicationChangedEventArgs>?
+            RuleApplicationChanged;
+        protected virtual void OnRuleApplicationChanged(
+            RuleApplicationChangedEventArgs args) =>
+            RuleApplicationChanged?.Invoke(this, args);
+        protected virtual void OnRuleApplicationChanged(
+            Guid powerSchemeGuid,
+            string? reason,
+            PowerRule? rule) =>
+            OnRuleApplicationChanged(
+                new RuleApplicationChangedEventArgs(
+                    powerSchemeGuid,
+                    reason,
+                    rule));
 
-        public void StartEngine()
+        public IBatteryMonitor? BatteryMonitor { get; set; }
+        public IProcessMonitor? ProcessMonitor { get; set; }
+        public IPowerManager? PowerManager { get; set; }
+        private IEnumerable<PowerRule>? rules;
+        private readonly object syncObj = new();
+
+        // Add event handling for power scheme change.
+        // If happens, check if no rule is applied and set baseline
+        // If any rule is applied, we ignore the event
+        // Ohhh don't forget to initialize in the ctor (throw if Guid.Empty)
+        private Guid baselinePowerSchemeGuid;
+
+        public void StartEngine(IEnumerable<PowerRule> rules)
         {
+            if (PowerManager is null)
+            {
+                throw new InvalidOperationException(
+                    $"{nameof(PowerManager)} is null.");
+            }
+            PowerManager.ActivePowerSchemeChanged +=
+                PowerManager_ActivePowerSchemeChanged;
+
             lock (syncObj)
             {
-                InitializeBatterManager();
-                InitializeProcessMonitor();
+                StopEngine();
+
+                // BatteryMonitor isn't reliant on rules,
+                // so we start it even when we don't have any rules.
+                StartBatteryMonitor();
+
+                this.rules = rules;
+                if (!rules.Any())
+                {
+                    return;
+                }
+
+                foreach (var rule in rules)
+                {
+                    rule.ActivationCount = 0;
+                }
+
+                StartProcessMonitor();
             }
         }
 
-        private void InitializeBatterManager()
+        private void PowerManager_ActivePowerSchemeChanged(
+            object? sender,
+            ActivePowerSchemeChangedEventArgs e)
         {
+            lock (syncObj)
+            {
+                if (HasActiveRule())
+                {
+                    return;
+                }
+
+                if (e.ActiveSchemeGuid == Guid.Empty)
+                {
+                    return;
+                }
+
+                baselinePowerSchemeGuid = e.ActiveSchemeGuid;
+            }
+        }
+
+        private void StartBatteryMonitor()
+        {
+            if (BatteryMonitor is null)
+            {
+                return;
+            }
+
             if (!BatteryMonitor.HasSystemBattery)
             {
                 return;
             }
 
-            batteryMonitor.PowerLineStatusChanged +=
-                BatteryMonitor_PowerLineStatusChanged;
+            BatteryMonitor.PowerLineStatusChanged +=
+                RuleManager_PowerLineStatusChanged;
 
-            baselinePowerSchemeGuid = GetPowerSchemeForPowerLineStatus();
-            PowerManager.SetActivePowerScheme(baselinePowerSchemeGuid);
+            HandlePowerLineStatusChange(BatteryMonitor.PowerLineStatus);
         }
 
-        private void InitializeProcessMonitor()
+        private void StartProcessMonitor()
         {
-            if (!rules.Any())
+            baselinePowerSchemeGuid = PowerManager!.GetActivePowerSchemeGuid();
+            if (baselinePowerSchemeGuid == Guid.Empty)
+            {
+                throw new InvalidOperationException(
+                    "Unable to determine active power scheme");
+            }
+
+            ProcessMonitor!.ProcessCreated += RuleManager_ProcessCreated;
+            ProcessMonitor!.ProcessTerminated += RuleManager_ProcessTerminated;
+            ProcessMonitor!.StartMonitoring();
+
+            HandleProcessesCreated(ProcessMonitor.GetUsersProcesses());
+        }
+
+        public void StopEngine()
+        {
+            lock (syncObj)
+            {
+                StopBatteryMonitor();
+
+                StopProcessMonitor();
+            }
+        }
+
+        private void StopBatteryMonitor()
+        {
+            if (BatteryMonitor is null)
             {
                 return;
             }
 
-            processMonitor.ProcessCreated += ProcessMonitor_ProcessCreated;
-            processMonitor.ProcessTerminated += ProcessMonitor_ProcessTerminated;
-            processMonitor.StartMonitoring();
-
-            var processes = ProcessMonitor.GetUsersProcesses();
-            var ruleApplied = false;
-
-            foreach (var rule in rules)
-            {
-                if (!CheckRule(rule, processes))
-                {
-                    continue;
-                }
-                rule.ActivationCount++;
-
-                if (ruleApplied)
-                {
-                    continue;
-                }
-                ruleApplied = true;
-
-                _ = ActivateRule(rule);
-            }
+            BatteryMonitor.PowerLineStatusChanged -=
+                RuleManager_PowerLineStatusChanged;
         }
 
-        private void ProcessMonitor_ProcessCreated(
+        private void StopProcessMonitor()
+        {
+            if (ProcessMonitor is null)
+            {
+                return;
+            }
+
+            ProcessMonitor.ProcessCreated -= RuleManager_ProcessCreated;
+            ProcessMonitor.ProcessTerminated -= RuleManager_ProcessTerminated;
+        }
+
+        private void RuleManager_PowerLineStatusChanged(
             object? sender,
-            ProcessEventArgs e)
+            PowerLineStatusChangedEventArgs e) =>
+            HandlePowerLineStatusChange(e.PowerLineStatus);
+
+        private void RuleManager_ProcessCreated(
+            object? sender,
+            ProcessEventArgs e) =>
+            HandleProcessCreated(e.Process);
+
+        private void RuleManager_ProcessTerminated(
+            object? sender,
+            ProcessEventArgs e) =>
+            HandleProcessTerminated(e.Process);
+
+        private void HandleProcessesCreated(
+            IEnumerable<ICachedProcess> processes)
         {
             lock (syncObj)
             {
                 var higherRuleActive = false;
-                foreach (var rule in rules)
+                foreach (var rule in rules ?? [])
                 {
                     if (rule.ActivationCount > 0)
                     {
                         higherRuleActive = true;
                     }
 
-                    if (!CheckRule(rule, e.Process))
+                    if (!CheckRule(rule, processes))
                     {
                         continue;
                     }
@@ -94,95 +193,135 @@ namespace PowerPlanSwitcher
                     }
                     higherRuleActive = true;
 
-                    _ = ActivateRule(rule);
+                    OnRuleApplicationChanged(
+                        rule.SchemeGuid,
+                        $"Rule {rule.Index + 1} applies",
+                        rule);
                 }
             }
         }
 
-        private void ProcessMonitor_ProcessTerminated(
-            object? sender,
-            ProcessEventArgs e)
+        private void HandleProcessCreated(ICachedProcess process)
         {
             lock (syncObj)
             {
                 var higherRuleActive = false;
-                foreach (var rule in rules)
+                foreach (var rule in rules ?? [])
                 {
-                    if (CheckRule(rule, e.Process))
+                    if (rule.ActivationCount > 0)
                     {
-                        rule.ActivationCount--;
+                        higherRuleActive = true;
                     }
+
+                    if (!CheckRule(rule, process))
+                    {
+                        continue;
+                    }
+                    rule.ActivationCount++;
 
                     if (higherRuleActive)
                     {
                         continue;
                     }
-
-                    if (rule.ActivationCount == 0)
-                    {
-                        continue;
-                    }
                     higherRuleActive = true;
 
-                    _ = ActivateRule(rule);
-                }
-
-                if (!higherRuleActive)
-                {
-                    PowerManager.SetActivePowerScheme(baselinePowerSchemeGuid);
-                    ToastDlg.ShowToastNotification(
-                        baselinePowerSchemeGuid,
-                        "No rule applies");
+                    OnRuleApplicationChanged(
+                        rule.SchemeGuid,
+                        $"Rule {rule.Index + 1} applies",
+                        rule);
                 }
             }
         }
 
-        private void BatteryMonitor_PowerLineStatusChanged(
-            object? sender,
-            EventArgs e)
+        private void HandleProcessTerminated(ICachedProcess process)
         {
             lock (syncObj)
             {
-                baselinePowerSchemeGuid = GetPowerSchemeForPowerLineStatus();
+                var higherRuleActive = false;
+                var highestRuleDeactivated = false;
+                foreach (var rule in rules ?? [])
+                {
+                    if (CheckRule(rule, process))
+                    {
+                        rule.ActivationCount = Math.Max(
+                            rule.ActivationCount - 1,
+                            0);
+
+                        if (higherRuleActive)
+                        {
+                            continue;
+                        }
+
+                        highestRuleDeactivated = rule.ActivationCount == 0;
+
+                        continue;
+                    }
+
+                    if (highestRuleDeactivated
+                        && !higherRuleActive
+                        && rule.ActivationCount > 0)
+                    {
+                        OnRuleApplicationChanged(
+                            rule.SchemeGuid,
+                            $"Rule {rule.Index + 1} applies",
+                            rule);
+                    }
+
+                    higherRuleActive =
+                        higherRuleActive
+                        || rule.ActivationCount > 0;
+                }
+
+                if (!higherRuleActive)
+                {
+                    OnRuleApplicationChanged(
+                        baselinePowerSchemeGuid,
+                        "No rule applies",
+                        null);
+                }
+            }
+        }
+
+        private void HandlePowerLineStatusChange(PowerLineStatus powerLineStatus)
+        {
+            lock (syncObj)
+            {
+                baselinePowerSchemeGuid =
+                    GetPowerSchemeForPowerLineStatus(powerLineStatus);
 
                 if (HasActiveRule())
                 {
                     return;
                 }
 
-                PowerManager.SetActivePowerScheme(baselinePowerSchemeGuid);
+                OnRuleApplicationChanged(baselinePowerSchemeGuid, null, null);
             }
         }
 
-        private static bool ActivateRule(PowerRule rule)
-        {
-            if (rule.SchemeGuid == PowerManager.GetActivePowerSchemeGuid())
+        private static Guid GetPowerSchemeForPowerLineStatus(
+            PowerLineStatus powerLineStatus) =>
+            powerLineStatus switch
             {
-                return false;
-            }
-
-            PowerManager.SetActivePowerScheme(rule.SchemeGuid);
-            ToastDlg.ShowToastNotification(
-                rule.SchemeGuid,
-                $"Rule {rule.Index + 1} applies");
-            return true;
-        }
-
-        private static Guid GetPowerSchemeForPowerLineStatus() =>
-            BatteryMonitor.PowerLineStatus switch
-            {
-                PowerLineStatus.Online => Settings.Default.AcPowerSchemeGuid,
-                PowerLineStatus.Offline => Settings.Default.BatterPowerSchemeGuid,
-                PowerLineStatus.Unknown => baselinePowerSchemeGuid,
-                _ => baselinePowerSchemeGuid,
+                PowerLineStatus.Online =>
+                    Settings.Default.AcPowerSchemeGuid,
+                PowerLineStatus.Offline =>
+                    Settings.Default.BatterPowerSchemeGuid,
+                PowerLineStatus.Unknown =>
+                    throw new InvalidOperationException(
+                        $"Invalid value for {nameof(powerLineStatus)}"),
+                _ =>
+                    throw new InvalidOperationException(
+                        $"Invalid value for {nameof(powerLineStatus)}"),
             };
 
         private PowerRule? GetActiveRule() =>
-            rules.FirstOrDefault(r => r.ActivationCount > 0);
+            rules?.FirstOrDefault(r => r.ActivationCount > 0);
 
         private bool HasActiveRule() => GetActiveRule() is not null;
 
-        private static bool CheckRule(PowerRule powerRule, CachedProcess process)
+        private static bool CheckRule(
+            PowerRule powerRule,
+            ICachedProcess process)
         {
             try
             {
@@ -197,12 +336,10 @@ namespace PowerPlanSwitcher
                     RuleType.Exact => path == powerRule.FilePath,
                     RuleType.StartsWith => path.StartsWith(
                         powerRule.FilePath,
-                        true,
-                        CultureInfo.InvariantCulture),
+                        StringComparison.InvariantCulture),
                     RuleType.EndsWith => path.EndsWith(
                         powerRule.FilePath,
-                        true,
-                        CultureInfo.InvariantCulture),
+                        StringComparison.InvariantCulture),
                     _ => throw new InvalidOperationException(
                         $"Unable to apply rule type {powerRule.Type}"),
                 };
@@ -219,27 +356,7 @@ namespace PowerPlanSwitcher
 
         private static bool CheckRule(
             PowerRule powerRule,
-            IEnumerable<CachedProcess> processes) =>
+            IEnumerable<ICachedProcess> processes) =>
             processes.Any(p => CheckRule(powerRule, p));
-
-        protected virtual void Dispose(bool disposing)
-        {
-            if (disposedValue)
-            {
-                return;
-            }
-            if (disposing)
-            {
-                processMonitor?.Dispose();
-            }
-
-            disposedValue = true;
-        }
-
-        public void Dispose()
-        {
-            Dispose(disposing: true);
-            GC.SuppressFinalize(this);
-        }
     }
 }

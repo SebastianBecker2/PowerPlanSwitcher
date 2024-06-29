@@ -1,24 +1,39 @@
-namespace PowerPlanSwitcher
+namespace PowerPlanSwitcher.PowerManagement
 {
     using Microsoft.Win32;
 
-    public class BatteryMonitor
+    public class BatteryMonitor : IBatteryMonitor
     {
-        public event EventHandler<EventArgs>? PowerLineStatusChanged;
-        protected virtual void OnPowerLineStatusChanged(EventArgs e) =>
+#pragma warning disable CA1716 // Identifiers should not match keywords
+        public static class Static
+#pragma warning restore CA1716 // Identifiers should not match keywords
+        {
+            public static bool HasSystemBattery =>
+                SystemInformation.PowerStatus.BatteryChargeStatus
+                != BatteryChargeStatus.NoSystemBattery;
+
+            public static PowerLineStatus PowerLineStatus =>
+                SystemInformation.PowerStatus.PowerLineStatus;
+        }
+
+        public event EventHandler<PowerLineStatusChangedEventArgs>?
+            PowerLineStatusChanged;
+        protected virtual void OnPowerLineStatusChanged(
+            PowerLineStatusChangedEventArgs e) =>
             PowerLineStatusChanged?.Invoke(this, e);
-        protected virtual void OnPowerLineStatusChanged() =>
-            OnPowerLineStatusChanged(new EventArgs());
+        protected virtual void OnPowerLineStatusChanged(
+            PowerLineStatus powerLineStatus) =>
+            OnPowerLineStatusChanged(
+                new PowerLineStatusChangedEventArgs(powerLineStatus));
 
         public BatteryMonitor() =>
             SystemEvents.PowerModeChanged += SystemEvents_PowerModeChanged;
 
-        public static bool HasSystemBattery =>
-            SystemInformation.PowerStatus.BatteryChargeStatus
-            != BatteryChargeStatus.NoSystemBattery;
+        public bool HasSystemBattery =>
+            Static.HasSystemBattery;
 
-        public static PowerLineStatus PowerLineStatus =>
-            SystemInformation.PowerStatus.PowerLineStatus;
+        public PowerLineStatus PowerLineStatus =>
+            Static.PowerLineStatus;
 
         private void SystemEvents_PowerModeChanged(
             object sender,
@@ -34,7 +49,7 @@ namespace PowerPlanSwitcher
                 return;
             }
 
-            OnPowerLineStatusChanged();
+            OnPowerLineStatusChanged(PowerLineStatus);
         }
     }
 }

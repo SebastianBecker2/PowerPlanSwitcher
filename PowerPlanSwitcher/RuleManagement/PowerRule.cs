@@ -1,4 +1,4 @@
-namespace PowerPlanSwitcher
+namespace PowerPlanSwitcher.RuleManagement
 {
     using Newtonsoft.Json;
     using Properties;

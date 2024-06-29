@@ -2,15 +2,16 @@ namespace PowerPlanSwitcher
 {
     using System.ComponentModel;
     using System.Diagnostics;
+    using PowerPlanSwitcher.ProcessManagement;
 
     public partial class ProcessSelectionDlg : Form
     {
         private sealed class SortableProcess
         {
-            public CachedProcess Process { get; }
+            public ICachedProcess Process { get; }
             public DateTime StartTime { get; } = DateTime.MinValue;
 
-            public SortableProcess(CachedProcess process)
+            public SortableProcess(ICachedProcess process)
             {
                 Process = process;
                 try
@@ -78,8 +79,9 @@ namespace PowerPlanSwitcher
         {
             DgvProcesses.Rows.Clear();
 
+            using var processMonitor = new ProcessMonitor();
             foreach (var sortableProcess in
-                ProcessMonitor.GetUsersProcesses()
+                processMonitor.GetUsersProcesses()
                 .Select(p => new SortableProcess(p))
                 .OrderByDescending(t => t.StartTime))
             {

@@ -1,4 +1,4 @@
-namespace PowerPlanSwitcher
+namespace PowerPlanSwitcher.ProcessManagement
 {
     using System;
     using System.Collections.Concurrent;
@@ -6,7 +6,7 @@ namespace PowerPlanSwitcher
     using System.Globalization;
     using System.Management;
 
-    public class CachedProcess
+    public class CachedProcess : ICachedProcess
     {
         private sealed class CacheKey(int processId, string processName)
         {
@@ -63,9 +63,8 @@ namespace PowerPlanSwitcher
                 {
                     ProcessId = process.Id,
                     ProcessName = process.ProcessName,
-                    //SessionId = process.SessionId,
-                    //StartTime = process.StartTime,
-                    ExecutablePath = process.MainModule!.FileName,
+                    ExecutablePath =
+                        process.MainModule!.FileName.ToLowerInvariant(),
                 });
 
         public static CachedProcess? CreateFromWin32Process(
@@ -107,8 +106,6 @@ namespace PowerPlanSwitcher
 
         public int ProcessId { get; private set; }
         public string ProcessName { get; private set; } = "";
-        //public int SessionId { get; private set; }
-        //public DateTime StartTime { get; private set; }
         public string ExecutablePath { get; private set; } = "";
         public bool IsOwnProcess => ProcessId == OwnProcess.ProcessId;
 

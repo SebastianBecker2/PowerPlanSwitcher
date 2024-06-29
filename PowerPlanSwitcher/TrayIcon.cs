@@ -1,5 +1,6 @@
 namespace PowerPlanSwitcher
 {
+    using PowerPlanSwitcher.PowerManagement;
     using Properties;
 
     internal class TrayIcon : IDisposable
@@ -39,7 +40,7 @@ namespace PowerPlanSwitcher
 
         public void UpdateIcon()
         {
-            var activeSchemeGuid = PowerManager.GetActivePowerSchemeGuid();
+            var activeSchemeGuid = PowerManager.Static.GetActivePowerSchemeGuid();
             if (activeSchemeGuid == Guid.Empty)
             {
                 return;

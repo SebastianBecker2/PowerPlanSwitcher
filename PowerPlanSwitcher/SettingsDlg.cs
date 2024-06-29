@@ -3,12 +3,14 @@ namespace PowerPlanSwitcher
     using System.Data;
     using System.Drawing.Drawing2D;
     using Newtonsoft.Json;
+    using PowerPlanSwitcher.PowerManagement;
+    using PowerPlanSwitcher.RuleManagement;
     using Properties;
 
     public partial class SettingsDlg : Form
     {
         private readonly List<(Guid guid, string name)> powerSchemes =
-            PowerManager.GetPowerSchemes()
+            PowerManager.Static.GetPowerSchemes()
                 .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
                 .Cast<(Guid schemeGuid, string name)>()
                 .ToList();
@@ -66,7 +68,8 @@ namespace PowerPlanSwitcher
                 CmbColorTheme.SelectedIndex = 0;
             }
 
-            GrbBatteryManagement.Visible = BatteryMonitor.HasSystemBattery;
+            GrbBatteryManagement.Visible =
+                BatteryMonitor.Static.HasSystemBattery;
 
             CmbAcPowerScheme.Items.AddRange(powerSchemes
                 .Select(scheme => scheme.name)
@@ -321,7 +324,9 @@ namespace PowerPlanSwitcher
                 },
                 new DataGridViewTextBoxCell
                 {
-                    Value = PowerManager.GetPowerSchemeName(powerRule.SchemeGuid)
+                    Value =
+                        PowerManager.Static.GetPowerSchemeName(
+                            powerRule.SchemeGuid)
                         ?? powerRule.SchemeGuid.ToString(),
                 },
                 new DataGridViewCheckBoxCell

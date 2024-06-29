@@ -1,11 +1,58 @@
-namespace PowerPlanSwitcher
+namespace PowerPlanSwitcher.PowerManagement
 {
     using Vanara.Extensions;
     using Vanara.PInvoke;
     using static Vanara.PInvoke.PowrProf;
 
-    internal class PowerManager : IDisposable
+    public class PowerManager : IDisposable, IPowerManager
     {
+#pragma warning disable CA1716 // Identifiers should not match keywords
+        public static class Static
+#pragma warning restore CA1716 // Identifiers should not match keywords
+        {
+            public static string? GetPowerSchemeName(Guid schemeGuid)
+            {
+                var friendlyName = PowerReadFriendlyName(schemeGuid, null, null);
+                if (string.IsNullOrWhiteSpace(friendlyName))
+                {
+                    return null;
+                }
+                return friendlyName;
+            }
+
+            public static IEnumerable<Guid> GetPowerSchemeGuids() =>
+                PowerEnumerate<Guid>(
+                    null,
+                    null,
+                    POWER_DATA_ACCESSOR.ACCESS_SCHEME);
+
+            public static IEnumerable<(Guid guid, string? name)> GetPowerSchemes()
+            {
+                foreach (var guid in GetPowerSchemeGuids())
+                {
+                    yield return (guid, GetPowerSchemeName(guid));
+                }
+            }
+
+            public static Guid GetActivePowerSchemeGuid()
+            {
+                if (PowerGetActiveScheme(out var activeScheme).Failed)
+                {
+                    return Guid.Empty;
+                }
+                return activeScheme;
+            }
+
+            public static void SetActivePowerScheme(Guid schemeGuid)
+            {
+                if (PowerSetActiveScheme(HKEY.NULL, schemeGuid).Failed)
+                {
+                    throw new InvalidOperationException(
+                        $"Unable to set the active power scheme to {schemeGuid}");
+                }
+            }
+        }
+
         private bool disposedValue;
         private readonly SafeHPOWERNOTIFY powerSettingsChangedCallbackHandler;
 
@@ -26,51 +73,27 @@ namespace PowerPlanSwitcher
                 this,
                 new ActivePowerSchemeChangedEventArgs(activeSchemeGuid));
 
-        public static string? GetPowerSchemeName(Guid schemeGuid)
-        {
-            var friendlyName = PowerReadFriendlyName(schemeGuid, null, null);
-            if (string.IsNullOrWhiteSpace(friendlyName))
-            {
-                return null;
-            }
-            return friendlyName;
-        }
+        public string? GetPowerSchemeName(Guid schemeGuid) =>
+            Static.GetPowerSchemeName(schemeGuid);
 
-        public static IEnumerable<Guid> GetPowerSchemeGuids() =>
-            PowerEnumerate<Guid>(null, null, POWER_DATA_ACCESSOR.ACCESS_SCHEME);
+        public IEnumerable<Guid> GetPowerSchemeGuids() =>
+            Static.GetPowerSchemeGuids();
 
-        public static IEnumerable<(Guid guid, string? name)> GetPowerSchemes()
-        {
-            foreach (var guid in GetPowerSchemeGuids())
-            {
-                yield return (guid, GetPowerSchemeName(guid));
-            }
-        }
+        public IEnumerable<(Guid guid, string? name)> GetPowerSchemes() =>
+            Static.GetPowerSchemes();
 
-        public static Guid GetActivePowerSchemeGuid()
-        {
-            if (PowerGetActiveScheme(out var activeScheme).Failed)
-            {
-                return Guid.Empty;
-            }
-            return activeScheme;
-        }
+        public Guid GetActivePowerSchemeGuid() =>
+            Static.GetActivePowerSchemeGuid();
 
-        public static void SetActivePowerScheme(Guid schemeGuid)
-        {
-            if (PowerSetActiveScheme(HKEY.NULL, schemeGuid).Failed)
-            {
-                throw new InvalidOperationException(
-                    $"Unable to set the active power scheme to {schemeGuid}");
-            }
-        }
+        public void SetActivePowerScheme(Guid schemeGuid) =>
+            Static.SetActivePowerScheme(schemeGuid);
 
         public PowerManager()
         {
             powerSettingsChangedCallback = new DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS
             {
                 Callback = HandlePowerSettingsChanged,
-                Context = IntPtr.Zero
+                Context = nint.Zero
             };
 
             if (PowerSettingRegisterNotification(
@@ -86,11 +109,12 @@ namespace PowerPlanSwitcher
         }
 
         private Win32Error HandlePowerSettingsChanged(
-            IntPtr context,
+            nint context,
             uint eventType,
-            IntPtr settingPtr)
+            nint settingPtr)
         {
-            if (eventType != (uint)User32.PowerBroadcastType.PBT_POWERSETTINGCHANGE || settingPtr == IntPtr.Zero)
+            if (eventType != (uint)User32.PowerBroadcastType.PBT_POWERSETTINGCHANGE
+                || settingPtr == nint.Zero)
             {
                 return Win32Error.NO_ERROR;
             }
@@ -118,7 +142,7 @@ namespace PowerPlanSwitcher
 
             if (disposing)
             {
-                if (powerSettingsChangedCallbackHandler != IntPtr.Zero)
+                if (powerSettingsChangedCallbackHandler != nint.Zero)
                 {
                     _ = PowerSettingUnregisterNotification(
                         powerSettingsChangedCallbackHandler);

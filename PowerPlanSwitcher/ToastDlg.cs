@@ -2,6 +2,7 @@ namespace PowerPlanSwitcher
 {
     using System;
     using System.Windows.Forms;
+    using PowerPlanSwitcher.PowerManagement;
     using static Vanara.PInvoke.User32;
 
     public partial class ToastDlg : Form
@@ -122,7 +123,7 @@ namespace PowerPlanSwitcher
                 toastDlg.PibPowerSchemeIcon.Image =
                     PowerSchemeSettings.GetSetting(activeSchemeGuid)?.Icon;
                 toastDlg.LblPowerSchemeName.Text =
-                    PowerManager.GetPowerSchemeName(activeSchemeGuid);
+                    PowerManager.Static.GetPowerSchemeName(activeSchemeGuid);
                 toastDlg.LblReason.Text = activationReason;
 
                 toastDlg.DisplayTimer.Stop();

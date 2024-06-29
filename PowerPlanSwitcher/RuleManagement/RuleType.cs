@@ -1,4 +1,4 @@
-namespace PowerPlanSwitcher
+namespace PowerPlanSwitcher.RuleManagement
 {
     public enum RuleType
     {

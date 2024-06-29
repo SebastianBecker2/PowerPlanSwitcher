@@ -5,6 +5,7 @@ namespace PowerPlanSwitcher
     using Properties;
     using Serilog;
     using Newtonsoft.Json;
+    using PowerPlanSwitcher.PowerManagement;
 
     internal static class Program
     {
@@ -31,7 +32,7 @@ namespace PowerPlanSwitcher
                     cycleHotkey.Modifier);
             }
 
-            foreach (var hotkey in PowerManager.GetPowerSchemes()
+            foreach (var hotkey in PowerManager.Static.GetPowerSchemes()
                 .Select(ps => PowerSchemeSettings.GetSetting(ps.guid)?.Hotkey)
                 .Where(h => h is not null))
             {
@@ -67,17 +68,17 @@ namespace PowerPlanSwitcher
 
         private static void HandleCycleHotkeyPressed()
         {
-            var schemes = PowerManager.GetPowerSchemeGuids()
+            var schemes = PowerManager.Static.GetPowerSchemeGuids()
                 .Where(ps => !Settings.Default.CycleOnlyVisible
                     || (PowerSchemeSettings.GetSetting(ps)?.Visible ?? false))
                 .ToList();
 
-            var active = PowerManager.GetActivePowerSchemeGuid();
+            var active = PowerManager.Static.GetActivePowerSchemeGuid();
 
             var index = active == Guid.Empty ? 0 : schemes.IndexOf(active);
             index = (index + 1) % schemes.Count;
 
-            PowerManager.SetActivePowerScheme(schemes[index]);
+            PowerManager.Static.SetActivePowerScheme(schemes[index]);
             ToastDlg.ShowToastNotification(
                 schemes[index],
                 "Cycle hotkey pressed");
@@ -86,7 +87,7 @@ namespace PowerPlanSwitcher
         private static void HandlePowerSchemeHotkeyPressed(
             HotkeyPressedEventArgs e)
         {
-            var (guid, _) = PowerManager.GetPowerSchemes()
+            var (guid, _) = PowerManager.Static.GetPowerSchemes()
             .FirstOrDefault(ps =>
             {
                 var setting = PowerSchemeSettings.GetSetting(ps.guid);
@@ -102,7 +103,7 @@ namespace PowerPlanSwitcher
                 return;
             }
 
-            PowerManager.SetActivePowerScheme(guid);
+            PowerManager.Static.SetActivePowerScheme(guid);
             ToastDlg.ShowToastNotification(guid, "Power Plan hotkey pressed");
         }
 
@@ -136,7 +137,7 @@ namespace PowerPlanSwitcher
             if (Settings.Default.ActivateInitialPowerScheme &&
                 Settings.Default.InitialPowerSchemeGuid != Guid.Empty)
             {
-                PowerManager.SetActivePowerScheme(
+                PowerManager.Static.SetActivePowerScheme(
                     Settings.Default.InitialPowerSchemeGuid);
             }
 
