@@ -16,24 +16,6 @@ namespace PowerPlanSwitcherTests
                 SchemeGuid = PowerManagerStub.CreatePowerSchemeGuid(i),
             };
 
-        private static CachedProcessStub CreateProcess(int i) =>
-            new() { ExecutablePath = $"{i}" };
-
-        private static List<CachedProcessStub> CreateProcesses(
-            int start,
-            int count) =>
-            [.. Enumerable
-                .Range(start, count)
-                .Select(CreateProcess)];
-
-        private static ProcessMonitorStub.Action CreateProcessCreatedAction(
-            int i) =>
-            new(ProcessMonitorStub.ActionType.Create, CreateProcess(i));
-
-        private static ProcessMonitorStub.Action CreateProcessTerminatedAction(
-            int i) =>
-            new(ProcessMonitorStub.ActionType.Terminate, CreateProcess(i));
-
         private static void AssertRuleApplication(
             RuleApplicationChangedEventArgs e,
             int i)
@@ -62,42 +44,23 @@ namespace PowerPlanSwitcherTests
         public void NoRules()
         {
             // Data
-            var initialProcesses = CreateProcesses(4, 6);
-            initialProcesses.AddRange(CreateProcesses(0, 2));
-            List<ProcessMonitorStub.Action> processActions =
-            [
-                CreateProcessCreatedAction(2),
-                CreateProcessTerminatedAction(1),
-                CreateProcessTerminatedAction(2),
-                CreateProcessCreatedAction(1),
-                CreateProcessTerminatedAction(1),
-            ];
+            var initialProcesses = ProcessMonitorStub.CreateProcesses(4, 6);
+            initialProcesses.AddRange(ProcessMonitorStub.CreateProcesses(0, 2));
             List<int> expectedRuleApplications = [];
 
             // Arrange
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub(initialProcesses, []);
+            var processMonitor = new ProcessMonitorStub(initialProcesses);
             var ruleManager = new RuleManager()
             {
                 ProcessMonitor = processMonitor,
                 PowerManager = new PowerManagerStub(),
             };
-            ruleManager.RuleApplicationChanged += (s, e) =>
-            {
-                // Assert
-                AssertRuleApplication(
-                    e,
-                    expectedRuleApplications[ruleApplicationCount]);
-                ruleApplicationCount++;
-            };
 
             // Check
             ruleManager.StartEngine([]);
-            // Wait for all simulated actions to finish
-            processMonitor.GetActionTask()?.Wait();
 
             // Assert
-            Assert.IsFalse(processMonitor.IsRunning());
             Assert.AreEqual(
                 expectedRuleApplications.Count,
                 ruleApplicationCount);
@@ -108,13 +71,13 @@ namespace PowerPlanSwitcherTests
         {
             // Data
             var powerRules = CreateRules(1, 4);
-            var initialProcesses = CreateProcesses(4, 6);
-            initialProcesses.AddRange(CreateProcesses(0, 2));
+            var initialProcesses = ProcessMonitorStub.CreateProcesses(4, 6);
+            initialProcesses.AddRange(ProcessMonitorStub.CreateProcesses(0, 2));
             List<int> expectedRuleApplications = [1];
 
             // Arrange
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub(initialProcesses, []);
+            var processMonitor = new ProcessMonitorStub(initialProcesses);
             var ruleManager = new RuleManager()
             {
                 ProcessMonitor = processMonitor,
@@ -133,7 +96,6 @@ namespace PowerPlanSwitcherTests
             ruleManager.StartEngine(powerRules);
 
             // Assert
-            Assert.IsTrue(processMonitor.IsRunning());
             Assert.AreEqual(
                 expectedRuleApplications.Count,
                 ruleApplicationCount);
@@ -144,19 +106,12 @@ namespace PowerPlanSwitcherTests
         {
             // Data
             var powerRules = CreateRules(1, 4);
-            var initialProcesses = CreateProcesses(3, 7);
-            List<ProcessMonitorStub.Action> processActions =
-            [
-                CreateProcessTerminatedAction(3),
-                CreateProcessTerminatedAction(4),
-            ];
+            var initialProcesses = ProcessMonitorStub.CreateProcesses(3, 7);
             List<int> expectedRuleApplications = [3, 4, -100];
 
             // Arrange
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub(
-                initialProcesses,
-                processActions);
+            var processMonitor = new ProcessMonitorStub(initialProcesses);
             var ruleManager = new RuleManager()
             {
                 ProcessMonitor = processMonitor,
@@ -173,11 +128,14 @@ namespace PowerPlanSwitcherTests
 
             // Check
             ruleManager.StartEngine(powerRules);
-            // Wait for all simulated actions to finish
-            processMonitor.GetActionTask()?.Wait();
+            // Simulate process changes
+            processMonitor.StartSimulation(
+            [
+                ProcessMonitorStub.CreateAction(Action.Terminate, 3),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 4),
+            ])?.Wait();
 
             // Assert
-            Assert.IsTrue(processMonitor.IsRunning());
             Assert.AreEqual(
                 expectedRuleApplications.Count,
                 ruleApplicationCount);
@@ -213,24 +171,13 @@ namespace PowerPlanSwitcherTests
         {
             // Data
             var powerRules = CreateRules(1, 4);
-            var initialProcesses = CreateProcesses(3, 7);
-            initialProcesses.AddRange(CreateProcesses(0, 2));
-            List<ProcessMonitorStub.Action> processActions =
-            [
-                CreateProcessTerminatedAction(0),
-                CreateProcessTerminatedAction(5),
-                CreateProcessTerminatedAction(7),
-                CreateProcessTerminatedAction(3),
-                CreateProcessTerminatedAction(1),
-                CreateProcessTerminatedAction(6),
-            ];
+            var initialProcesses = ProcessMonitorStub.CreateProcesses(3, 7);
+            initialProcesses.AddRange(ProcessMonitorStub.CreateProcesses(0, 2));
             List<int> expectedRuleApplications = [1, 4];
 
             // Arrange
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub(
-                initialProcesses,
-                processActions);
+            var processMonitor = new ProcessMonitorStub(initialProcesses);
             var ruleManager = new RuleManager()
             {
                 ProcessMonitor = processMonitor,
@@ -247,11 +194,70 @@ namespace PowerPlanSwitcherTests
 
             // Check
             ruleManager.StartEngine(powerRules);
-            // Wait for all simulated actions to finish
-            processMonitor.GetActionTask()?.Wait();
+            // Simulate process changes
+            processMonitor.StartSimulation(
+            [
+                ProcessMonitorStub.CreateAction(Action.Terminate, 0),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 5),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 7),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 3),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 6),
+            ])?.Wait();
 
             // Assert
-            Assert.IsTrue(processMonitor.IsRunning());
+            Assert.AreEqual(
+                expectedRuleApplications.Count,
+                ruleApplicationCount);
+        }
+
+        [TestMethod]
+        public void BaselineChangeBeforeFallback()
+        {
+            // Data
+            var powerRules = CreateRules(1, 4);
+            var initialProcesses = ProcessMonitorStub.CreateProcesses(3, 7);
+            List<int> expectedRuleApplications = [3, 4, -100, 2, -102];
+
+            // Arrange
+            var ruleApplicationCount = 0;
+            var processMonitor = new ProcessMonitorStub(initialProcesses);
+            var ruleManager = new RuleManager()
+            {
+                ProcessMonitor = processMonitor,
+                PowerManager = new PowerManagerStub(),
+            };
+            ruleManager.RuleApplicationChanged += (s, e) =>
+            {
+                // Assert
+                AssertRuleApplication(
+                    e,
+                    expectedRuleApplications[ruleApplicationCount]);
+                ruleApplicationCount++;
+            };
+
+            // Check
+            ruleManager.StartEngine(powerRules);
+            // Simulate user changing PowerScheme
+            ruleManager.PowerManager.SetActivePowerScheme(
+                ruleManager.PowerManager.GetPowerSchemeGuids().Skip(3).First());
+            // Simulate process changes
+            processMonitor.StartSimulation(
+                [
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 3),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 4),
+                ])?.Wait();
+            // Simulate user changing PowerScheme
+            ruleManager.PowerManager.SetActivePowerScheme(
+                ruleManager.PowerManager.GetPowerSchemeGuids().Skip(2).First());
+            // Simulate process changes
+            processMonitor.StartSimulation(
+                [
+                    ProcessMonitorStub.CreateAction(Action.Create, 2),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 2),
+                ])?.Wait();
+
+            // Assert
             Assert.AreEqual(
                 expectedRuleApplications.Count,
                 ruleApplicationCount);
@@ -269,23 +275,13 @@ namespace PowerPlanSwitcherTests
         {
             // Data
             var powerRules = CreateRules(1, 4);
-            var initialProcesses = CreateProcesses(4, 6);
-            initialProcesses.AddRange(CreateProcesses(0, 2));
-            List<ProcessMonitorStub.Action> processActions =
-            [
-                CreateProcessCreatedAction(2),
-                CreateProcessTerminatedAction(1),
-                CreateProcessTerminatedAction(2),
-                CreateProcessCreatedAction(1),
-                CreateProcessTerminatedAction(1),
-            ];
+            var initialProcesses = ProcessMonitorStub.CreateProcesses(4, 6);
+            initialProcesses.AddRange(ProcessMonitorStub.CreateProcesses(0, 2));
             List<int> expectedRuleApplications = [1, 2, 4, 1, 4];
 
             // Arrange
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub(
-                initialProcesses,
-                processActions);
+            var processMonitor = new ProcessMonitorStub(initialProcesses);
             var ruleManager = new RuleManager()
             {
                 ProcessMonitor = processMonitor,
@@ -302,11 +298,17 @@ namespace PowerPlanSwitcherTests
 
             // Check
             ruleManager.StartEngine(powerRules);
-            // Wait for all simulated actions to finish
-            processMonitor.GetActionTask()?.Wait();
+            // Simulate process changes
+            processMonitor.StartSimulation(
+            [
+                ProcessMonitorStub.CreateAction(Action.Create, 2),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 2),
+                ProcessMonitorStub.CreateAction(Action.Create, 1),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+            ])?.Wait();
 
             // Assert
-            Assert.IsTrue(processMonitor.IsRunning());
             Assert.AreEqual(
                 expectedRuleApplications.Count,
                 ruleApplicationCount);

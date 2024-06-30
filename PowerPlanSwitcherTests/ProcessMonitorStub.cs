@@ -4,22 +4,30 @@ namespace PowerPlanSwitcherTests
     using System.Collections.Generic;
     using PowerPlanSwitcher.ProcessManagement;
 
-    internal class ProcessMonitorStub(
-        IEnumerable<ICachedProcess> initialProcesses,
-        IEnumerable<ProcessMonitorStub.Action> processActions)
+    public enum Action
+    {
+        Create,
+        Terminate,
+    }
+
+    internal partial class ProcessMonitorStub(
+        IEnumerable<ICachedProcess> initialProcesses)
         : IProcessMonitor
     {
-        public enum ActionType
-        {
-            Create,
-            Terminate,
-        }
+        public static (Action Action, ICachedProcess Process) CreateAction(
+            Action action,
+            int i) =>
+            (action, CreateProcess(i));
 
-        public class Action(ActionType type, ICachedProcess process)
-        {
-            public ActionType ActionType { get; set; } = type;
-            public ICachedProcess Process { get; set; } = process;
-        }
+        public static CachedProcessStub CreateProcess(int i) =>
+            new() { ExecutablePath = $"{i}" };
+
+        public static List<CachedProcessStub> CreateProcesses(
+            int start,
+            int count) =>
+            [.. Enumerable
+                .Range(start, count)
+                .Select(CreateProcess)];
 
         public event EventHandler<ProcessEventArgs>? ProcessCreated;
         protected virtual void OnProcessCreated(ICachedProcess process) =>
@@ -28,22 +36,23 @@ namespace PowerPlanSwitcherTests
         protected virtual void OnProcessTerminated(ICachedProcess process) =>
             ProcessTerminated?.Invoke(this, new ProcessEventArgs(process));
 
-        private Task? actionTask;
-
         public IEnumerable<ICachedProcess> GetUsersProcesses() =>
             initialProcesses;
 
-        public void StartMonitoring() =>
-            actionTask = Task.Factory.StartNew(() =>
+        public void StartMonitoring() { }
+
+        public Task StartSimulation(
+            IEnumerable<(Action Action, ICachedProcess Process)> processActions) =>
+            Task.Factory.StartNew(() =>
             {
                 foreach (var action in processActions)
                 {
-                    switch (action.ActionType)
+                    switch (action.Action)
                     {
-                        case ActionType.Create:
+                        case Action.Create:
                             OnProcessCreated(action.Process);
                             break;
-                        case ActionType.Terminate:
+                        case Action.Terminate:
                             OnProcessTerminated(action.Process);
                             break;
                         default:
@@ -51,10 +60,6 @@ namespace PowerPlanSwitcherTests
                     }
                 }
             });
-
-        public Task? GetActionTask() => actionTask;
-
-        public bool IsRunning() => actionTask is not null;
 
         public void StopMonitoring()
         { }
