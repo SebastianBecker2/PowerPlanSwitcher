@@ -62,29 +62,43 @@ namespace PowerPlanSwitcher
 
         private static Point GetPositionOnTaskbar(Size windowSize)
         {
-            var bounds = Taskbar.CurrentBounds;
-            switch (Taskbar.Position)
-            {
-                case TaskbarPosition.Left:
-                    bounds.Location += bounds.Size;
-                    return new Point(bounds.X, bounds.Y - windowSize.Height);
+        //1.
+            // var bounds = Taskbar.CurrentBounds;
+            // switch (Taskbar.Position)
+            // {
+                // case TaskbarPosition.Left:
+                    // bounds.Location += bounds.Size;
+                    // return new Point(bounds.X, bounds.Y - windowSize.Height);
 
-                case TaskbarPosition.Top:
-                    bounds.Location += bounds.Size;
-                    return new Point(bounds.X - windowSize.Width, bounds.Y);
+                // case TaskbarPosition.Top:
+                    // bounds.Location += bounds.Size;
+                    // return new Point(bounds.X - windowSize.Width, bounds.Y);
 
-                case TaskbarPosition.Right:
-                    bounds.Location -= windowSize;
-                    return new Point(bounds.X, bounds.Y + bounds.Height);
+                // case TaskbarPosition.Right:
+                    // bounds.Location -= windowSize;
+                    // return new Point(bounds.X, bounds.Y + bounds.Height);
 
-                case TaskbarPosition.Bottom:
-                    bounds.Location -= windowSize;
-                    return new Point(bounds.X + bounds.Width, bounds.Y);
+                // case TaskbarPosition.Bottom:
+                    // bounds.Location -= windowSize;
+                    // return new Point(bounds.X + bounds.Width, bounds.Y);
 
-                case TaskbarPosition.Unknown:
-                default:
-                    return new Point(0, 0);
-            }
+                // case TaskbarPosition.Unknown:
+                // default:
+                    // return new Point(0, 0);
+            // }
+        
+        //2. center the screen
+            // Rectangle workArea = Screen.PrimaryScreen.WorkingArea;
+            // int x = workArea.Left + (workArea.Width - windowSize.Width) / 2;
+            // int y = workArea.Top + (workArea.Height - windowSize.Height) / 2;
+            // return new Point(x, y);
+
+
+
+        //3. follow system
+            Rectangle workArea = Screen.PrimaryScreen.WorkingArea;
+            int y = workArea.Top + (workArea.Height - windowSize.Height) / 2;
+            return new Point(workArea.Left + (workArea.Width - windowSize.Width), y);
         }
 
         private void Any_Click(object sender, EventArgs e) => Dispose();
