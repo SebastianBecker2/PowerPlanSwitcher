@@ -20,7 +20,7 @@ namespace PowerPlanSwitcherTests
             (action, CreateProcess(i));
 
         public static CachedProcessStub CreateProcess(int i) =>
-            new() { ExecutablePath = $"{i}" };
+            new() { ExecutablePath = $"{i}", ProcessId = i };
 
         public static List<CachedProcessStub> CreateProcesses(
             int start,
@@ -41,8 +41,29 @@ namespace PowerPlanSwitcherTests
 
         public void StartMonitoring() { }
 
-        public Task StartSimulation(
-            IEnumerable<(Action Action, ICachedProcess Process)> processActions) =>
+        public void StartSimulation(
+            IEnumerable<(Action Action, ICachedProcess Process)> processActions)
+        {
+            void Create(ICachedProcess p)
+            {
+                if (initialProcesses.Contains(p))
+                {
+                    return;
+                }
+                initialProcesses = initialProcesses.Append(p);
+                OnProcessCreated(p);
+            }
+
+            void Terminate(ICachedProcess p)
+            {
+                if (!initialProcesses.Contains(p))
+                {
+                    return;
+                }
+                initialProcesses = initialProcesses.Where(ip => !ip.Equals(p));
+                OnProcessTerminated(p);
+            }
+
             Task.Factory.StartNew(() =>
             {
                 foreach (var action in processActions)
@@ -50,16 +71,17 @@ namespace PowerPlanSwitcherTests
                     switch (action.Action)
                     {
                         case Action.Create:
-                            OnProcessCreated(action.Process);
+                            Create(action.Process);
                             break;
                         case Action.Terminate:
-                            OnProcessTerminated(action.Process);
+                            Terminate(action.Process);
                             break;
                         default:
                             throw new NotImplementedException();
                     }
                 }
-            });
+            }).Wait();
+        }
 
         public void StopMonitoring()
         { }

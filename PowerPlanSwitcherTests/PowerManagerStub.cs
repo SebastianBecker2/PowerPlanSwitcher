@@ -11,12 +11,12 @@ namespace PowerPlanSwitcherTests
             new($"00000000-0000-0000-0000-{i:000000000000}");
 
         private static readonly Dictionary<Guid, string> PowerSchemes = new() {
-            { CreatePowerSchemeGuid(100), "PowerScheme 100" },
-            { CreatePowerSchemeGuid(101), "PowerScheme 101" },
-            { CreatePowerSchemeGuid(102), "PowerScheme 102" },
-            { CreatePowerSchemeGuid(103), "PowerScheme 103" },
-            { CreatePowerSchemeGuid(104), "PowerScheme 104" },
-            { CreatePowerSchemeGuid(105), "PowerScheme 105" },
+            { CreatePowerSchemeGuid(1_000), "PowerScheme 1000" },
+            { CreatePowerSchemeGuid(1_001), "PowerScheme 1001" },
+            { CreatePowerSchemeGuid(1_002), "PowerScheme 1002" },
+            { CreatePowerSchemeGuid(1_003), "PowerScheme 1003" },
+            { CreatePowerSchemeGuid(1_004), "PowerScheme 1004" },
+            { CreatePowerSchemeGuid(1_005), "PowerScheme 1005" },
         };
         private Guid activePowerSchemeGuid = PowerSchemes.First().Key;
 

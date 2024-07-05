@@ -1,6 +1,7 @@
 namespace PowerPlanSwitcher.PowerManagement
 {
     using Microsoft.Win32;
+    using PowerPlanSwitcher.Properties;
 
     public class BatteryMonitor : IBatteryMonitor
     {
@@ -14,6 +15,20 @@ namespace PowerPlanSwitcher.PowerManagement
 
             public static PowerLineStatus PowerLineStatus =>
                 SystemInformation.PowerStatus.PowerLineStatus;
+
+            public static Guid GetPowerSchemeGuid(
+                PowerLineStatus powerLineStatus) =>
+                powerLineStatus switch
+                {
+                    PowerLineStatus.Online =>
+                        Settings.Default.AcPowerSchemeGuid,
+                    PowerLineStatus.Offline =>
+                        Settings.Default.BatterPowerSchemeGuid,
+                    PowerLineStatus.Unknown =>
+                        Guid.Empty,
+                    _ =>
+                        Guid.Empty,
+                };
         }
 
         public event EventHandler<PowerLineStatusChangedEventArgs>?
@@ -34,6 +49,9 @@ namespace PowerPlanSwitcher.PowerManagement
 
         public PowerLineStatus PowerLineStatus =>
             Static.PowerLineStatus;
+
+        public Guid GetPowerSchemeGuid(PowerLineStatus powerLineStatus) =>
+            Static.GetPowerSchemeGuid(powerLineStatus);
 
         private void SystemEvents_PowerModeChanged(
             object sender,

@@ -104,6 +104,16 @@ namespace PowerPlanSwitcher.ProcessManagement
 #pragma warning restore CA1507 // Use nameof to express symbol names
         }
 
+        public override bool Equals(object? obj) =>
+            Equals(obj as ICachedProcess);
+
+        public bool Equals(ICachedProcess? other) =>
+            other is not null
+            && ProcessId == other.ProcessId;
+
+        public override int GetHashCode() =>
+            HashCode.Combine(ProcessId);
+
         public int ProcessId { get; private set; }
         public string ProcessName { get; private set; } = "";
         public string ExecutablePath { get; private set; } = "";

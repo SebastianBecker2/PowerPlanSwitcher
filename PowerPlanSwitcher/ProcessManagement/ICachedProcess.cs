@@ -1,6 +1,6 @@
-﻿namespace PowerPlanSwitcher.ProcessManagement
+namespace PowerPlanSwitcher.ProcessManagement
 {
-    public interface ICachedProcess
+    public interface ICachedProcess : IEquatable<ICachedProcess>
     {
         string ExecutablePath { get; }
         bool IsOwnProcess { get; }
