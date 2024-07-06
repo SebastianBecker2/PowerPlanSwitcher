@@ -24,7 +24,7 @@ namespace PowerPlanSwitcher.ProcessManagement
                 HashCode.Combine(ProcessId, ProcessName);
         }
 
-        private static readonly ConcurrentDictionary<CacheKey, CachedProcess>
+        private static readonly ConcurrentDictionary<CacheKey, CachedProcess?>
             Cache = new();
         private static readonly CachedProcess OwnProcess =
             CreateFromProcess(Process.GetCurrentProcess())
@@ -48,6 +48,8 @@ namespace PowerPlanSwitcher.ProcessManagement
             }
             catch (Exception)
             {
+                _ = Cache.TryAdd(key, null);
+                Debug.Print($"Caching process {processName} / {processId} caused an exception");
                 return null;
             }
 
