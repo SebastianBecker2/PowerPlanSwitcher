@@ -3,7 +3,6 @@ namespace PowerPlanSwitcherTests
     using System;
     using System.Diagnostics;
     using System.Windows.Forms;
-    using PowerPlanSwitcher.PowerManagement;
     using PowerPlanSwitcher.RuleManagement;
 
     [TestClass]
@@ -76,10 +75,9 @@ namespace PowerPlanSwitcherTests
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(initialProcesses);
-            var ruleManager = new RuleManager()
+            var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
-                PowerManager = new PowerManagerStub(),
             };
 
             ruleManager.StartEngine([]);
@@ -98,10 +96,9 @@ namespace PowerPlanSwitcherTests
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(initialProcesses);
-            var ruleManager = new RuleManager()
+            var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
-                PowerManager = new PowerManagerStub(),
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
@@ -126,10 +123,9 @@ namespace PowerPlanSwitcherTests
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
                 ProcessMonitorStub.CreateProcesses(3, 7));
-            var ruleManager = new RuleManager()
+            var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
-                PowerManager = new PowerManagerStub(),
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
@@ -148,24 +144,8 @@ namespace PowerPlanSwitcherTests
         }
 
         [TestMethod]
-        public void MissingPowerManager()
-        {
-            var ruleManager = new RuleManager();
-
-            try
-            {
-                ruleManager.StartEngine(CreateRules(1, 4));
-            }
-            catch (InvalidOperationException exc)
-            {
-                StringAssert.Contains(
-                    exc.Message,
-                    $"{nameof(PowerManager)} is null.");
-                return;
-            }
-
-            Assert.Fail("The expected exception was not thrown.");
-        }
+        public void UnknownActivePowerScheme() =>
+            Assert.Fail("UnitTest not implemented yet");
 
         [TestMethod]
         public void ProcessTermination()
@@ -180,10 +160,9 @@ namespace PowerPlanSwitcherTests
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(initialProcesses);
-            var ruleManager = new RuleManager()
+            var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
-                PowerManager = new PowerManagerStub(),
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
@@ -228,11 +207,9 @@ namespace PowerPlanSwitcherTests
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
                 ProcessMonitorStub.CreateProcesses(0, 10));
-            var powerManager = new PowerManagerStub();
-            var ruleManager = new RuleManager()
+            var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
-                PowerManager = powerManager,
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
@@ -283,10 +260,9 @@ namespace PowerPlanSwitcherTests
                 ProcessMonitorStub.CreateProcesses(3, 7));
             var powerManager = new PowerManagerStub();
             var rules = CreateRules(1, 4);
-            var ruleManager = new RuleManager()
+            var ruleManager = new RuleManager(powerManager)
             {
                 ProcessMonitor = processMonitor,
-                PowerManager = powerManager,
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
@@ -334,10 +310,9 @@ namespace PowerPlanSwitcherTests
             var processMonitor = new ProcessMonitorStub(
                 ProcessMonitorStub.CreateProcesses(3, 7));
             var batteryManager = new BatteryManagerStub(false);
-            var ruleManager = new RuleManager()
+            var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
-                PowerManager = new PowerManagerStub(),
                 BatteryMonitor = batteryManager,
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
@@ -370,10 +345,9 @@ namespace PowerPlanSwitcherTests
             var processMonitor = new ProcessMonitorStub(
                 ProcessMonitorStub.CreateProcesses(3, 7));
             var batteryManager = new BatteryManagerStub();
-            var ruleManager = new RuleManager()
+            var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
-                PowerManager = new PowerManagerStub(),
                 BatteryMonitor = batteryManager,
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
@@ -409,10 +383,9 @@ namespace PowerPlanSwitcherTests
             var processMonitor = new ProcessMonitorStub(
                 ProcessMonitorStub.CreateProcesses(3, 7));
             var batteryManager = new BatteryManagerStub();
-            var ruleManager = new RuleManager()
+            var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
-                PowerManager = new PowerManagerStub(),
                 BatteryMonitor = batteryManager,
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
@@ -454,10 +427,9 @@ namespace PowerPlanSwitcherTests
             var processMonitor = new ProcessMonitorStub(
                 ProcessMonitorStub.CreateProcesses(3, 7));
             var batteryManager = new BatteryManagerStub();
-            var ruleManager = new RuleManager()
+            var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
-                PowerManager = new PowerManagerStub(),
                 BatteryMonitor = batteryManager,
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
@@ -496,10 +468,10 @@ namespace PowerPlanSwitcherTests
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
                 ProcessMonitorStub.CreateProcesses(3, 7));
-            var ruleManager = new RuleManager()
+            var powerManager = new PowerManagerStub();
+            var ruleManager = new RuleManager(powerManager)
             {
                 ProcessMonitor = processMonitor,
-                PowerManager = new PowerManagerStub(),
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
@@ -508,15 +480,15 @@ namespace PowerPlanSwitcherTests
             };
 
             ruleManager.StartEngine(CreateRules(1, 4));
-            ruleManager.PowerManager.SetActivePowerScheme(
-                ruleManager.PowerManager.GetPowerSchemeGuids().Skip(3).First());
+            powerManager.SetActivePowerScheme(
+                powerManager.GetPowerSchemeGuids().Skip(3).First());
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
                     ProcessMonitorStub.CreateAction(Action.Terminate, 4),
                 ]);
-            ruleManager.PowerManager.SetActivePowerScheme(
-                ruleManager.PowerManager.GetPowerSchemeGuids().Skip(2).First());
+            powerManager.SetActivePowerScheme(
+                powerManager.GetPowerSchemeGuids().Skip(2).First());
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Create, 2),
@@ -548,10 +520,9 @@ namespace PowerPlanSwitcherTests
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(initialProcesses);
-            var ruleManager = new RuleManager()
+            var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
-                PowerManager = new PowerManagerStub(),
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {

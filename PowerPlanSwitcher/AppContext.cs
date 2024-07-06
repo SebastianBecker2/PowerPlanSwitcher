@@ -11,7 +11,7 @@ namespace PowerPlanSwitcher
         private readonly PowerManager powerManager = new();
         private readonly BatteryMonitor batteryMonitor = new();
         private readonly ProcessMonitor processMonitor = new();
-        private readonly RuleManager ruleManager = new();
+        private readonly RuleManager? ruleManager;
         private readonly TrayIcon trayIcon = new();
 
         public AppContext()
@@ -21,9 +21,11 @@ namespace PowerPlanSwitcher
             powerManager.ActivePowerSchemeChanged +=
                 (s, e) => trayIcon.UpdateIcon(e.ActiveSchemeGuid);
 
-            ruleManager.BatteryMonitor = batteryMonitor;
-            ruleManager.ProcessMonitor = processMonitor;
-            ruleManager.PowerManager = powerManager;
+            ruleManager = new(powerManager)
+            {
+                BatteryMonitor = batteryMonitor,
+                ProcessMonitor = processMonitor
+            };
             ruleManager.RuleApplicationChanged +=
                 RuleManager_RuleApplicationChanged;
             ruleManager.StartEngine(PowerRule.GetPowerRules());
@@ -41,7 +43,7 @@ namespace PowerPlanSwitcher
                 return;
             }
 
-            ruleManager.StartEngine(PowerRule.GetPowerRules());
+            ruleManager?.StartEngine(PowerRule.GetPowerRules());
         }
 
         private void RuleManager_RuleApplicationChanged(
@@ -67,7 +69,7 @@ namespace PowerPlanSwitcher
         {
             if (disposing)
             {
-                ruleManager.StopEngine();
+                ruleManager?.StopEngine();
                 processMonitor.Dispose();
                 powerManager.Dispose();
                 trayIcon.Dispose();

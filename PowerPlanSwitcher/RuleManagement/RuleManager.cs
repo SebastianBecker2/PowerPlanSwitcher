@@ -23,24 +23,35 @@ namespace PowerPlanSwitcher.RuleManagement
 
         public IBatteryMonitor? BatteryMonitor { get; set; }
         public IProcessMonitor? ProcessMonitor { get; set; }
-        public IPowerManager? PowerManager { get; set; }
+        private readonly IPowerManager powerManager;
         private IEnumerable<PowerRule>? rules;
         private readonly object syncObj = new();
         private Guid baselinePowerSchemeGuid;
 
-        public void StartEngine(IEnumerable<PowerRule> rules)
+        public RuleManager(IPowerManager powerManager)
         {
-            if (PowerManager is null)
+            this.powerManager = powerManager;
+
+            if (baselinePowerSchemeGuid == Guid.Empty)
             {
-                throw new InvalidOperationException(
-                    $"{nameof(PowerManager)} is null.");
+                baselinePowerSchemeGuid =
+                    this.powerManager.GetActivePowerSchemeGuid();
+                if (baselinePowerSchemeGuid == Guid.Empty)
+                {
+                    throw new InvalidOperationException(
+                        "Unable to determine active power scheme");
+                }
             }
 
+            this.powerManager.ActivePowerSchemeChanged +=
+                PowerManager_ActivePowerSchemeChanged;
+        }
+
+        public void StartEngine(IEnumerable<PowerRule> rules)
+        {
             lock (syncObj)
             {
                 StopEngine();
-
-                StartPowerManager();
 
                 // BatteryMonitor isn't reliant on rules,
                 // so we start it even when we don't have any rules.
@@ -82,19 +93,6 @@ namespace PowerPlanSwitcher.RuleManagement
                     BatteryMonitor.PowerLineStatus));
         }
 
-        private void StartPowerManager()
-        {
-            baselinePowerSchemeGuid = PowerManager!.GetActivePowerSchemeGuid();
-            if (baselinePowerSchemeGuid == Guid.Empty)
-            {
-                throw new InvalidOperationException(
-                    "Unable to determine active power scheme");
-            }
-
-            PowerManager!.ActivePowerSchemeChanged +=
-                PowerManager_ActivePowerSchemeChanged;
-        }
-
         private void StartProcessMonitor()
         {
             ProcessMonitor!.ProcessCreated += ProcessMonitor_ProcessCreated;
@@ -108,20 +106,9 @@ namespace PowerPlanSwitcher.RuleManagement
         {
             lock (syncObj)
             {
-                StopPowerManager();
-
                 StopBatteryMonitor();
 
                 StopProcessMonitor();
-            }
-        }
-
-        private void StopPowerManager()
-        {
-            if (PowerManager is not null)
-            {
-                PowerManager.ActivePowerSchemeChanged -=
-                    PowerManager_ActivePowerSchemeChanged;
             }
         }
 
