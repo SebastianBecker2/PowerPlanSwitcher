@@ -1,7 +1,6 @@
 namespace PowerPlanSwitcherTests
 {
     using System;
-    using System.Diagnostics;
     using System.Windows.Forms;
     using PowerPlanSwitcher.RuleManagement;
 
@@ -213,24 +212,16 @@ namespace PowerPlanSwitcherTests
             Assert.AreEqual(expectations.Count, ruleApplicationCount);
         }
 
-        // Rules           [0,1,2,3            ]
-        // Init Processes  [0,1,2,3,4,5,6,7,8,9]
-        // Terminate Event [  1                ]
-        // Terminate Event [0                  ]
-        // Rules           [            6,7,8,9]
-        // Create Event    [0                  ]
-        // Terminate Event [            6      ]
-        // Terminate Event [0                  ]
-        // Rules           [                   ]
-        // Create Event    [            6      ]
         [TestMethod]
         public void ChangingRules()
         {
             List<Expectation> expectations = [
                 new(Reason.RuleApplied, 0),
                 new(Reason.RuleApplied, 2),
+                new(Reason.BaselineApplied, 1_000),
                 new(Reason.RuleApplied, 6),
                 new(Reason.RuleApplied, 7),
+                new(Reason.BaselineApplied, 1_000),
             ];
 
             var ruleApplicationCount = 0;
@@ -242,7 +233,6 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
-                Debug.Print($"Switched to {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
