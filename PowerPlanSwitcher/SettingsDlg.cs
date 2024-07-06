@@ -624,5 +624,17 @@ namespace PowerPlanSwitcher
             LblCycleHotkey.Text = "[ ---------- ]";
             LblCycleHotkey.Tag = null;
         }
+
+        private void DgvPowerRules_CellContentDoubleClick(
+            object sender,
+            DataGridViewCellEventArgs e)
+        {
+            if (e.RowIndex < 0 || e.RowIndex >= DgvPowerRules.RowCount)
+            {
+                return;
+            }
+
+            HandleBtnEditPowerRuleClick(sender, e);
+        }
     }
 }

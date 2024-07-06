@@ -4003,6 +4003,7 @@
             LsvIcons.SmallImageList = ImlIcons;
             LsvIcons.TabIndex = 7;
             LsvIcons.UseCompatibleStateImageBehavior = false;
+            LsvIcons.MouseDoubleClick += LsvIcons_MouseDoubleClick;
             // 
             // TxtFilter
             // 

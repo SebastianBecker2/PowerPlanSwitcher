@@ -216,6 +216,7 @@ namespace PowerPlanSwitcher
             DgvPowerRules.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             DgvPowerRules.Size = new Size(685, 158);
             DgvPowerRules.TabIndex = 7;
+            DgvPowerRules.CellContentDoubleClick += DgvPowerRules_CellContentDoubleClick;
             // 
             // DgcRuleIndex
             // 
