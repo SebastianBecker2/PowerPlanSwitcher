@@ -250,9 +250,11 @@ namespace PowerPlanSwitcherTests
             List<Expectation> expectations = [
                 new(Reason.RuleApplied, 3),
                 new(Reason.RuleApplied, 4),
+                new(Reason.BaselineApplied, 1_000),
                 new(Reason.RuleApplied, 4),
                 new(Reason.BaselineApplied, 1_003),
                 new(Reason.RuleApplied, 2),
+                new(Reason.BaselineApplied, 1_003),
             ];
 
             var ruleApplicationCount = 0;
