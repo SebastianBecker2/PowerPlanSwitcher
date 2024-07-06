@@ -1,6 +1,7 @@
 namespace PowerPlanSwitcher
 {
     using System;
+    using System.Diagnostics;
     using System.Drawing;
     using System.Windows.Forms;
 
@@ -71,5 +72,8 @@ namespace PowerPlanSwitcher
             SelectedIcon = Image.FromFile(dlg.FileName);
             DialogResult = DialogResult.OK;
         }
+
+        private void LsvIcons_MouseDoubleClick(object sender, MouseEventArgs e) =>
+            BtnOk_Click(sender, e);
     }
 }
