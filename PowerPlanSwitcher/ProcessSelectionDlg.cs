@@ -26,7 +26,7 @@ namespace PowerPlanSwitcher
             }
         }
 
-        public CachedProcess? SelectedProcess { get; set; }
+        public ICachedProcess? SelectedProcess { get; set; }
 
         public ProcessSelectionDlg() => InitializeComponent();
 
@@ -114,7 +114,8 @@ namespace PowerPlanSwitcher
                 return;
             }
 
-            SelectedProcess = DgvProcesses.SelectedRows[0].Tag as CachedProcess;
+            SelectedProcess =
+                (DgvProcesses.SelectedRows[0].Tag as SortableProcess)!.Process;
             DialogResult = DialogResult.OK;
         }
 
