@@ -18,7 +18,17 @@ namespace PowerPlanSwitcherTests
             { CreatePowerSchemeGuid(1_004), "PowerScheme 1004" },
             { CreatePowerSchemeGuid(1_005), "PowerScheme 1005" },
         };
-        private Guid activePowerSchemeGuid = PowerSchemes.First().Key;
+        private Guid activePowerSchemeGuid;
+
+        public PowerManagerStub(Guid? activePowerScheme = null)
+        {
+            if (activePowerScheme is null)
+            {
+                activePowerSchemeGuid = PowerSchemes.First().Key;
+                return;
+            }
+            activePowerSchemeGuid = activePowerScheme.Value;
+        }
 
         public event EventHandler<ActivePowerSchemeChangedEventArgs>?
             ActivePowerSchemeChanged;

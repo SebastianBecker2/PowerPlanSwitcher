@@ -172,8 +172,60 @@ namespace PowerPlanSwitcherTests
         }
 
         [TestMethod]
-        public void UnknownActivePowerScheme() =>
-            Assert.Fail("UnitTest not implemented yet");
+        public void UnknownActivePowerScheme()
+        {
+            var processMonitor = new ProcessMonitorStub(
+                ProcessMonitorStub.CreateProcesses(3, 7));
+            var powerManager = new PowerManagerStub(Guid.Empty);
+
+            Assert.ThrowsException<InvalidOperationException>(() =>
+                new RuleManager(powerManager)
+                {
+                    ProcessMonitor = processMonitor,
+                }
+            );
+        }
+
+        [TestMethod]
+        public void ChangeToUnkownPowerScheme()
+        {
+            List<Expectation> expectations = [
+                new(Reason.RuleApplied, 3),
+                new(Reason.RuleApplied, 4),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_000),
+            ];
+
+            var ruleApplicationCount = 0;
+            var processMonitor = new ProcessMonitorStub(
+                ProcessMonitorStub.CreateProcesses(3, 7));
+            var powerManager = new PowerManagerStub();
+            var ruleManager = new RuleManager(powerManager)
+            {
+                ProcessMonitor = processMonitor,
+            };
+            ruleManager.RuleApplicationChanged += (s, e) =>
+            {
+                AssertRuleApplication(e, expectations[ruleApplicationCount]);
+                ruleApplicationCount++;
+            };
+
+            ruleManager.StartEngine(CreateRules(1, 4));
+            processMonitor.StartSimulation(
+                [
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 3),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 4),
+                ]);
+            powerManager.SetActivePowerScheme(Guid.Empty);
+            processMonitor.StartSimulation(
+                [
+                    ProcessMonitorStub.CreateAction(Action.Create, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                ]);
+
+            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+        }
 
         [TestMethod]
         public void ProcessTermination()
