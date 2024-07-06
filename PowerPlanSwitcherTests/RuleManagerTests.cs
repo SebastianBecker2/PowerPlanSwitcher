@@ -67,6 +67,35 @@ namespace PowerPlanSwitcherTests
             Enumerable.Range(start, count).Select(CreatePowerRule).ToList();
 
         [TestMethod]
+        public void FallbackWhenNewRulesDoNotApply()
+        {
+            List<Expectation> expectations = [
+                new(Reason.RuleApplied, 3),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 3),
+            ];
+
+            var ruleApplicationCount = 0;
+            var processMonitor = new ProcessMonitorStub(
+                ProcessMonitorStub.CreateProcesses(3, 7));
+            var ruleManager = new RuleManager(new PowerManagerStub())
+            {
+                ProcessMonitor = processMonitor,
+            };
+            ruleManager.RuleApplicationChanged += (s, e) =>
+            {
+                AssertRuleApplication(e, expectations[ruleApplicationCount]);
+                ruleApplicationCount++;
+            };
+
+            ruleManager.StartEngine(CreateRules(1, 4));
+            ruleManager.StartEngine(CreateRules(0, 2));
+            ruleManager.StartEngine(CreateRules(0, 4));
+
+            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+        }
+
+        [TestMethod]
         public void NoRules()
         {
             var initialProcesses = ProcessMonitorStub.CreateProcesses(4, 6);
