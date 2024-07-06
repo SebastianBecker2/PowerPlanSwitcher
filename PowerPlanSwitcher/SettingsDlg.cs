@@ -17,6 +17,14 @@ namespace PowerPlanSwitcher
 
         protected override void OnLoad(EventArgs e)
         {
+            static void AddPowerSchemesToComboBox(
+                ComboBox cmb,
+                List<(Guid _, string name)> powerSchemes) =>
+                cmb.Items.AddRange(powerSchemes
+                    .Select(scheme => scheme.name)
+                    .Cast<object>()
+                    .ToArray());
+
             DgvPowerSchemes.Rows.AddRange(powerSchemes
                 .Select(SchemeToRow)
                 .ToArray());
@@ -25,6 +33,7 @@ namespace PowerPlanSwitcher
 
             ChbActivateInitialPowerScheme.Checked =
                 Settings.Default.ActivateInitialPowerScheme;
+            AddPowerSchemesToComboBox(CmbInitialPowerScheme, powerSchemes);
             CmbInitialPowerScheme.Items.AddRange(powerSchemes
                 .Select(scheme => scheme.name)
                 .Cast<object>()
@@ -68,11 +77,8 @@ namespace PowerPlanSwitcher
 
             GrbBatteryManagement.Visible = BatteryMonitor.HasSystemBattery();
 
-            CmbAcPowerScheme.Items.AddRange(powerSchemes
-                .Select(scheme => scheme.name)
-                .Cast<object>()
-                .ToArray());
-            if (Settings.Default.InitialPowerSchemeGuid == Guid.Empty)
+            AddPowerSchemesToComboBox(CmbAcPowerScheme, powerSchemes);
+            if (Settings.Default.AcPowerSchemeGuid == Guid.Empty)
             {
                 CmbAcPowerScheme.SelectedIndex = 0;
             }
@@ -80,22 +86,19 @@ namespace PowerPlanSwitcher
             {
                 CmbAcPowerScheme.SelectedIndex = powerSchemes.FindIndex(
                     scheme => scheme.guid
-                        == Settings.Default.InitialPowerSchemeGuid);
+                        == Settings.Default.AcPowerSchemeGuid);
             }
 
-            CmbBatteryPowerScheme.Items.AddRange(powerSchemes
-                .Select(scheme => scheme.name)
-                .Cast<object>()
-                .ToArray());
-            if (Settings.Default.InitialPowerSchemeGuid == Guid.Empty)
+            AddPowerSchemesToComboBox(CmbBatteryPowerScheme, powerSchemes);
+            if (Settings.Default.BatterPowerSchemeGuid == Guid.Empty)
             {
-                CmbAcPowerScheme.SelectedIndex = 0;
+                CmbBatteryPowerScheme.SelectedIndex = 0;
             }
             else
             {
-                CmbAcPowerScheme.SelectedIndex = powerSchemes.FindIndex(
+                CmbBatteryPowerScheme.SelectedIndex = powerSchemes.FindIndex(
                     scheme => scheme.guid
-                        == Settings.Default.InitialPowerSchemeGuid);
+                        == Settings.Default.BatterPowerSchemeGuid);
             }
 
             ChbShowToastNotifications.Checked =
