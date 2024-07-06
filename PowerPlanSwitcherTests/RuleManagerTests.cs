@@ -234,7 +234,7 @@ namespace PowerPlanSwitcherTests
                 ProcessMonitorStub.CreateProcesses(3, 7));
             var powerManager = new PowerManagerStub(Guid.Empty);
 
-            Assert.ThrowsException<InvalidOperationException>(() =>
+            _ = Assert.ThrowsException<InvalidOperationException>(() =>
                 new RuleManager(powerManager)
                 {
                     ProcessMonitor = processMonitor,
