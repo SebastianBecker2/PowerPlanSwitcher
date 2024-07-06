@@ -240,6 +240,7 @@ namespace PowerPlanSwitcher.RuleManagement
                         }
 
                         highestRuleDeactivated = rule.ActivationCount == 0;
+                        higherRuleActive = rule.ActivationCount != 0;
 
                         continue;
                     }
