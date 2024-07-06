@@ -20,7 +20,7 @@ namespace PowerPlanSwitcher
         {
             var contextMenu = new ContextMenu();
             notifyIcon.ContextMenuStrip = contextMenu;
-            contextMenu.SettingsChanged += (_, _) => UpdateIcon();
+            Settings.Default.PropertyChanged += (_, _) => UpdateIcon();
 
             notifyIcon.MouseClick += NotifyIcon_MouseClick;
 

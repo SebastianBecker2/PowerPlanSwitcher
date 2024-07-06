@@ -4,11 +4,6 @@ namespace PowerPlanSwitcher
 
     internal class ContextMenu : ContextMenuStrip
     {
-
-        public event EventHandler<SettingsChangedEventArgs>? SettingsChanged;
-        protected virtual void OnSettingsChanged() =>
-            SettingsChanged?.Invoke(this, new SettingsChangedEventArgs());
-
         public ContextMenu()
         {
             BuildContextMenu();
@@ -74,11 +69,7 @@ namespace PowerPlanSwitcher
                 try
                 {
                     using var dlg = new SettingsDlg();
-                    if (dlg.ShowDialog() != DialogResult.OK)
-                    {
-                        return;
-                    }
-                    OnSettingsChanged();
+                    _ = dlg.ShowDialog();
                 }
                 finally
                 {
