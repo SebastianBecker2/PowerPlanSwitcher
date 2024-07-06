@@ -11,7 +11,7 @@ namespace PowerPlanSwitcherTests
     }
 
     internal partial class ProcessMonitorStub(
-        IEnumerable<ICachedProcess> initialProcesses)
+        List<ICachedProcess> initialProcesses)
         : IProcessMonitor
     {
         public static (Action Action, ICachedProcess Process) CreateAction(
@@ -22,7 +22,7 @@ namespace PowerPlanSwitcherTests
         public static CachedProcessStub CreateProcess(int i) =>
             new() { ExecutablePath = $"{i}", ProcessId = i };
 
-        public static List<CachedProcessStub> CreateProcesses(
+        public static List<ICachedProcess> CreateProcesses(
             int start,
             int count) =>
             [.. Enumerable
@@ -46,21 +46,16 @@ namespace PowerPlanSwitcherTests
         {
             void Create(ICachedProcess p)
             {
-                if (initialProcesses.Contains(p))
-                {
-                    return;
-                }
-                initialProcesses = initialProcesses.Append(p);
+                initialProcesses.Add(p);
                 OnProcessCreated(p);
             }
 
             void Terminate(ICachedProcess p)
             {
-                if (!initialProcesses.Contains(p))
+                if (!initialProcesses.Remove(p))
                 {
                     return;
                 }
-                initialProcesses = initialProcesses.Where(ip => !ip.Equals(p));
                 OnProcessTerminated(p);
             }
 

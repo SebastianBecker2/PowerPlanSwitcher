@@ -95,9 +95,9 @@ namespace PowerPlanSwitcherTests
             ];
 
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub(
-                ProcessMonitorStub.CreateProcesses(4, 6)
-                    .Concat(ProcessMonitorStub.CreateProcesses(0, 2)));
+            var processMonitor = new ProcessMonitorStub([
+                .. ProcessMonitorStub.CreateProcesses(4, 6),
+                .. ProcessMonitorStub.CreateProcesses(0, 2)]);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
@@ -116,6 +116,40 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Terminate, 2),
                     ProcessMonitorStub.CreateAction(Action.Create, 1),
                     ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                ]);
+
+            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+        }
+
+        [TestMethod]
+        public void MultipleProcessesForRule()
+        {
+            List<Expectation> expectations = [
+                new(Reason.RuleApplied, 2),
+                new(Reason.RuleApplied, 1),
+                new(Reason.RuleApplied, 2),
+            ];
+
+            var ruleApplicationCount = 0;
+            var processMonitor = new ProcessMonitorStub([]);
+            var ruleManager = new RuleManager(new PowerManagerStub())
+            {
+                ProcessMonitor = processMonitor,
+            };
+            ruleManager.RuleApplicationChanged += (s, e) =>
+            {
+                AssertRuleApplication(e, expectations[ruleApplicationCount]);
+                ruleApplicationCount++;
+            };
+
+            ruleManager.StartEngine(CreateRules(1, 4));
+            processMonitor.StartSimulation(
+                [
+                    ProcessMonitorStub.CreateAction(Action.Create, 2),
+                    ProcessMonitorStub.CreateAction(Action.Create, 2),
+                    ProcessMonitorStub.CreateAction(Action.Create, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 2),
                 ]);
 
             Assert.AreEqual(expectations.Count, ruleApplicationCount);
