@@ -73,6 +73,12 @@ namespace PowerPlanSwitcher.ProcessManagement
 #pragma warning disable CA1507 // Use nameof to express symbol names
             try
             {
+                var executablePathProperty = obj["ExecutablePath"];
+                if (executablePathProperty is null)
+                {
+                    return null;
+                }
+
                 var processId = Convert.ToInt32(
                     obj["ProcessId"],
                     CultureInfo.InvariantCulture);
@@ -92,7 +98,7 @@ namespace PowerPlanSwitcher.ProcessManagement
                         //    obj["CreationDate"]!.ToString()![..21],
                         //    "yyyyMMddHHmmss.ffffff",
                         //    null),
-                        ExecutablePath = obj["ExecutablePath"]
+                        ExecutablePath = executablePathProperty
                             !.ToString()
                             !.ToLowerInvariant(),
                     });
