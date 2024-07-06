@@ -130,6 +130,15 @@ namespace PowerPlanSwitcher.RuleManagement
                 return;
             }
 
+            if (HasActiveRule())
+            {
+                ApplyBaselinePowerScheme();
+                foreach (var rule in rules ?? [])
+                {
+                    rule.ActivationCount = 0;
+                }
+            }
+
             ProcessMonitor.ProcessCreated -= ProcessMonitor_ProcessCreated;
             ProcessMonitor.ProcessTerminated -= ProcessMonitor_ProcessTerminated;
         }
@@ -204,10 +213,7 @@ namespace PowerPlanSwitcher.RuleManagement
                     }
                     higherRuleActive = true;
 
-                    OnRuleApplicationChanged(
-                        rule.SchemeGuid,
-                        $"Rule {rule.Index + 1} applies",
-                        rule);
+                    ApplyRule(rule);
                 }
             }
         }
@@ -242,10 +248,7 @@ namespace PowerPlanSwitcher.RuleManagement
                         && !higherRuleActive
                         && rule.ActivationCount > 0)
                     {
-                        OnRuleApplicationChanged(
-                            rule.SchemeGuid,
-                            $"Rule {rule.Index + 1} applies",
-                            rule);
+                        ApplyRule(rule);
                     }
 
                     higherRuleActive =
@@ -255,10 +258,7 @@ namespace PowerPlanSwitcher.RuleManagement
 
                 if (!higherRuleActive)
                 {
-                    OnRuleApplicationChanged(
-                        baselinePowerSchemeGuid,
-                        "No rule applies",
-                        null);
+                    ApplyBaselinePowerScheme();
                 }
             }
         }
@@ -288,13 +288,22 @@ namespace PowerPlanSwitcher.RuleManagement
                     }
                     higherRuleActive = true;
 
-                    OnRuleApplicationChanged(
-                        rule.SchemeGuid,
-                        $"Rule {rule.Index + 1} applies",
-                        rule);
+                    ApplyRule(rule);
                 }
             }
         }
+
+        private void ApplyRule(PowerRule rule) =>
+            OnRuleApplicationChanged(
+                rule.SchemeGuid,
+                $"Rule {rule.Index + 1} applies",
+                rule);
+
+        private void ApplyBaselinePowerScheme() =>
+            OnRuleApplicationChanged(
+                baselinePowerSchemeGuid,
+                "No rule applies",
+                null);
 
         private PowerRule? GetActiveRule() =>
             rules?.FirstOrDefault(r => r.ActivationCount > 0);
