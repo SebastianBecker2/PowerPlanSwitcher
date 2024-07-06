@@ -36,30 +36,41 @@ namespace PowerPlanSwitcherTests
         {
             if (expectation.Reason == Reason.BaselineApplied)
             {
-                Assert.IsNull(e.Rule);
-                StringAssert.Contains(e.Reason!, "No rule applies");
+                Assert.IsNull(e.Rule, "Expected baseline to be applied");
+                Assert.IsNotNull(e.Reason, "Expected a reason to be provided");
+                StringAssert.Contains(
+                    e.Reason,
+                    "No rule applies",
+                    "Reason not as expected");
                 Assert.AreEqual(
                     expectation.GetPowerSchemeGuid(),
-                    e.PowerSchemeGuid);
+                    e.PowerSchemeGuid,
+                    "PowerSchemeGuid doesn't match expectation");
                 return;
             }
             if (expectation.Reason == Reason.PowerLineChanged)
             {
-                Assert.IsNull(e.Rule);
-                Assert.IsNull(e.Reason);
+                Assert.IsNull(e.Rule, "Expected PowerLineChange");
+                Assert.IsNull(e.Reason, "Expected no reason to be provided");
                 Assert.AreEqual(
                     expectation.GetPowerSchemeGuid(),
-                    e.PowerSchemeGuid);
+                    e.PowerSchemeGuid,
+                    "PowerSchemeGuid doesn't match expectation");
                 return;
             }
 
-            Assert.AreEqual(expectation.Index, e.Rule!.Index);
+            Assert.IsNotNull(e.Rule, "Expected rule to be applied");
+            Assert.AreEqual(
+                expectation.Index,
+                e.Rule.Index,
+                "Wrong rule applied");
             StringAssert.Contains(
-                e.Reason!,
+                e.Reason,
                 $"Rule {expectation.Index + 1} applies");
             Assert.AreEqual(
                 expectation.GetPowerSchemeGuid(),
-                e.PowerSchemeGuid);
+                e.PowerSchemeGuid,
+                "PowerSchemeGuid doesn't match expectation");
         }
 
         private static List<PowerRule> CreateRules(int start, int count) =>
