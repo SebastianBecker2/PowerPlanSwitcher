@@ -26,7 +26,7 @@ namespace PowerPlanSwitcherTests
             {
                 FilePath = $"{i}",
                 Index = i,
-                Type = RuleType.Exact,
+                Type = RuleType.StartsWith,
                 SchemeGuid = PowerManagerStub.CreatePowerSchemeGuid(i),
             };
 
@@ -148,6 +148,42 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Create, 2),
                     ProcessMonitorStub.CreateAction(Action.Create, 2),
                     ProcessMonitorStub.CreateAction(Action.Create, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 2),
+                ]);
+
+            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+        }
+
+        [TestMethod]
+        public void ProcessForMultipleRules()
+        {
+            //Assert.Fail("UnitTest not fully implemented yet");
+
+            List<Expectation> expectations = [
+                new(Reason.RuleApplied, 2),
+                new(Reason.RuleApplied, 1),
+                new(Reason.RuleApplied, 2),
+            ];
+
+            var ruleApplicationCount = 0;
+            var processMonitor = new ProcessMonitorStub([]);
+            var ruleManager = new RuleManager(new PowerManagerStub())
+            {
+                ProcessMonitor = processMonitor,
+            };
+            ruleManager.RuleApplicationChanged += (s, e) =>
+            {
+                AssertRuleApplication(e, expectations[ruleApplicationCount]);
+                ruleApplicationCount++;
+            };
+
+            ruleManager.StartEngine(CreateRules(1, 2));
+            processMonitor.StartSimulation(
+                [
+                    ProcessMonitorStub.CreateAction(Action.Create, 2),
+                    ProcessMonitorStub.CreateAction(Action.Create, 1),
+                    ProcessMonitorStub.CreateAction(Action.Create, 2),
                     ProcessMonitorStub.CreateAction(Action.Terminate, 1),
                     ProcessMonitorStub.CreateAction(Action.Terminate, 2),
                 ]);
