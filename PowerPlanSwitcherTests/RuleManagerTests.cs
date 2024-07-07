@@ -104,6 +104,7 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
@@ -138,6 +139,7 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
@@ -174,6 +176,7 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
@@ -209,6 +212,7 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
@@ -256,6 +260,7 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
@@ -283,6 +288,7 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
@@ -333,6 +339,7 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
@@ -372,6 +379,7 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
@@ -411,6 +419,7 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
@@ -465,6 +474,7 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
@@ -516,6 +526,7 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
@@ -551,6 +562,7 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
@@ -589,6 +601,7 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
@@ -633,6 +646,7 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
@@ -674,6 +688,7 @@ namespace PowerPlanSwitcherTests
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
                 AssertRuleApplication(e, expectations[ruleApplicationCount]);
                 ruleApplicationCount++;
             };
