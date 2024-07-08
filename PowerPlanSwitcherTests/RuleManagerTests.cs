@@ -227,12 +227,12 @@ namespace PowerPlanSwitcherTests
         [TestMethod]
         public void NoRules()
         {
-            var initialProcesses = ProcessMonitorStub.CreateProcesses(4, 6);
-            initialProcesses.AddRange(ProcessMonitorStub.CreateProcesses(0, 2));
             List<int> expectedRuleApplications = [];
 
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub(initialProcesses);
+            var processMonitor = new ProcessMonitorStub([
+                .. ProcessMonitorStub.CreateProcesses(4, 6),
+                .. ProcessMonitorStub.CreateProcesses(0, 2)]);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
@@ -248,12 +248,12 @@ namespace PowerPlanSwitcherTests
         [TestMethod]
         public void InitialProcesses()
         {
-            var initialProcesses = ProcessMonitorStub.CreateProcesses(4, 6);
-            initialProcesses.AddRange(ProcessMonitorStub.CreateProcesses(0, 2));
             List<Expectation> expectations = [new(Reason.RuleApplied, 1)];
 
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub(initialProcesses);
+            var processMonitor = new ProcessMonitorStub([
+                .. ProcessMonitorStub.CreateProcesses(4, 6),
+                .. ProcessMonitorStub.CreateProcesses(0, 2)]);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
@@ -363,16 +363,15 @@ namespace PowerPlanSwitcherTests
         [TestMethod]
         public void ProcessTermination()
         {
-            var initialProcesses = ProcessMonitorStub.CreateProcesses(3, 7);
-            initialProcesses.AddRange(ProcessMonitorStub.CreateProcesses(0, 2));
-
             List<Expectation> expectations = [
                 new(Reason.RuleApplied, 1),
                 new(Reason.RuleApplied, 4),
             ];
 
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub(initialProcesses);
+            var processMonitor = new ProcessMonitorStub([
+                .. ProcessMonitorStub.CreateProcesses(3, 7),
+                .. ProcessMonitorStub.CreateProcesses(0, 2)]);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
