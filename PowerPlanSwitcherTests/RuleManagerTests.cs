@@ -366,6 +366,7 @@ namespace PowerPlanSwitcherTests
             List<Expectation> expectations = [
                 new(Reason.RuleApplied, 1),
                 new(Reason.RuleApplied, 4),
+                new(Reason.BaselineApplied, 1_000),
             ];
 
             var ruleApplicationCount = 0;
@@ -392,6 +393,7 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
                     ProcessMonitorStub.CreateAction(Action.Terminate, 1),
                     ProcessMonitorStub.CreateAction(Action.Terminate, 6),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 4),
                 ]);
 
             Assert.AreEqual(expectations.Count, ruleApplicationCount);
