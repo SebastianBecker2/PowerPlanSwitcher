@@ -160,16 +160,55 @@ namespace PowerPlanSwitcherTests
         [TestMethod]
         public void ProcessForMultipleRules()
         {
-            //Assert.Fail("UnitTest not fully implemented yet");
-
             List<Expectation> expectations = [
-                new(Reason.RuleApplied, 2),
+                new(Reason.RuleApplied, 100),
+                new(Reason.RuleApplied, 10),
                 new(Reason.RuleApplied, 1),
-                new(Reason.RuleApplied, 2),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 100),
+                new(Reason.RuleApplied, 10),
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 10),
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 1),
+                new(Reason.RuleApplied, 10),
+                new(Reason.RuleApplied, 100),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 10),
+                new(Reason.RuleApplied, 100),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 1),
+                new(Reason.RuleApplied, 10),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 10),
+                new(Reason.RuleApplied, 100),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_000),
             ];
 
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub([]);
+            var processMonitor = new ProcessMonitorStub([
+                ProcessMonitorStub.CreateProcess(1),
+                ProcessMonitorStub.CreateProcess(10),
+                ProcessMonitorStub.CreateProcess(100),
+            ]);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
@@ -181,15 +220,80 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount++;
             };
 
-            ruleManager.StartEngine(CreateRules(1, 2));
-            processMonitor.StartSimulation(
-                [
-                    ProcessMonitorStub.CreateAction(Action.Create, 2),
-                    ProcessMonitorStub.CreateAction(Action.Create, 1),
-                    ProcessMonitorStub.CreateAction(Action.Create, 2),
-                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
-                    ProcessMonitorStub.CreateAction(Action.Terminate, 2),
-                ]);
+            ruleManager.StartEngine([
+                CreatePowerRule(100),
+                CreatePowerRule(10),
+                CreatePowerRule(1),
+            ]);
+            processMonitor.StartSimulation([
+                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                ProcessMonitorStub.CreateAction(Action.Create, 100),
+                ProcessMonitorStub.CreateAction(Action.Create, 10),
+                ProcessMonitorStub.CreateAction(Action.Create, 1),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                ProcessMonitorStub.CreateAction(Action.Create, 10),
+                ProcessMonitorStub.CreateAction(Action.Create, 1),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                ProcessMonitorStub.CreateAction(Action.Create, 1),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                ProcessMonitorStub.CreateAction(Action.Create, 1),
+                ProcessMonitorStub.CreateAction(Action.Create, 10),
+                ProcessMonitorStub.CreateAction(Action.Create, 100),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                ProcessMonitorStub.CreateAction(Action.Create, 10),
+                ProcessMonitorStub.CreateAction(Action.Create, 100),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                ProcessMonitorStub.CreateAction(Action.Create, 1),
+                ProcessMonitorStub.CreateAction(Action.Create, 10),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                ProcessMonitorStub.CreateAction(Action.Create, 10),
+                ProcessMonitorStub.CreateAction(Action.Create, 100),
+            ]);
+
+            ruleManager.StartEngine([
+                CreatePowerRule(1),
+                CreatePowerRule(10),
+                CreatePowerRule(100),
+            ]);
+            processMonitor.StartSimulation([
+                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                ProcessMonitorStub.CreateAction(Action.Create, 100),
+                ProcessMonitorStub.CreateAction(Action.Create, 10),
+                ProcessMonitorStub.CreateAction(Action.Create, 1),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                ProcessMonitorStub.CreateAction(Action.Create, 10),
+                ProcessMonitorStub.CreateAction(Action.Create, 1),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                ProcessMonitorStub.CreateAction(Action.Create, 1),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                ProcessMonitorStub.CreateAction(Action.Create, 1),
+                ProcessMonitorStub.CreateAction(Action.Create, 10),
+                ProcessMonitorStub.CreateAction(Action.Create, 100),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                ProcessMonitorStub.CreateAction(Action.Create, 10),
+                ProcessMonitorStub.CreateAction(Action.Create, 100),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                ProcessMonitorStub.CreateAction(Action.Create, 1),
+                ProcessMonitorStub.CreateAction(Action.Create, 10),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+            ]);
 
             Assert.AreEqual(expectations.Count, ruleApplicationCount);
         }
