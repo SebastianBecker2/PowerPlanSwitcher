@@ -224,42 +224,40 @@ namespace PowerPlanSwitcher.RuleManagement
         {
             lock (syncObj)
             {
-                var higherRuleActive = false;
-                var highestRuleDeactivated = false;
+                bool? needToSwitch = null;
+                PowerRule? ruleToApply = null;
+
                 foreach (var rule in rules ?? [])
                 {
                     if (CheckRule(rule, e.Process))
                     {
-                        rule.ActivationCount = Math.Max(
-                            rule.ActivationCount - 1,
-                            0);
+                        rule.ActivationCount =
+                            Math.Max(rule.ActivationCount - 1, 0);
 
-                        if (higherRuleActive)
+                        needToSwitch ??= rule.ActivationCount == 0;
+                        if (rule.ActivationCount > 0)
                         {
-                            continue;
+                            ruleToApply ??= needToSwitch == true ? rule : null;
                         }
-
-                        highestRuleDeactivated = rule.ActivationCount == 0;
-                        higherRuleActive = rule.ActivationCount != 0;
 
                         continue;
                     }
 
-                    if (highestRuleDeactivated
-                        && !higherRuleActive
-                        && rule.ActivationCount > 0)
+                    if (rule.ActivationCount > 0)
                     {
-                        ApplyRule(rule);
+                        needToSwitch ??= false;
+                        ruleToApply ??= needToSwitch == true ? rule : null;
                     }
-
-                    higherRuleActive =
-                        higherRuleActive
-                        || rule.ActivationCount > 0;
                 }
 
-                if (!higherRuleActive)
+                if (needToSwitch == true)
                 {
-                    ApplyBaselinePowerScheme();
+                    if (ruleToApply is null)
+                    {
+                        ApplyBaselinePowerScheme();
+                        return;
+                    }
+                    ApplyRule(ruleToApply);
                 }
             }
         }
