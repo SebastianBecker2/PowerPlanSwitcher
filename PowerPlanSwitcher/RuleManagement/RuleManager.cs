@@ -267,27 +267,21 @@ namespace PowerPlanSwitcher.RuleManagement
         {
             lock (syncObj)
             {
-                var higherRuleActive = false;
+                PowerRule? ruleToApply = null;
+
                 foreach (var rule in rules ?? [])
                 {
+                    rule.ActivationCount += CheckRule(rule, processes);
+
                     if (rule.ActivationCount > 0)
                     {
-                        higherRuleActive = true;
+                        ruleToApply ??= rule;
                     }
+                }
 
-                    if (!CheckRule(rule, processes))
-                    {
-                        continue;
-                    }
-                    rule.ActivationCount++;
-
-                    if (higherRuleActive)
-                    {
-                        continue;
-                    }
-                    higherRuleActive = true;
-
-                    ApplyRule(rule);
+                if (ruleToApply is not null)
+                {
+                    ApplyRule(ruleToApply);
                 }
             }
         }
@@ -344,9 +338,9 @@ namespace PowerPlanSwitcher.RuleManagement
             }
         }
 
-        private static bool CheckRule(
+        private static int CheckRule(
             PowerRule powerRule,
             IEnumerable<ICachedProcess> processes) =>
-            processes.Any(p => CheckRule(powerRule, p));
+            processes.Count(p => CheckRule(powerRule, p));
     }
 }
