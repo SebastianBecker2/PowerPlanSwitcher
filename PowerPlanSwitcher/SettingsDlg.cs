@@ -51,9 +51,6 @@ namespace PowerPlanSwitcher
             CmbInitialPowerScheme.Enabled =
                 ChbActivateInitialPowerScheme.Checked;
 
-            NudPowerRuleCheckInterval.Value =
-                Settings.Default.PowerRuleCheckInterval;
-
             var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
                 Settings.Default.CyclePowerSchemeHotkey);
             LblCycleHotkey.Text = cycleHotkey?.ToString() ?? "[ ---------- ]";
@@ -250,9 +247,6 @@ namespace PowerPlanSwitcher
                 ChbActivateInitialPowerScheme.Checked;
             Settings.Default.InitialPowerSchemeGuid =
                 GetPowerSchemeGuid(GetSelectedString(CmbInitialPowerScheme));
-
-            Settings.Default.PowerRuleCheckInterval =
-                (int)NudPowerRuleCheckInterval.Value;
 
             Settings.Default.CyclePowerSchemeHotkey =
                 JsonConvert.SerializeObject(LblCycleHotkey.Tag);

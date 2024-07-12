@@ -85,18 +85,6 @@ namespace PowerPlanSwitcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
-        [global::System.Configuration.DefaultSettingValueAttribute("5")]
-        public int PowerRuleCheckInterval {
-            get {
-                return ((int)(this["PowerRuleCheckInterval"]));
-            }
-            set {
-                this["PowerRuleCheckInterval"] = value;
-            }
-        }
-        
-        [global::System.Configuration.UserScopedSettingAttribute()]
-        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Use System Setting")]
         public string ColorTheme {
             get {
