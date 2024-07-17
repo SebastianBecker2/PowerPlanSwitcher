@@ -29,7 +29,7 @@ Furher settings allow you to:
 - Determine the interval in which your rules are checked.
 - Define the default power plans to use when your laptop is plugged in or using the battery.
 
-![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/ac23edd2-fc03-446f-b43a-48fc544eda30)
+![image](https://github.com/user-attachments/assets/e254f238-e27f-46c0-96ab-b0da9f168882)
 
 PowerPlanSwitcher is using the following tools, resources and libraries:
 
