@@ -26,7 +26,6 @@ Furher settings allow you to:
 - Configure a global hotkey to cycle through your power plans.
 - Set your prefered color theme.
 - Specify the display of notifications when a power plan is switched by a rule or a hotkey press.
-- Determine the interval in which your rules are checked.
 - Define the default power plans to use when your laptop is plugged in or using the battery.
 
 ![image](https://github.com/user-attachments/assets/e254f238-e27f-46c0-96ab-b0da9f168882)
