@@ -15,7 +15,36 @@ namespace PowerPlanSwitcher
                 .Cast<(Guid schemeGuid, string name)>()
                 .ToList();
 
-        public SettingsDlg() => InitializeComponent();
+        public SettingsDlg()
+        {
+            InitializeComponent();
+            this.tabControl1.SelectedIndexChanged += (sender, e) => tabControl1_SelectedIndexChanged(sender, e);
+            this.Size = Settings.Default.SettingsDlgSize;
+            this.FormClosing += SettingsDlg_FormClosing;
+        }
+
+        private Size settingsDlgOriginalSize = Size.Empty;
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.tabControl1.SelectedTab == tabPage3 && this.MaximumSize == Size.Empty)
+            {
+                settingsDlgOriginalSize = this.Size;
+                this.MaximumSize = this.MinimumSize;
+            }
+            else if (this.tabControl1.SelectedTab != tabPage3 && this.MaximumSize != Size.Empty)
+            {
+                this.MaximumSize = Size.Empty;
+                this.Size = settingsDlgOriginalSize;
+            }
+        }
+
+        private void SettingsDlg_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Settings.Default.SettingsDlgSize = this.tabControl1.SelectedTab != tabPage3
+                ? this.Size
+                : settingsDlgOriginalSize;
+            Settings.Default.Save();
+        }
 
         protected override void OnLoad(EventArgs e)
         {
