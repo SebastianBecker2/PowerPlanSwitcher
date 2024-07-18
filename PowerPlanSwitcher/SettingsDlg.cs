@@ -100,6 +100,19 @@ namespace PowerPlanSwitcher
             {
                 CmbColorTheme.SelectedIndex = 0;
             }
+            
+            CmbPopUpWindow.Items.AddRange(PopUpWindowLocationHelper.GetDisplayNames()
+                .Cast<object>()
+                .ToArray());
+            var IndexCPUWL = CmbPopUpWindow.Items.IndexOf(Settings.Default.PopUpWindowLocation);
+            if (IndexCPUWL != -1 && index < CmbPopUpWindow.Items.Count)
+            {
+                CmbPopUpWindow.SelectedIndex = IndexCPUWL;
+            }
+            else
+            {
+                CmbPopUpWindow.SelectedIndex = 0;
+            }
 
             GrbBatteryManagement.Visible =
                 BatteryMonitor.Static.HasSystemBattery;
@@ -283,6 +296,8 @@ namespace PowerPlanSwitcher
             Settings.Default.CycleOnlyVisible = RdbCycleVisible.Checked;
 
             Settings.Default.ColorTheme = CmbColorTheme.SelectedItem as string;
+            
+            Settings.Default.PopUpWindowLocation = CmbPopUpWindow.SelectedItem as string;
 
             Settings.Default.AcPowerSchemeGuid =
                 GetPowerSchemeGuid(GetSelectedString(CmbAcPowerScheme));

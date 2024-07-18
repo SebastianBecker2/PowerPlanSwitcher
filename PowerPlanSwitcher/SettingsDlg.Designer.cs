@@ -28,7 +28,7 @@ namespace PowerPlanSwitcher
         /// </summary>
         private void InitializeComponent()
         {
-            var dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            var dataGridViewCellStyle2 = new DataGridViewCellStyle();
             var resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsDlg));
             DgvPowerSchemes = new DataGridView();
             DgcVisible = new DataGridViewCheckBoxColumn();
@@ -72,7 +72,7 @@ namespace PowerPlanSwitcher
             BtnRemoveCycleHotkey = new Button();
             BtnSetCycleHotkey = new Button();
             PopUpWindowLocation = new GroupBox();
-            ComPopUpWindow = new ComboBox();
+            CmbPopUpWindow = new ComboBox();
             groupBox1 = new GroupBox();
             tableLayoutPanel6 = new TableLayoutPanel();
             GrbBatteryManagement = new GroupBox();
@@ -153,8 +153,8 @@ namespace PowerPlanSwitcher
             // DgcHotkey
             // 
             DgcHotkey.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            DgcHotkey.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            DgcHotkey.DefaultCellStyle = dataGridViewCellStyle2;
             DgcHotkey.HeaderText = "Hotkey";
             DgcHotkey.Name = "DgcHotkey";
             DgcHotkey.ReadOnly = true;
@@ -626,7 +626,7 @@ namespace PowerPlanSwitcher
             // 
             // PopUpWindowLocation
             // 
-            PopUpWindowLocation.Controls.Add(ComPopUpWindow);
+            PopUpWindowLocation.Controls.Add(CmbPopUpWindow);
             PopUpWindowLocation.Location = new Point(508, 3);
             PopUpWindowLocation.Name = "PopUpWindowLocation";
             tableLayoutPanel4.SetRowSpan(PopUpWindowLocation, 2);
@@ -635,15 +635,15 @@ namespace PowerPlanSwitcher
             PopUpWindowLocation.TabStop = false;
             PopUpWindowLocation.Text = "Pop-up window location";
             // 
-            // ComPopUpWindow
+            // CmbPopUpWindow
             // 
-            ComPopUpWindow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            ComPopUpWindow.DropDownStyle = ComboBoxStyle.DropDownList;
-            ComPopUpWindow.FormattingEnabled = true;
-            ComPopUpWindow.Location = new Point(9, 33);
-            ComPopUpWindow.Name = "ComPopUpWindow";
-            ComPopUpWindow.Size = new Size(152, 25);
-            ComPopUpWindow.TabIndex = 0;
+            CmbPopUpWindow.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            CmbPopUpWindow.DropDownStyle = ComboBoxStyle.DropDownList;
+            CmbPopUpWindow.FormattingEnabled = true;
+            CmbPopUpWindow.Location = new Point(9, 33);
+            CmbPopUpWindow.Name = "CmbPopUpWindow";
+            CmbPopUpWindow.Size = new Size(152, 25);
+            CmbPopUpWindow.TabIndex = 0;
             // 
             // groupBox1
             // 
@@ -876,6 +876,6 @@ namespace PowerPlanSwitcher
         private TableLayoutPanel tableLayoutPanel8;
         private CheckBox ChbShowToastNotifications;
         private GroupBox PopUpWindowLocation;
-        private ComboBox ComPopUpWindow;
+        private ComboBox CmbPopUpWindow;
     }
 }

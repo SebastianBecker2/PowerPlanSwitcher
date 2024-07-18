@@ -47,7 +47,7 @@ namespace PowerPlanSwitcher
             LblReason.ForeColor = ForegroundColor;
             LblReason.BackColor = ButtonBackgroundColor;
 
-            Location = GetPositionOnTaskbar(Size);
+            Location = PopUpWindowLocationHelper.GetPositionOnTaskbar(Size);
 
             DisplayTimer.Stop();
             DisplayTimer.Start();
@@ -65,33 +65,6 @@ namespace PowerPlanSwitcher
                 // source: https://www.csharp411.com/hide-form-from-alttab/
                 cp.ExStyle |= (int)WindowStylesEx.WS_EX_TOOLWINDOW;
                 return cp;
-            }
-        }
-
-        private static Point GetPositionOnTaskbar(Size windowSize)
-        {
-            var bounds = Taskbar.CurrentBounds;
-            switch (Taskbar.Position)
-            {
-                case TaskbarPosition.Left:
-                    bounds.Location += bounds.Size;
-                    return new Point(bounds.X, bounds.Y - windowSize.Height);
-
-                case TaskbarPosition.Top:
-                    bounds.Location += bounds.Size;
-                    return new Point(bounds.X - windowSize.Width, bounds.Y);
-
-                case TaskbarPosition.Right:
-                    bounds.Location -= windowSize;
-                    return new Point(bounds.X, bounds.Y + bounds.Height);
-
-                case TaskbarPosition.Bottom:
-                    bounds.Location -= windowSize;
-                    return new Point(bounds.X + bounds.Width, bounds.Y);
-
-                case TaskbarPosition.Unknown:
-                default:
-                    return new Point(0, 0);
             }
         }
 
