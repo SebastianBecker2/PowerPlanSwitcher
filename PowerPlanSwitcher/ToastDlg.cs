@@ -14,12 +14,16 @@ namespace PowerPlanSwitcher
 
         private static Color ButtonBackgroundColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? SystemColors.Control
-            : Color.FromArgb(0x15, 0x15, 0x14);
+            ? Color.WhiteSmoke
+            : Color.FromArgb(0x15, 0x15, 0x15);
         private static Color ForegroundColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? SystemColors.ControlText
-            : SystemColors.HighlightText;
+            ? Color.Black
+            : Color.White;
+        private static Color TlpPowerSchemesBackColor =>
+            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
+            ? Color.Silver
+            : Color.DimGray;
 
         public ToastDlg() => InitializeComponent();
 
@@ -27,7 +31,10 @@ namespace PowerPlanSwitcher
         {
             DisplayTimer.Interval = DisplayDuration;
 
-            BackColor = ButtonBackgroundColor;
+
+            Padding = new Padding(1); //“ToastDlg” optimizes the visual display. add border (gray border)
+            BackColor = TlpPowerSchemesBackColor;
+            tableLayoutPanel1.BackColor = ButtonBackgroundColor;
 
             PibAppIcon.BackColor = ButtonBackgroundColor;
             LblTitle.ForeColor = ForegroundColor;
