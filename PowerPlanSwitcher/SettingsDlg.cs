@@ -30,7 +30,7 @@ namespace PowerPlanSwitcher
             if (this.tabControl1.SelectedTab == tabPage3)
             {
                 settingsDlgOriginalMaximumSize = this.Size;
-                this.MaximumSize = new Size(721, 413); 
+                this.MaximumSize = new Size(721, 413);
             }
             else
             {
@@ -108,7 +108,7 @@ namespace PowerPlanSwitcher
             {
                 CmbColorTheme.SelectedIndex = 0;
             }
-            
+
             CmbPopUpWindow.Items.AddRange(PopUpWindowLocationHelper.GetDisplayNames()
                 .Cast<object>()
                 .ToArray());
@@ -304,7 +304,7 @@ namespace PowerPlanSwitcher
             Settings.Default.CycleOnlyVisible = RdbCycleVisible.Checked;
 
             Settings.Default.ColorTheme = CmbColorTheme.SelectedItem as string;
-            
+
             Settings.Default.PopUpWindowLocation = CmbPopUpWindow.SelectedItem as string;
 
             Settings.Default.AcPowerSchemeGuid =
@@ -682,6 +682,16 @@ namespace PowerPlanSwitcher
             }
 
             HandleBtnEditPowerRuleClick(sender, e);
+        }
+
+        private void tabPage3_Click(object sender, EventArgs e)
+        {
+
+        }
+
+        private void tableLayoutPanel5_Paint(object sender, PaintEventArgs e)
+        {
+
         }
     }
 }
