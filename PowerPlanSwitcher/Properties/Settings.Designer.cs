@@ -166,5 +166,17 @@ namespace PowerPlanSwitcher.Properties {
                 this["PopUpWindowLocation"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("0, 0")]
+        public global::System.Drawing.Size SettingsDlgSize {
+            get {
+                return ((global::System.Drawing.Size)(this["SettingsDlgSize"]));
+            }
+            set {
+                this["SettingsDlgSize"] = value;
+            }
+        }
     }
 }

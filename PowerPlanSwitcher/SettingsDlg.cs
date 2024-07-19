@@ -15,33 +15,41 @@ namespace PowerPlanSwitcher
                 .Cast<(Guid schemeGuid, string name)>()
                 .ToList();
 
-        // 用来存储SettingsDlg之前的MaximumSize，以便恢复
         private Size settingsDlgOriginalMaximumSize = Size.Empty;
 
         public SettingsDlg()
         {
             InitializeComponent();
-
-            // 绑定TabControl的SelectedIndexChanged事件
             this.tabControl1.SelectedIndexChanged += new EventHandler(tabControl1_SelectedIndexChanged);
+            this.Size = Settings.Default.SettingsDlgSize;
+            this.FormClosing += SettingsDlg_FormClosing;
         }
 
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            // 获取TabControl和当前选中的TabPage
-            TabControl tabControl = sender as TabControl;
-            // 检查是否选中了tabPage3
-            if (tabControl.SelectedTab == tabPage3)
+            if (this.tabControl1.SelectedTab == tabPage3)
             {
                 settingsDlgOriginalMaximumSize = this.Size;
-                // 设置窗体大小为固定值，并禁用用户调节
-                this.MaximumSize = new Size(721, 401); // 设置为相同的值以禁用用户调节
+                this.MaximumSize = new Size(721, 413); 
             }
             else
             {
-                this.MaximumSize = Size.Empty; // 设置为空以允许用户调节
+                this.MaximumSize = Size.Empty;
                 this.Size = settingsDlgOriginalMaximumSize;
             }
+        }
+
+        private void SettingsDlg_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            if (this.tabControl1.SelectedTab != tabPage3)
+            {
+                Settings.Default.SettingsDlgSize = this.Size;
+            }
+            else
+            {
+                Settings.Default.SettingsDlgSize = settingsDlgOriginalMaximumSize;
+            }
+            Settings.Default.Save();
         }
 
         protected override void OnLoad(EventArgs e)
