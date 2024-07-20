@@ -5,7 +5,7 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
     using PowerPlanSwitcher.ProcessManagement;
     using PowerPlanSwitcher.RuleManagement;
 
-    public class PowerRule : IRule
+    public class ProcessRule : IRule
     {
         public int Index { get; set; }
         public string FilePath

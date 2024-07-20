@@ -22,7 +22,7 @@ namespace PowerPlanSwitcherTests
                 PowerManagerStub.CreatePowerSchemeGuid(Index);
         }
 
-        private static PowerRule CreatePowerRule(int i) =>
+        private static ProcessRule CreatePowerRule(int i) =>
             new()
             {
                 FilePath = $"{i}",
@@ -74,7 +74,7 @@ namespace PowerPlanSwitcherTests
                 "PowerSchemeGuid doesn't match expectation");
         }
 
-        private static List<PowerRule> CreateRules(int start, int count) =>
+        private static List<ProcessRule> CreateRules(int start, int count) =>
             Enumerable.Range(start, count).Select(CreatePowerRule).ToList();
 
         // Rules           [  1,2,3,4          ]

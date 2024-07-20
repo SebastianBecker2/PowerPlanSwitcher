@@ -305,7 +305,7 @@ namespace PowerPlanSwitcher.RuleManagement
 
         private static bool CheckRule(IRule rule, ICachedProcess process)
         {
-            if (rule is PowerRule powerRule)
+            if (rule is ProcessRule powerRule)
             {
                 return powerRule.CheckRule(process);
             }

@@ -7,7 +7,7 @@ namespace PowerPlanSwitcher
 
     public partial class PowerRuleDlg : Form
     {
-        public PowerRule? PowerRule { get; set; }
+        public ProcessRule? PowerRule { get; set; }
         private readonly List<(Guid guid, string name)> powerSchemes =
             PowerManager.Static.GetPowerSchemes()
                 .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
@@ -22,7 +22,7 @@ namespace PowerPlanSwitcher
         protected override void OnLoad(EventArgs e)
         {
             CmbRuleType.Items.AddRange(ruleTypes
-                .Select(PowerRule.RuleTypeToText)
+                .Select(ProcessRule.RuleTypeToText)
                 .Cast<object>()
                 .ToArray());
             if (PowerRule is not null)
@@ -71,9 +71,9 @@ namespace PowerPlanSwitcher
             Guid GetPowerSchemeGuid(string name) =>
                 powerSchemes.First(scheme => scheme.name == name).guid;
 
-            PowerRule ??= new PowerRule();
+            PowerRule ??= new ProcessRule();
             PowerRule.Type =
-                PowerRule.TextToRuleType(GetSelectedString(CmbRuleType));
+                ProcessRule.TextToRuleType(GetSelectedString(CmbRuleType));
             PowerRule.FilePath = TxtPath.Text;
             PowerRule.SchemeGuid =
                 GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme));
@@ -86,7 +86,7 @@ namespace PowerPlanSwitcher
             static string GetSelectedString(ComboBox cmb) =>
                 cmb.Items[cmb.SelectedIndex]?.ToString() ?? string.Empty;
 
-            var type = PowerRule.TextToRuleType(GetSelectedString(CmbRuleType));
+            var type = ProcessRule.TextToRuleType(GetSelectedString(CmbRuleType));
 
             using var dlg = new CommonOpenFileDialog
             {

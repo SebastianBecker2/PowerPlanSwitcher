@@ -282,7 +282,7 @@ namespace PowerPlanSwitcher
 
             using var powerRuleDlg = new PowerRuleDlg
             {
-                PowerRule = new PowerRule
+                PowerRule = new ProcessRule
                 {
                     FilePath = processSelectionDlg.SelectedProcess!.ExecutablePath,
                     Type = PathCheckType.Exact,
@@ -357,7 +357,7 @@ namespace PowerPlanSwitcher
 
             using var dlg = new PowerRuleDlg
             {
-                PowerRule = DgvPowerRules.SelectedRows[0].Tag as PowerRule,
+                PowerRule = DgvPowerRules.SelectedRows[0].Tag as ProcessRule,
             };
             if (dlg.ShowDialog() != DialogResult.OK)
             {
@@ -383,7 +383,7 @@ namespace PowerPlanSwitcher
             for (; index < DgvPowerRules.Rows.Count; index++)
             {
                 var row = DgvPowerRules.Rows[index];
-                (row.Tag as PowerRule)!.Index = index;
+                (row.Tag as ProcessRule)!.Index = index;
                 row.Cells["DgcRuleIndex"].Value = index;
             }
         }
@@ -396,7 +396,7 @@ namespace PowerPlanSwitcher
             }
 
             var row = DgvPowerRules.SelectedRows[0];
-            var powerRule = row.Tag as PowerRule;
+            var powerRule = row.Tag as ProcessRule;
             if (powerRule!.Index == 0)
             {
                 return;
@@ -407,8 +407,8 @@ namespace PowerPlanSwitcher
 
             var otherRow = DgvPowerRules.Rows[powerRule.Index];
             otherRow.Cells["DgcRuleIndex"].Value =
-                ++(otherRow.Tag as PowerRule)!.Index;
-            row.Cells["DgcRuleIndex"].Value = --(row.Tag as PowerRule)!.Index;
+                ++(otherRow.Tag as ProcessRule)!.Index;
+            row.Cells["DgcRuleIndex"].Value = --(row.Tag as ProcessRule)!.Index;
 
             row.Selected = true;
         }
@@ -421,7 +421,7 @@ namespace PowerPlanSwitcher
             }
 
             var row = DgvPowerRules.SelectedRows[0];
-            var powerRule = row.Tag as PowerRule;
+            var powerRule = row.Tag as ProcessRule;
             if (powerRule!.Index == DgvPowerRules.RowCount - 1)
             {
                 return;
@@ -432,8 +432,8 @@ namespace PowerPlanSwitcher
 
             var otherRow = DgvPowerRules.Rows[powerRule.Index];
             otherRow.Cells["DgcRuleIndex"].Value =
-                --(otherRow.Tag as PowerRule)!.Index;
-            row.Cells["DgcRuleIndex"].Value = ++(row.Tag as PowerRule)!.Index;
+                --(otherRow.Tag as ProcessRule)!.Index;
+            row.Cells["DgcRuleIndex"].Value = ++(row.Tag as ProcessRule)!.Index;
 
             row.Selected = true;
         }
@@ -457,7 +457,7 @@ namespace PowerPlanSwitcher
 
             foreach (var r in DgvPowerRules.Rows
                 .Cast<DataGridViewRow>()
-                .Where(r => (r.Tag as PowerRule)!.SchemeGuid == guid))
+                .Where(r => (r.Tag as ProcessRule)!.SchemeGuid == guid))
             {
                 r.Cells["DgcRuleSchemeIcon"].Value = null;
             }
@@ -491,7 +491,7 @@ namespace PowerPlanSwitcher
 
             foreach (var r in DgvPowerRules.Rows
                 .Cast<DataGridViewRow>()
-                .Where(r => (r.Tag as PowerRule)!.SchemeGuid == guid))
+                .Where(r => (r.Tag as ProcessRule)!.SchemeGuid == guid))
             {
                 r.Cells["DgcRuleSchemeIcon"].Value = image;
             }
