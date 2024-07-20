@@ -154,5 +154,29 @@ namespace PowerPlanSwitcher.Properties {
                 this["ShowToastNotifications"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Rules {
+            get {
+                return ((string)(this["Rules"]));
+            }
+            set {
+                this["Rules"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool UpgradePowerRulesToRules {
+            get {
+                return ((bool)(this["UpgradePowerRulesToRules"]));
+            }
+            set {
+                this["UpgradePowerRulesToRules"] = value;
+            }
+        }
     }
 }

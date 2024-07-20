@@ -3,6 +3,7 @@ namespace PowerPlanSwitcher
     using Microsoft.WindowsAPICodePack.Dialogs;
     using PowerPlanSwitcher.PowerManagement;
     using PowerPlanSwitcher.RuleManagement;
+    using PowerPlanSwitcher.RuleManagement.Rules;
 
     public partial class PowerRuleDlg : Form
     {
@@ -13,8 +14,8 @@ namespace PowerPlanSwitcher
                 .Cast<(Guid schemeGuid, string name)>()
                 .ToList();
 
-        private readonly List<RuleType> ruleTypes =
-            Enum.GetValues(typeof(RuleType)).Cast<RuleType>().ToList();
+        private readonly List<PathCheckType> ruleTypes =
+            Enum.GetValues(typeof(PathCheckType)).Cast<PathCheckType>().ToList();
 
         public PowerRuleDlg() => InitializeComponent();
 
@@ -89,7 +90,7 @@ namespace PowerPlanSwitcher
 
             using var dlg = new CommonOpenFileDialog
             {
-                IsFolderPicker = type == RuleType.StartsWith,
+                IsFolderPicker = type == PathCheckType.StartsWith,
             };
 
             if (dlg.ShowDialog() != CommonFileDialogResult.Ok)
@@ -97,7 +98,7 @@ namespace PowerPlanSwitcher
                 return;
             }
 
-            if (type == RuleType.EndsWith)
+            if (type == PathCheckType.EndsWith)
             {
                 TxtPath.Text = Path.GetFileName(dlg.FileName);
                 return;

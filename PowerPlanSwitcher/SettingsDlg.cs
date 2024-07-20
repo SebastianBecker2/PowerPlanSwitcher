@@ -5,6 +5,7 @@ namespace PowerPlanSwitcher
     using Newtonsoft.Json;
     using PowerPlanSwitcher.PowerManagement;
     using PowerPlanSwitcher.RuleManagement;
+    using PowerPlanSwitcher.RuleManagement.Rules;
     using Properties;
 
     public partial class SettingsDlg : Form
@@ -228,11 +229,10 @@ namespace PowerPlanSwitcher
             }
             PowerSchemeSettings.SaveSettings();
 
-            PowerRule.SetPowerRules(DgvPowerRules.Rows
+            Rules.SetRules(DgvPowerRules.Rows
                 .Cast<DataGridViewRow>()
-                .Select(r => r.Tag as PowerRule)
-                .Cast<PowerRule>());
-            PowerRule.SavePowerRules();
+                .Select(r => r.Tag as IRule)
+                .Cast<IRule>());
 
             static string GetSelectedString(ComboBox cmb)
             {
@@ -285,7 +285,7 @@ namespace PowerPlanSwitcher
                 PowerRule = new PowerRule
                 {
                     FilePath = processSelectionDlg.SelectedProcess!.ExecutablePath,
-                    Type = RuleType.Exact,
+                    Type = PathCheckType.Exact,
                 },
             };
             if (powerRuleDlg.ShowDialog() != DialogResult.OK)
@@ -294,25 +294,21 @@ namespace PowerPlanSwitcher
             }
 
             powerRuleDlg.PowerRule!.Index = DgvPowerRules.RowCount;
-            _ = DgvPowerRules.Rows.Add(PowerRuleToRow(powerRuleDlg.PowerRule));
+            _ = DgvPowerRules.Rows.Add(RuleToRow(powerRuleDlg.PowerRule));
         }
 
-        private static DataGridViewRow PowerRuleToRow(PowerRule powerRule)
+        private static DataGridViewRow RuleToRow(IRule rule)
         {
-            var row = new DataGridViewRow { Tag = powerRule, };
-            var setting = PowerSchemeSettings.GetSetting(powerRule.SchemeGuid);
+            var row = new DataGridViewRow { Tag = rule, };
+            var setting = PowerSchemeSettings.GetSetting(rule.SchemeGuid);
             row.Cells.AddRange(
                 new DataGridViewTextBoxCell
                 {
-                    Value = powerRule.Index + 1,
+                    Value = rule.Index + 1,
                 },
                 new DataGridViewTextBoxCell
                 {
-                    Value = PowerRule.RuleTypeToText(powerRule.Type),
-                },
-                new DataGridViewTextBoxCell
-                {
-                    Value = powerRule.FilePath,
+                    Value = rule.GetDescription(),
                 },
                 new DataGridViewImageCell
                 {
@@ -323,21 +319,21 @@ namespace PowerPlanSwitcher
                 {
                     Value =
                         PowerManager.Static.GetPowerSchemeName(
-                            powerRule.SchemeGuid)
-                        ?? powerRule.SchemeGuid.ToString(),
+                            rule.SchemeGuid)
+                        ?? rule.SchemeGuid.ToString(),
                 },
                 new DataGridViewCheckBoxCell
                 {
-                    Value = powerRule.ActivationCount,
+                    Value = rule.ActivationCount,
                 });
 
             return row;
         }
 
         private void UpdatePowerRules() =>
-            DgvPowerRules.Rows.AddRange(PowerRule.GetPowerRules()
+            DgvPowerRules.Rows.AddRange(Rules.GetRules()
                 .OrderBy(r => r.Index)
-                .Select(PowerRuleToRow)
+                .Select(RuleToRow)
                 .ToArray());
 
         private void HandleBtnAddPowerRuleClick(object sender, EventArgs e)
@@ -349,7 +345,7 @@ namespace PowerPlanSwitcher
             }
 
             dlg.PowerRule!.Index = DgvPowerRules.RowCount;
-            _ = DgvPowerRules.Rows.Add(PowerRuleToRow(dlg.PowerRule));
+            _ = DgvPowerRules.Rows.Add(RuleToRow(dlg.PowerRule));
         }
 
         private void HandleBtnEditPowerRuleClick(object sender, EventArgs e)
@@ -371,7 +367,7 @@ namespace PowerPlanSwitcher
             DgvPowerRules.Rows.RemoveAt(dlg.PowerRule!.Index);
             DgvPowerRules.Rows.Insert(
                 dlg.PowerRule!.Index,
-                PowerRuleToRow(dlg.PowerRule));
+                RuleToRow(dlg.PowerRule));
             DgvPowerRules.Rows[dlg.PowerRule!.Index].Selected = true;
         }
 

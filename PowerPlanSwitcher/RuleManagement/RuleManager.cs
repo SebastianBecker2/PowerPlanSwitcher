@@ -1,8 +1,8 @@
 namespace PowerPlanSwitcher.RuleManagement
 {
-    using System.ComponentModel;
     using PowerPlanSwitcher.PowerManagement;
     using PowerPlanSwitcher.ProcessManagement;
+    using PowerPlanSwitcher.RuleManagement.Rules;
 
     public class RuleManager
     {
@@ -14,7 +14,7 @@ namespace PowerPlanSwitcher.RuleManagement
         protected virtual void OnRuleApplicationChanged(
             Guid powerSchemeGuid,
             string? reason,
-            PowerRule? rule) =>
+            IRule? rule) =>
             OnRuleApplicationChanged(
                 new RuleApplicationChangedEventArgs(
                     powerSchemeGuid,
@@ -24,7 +24,7 @@ namespace PowerPlanSwitcher.RuleManagement
         public IBatteryMonitor? BatteryMonitor { get; set; }
         public IProcessMonitor? ProcessMonitor { get; set; }
         private readonly IPowerManager powerManager;
-        private IEnumerable<PowerRule>? rules;
+        private IEnumerable<IRule>? rules;
         private readonly object syncObj = new();
         private Guid baselinePowerSchemeGuid;
 
@@ -47,7 +47,7 @@ namespace PowerPlanSwitcher.RuleManagement
                 PowerManager_ActivePowerSchemeChanged;
         }
 
-        public void StartEngine(IEnumerable<PowerRule> rules)
+        public void StartEngine(IEnumerable<IRule> rules)
         {
             lock (syncObj)
             {
@@ -225,7 +225,7 @@ namespace PowerPlanSwitcher.RuleManagement
             lock (syncObj)
             {
                 bool? needToSwitch = null;
-                PowerRule? ruleToApply = null;
+                IRule? ruleToApply = null;
 
                 foreach (var rule in rules ?? [])
                 {
@@ -267,7 +267,7 @@ namespace PowerPlanSwitcher.RuleManagement
         {
             lock (syncObj)
             {
-                PowerRule? ruleToApply = null;
+                IRule? ruleToApply = null;
 
                 foreach (var rule in rules ?? [])
                 {
@@ -286,7 +286,7 @@ namespace PowerPlanSwitcher.RuleManagement
             }
         }
 
-        private void ApplyRule(PowerRule rule) =>
+        private void ApplyRule(IRule rule) =>
             OnRuleApplicationChanged(
                 rule.SchemeGuid,
                 $"Rule {rule.Index + 1} applies",
@@ -298,49 +298,23 @@ namespace PowerPlanSwitcher.RuleManagement
                 "No rule applies",
                 null);
 
-        private PowerRule? GetActiveRule() =>
+        private IRule? GetActiveRule() =>
             rules?.FirstOrDefault(r => r.ActivationCount > 0);
 
         private bool HasActiveRule() => GetActiveRule() is not null;
 
-        private static bool CheckRule(
-            PowerRule powerRule,
-            ICachedProcess process)
+        private static bool CheckRule(IRule rule, ICachedProcess process)
         {
-            try
+            if (rule is PowerRule powerRule)
             {
-                var path = process.ExecutablePath;
-                if (string.IsNullOrWhiteSpace(path))
-                {
-                    return false;
-                }
-
-                return powerRule.Type switch
-                {
-                    RuleType.Exact => path == powerRule.FilePath,
-                    RuleType.StartsWith => path.StartsWith(
-                        powerRule.FilePath,
-                        StringComparison.InvariantCulture),
-                    RuleType.EndsWith => path.EndsWith(
-                        powerRule.FilePath,
-                        StringComparison.InvariantCulture),
-                    _ => throw new InvalidOperationException(
-                        $"Unable to apply rule type {powerRule.Type}"),
-                };
+                return powerRule.CheckRule(process);
             }
-            catch (Win32Exception)
-            {
-                return false;
-            }
-            catch (InvalidOperationException)
-            {
-                return false;
-            }
+            return false;
         }
 
         private static int CheckRule(
-            PowerRule powerRule,
+            IRule rule,
             IEnumerable<ICachedProcess> processes) =>
-            processes.Count(p => CheckRule(powerRule, p));
+            processes.Count(p => CheckRule(rule, p));
     }
 }

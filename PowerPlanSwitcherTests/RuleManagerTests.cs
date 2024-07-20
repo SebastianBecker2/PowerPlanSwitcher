@@ -3,6 +3,7 @@ namespace PowerPlanSwitcherTests
     using System;
     using System.Windows.Forms;
     using PowerPlanSwitcher.RuleManagement;
+    using PowerPlanSwitcher.RuleManagement.Rules;
 
     [TestClass]
     public class RuleManagerTests
@@ -26,7 +27,7 @@ namespace PowerPlanSwitcherTests
             {
                 FilePath = $"{i}",
                 Index = i,
-                Type = RuleType.StartsWith,
+                Type = PathCheckType.StartsWith,
                 SchemeGuid = PowerManagerStub.CreatePowerSchemeGuid(i),
             };
 
