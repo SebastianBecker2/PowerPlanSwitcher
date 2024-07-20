@@ -47,7 +47,7 @@ namespace PowerPlanSwitcher
             LblReason.ForeColor = ForegroundColor;
             LblReason.BackColor = ButtonBackgroundColor;
 
-            Location = PopUpWindowLocationHelper.GetPositionOnTaskbar(Size);
+            Location = helper.GetPositionOnTaskbar(Size, LblReason.Text);
 
             DisplayTimer.Stop();
             DisplayTimer.Start();
@@ -82,6 +82,7 @@ namespace PowerPlanSwitcher
             }
         }
 
+        private PopUpWindowLocationHelper helper = new PopUpWindowLocationHelper();
         public static void ShowToastNotification(
             Guid activeSchemeGuid,
             string activationReason)

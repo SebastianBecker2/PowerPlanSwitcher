@@ -15,8 +15,6 @@ namespace PowerPlanSwitcher
                 .Cast<(Guid schemeGuid, string name)>()
                 .ToList();
 
-        private Size settingsDlgOriginalMaximumSize = Size.Empty;
-
         public SettingsDlg()
         {
             InitializeComponent();
@@ -25,15 +23,19 @@ namespace PowerPlanSwitcher
             this.FormClosing += SettingsDlg_FormClosing;
         }
 
+        private Size settingsDlgOriginalMaximumSize = Size.Empty;
+        private bool mode = false;
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
             if (this.tabControl1.SelectedTab == tabPage3)
             {
+                mode = true;
                 settingsDlgOriginalMaximumSize = this.Size;
                 this.MaximumSize = new Size(721, 413);
             }
-            else
+            else if (mode)
             {
+                mode = false;
                 this.MaximumSize = Size.Empty;
                 this.Size = settingsDlgOriginalMaximumSize;
             }
@@ -109,17 +111,30 @@ namespace PowerPlanSwitcher
                 CmbColorTheme.SelectedIndex = 0;
             }
 
-            CmbPopUpWindow.Items.AddRange(PopUpWindowLocationHelper.GetDisplayNames()
+            CmbPopUpWindowGlobal.Items.AddRange(PopUpWindowLocationHelper.GetDisplayNames()
                 .Cast<object>()
                 .ToArray());
-            var IndexCPUWL = CmbPopUpWindow.Items.IndexOf(Settings.Default.PopUpWindowLocation);
-            if (IndexCPUWL != -1 && index < CmbPopUpWindow.Items.Count)
+            index = CmbPopUpWindowGlobal.Items.IndexOf(Settings.Default.PopUpWindowLocationGlobal);
+            if (index != -1 && index < CmbPopUpWindowGlobal.Items.Count)
             {
-                CmbPopUpWindow.SelectedIndex = IndexCPUWL;
+                CmbPopUpWindowGlobal.SelectedIndex = index;
             }
             else
             {
-                CmbPopUpWindow.SelectedIndex = 0;
+                CmbPopUpWindowGlobal.SelectedIndex = 0;
+            }
+            
+            CmbPopUpWindowBM.Items.AddRange(PopUpWindowLocationHelper.GetDisplayNames()
+                .Cast<object>()
+                .ToArray());
+            index = CmbPopUpWindowBM.Items.IndexOf(Settings.Default.PopUpWindowLocationBM);
+            if (index != -1 && index < CmbPopUpWindowBM.Items.Count)
+            {
+                CmbPopUpWindowBM.SelectedIndex = index;
+            }
+            else
+            {
+                CmbPopUpWindowBM.SelectedIndex = 3;
             }
 
             GrbBatteryManagement.Visible =
@@ -305,7 +320,9 @@ namespace PowerPlanSwitcher
 
             Settings.Default.ColorTheme = CmbColorTheme.SelectedItem as string;
 
-            Settings.Default.PopUpWindowLocation = CmbPopUpWindow.SelectedItem as string;
+            Settings.Default.PopUpWindowLocationGlobal = CmbPopUpWindowGlobal.SelectedItem as string;
+            
+            Settings.Default.PopUpWindowLocationBM = CmbPopUpWindowBM.SelectedItem as string;
 
             Settings.Default.AcPowerSchemeGuid =
                 GetPowerSchemeGuid(GetSelectedString(CmbAcPowerScheme));
@@ -682,16 +699,6 @@ namespace PowerPlanSwitcher
             }
 
             HandleBtnEditPowerRuleClick(sender, e);
-        }
-
-        private void tabPage3_Click(object sender, EventArgs e)
-        {
-
-        }
-
-        private void tableLayoutPanel5_Paint(object sender, PaintEventArgs e)
-        {
-
         }
     }
 }

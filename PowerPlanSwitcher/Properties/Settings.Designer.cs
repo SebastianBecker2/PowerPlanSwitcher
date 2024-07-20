@@ -158,12 +158,12 @@ namespace PowerPlanSwitcher.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
-        public string PopUpWindowLocation {
+        public string PopUpWindowLocationGlobal {
             get {
-                return ((string)(this["PopUpWindowLocation"]));
+                return ((string)(this["PopUpWindowLocationGlobal"]));
             }
             set {
-                this["PopUpWindowLocation"] = value;
+                this["PopUpWindowLocationGlobal"] = value;
             }
         }
         
@@ -176,6 +176,18 @@ namespace PowerPlanSwitcher.Properties {
             }
             set {
                 this["SettingsDlgSize"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string PopUpWindowLocationBM {
+            get {
+                return ((string)(this["PopUpWindowLocationBM"]));
+            }
+            set {
+                this["PopUpWindowLocationBM"] = value;
             }
         }
     }

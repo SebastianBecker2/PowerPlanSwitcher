@@ -183,7 +183,7 @@ namespace PowerPlanSwitcher.RuleManagement
                     return;
                 }
 
-                OnRuleApplicationChanged(baselinePowerSchemeGuid, null, null);
+                OnRuleApplicationChanged(baselinePowerSchemeGuid, "Battery Management", null);
             }
         }
 

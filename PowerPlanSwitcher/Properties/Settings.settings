@@ -35,11 +35,14 @@
     <Setting Name="ShowToastNotifications" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
-    <Setting Name="PopUpWindowLocation" Type="System.String" Scope="User">
+    <Setting Name="PopUpWindowLocationGlobal" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="SettingsDlgSize" Type="System.Drawing.Size" Scope="User">
       <Value Profile="(Default)">0, 0</Value>
+    </Setting>
+    <Setting Name="PopUpWindowLocationBM" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
     </Setting>
   </Settings>
 </SettingsFile>

@@ -7,29 +7,50 @@ namespace PowerPlanSwitcher
         BottomRight,
         System ,
         Center,
+        Off,
     }
 
-    internal static class PopUpWindowLocationHelper
+    internal class PopUpWindowLocationHelper
     {
         private static readonly List<(string name, PopUpWindowLocation theme)> PopUpWindowLocations =
         [
             ( "Bottom Right", PopUpWindowLocation.BottomRight ),
             ( "Use System Setting", PopUpWindowLocation.System ),
             ( "Center", PopUpWindowLocation.Center ),
+            ( "Off", PopUpWindowLocation.Off ),
         ];
+
+        public static bool ShouldShowToast(string reason)
+        {
+            string popUpWindowSetting = reason == "Battery Management"
+                ? Settings.Default.PopUpWindowLocationBM
+                : Settings.Default.PopUpWindowLocationGlobal;
+
+            return !string.IsNullOrEmpty(popUpWindowSetting) && popUpWindowSetting != "Off";
+        }
 
         public static IEnumerable<string> GetDisplayNames() =>
             PopUpWindowLocations.Select(ct => ct.name);
 
-        public static PopUpWindowLocation GetSelectedPopUpWindowLocation() =>
+        public static PopUpWindowLocation GetSelectedPopUpWindowLocation(string settingsValue) =>
             PopUpWindowLocations.FirstOrDefault(
-                ct => ct.name == Settings.Default.PopUpWindowLocation,
-                new("", PopUpWindowLocation.BottomRight))
+                ct => ct.name == settingsValue,
+                new("", PopUpWindowLocation.Off))
             .theme;
-
-        public static Point GetPositionOnTaskbar(Size windowSize)
+            
+        public Point GetPositionOnTaskbar(Size windowSize, string activationReason)
         {
-            var popUpWindowLocation = GetSelectedPopUpWindowLocation();
+            string settingsTEMP;
+            if (activationReason == "Battery Management")
+            {
+                settingsTEMP = Settings.Default.PopUpWindowLocationBM;
+            }
+            else
+            {
+                settingsTEMP = Settings.Default.PopUpWindowLocationGlobal;
+            }
+            
+            var popUpWindowLocation = GetSelectedPopUpWindowLocation(settingsTEMP);
             if (popUpWindowLocation == PopUpWindowLocation.BottomRight)
             {
                 var bounds = Taskbar.CurrentBounds;
