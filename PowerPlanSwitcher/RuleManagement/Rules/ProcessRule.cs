@@ -7,16 +7,16 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
 
     public class ProcessRule : IRule
     {
+        [JsonIgnore]
+        public int ActivationCount { get; set; }
         public int Index { get; set; }
+        public Guid SchemeGuid { get; set; }
         public string FilePath
         {
             get => filePath;
             set => filePath = value.ToLowerInvariant();
         }
         public PathCheckType Type { get; set; }
-        public Guid SchemeGuid { get; set; }
-        [JsonIgnore]
-        public int ActivationCount { get; set; }
 
         private static readonly List<(PathCheckType type, string text)>
             PathCheckTypeText =
@@ -66,16 +66,16 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
 
         public static string RuleTypeToText(PathCheckType ruleType)
         {
-            (PathCheckType type, string text)? type = PathCheckTypeText
+            (PathCheckType type, string text)? entry = PathCheckTypeText
                 .FirstOrDefault(rtt => rtt.type == ruleType);
-            return type?.text ?? string.Empty;
+            return entry?.text ?? string.Empty;
         }
 
         public static PathCheckType TextToRuleType(string text)
         {
-            (PathCheckType type, string text)? type = PathCheckTypeText
+            (PathCheckType type, string text)? entry = PathCheckTypeText
                 .FirstOrDefault(rtt => rtt.text == text);
-            return type?.type ?? throw new InvalidOperationException(
+            return entry?.type ?? throw new InvalidOperationException(
                 "No RuleType matches the provided text. " +
                 "Unable to convert to RuleType!");
         }
