@@ -28,7 +28,7 @@ namespace PowerPlanSwitcher
         /// </summary>
         private void InitializeComponent()
         {
-            var dataGridViewCellStyle1 = new DataGridViewCellStyle();
+            var dataGridViewCellStyle2 = new DataGridViewCellStyle();
             var resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsDlg));
             DgvPowerSchemes = new DataGridView();
             DgcVisible = new DataGridViewCheckBoxColumn();
@@ -37,8 +37,12 @@ namespace PowerPlanSwitcher
             DgcHotkey = new DataGridViewTextBoxColumn();
             BtnOk = new Button();
             BtnCancel = new Button();
-            BtnCreateRuleFromProcess = new Button();
             DgvPowerRules = new DataGridView();
+            DgcRuleIndex = new DataGridViewTextBoxColumn();
+            DgcRuleDescription = new DataGridViewTextBoxColumn();
+            DgcRuleSchemeIcon = new DataGridViewImageColumn();
+            DgcRuleSchemeName = new DataGridViewTextBoxColumn();
+            DgcActive = new DataGridViewCheckBoxColumn();
             BtnAddPowerRule = new Button();
             BtnEditPowerRule = new Button();
             BtnAscentPowerRule = new Button();
@@ -67,20 +71,9 @@ namespace PowerPlanSwitcher
             BtnSetCycleHotkey = new Button();
             groupBox1 = new GroupBox();
             tableLayoutPanel6 = new TableLayoutPanel();
-            GrbBatteryManagement = new GroupBox();
-            tableLayoutPanel3 = new TableLayoutPanel();
-            CmbAcPowerScheme = new ComboBox();
-            label1 = new Label();
-            label3 = new Label();
-            CmbBatteryPowerScheme = new ComboBox();
             groupBox3 = new GroupBox();
             tableLayoutPanel8 = new TableLayoutPanel();
             ChbShowToastNotifications = new CheckBox();
-            DgcRuleIndex = new DataGridViewTextBoxColumn();
-            DgcRuleDescription = new DataGridViewTextBoxColumn();
-            DgcRuleSchemeIcon = new DataGridViewImageColumn();
-            DgcRuleSchemeName = new DataGridViewTextBoxColumn();
-            DgcActive = new DataGridViewCheckBoxColumn();
             ((System.ComponentModel.ISupportInitialize)DgvPowerSchemes).BeginInit();
             ((System.ComponentModel.ISupportInitialize)DgvPowerRules).BeginInit();
             tableLayoutPanel1.SuspendLayout();
@@ -94,8 +87,6 @@ namespace PowerPlanSwitcher
             tableLayoutPanel4.SuspendLayout();
             groupBox1.SuspendLayout();
             tableLayoutPanel6.SuspendLayout();
-            GrbBatteryManagement.SuspendLayout();
-            tableLayoutPanel3.SuspendLayout();
             groupBox3.SuspendLayout();
             tableLayoutPanel8.SuspendLayout();
             SuspendLayout();
@@ -149,8 +140,8 @@ namespace PowerPlanSwitcher
             // DgcHotkey
             // 
             DgcHotkey.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            dataGridViewCellStyle1.Alignment = DataGridViewContentAlignment.MiddleCenter;
-            DgcHotkey.DefaultCellStyle = dataGridViewCellStyle1;
+            dataGridViewCellStyle2.Alignment = DataGridViewContentAlignment.MiddleCenter;
+            DgcHotkey.DefaultCellStyle = dataGridViewCellStyle2;
             DgcHotkey.HeaderText = "Hotkey";
             DgcHotkey.Name = "DgcHotkey";
             DgcHotkey.ReadOnly = true;
@@ -178,18 +169,6 @@ namespace PowerPlanSwitcher
             BtnCancel.Text = "Cancel";
             BtnCancel.UseVisualStyleBackColor = true;
             // 
-            // BtnCreateRuleFromProcess
-            // 
-            BtnCreateRuleFromProcess.Image = (Image)resources.GetObject("BtnCreateRuleFromProcess.Image");
-            BtnCreateRuleFromProcess.Location = new Point(118, 167);
-            BtnCreateRuleFromProcess.Name = "BtnCreateRuleFromProcess";
-            BtnCreateRuleFromProcess.Size = new Size(109, 74);
-            BtnCreateRuleFromProcess.TabIndex = 6;
-            BtnCreateRuleFromProcess.Text = "Create Rule from active Process";
-            BtnCreateRuleFromProcess.TextImageRelation = TextImageRelation.ImageAboveText;
-            BtnCreateRuleFromProcess.UseVisualStyleBackColor = true;
-            BtnCreateRuleFromProcess.Click += HandleBtnCreateRuleFromProcessClick;
-            // 
             // DgvPowerRules
             // 
             DgvPowerRules.AllowUserToAddRows = false;
@@ -198,7 +177,7 @@ namespace PowerPlanSwitcher
             DgvPowerRules.AllowUserToResizeRows = false;
             DgvPowerRules.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
             DgvPowerRules.Columns.AddRange(new DataGridViewColumn[] { DgcRuleIndex, DgcRuleDescription, DgcRuleSchemeIcon, DgcRuleSchemeName, DgcActive });
-            tableLayoutPanel1.SetColumnSpan(DgvPowerRules, 6);
+            tableLayoutPanel1.SetColumnSpan(DgvPowerRules, 5);
             DgvPowerRules.Dock = DockStyle.Fill;
             DgvPowerRules.Location = new Point(3, 3);
             DgvPowerRules.MultiSelect = false;
@@ -209,6 +188,45 @@ namespace PowerPlanSwitcher
             DgvPowerRules.Size = new Size(685, 158);
             DgvPowerRules.TabIndex = 7;
             DgvPowerRules.CellContentDoubleClick += DgvPowerRules_CellContentDoubleClick;
+            // 
+            // DgcRuleIndex
+            // 
+            DgcRuleIndex.Frozen = true;
+            DgcRuleIndex.HeaderText = "ID";
+            DgcRuleIndex.Name = "DgcRuleIndex";
+            DgcRuleIndex.ReadOnly = true;
+            DgcRuleIndex.Width = 30;
+            // 
+            // DgcRuleDescription
+            // 
+            DgcRuleDescription.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            DgcRuleDescription.HeaderText = "Description";
+            DgcRuleDescription.Name = "DgcRuleDescription";
+            DgcRuleDescription.ReadOnly = true;
+            // 
+            // DgcRuleSchemeIcon
+            // 
+            DgcRuleSchemeIcon.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcRuleSchemeIcon.HeaderText = "Icon";
+            DgcRuleSchemeIcon.Name = "DgcRuleSchemeIcon";
+            DgcRuleSchemeIcon.ReadOnly = true;
+            DgcRuleSchemeIcon.Width = 36;
+            // 
+            // DgcRuleSchemeName
+            // 
+            DgcRuleSchemeName.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcRuleSchemeName.HeaderText = "Power Plan";
+            DgcRuleSchemeName.Name = "DgcRuleSchemeName";
+            DgcRuleSchemeName.ReadOnly = true;
+            DgcRuleSchemeName.Width = 91;
+            // 
+            // DgcActive
+            // 
+            DgcActive.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcActive.HeaderText = "Active";
+            DgcActive.Name = "DgcActive";
+            DgcActive.ReadOnly = true;
+            DgcActive.Width = 46;
             // 
             // BtnAddPowerRule
             // 
@@ -225,7 +243,7 @@ namespace PowerPlanSwitcher
             // BtnEditPowerRule
             // 
             BtnEditPowerRule.Image = (Image)resources.GetObject("BtnEditPowerRule.Image");
-            BtnEditPowerRule.Location = new Point(233, 167);
+            BtnEditPowerRule.Location = new Point(118, 167);
             BtnEditPowerRule.Name = "BtnEditPowerRule";
             BtnEditPowerRule.Size = new Size(109, 74);
             BtnEditPowerRule.TabIndex = 9;
@@ -237,7 +255,7 @@ namespace PowerPlanSwitcher
             // BtnAscentPowerRule
             // 
             BtnAscentPowerRule.Image = (Image)resources.GetObject("BtnAscentPowerRule.Image");
-            BtnAscentPowerRule.Location = new Point(463, 167);
+            BtnAscentPowerRule.Location = new Point(348, 167);
             BtnAscentPowerRule.Name = "BtnAscentPowerRule";
             BtnAscentPowerRule.Size = new Size(109, 74);
             BtnAscentPowerRule.TabIndex = 10;
@@ -249,7 +267,7 @@ namespace PowerPlanSwitcher
             // BtnDescentPowerRule
             // 
             BtnDescentPowerRule.Image = (Image)resources.GetObject("BtnDescentPowerRule.Image");
-            BtnDescentPowerRule.Location = new Point(578, 167);
+            BtnDescentPowerRule.Location = new Point(463, 167);
             BtnDescentPowerRule.Name = "BtnDescentPowerRule";
             BtnDescentPowerRule.Size = new Size(109, 74);
             BtnDescentPowerRule.TabIndex = 10;
@@ -261,7 +279,7 @@ namespace PowerPlanSwitcher
             // BtnDeletePowerRule
             // 
             BtnDeletePowerRule.Image = (Image)resources.GetObject("BtnDeletePowerRule.Image");
-            BtnDeletePowerRule.Location = new Point(348, 167);
+            BtnDeletePowerRule.Location = new Point(233, 167);
             BtnDeletePowerRule.Name = "BtnDeletePowerRule";
             BtnDeletePowerRule.Size = new Size(109, 74);
             BtnDeletePowerRule.TabIndex = 9;
@@ -275,26 +293,25 @@ namespace PowerPlanSwitcher
             CmbColorTheme.Anchor = AnchorStyles.None;
             CmbColorTheme.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbColorTheme.FormattingEnabled = true;
-            CmbColorTheme.Location = new Point(81, 8);
+            CmbColorTheme.Location = new Point(81, 29);
             CmbColorTheme.Name = "CmbColorTheme";
             CmbColorTheme.Size = new Size(170, 23);
             CmbColorTheme.TabIndex = 17;
             // 
             // tableLayoutPanel1
             // 
-            tableLayoutPanel1.ColumnCount = 6;
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel1.ColumnCount = 5;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
             tableLayoutPanel1.Controls.Add(DgvPowerRules, 0, 0);
-            tableLayoutPanel1.Controls.Add(BtnDeletePowerRule, 3, 1);
-            tableLayoutPanel1.Controls.Add(BtnDescentPowerRule, 5, 1);
-            tableLayoutPanel1.Controls.Add(BtnAscentPowerRule, 4, 1);
-            tableLayoutPanel1.Controls.Add(BtnEditPowerRule, 2, 1);
-            tableLayoutPanel1.Controls.Add(BtnCreateRuleFromProcess, 1, 1);
+            tableLayoutPanel1.Controls.Add(BtnDeletePowerRule, 2, 1);
+            tableLayoutPanel1.Controls.Add(BtnDescentPowerRule, 4, 1);
+            tableLayoutPanel1.Controls.Add(BtnAscentPowerRule, 3, 1);
+            tableLayoutPanel1.Controls.Add(BtnEditPowerRule, 1, 1);
             tableLayoutPanel1.Controls.Add(BtnAddPowerRule, 0, 1);
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(3, 3);
@@ -302,7 +319,6 @@ namespace PowerPlanSwitcher
             tableLayoutPanel1.RowCount = 1;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel1.Size = new Size(691, 244);
             tableLayoutPanel1.TabIndex = 0;
             // 
@@ -453,18 +469,15 @@ namespace PowerPlanSwitcher
             tableLayoutPanel5.ColumnCount = 2;
             tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
             tableLayoutPanel5.Controls.Add(groupBox4, 0, 0);
             tableLayoutPanel5.Controls.Add(groupBox1, 0, 1);
-            tableLayoutPanel5.Controls.Add(GrbBatteryManagement, 0, 2);
             tableLayoutPanel5.Controls.Add(groupBox3, 1, 1);
             tableLayoutPanel5.Dock = DockStyle.Fill;
             tableLayoutPanel5.Location = new Point(3, 3);
             tableLayoutPanel5.Name = "tableLayoutPanel5";
-            tableLayoutPanel5.RowCount = 3;
-            tableLayoutPanel5.RowStyles.Add(new RowStyle());
-            tableLayoutPanel5.RowStyles.Add(new RowStyle());
-            tableLayoutPanel5.RowStyles.Add(new RowStyle());
+            tableLayoutPanel5.RowCount = 2;
+            tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 55F));
+            tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 45F));
             tableLayoutPanel5.Size = new Size(691, 244);
             tableLayoutPanel5.TabIndex = 30;
             // 
@@ -475,7 +488,7 @@ namespace PowerPlanSwitcher
             groupBox4.Dock = DockStyle.Fill;
             groupBox4.Location = new Point(3, 3);
             groupBox4.Name = "groupBox4";
-            groupBox4.Size = new Size(685, 102);
+            groupBox4.Size = new Size(685, 128);
             groupBox4.TabIndex = 29;
             groupBox4.TabStop = false;
             groupBox4.Text = "Hotkey to cycle through Power Plans";
@@ -498,7 +511,7 @@ namespace PowerPlanSwitcher
             tableLayoutPanel4.RowCount = 2;
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel4.Size = new Size(679, 80);
+            tableLayoutPanel4.Size = new Size(679, 106);
             tableLayoutPanel4.TabIndex = 0;
             // 
             // RdbCycleAll
@@ -507,7 +520,7 @@ namespace PowerPlanSwitcher
             RdbCycleAll.Dock = DockStyle.Left;
             RdbCycleAll.Location = new Point(433, 3);
             RdbCycleAll.Name = "RdbCycleAll";
-            RdbCycleAll.Size = new Size(226, 34);
+            RdbCycleAll.Size = new Size(226, 47);
             RdbCycleAll.TabIndex = 26;
             RdbCycleAll.TabStop = true;
             RdbCycleAll.Text = "Cycle through all existing Power Plans";
@@ -522,7 +535,7 @@ namespace PowerPlanSwitcher
             LblCycleHotkey.Location = new Point(3, 0);
             LblCycleHotkey.Name = "LblCycleHotkey";
             tableLayoutPanel4.SetRowSpan(LblCycleHotkey, 2);
-            LblCycleHotkey.Size = new Size(194, 80);
+            LblCycleHotkey.Size = new Size(194, 106);
             LblCycleHotkey.TabIndex = 22;
             LblCycleHotkey.Text = "[ ---------- ]";
             LblCycleHotkey.TextAlign = ContentAlignment.MiddleCenter;
@@ -531,9 +544,9 @@ namespace PowerPlanSwitcher
             // 
             RdbCycleVisible.AutoSize = true;
             RdbCycleVisible.Dock = DockStyle.Left;
-            RdbCycleVisible.Location = new Point(433, 43);
+            RdbCycleVisible.Location = new Point(433, 56);
             RdbCycleVisible.Name = "RdbCycleVisible";
-            RdbCycleVisible.Size = new Size(229, 34);
+            RdbCycleVisible.Size = new Size(229, 47);
             RdbCycleVisible.TabIndex = 27;
             RdbCycleVisible.TabStop = true;
             RdbCycleVisible.Text = "Cycle only through visible Power Plans";
@@ -543,7 +556,7 @@ namespace PowerPlanSwitcher
             // 
             BtnRemoveCycleHotkey.Anchor = AnchorStyles.None;
             BtnRemoveCycleHotkey.Image = (Image)resources.GetObject("BtnRemoveCycleHotkey.Image");
-            BtnRemoveCycleHotkey.Location = new Point(318, 3);
+            BtnRemoveCycleHotkey.Location = new Point(318, 16);
             BtnRemoveCycleHotkey.Name = "BtnRemoveCycleHotkey";
             tableLayoutPanel4.SetRowSpan(BtnRemoveCycleHotkey, 2);
             BtnRemoveCycleHotkey.Size = new Size(109, 74);
@@ -557,7 +570,7 @@ namespace PowerPlanSwitcher
             // 
             BtnSetCycleHotkey.Anchor = AnchorStyles.None;
             BtnSetCycleHotkey.Image = (Image)resources.GetObject("BtnSetCycleHotkey.Image");
-            BtnSetCycleHotkey.Location = new Point(203, 3);
+            BtnSetCycleHotkey.Location = new Point(203, 16);
             BtnSetCycleHotkey.Name = "BtnSetCycleHotkey";
             tableLayoutPanel4.SetRowSpan(BtnSetCycleHotkey, 2);
             BtnSetCycleHotkey.Size = new Size(109, 74);
@@ -571,9 +584,9 @@ namespace PowerPlanSwitcher
             // 
             groupBox1.Controls.Add(tableLayoutPanel6);
             groupBox1.Dock = DockStyle.Fill;
-            groupBox1.Location = new Point(3, 111);
+            groupBox1.Location = new Point(3, 137);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(339, 62);
+            groupBox1.Size = new Size(339, 104);
             groupBox1.TabIndex = 30;
             groupBox1.TabStop = false;
             groupBox1.Text = "Color Theme";
@@ -590,92 +603,16 @@ namespace PowerPlanSwitcher
             tableLayoutPanel6.RowCount = 1;
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel6.Size = new Size(333, 40);
+            tableLayoutPanel6.Size = new Size(333, 82);
             tableLayoutPanel6.TabIndex = 0;
-            // 
-            // GrbBatteryManagement
-            // 
-            tableLayoutPanel5.SetColumnSpan(GrbBatteryManagement, 2);
-            GrbBatteryManagement.Controls.Add(tableLayoutPanel3);
-            GrbBatteryManagement.Dock = DockStyle.Fill;
-            GrbBatteryManagement.Location = new Point(3, 179);
-            GrbBatteryManagement.Name = "GrbBatteryManagement";
-            GrbBatteryManagement.Size = new Size(685, 62);
-            GrbBatteryManagement.TabIndex = 32;
-            GrbBatteryManagement.TabStop = false;
-            GrbBatteryManagement.Text = "Battery Management";
-            // 
-            // tableLayoutPanel3
-            // 
-            tableLayoutPanel3.ColumnCount = 4;
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 25F));
-            tableLayoutPanel3.Controls.Add(CmbAcPowerScheme, 1, 0);
-            tableLayoutPanel3.Controls.Add(label1, 0, 0);
-            tableLayoutPanel3.Controls.Add(label3, 2, 0);
-            tableLayoutPanel3.Controls.Add(CmbBatteryPowerScheme, 3, 0);
-            tableLayoutPanel3.Dock = DockStyle.Fill;
-            tableLayoutPanel3.Location = new Point(3, 19);
-            tableLayoutPanel3.Name = "tableLayoutPanel3";
-            tableLayoutPanel3.RowCount = 1;
-            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel3.Size = new Size(679, 40);
-            tableLayoutPanel3.TabIndex = 0;
-            // 
-            // CmbAcPowerScheme
-            // 
-            CmbAcPowerScheme.Anchor = AnchorStyles.Left;
-            CmbAcPowerScheme.DropDownStyle = ComboBoxStyle.DropDownList;
-            CmbAcPowerScheme.FormattingEnabled = true;
-            CmbAcPowerScheme.Location = new Point(179, 10);
-            CmbAcPowerScheme.Margin = new Padding(10);
-            CmbAcPowerScheme.Name = "CmbAcPowerScheme";
-            CmbAcPowerScheme.Size = new Size(149, 23);
-            CmbAcPowerScheme.TabIndex = 26;
-            // 
-            // label1
-            // 
-            label1.Anchor = AnchorStyles.Right;
-            label1.AutoSize = true;
-            label1.Location = new Point(10, 5);
-            label1.Name = "label1";
-            label1.Size = new Size(156, 30);
-            label1.TabIndex = 0;
-            label1.Text = "Default Power Plan when on AC:";
-            label1.TextAlign = ContentAlignment.MiddleRight;
-            // 
-            // label3
-            // 
-            label3.Anchor = AnchorStyles.Right;
-            label3.AutoSize = true;
-            label3.Location = new Point(348, 5);
-            label3.Name = "label3";
-            label3.Size = new Size(156, 30);
-            label3.TabIndex = 0;
-            label3.Text = "Default Power Plan when on Battery:";
-            label3.TextAlign = ContentAlignment.MiddleRight;
-            // 
-            // CmbBatteryPowerScheme
-            // 
-            CmbBatteryPowerScheme.Anchor = AnchorStyles.Left;
-            CmbBatteryPowerScheme.DropDownStyle = ComboBoxStyle.DropDownList;
-            CmbBatteryPowerScheme.FormattingEnabled = true;
-            CmbBatteryPowerScheme.Location = new Point(517, 10);
-            CmbBatteryPowerScheme.Margin = new Padding(10);
-            CmbBatteryPowerScheme.Name = "CmbBatteryPowerScheme";
-            CmbBatteryPowerScheme.Size = new Size(152, 23);
-            CmbBatteryPowerScheme.TabIndex = 26;
             // 
             // groupBox3
             // 
             groupBox3.Controls.Add(tableLayoutPanel8);
             groupBox3.Dock = DockStyle.Fill;
-            groupBox3.Location = new Point(348, 111);
+            groupBox3.Location = new Point(348, 137);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(340, 62);
+            groupBox3.Size = new Size(340, 104);
             groupBox3.TabIndex = 33;
             groupBox3.TabStop = false;
             groupBox3.Text = "Notifications";
@@ -690,58 +627,19 @@ namespace PowerPlanSwitcher
             tableLayoutPanel8.Name = "tableLayoutPanel8";
             tableLayoutPanel8.RowCount = 1;
             tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel8.Size = new Size(334, 40);
+            tableLayoutPanel8.Size = new Size(334, 82);
             tableLayoutPanel8.TabIndex = 0;
             // 
             // ChbShowToastNotifications
             // 
             ChbShowToastNotifications.Anchor = AnchorStyles.None;
             ChbShowToastNotifications.AutoSize = true;
-            ChbShowToastNotifications.Location = new Point(33, 10);
+            ChbShowToastNotifications.Location = new Point(33, 31);
             ChbShowToastNotifications.Name = "ChbShowToastNotifications";
             ChbShowToastNotifications.Size = new Size(267, 19);
             ChbShowToastNotifications.TabIndex = 0;
             ChbShowToastNotifications.Text = "Show notification when switching Power Plan";
             ChbShowToastNotifications.UseVisualStyleBackColor = true;
-            // 
-            // DgcRuleIndex
-            // 
-            DgcRuleIndex.Frozen = true;
-            DgcRuleIndex.HeaderText = "ID";
-            DgcRuleIndex.Name = "DgcRuleIndex";
-            DgcRuleIndex.ReadOnly = true;
-            DgcRuleIndex.Width = 30;
-            // 
-            // DgcRuleDescription
-            // 
-            DgcRuleDescription.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            DgcRuleDescription.HeaderText = "Description";
-            DgcRuleDescription.Name = "DgcRuleDescription";
-            DgcRuleDescription.ReadOnly = true;
-            // 
-            // DgcRuleSchemeIcon
-            // 
-            DgcRuleSchemeIcon.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            DgcRuleSchemeIcon.HeaderText = "Icon";
-            DgcRuleSchemeIcon.Name = "DgcRuleSchemeIcon";
-            DgcRuleSchemeIcon.ReadOnly = true;
-            DgcRuleSchemeIcon.Width = 36;
-            // 
-            // DgcRuleSchemeName
-            // 
-            DgcRuleSchemeName.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            DgcRuleSchemeName.HeaderText = "Power Plan";
-            DgcRuleSchemeName.Name = "DgcRuleSchemeName";
-            DgcRuleSchemeName.ReadOnly = true;
-            DgcRuleSchemeName.Width = 91;
-            // 
-            // DgcActive
-            // 
-            DgcActive.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            DgcActive.HeaderText = "Active";
-            DgcActive.Name = "DgcActive";
-            DgcActive.ReadOnly = true;
-            DgcActive.Width = 46;
             // 
             // SettingsDlg
             // 
@@ -772,9 +670,6 @@ namespace PowerPlanSwitcher
             tableLayoutPanel4.PerformLayout();
             groupBox1.ResumeLayout(false);
             tableLayoutPanel6.ResumeLayout(false);
-            GrbBatteryManagement.ResumeLayout(false);
-            tableLayoutPanel3.ResumeLayout(false);
-            tableLayoutPanel3.PerformLayout();
             groupBox3.ResumeLayout(false);
             tableLayoutPanel8.ResumeLayout(false);
             tableLayoutPanel8.PerformLayout();
@@ -786,7 +681,6 @@ namespace PowerPlanSwitcher
         private DataGridView DgvPowerSchemes;
         private Button BtnOk;
         private Button BtnCancel;
-        private Button BtnCreateRuleFromProcess;
         private DataGridView DgvPowerRules;
         private Button BtnAddPowerRule;
         private Button BtnEditPowerRule;
@@ -816,12 +710,6 @@ namespace PowerPlanSwitcher
         private TableLayoutPanel tableLayoutPanel5;
         private GroupBox groupBox1;
         private TableLayoutPanel tableLayoutPanel6;
-        private GroupBox GrbBatteryManagement;
-        private TableLayoutPanel tableLayoutPanel3;
-        private ComboBox CmbAcPowerScheme;
-        private Label label1;
-        private Label label3;
-        private ComboBox CmbBatteryPowerScheme;
         private DataGridViewCheckBoxColumn DgcVisible;
         private DataGridViewImageColumn DgcIcon;
         private DataGridViewTextBoxColumn DgcName;

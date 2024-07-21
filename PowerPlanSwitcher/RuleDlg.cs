@@ -7,43 +7,83 @@ namespace PowerPlanSwitcher
 
     public partial class RuleDlg : Form
     {
-        public ProcessRule? PowerRule { get; set; }
-        private readonly List<(Guid guid, string name)> powerSchemes =
+        public IRule? Rule { get; set; }
+
+        private static readonly List<(Guid guid, string name)> PowerSchemes =
             PowerManager.Static.GetPowerSchemes()
                 .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
                 .Cast<(Guid schemeGuid, string name)>()
                 .ToList();
 
         private static readonly List<ComparisonType> ComparisonTypes =
-            Enum.GetValues(typeof(ComparisonType)).Cast<ComparisonType>().ToList();
+            Enum.GetValues(typeof(ComparisonType))
+                .Cast<ComparisonType>()
+                .ToList();
+
+        private static readonly List<PowerLineStatus> PowerLineStatuses =
+            Enum.GetValues(typeof(PowerLineStatus))
+                .Cast<PowerLineStatus>()
+                .ToList();
+
+        private static string GetSelectedString(ComboBox cmb) =>
+            cmb.Items[cmb.SelectedIndex]?.ToString() ?? string.Empty;
+
+        private static Guid GetPowerSchemeGuid(string name) =>
+                PowerSchemes.First(scheme => scheme.name == name).guid;
 
         public RuleDlg() => InitializeComponent();
 
         protected override void OnLoad(EventArgs e)
         {
-            CmbRuleType.Items.AddRange(ComparisonTypes
+            LblComparisonType.Visible = false;
+            CmbComparisonType.Visible = false;
+            LblPath.Visible = false;
+            TxtPath.Visible = false;
+            LblPowerLineStatus.Visible = false;
+            CmbPowerLineStatus.Visible = false;
+
+            CmbComparisonType.Items.AddRange(ComparisonTypes
                 .Select(ProcessRule.ComparisonTypeToText)
                 .Cast<object>()
                 .ToArray());
-            if (PowerRule is not null)
-            {
-                CmbRuleType.SelectedIndex = ComparisonTypes.IndexOf(PowerRule.Type);
-            }
-            else
-            {
-                CmbRuleType.SelectedIndex = 0;
-            }
 
-            TxtPath.Text = PowerRule?.FilePath;
+            CmbPowerLineStatus.Items.AddRange(PowerLineStatuses
+                .Select(PowerLineRule.PowerLineStatusToText)
+                .Cast<object>()
+                .ToArray());
 
-            CmbPowerScheme.Items.AddRange(powerSchemes
+            CmbPowerScheme.Items.AddRange(PowerSchemes
                 .Select(scheme => scheme.name)
                 .Cast<object>()
                 .ToArray());
-            if (PowerRule is not null && PowerRule.SchemeGuid != Guid.Empty)
+
+            if (Rule is ProcessRule processRule)
             {
-                CmbPowerScheme.SelectedIndex = powerSchemes.FindIndex(
-                    scheme => scheme.guid == PowerRule.SchemeGuid);
+                RdbProcessRule.Checked = true;
+                CmbComparisonType.SelectedIndex =
+                    ComparisonTypes.IndexOf(processRule.Type);
+                TxtPath.Text = processRule.FilePath;
+            }
+            else
+            {
+                CmbComparisonType.SelectedIndex = 0;
+            }
+
+            if (Rule is PowerLineRule powerLineRule)
+            {
+                RdbPowerLineRule.Checked = true;
+                CmbPowerLineStatus.SelectedIndex =
+                    PowerLineStatuses.IndexOf(powerLineRule.PowerLineStatus);
+            }
+            else
+            {
+                CmbPowerLineStatus.SelectedIndex = 0;
+            }
+
+            if (Rule is not null && Rule.SchemeGuid != Guid.Empty)
+            {
+                CmbPowerScheme.SelectedIndex = PowerSchemes.FindIndex(
+                    scheme => scheme.guid == Rule.SchemeGuid);
             }
             else
             {
@@ -55,6 +95,38 @@ namespace PowerPlanSwitcher
 
         private void BtnOk_Click(object sender, EventArgs e)
         {
+            if (RdbProcessRule.Checked)
+            {
+                ApplyProcessRule();
+                DialogResult = DialogResult.OK;
+            }
+            else if (RdbPowerLineRule.Checked)
+            {
+                ApplyPowerLineRule();
+                DialogResult = DialogResult.OK;
+            }
+            _ = MessageBox.Show(
+                "Select a Rule Type!",
+                "Invalid input",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
+
+        private void ApplyPowerLineRule()
+        {
+            var powerLineRule = Rule as PowerLineRule ?? new PowerLineRule();
+
+            powerLineRule.PowerLineStatus =
+                PowerLineRule.TextToPowerLineStatus(
+                    GetSelectedString(CmbPowerScheme));
+            powerLineRule.SchemeGuid =
+                GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme));
+
+            Rule = powerLineRule;
+        }
+
+        private void ApplyProcessRule()
+        {
             if (string.IsNullOrWhiteSpace(TxtPath.Text))
             {
                 _ = MessageBox.Show(
@@ -65,28 +137,24 @@ namespace PowerPlanSwitcher
                 return;
             }
 
-            static string GetSelectedString(ComboBox cmb) =>
-                cmb.Items[cmb.SelectedIndex]?.ToString() ?? string.Empty;
+            var processRule = Rule as ProcessRule ?? new ProcessRule();
 
-            Guid GetPowerSchemeGuid(string name) =>
-                powerSchemes.First(scheme => scheme.name == name).guid;
-
-            PowerRule ??= new ProcessRule();
-            PowerRule.Type =
-                ProcessRule.TextToComparisonType(GetSelectedString(CmbRuleType));
-            PowerRule.FilePath = TxtPath.Text;
-            PowerRule.SchemeGuid =
+            processRule.Type =
+                ProcessRule.TextToComparisonType(
+                    GetSelectedString(CmbComparisonType));
+            processRule.FilePath = TxtPath.Text;
+            processRule.SchemeGuid =
                 GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme));
 
-            DialogResult = DialogResult.OK;
+            Rule = processRule;
         }
 
-        private void HandleBtnSelectPathClick(object sender, EventArgs e)
+        private void BtnSelectPath_Click(object sender, EventArgs e)
         {
             static string GetSelectedString(ComboBox cmb) =>
                 cmb.Items[cmb.SelectedIndex]?.ToString() ?? string.Empty;
 
-            var type = ProcessRule.TextToComparisonType(GetSelectedString(CmbRuleType));
+            var type = ProcessRule.TextToComparisonType(GetSelectedString(CmbComparisonType));
 
             using var dlg = new CommonOpenFileDialog
             {
@@ -105,6 +173,16 @@ namespace PowerPlanSwitcher
             }
 
             TxtPath.Text = dlg.FileName;
+        }
+
+        private void RdbProcessRule_CheckedChanged(object sender, EventArgs e)
+        {
+            LblComparisonType.Visible = RdbProcessRule.Checked;
+            CmbComparisonType.Visible = RdbProcessRule.Checked;
+            LblPath.Visible = RdbProcessRule.Checked;
+            TxtPath.Visible = RdbProcessRule.Checked;
+            LblPowerLineStatus.Visible = RdbPowerLineRule.Checked;
+            CmbPowerLineStatus.Visible = RdbPowerLineRule.Checked;
         }
     }
 }
