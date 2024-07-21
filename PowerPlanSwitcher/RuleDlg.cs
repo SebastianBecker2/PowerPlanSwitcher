@@ -122,6 +122,7 @@ namespace PowerPlanSwitcher
         private bool ApplyPowerLineRule()
         {
             var powerLineRule = Rule as PowerLineRule ?? new PowerLineRule();
+            powerLineRule.Index = Rule?.Index ?? 0;
 
             powerLineRule.PowerLineStatus =
                 PowerLineRule.TextToPowerLineStatus(
@@ -146,6 +147,7 @@ namespace PowerPlanSwitcher
             }
 
             var processRule = Rule as ProcessRule ?? new ProcessRule();
+            processRule.Index = Rule?.Index ?? 0;
 
             processRule.Type =
                 ProcessRule.TextToComparisonType(
