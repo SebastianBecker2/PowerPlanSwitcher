@@ -14,20 +14,20 @@ namespace PowerPlanSwitcher
                 .Cast<(Guid schemeGuid, string name)>()
                 .ToList();
 
-        private readonly List<ComparisonType> ruleTypes =
+        private static readonly List<ComparisonType> ComparisonTypes =
             Enum.GetValues(typeof(ComparisonType)).Cast<ComparisonType>().ToList();
 
         public RuleDlg() => InitializeComponent();
 
         protected override void OnLoad(EventArgs e)
         {
-            CmbRuleType.Items.AddRange(ruleTypes
-                .Select(ProcessRule.RuleTypeToText)
+            CmbRuleType.Items.AddRange(ComparisonTypes
+                .Select(ProcessRule.ComparisonTypeToText)
                 .Cast<object>()
                 .ToArray());
             if (PowerRule is not null)
             {
-                CmbRuleType.SelectedIndex = ruleTypes.IndexOf(PowerRule.Type);
+                CmbRuleType.SelectedIndex = ComparisonTypes.IndexOf(PowerRule.Type);
             }
             else
             {
@@ -73,7 +73,7 @@ namespace PowerPlanSwitcher
 
             PowerRule ??= new ProcessRule();
             PowerRule.Type =
-                ProcessRule.TextToRuleType(GetSelectedString(CmbRuleType));
+                ProcessRule.TextToComparisonType(GetSelectedString(CmbRuleType));
             PowerRule.FilePath = TxtPath.Text;
             PowerRule.SchemeGuid =
                 GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme));
@@ -86,7 +86,7 @@ namespace PowerPlanSwitcher
             static string GetSelectedString(ComboBox cmb) =>
                 cmb.Items[cmb.SelectedIndex]?.ToString() ?? string.Empty;
 
-            var type = ProcessRule.TextToRuleType(GetSelectedString(CmbRuleType));
+            var type = ProcessRule.TextToComparisonType(GetSelectedString(CmbRuleType));
 
             using var dlg = new CommonOpenFileDialog
             {

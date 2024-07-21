@@ -19,7 +19,7 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
         public ComparisonType Type { get; set; }
 
         private static readonly List<(ComparisonType type, string text)>
-            PathCheckTypeText =
+            ComparisonTypeText =
             [
                 (ComparisonType.Exact, "Match exact Path"),
                 (ComparisonType.StartsWith, "Path starts with"),
@@ -29,7 +29,7 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
         private string filePath = string.Empty;
 
         public string GetDescription() =>
-            $"Process -> {RuleTypeToText(Type)} -> {FilePath}";
+            $"Process -> {ComparisonTypeToText(Type)} -> {FilePath}";
 
         public bool CheckRule(ICachedProcess process)
         {
@@ -64,16 +64,16 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
             }
         }
 
-        public static string RuleTypeToText(ComparisonType ruleType)
+        public static string ComparisonTypeToText(ComparisonType ruleType)
         {
-            (ComparisonType type, string text)? entry = PathCheckTypeText
+            (ComparisonType type, string text)? entry = ComparisonTypeText
                 .FirstOrDefault(rtt => rtt.type == ruleType);
             return entry?.text ?? string.Empty;
         }
 
-        public static ComparisonType TextToRuleType(string text)
+        public static ComparisonType TextToComparisonType(string text)
         {
-            (ComparisonType type, string text)? entry = PathCheckTypeText
+            (ComparisonType type, string text)? entry = ComparisonTypeText
                 .FirstOrDefault(rtt => rtt.text == text);
             return entry?.type ?? throw new InvalidOperationException(
                 "No RuleType matches the provided text. " +
