@@ -181,6 +181,10 @@ namespace PowerPlanSwitcher
             CmbComparisonType.Visible = RdbProcessRule.Checked;
             LblPath.Visible = RdbProcessRule.Checked;
             TxtPath.Visible = RdbProcessRule.Checked;
+        }
+
+        private void RdbPowerLineRule_CheckedChanged(object sender, EventArgs e)
+        {
             LblPowerLineStatus.Visible = RdbPowerLineRule.Checked;
             CmbPowerLineStatus.Visible = RdbPowerLineRule.Checked;
         }

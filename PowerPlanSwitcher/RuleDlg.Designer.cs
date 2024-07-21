@@ -51,7 +51,7 @@ namespace PowerPlanSwitcher
             // 
             BtnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             BtnCancel.DialogResult = DialogResult.Cancel;
-            BtnCancel.Location = new Point(672, 238);
+            BtnCancel.Location = new Point(672, 227);
             BtnCancel.Name = "BtnCancel";
             BtnCancel.Size = new Size(75, 23);
             BtnCancel.TabIndex = 4;
@@ -61,7 +61,7 @@ namespace PowerPlanSwitcher
             // BtnOk
             // 
             BtnOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            BtnOk.Location = new Point(591, 238);
+            BtnOk.Location = new Point(591, 227);
             BtnOk.Name = "BtnOk";
             BtnOk.Size = new Size(75, 23);
             BtnOk.TabIndex = 3;
@@ -74,7 +74,7 @@ namespace PowerPlanSwitcher
             CmbComparisonType.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             CmbComparisonType.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbComparisonType.FormattingEnabled = true;
-            CmbComparisonType.Location = new Point(109, 78);
+            CmbComparisonType.Location = new Point(109, 67);
             CmbComparisonType.Name = "CmbComparisonType";
             CmbComparisonType.Size = new Size(592, 23);
             CmbComparisonType.TabIndex = 5;
@@ -82,7 +82,7 @@ namespace PowerPlanSwitcher
             // TxtPath
             // 
             TxtPath.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            TxtPath.Location = new Point(109, 114);
+            TxtPath.Location = new Point(109, 103);
             TxtPath.Name = "TxtPath";
             TxtPath.Size = new Size(592, 23);
             TxtPath.TabIndex = 6;
@@ -90,7 +90,7 @@ namespace PowerPlanSwitcher
             // LblPowerLineStatus
             // 
             LblPowerLineStatus.Dock = DockStyle.Fill;
-            LblPowerLineStatus.Location = new Point(3, 144);
+            LblPowerLineStatus.Location = new Point(3, 133);
             LblPowerLineStatus.Name = "LblPowerLineStatus";
             LblPowerLineStatus.Size = new Size(100, 36);
             LblPowerLineStatus.TabIndex = 7;
@@ -119,13 +119,13 @@ namespace PowerPlanSwitcher
             tableLayoutPanel1.Location = new Point(12, 12);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 6;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 16.666666F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 16.666666F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 16.666666F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 16.666666F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 16.666666F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 16.666666F));
-            tableLayoutPanel1.Size = new Size(735, 220);
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
+            tableLayoutPanel1.Size = new Size(735, 209);
             tableLayoutPanel1.TabIndex = 8;
             // 
             // CmbPowerLineStatus
@@ -133,7 +133,7 @@ namespace PowerPlanSwitcher
             CmbPowerLineStatus.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             CmbPowerLineStatus.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbPowerLineStatus.FormattingEnabled = true;
-            CmbPowerLineStatus.Location = new Point(109, 150);
+            CmbPowerLineStatus.Location = new Point(109, 139);
             CmbPowerLineStatus.Name = "CmbPowerLineStatus";
             CmbPowerLineStatus.Size = new Size(592, 23);
             CmbPowerLineStatus.TabIndex = 12;
@@ -141,7 +141,7 @@ namespace PowerPlanSwitcher
             // LblPowerScheme
             // 
             LblPowerScheme.Dock = DockStyle.Fill;
-            LblPowerScheme.Location = new Point(3, 180);
+            LblPowerScheme.Location = new Point(3, 169);
             LblPowerScheme.Name = "LblPowerScheme";
             LblPowerScheme.Size = new Size(100, 40);
             LblPowerScheme.TabIndex = 11;
@@ -152,13 +152,14 @@ namespace PowerPlanSwitcher
             // 
             RdbPowerLineRule.Anchor = AnchorStyles.Left;
             RdbPowerLineRule.AutoSize = true;
-            RdbPowerLineRule.Location = new Point(109, 44);
+            RdbPowerLineRule.Location = new Point(109, 39);
             RdbPowerLineRule.Name = "RdbPowerLineRule";
             RdbPowerLineRule.Size = new Size(87, 19);
             RdbPowerLineRule.TabIndex = 10;
             RdbPowerLineRule.TabStop = true;
             RdbPowerLineRule.Text = "Energy Rule";
             RdbPowerLineRule.UseVisualStyleBackColor = true;
+            RdbPowerLineRule.CheckedChanged += RdbPowerLineRule_CheckedChanged;
             // 
             // LblRuleType
             // 
@@ -186,7 +187,7 @@ namespace PowerPlanSwitcher
             // LblComparisonType
             // 
             LblComparisonType.Dock = DockStyle.Fill;
-            LblComparisonType.Location = new Point(3, 72);
+            LblComparisonType.Location = new Point(3, 61);
             LblComparisonType.Name = "LblComparisonType";
             LblComparisonType.Size = new Size(100, 36);
             LblComparisonType.TabIndex = 7;
@@ -196,7 +197,7 @@ namespace PowerPlanSwitcher
             // LblPath
             // 
             LblPath.Dock = DockStyle.Fill;
-            LblPath.Location = new Point(3, 108);
+            LblPath.Location = new Point(3, 97);
             LblPath.Name = "LblPath";
             LblPath.Size = new Size(100, 36);
             LblPath.TabIndex = 7;
@@ -208,7 +209,7 @@ namespace PowerPlanSwitcher
             CmbPowerScheme.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             CmbPowerScheme.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbPowerScheme.FormattingEnabled = true;
-            CmbPowerScheme.Location = new Point(109, 188);
+            CmbPowerScheme.Location = new Point(109, 177);
             CmbPowerScheme.Name = "CmbPowerScheme";
             CmbPowerScheme.Size = new Size(592, 23);
             CmbPowerScheme.TabIndex = 5;
@@ -216,7 +217,7 @@ namespace PowerPlanSwitcher
             // BtnSelectPath
             // 
             BtnSelectPath.Anchor = AnchorStyles.Left;
-            BtnSelectPath.Location = new Point(707, 114);
+            BtnSelectPath.Location = new Point(707, 103);
             BtnSelectPath.Name = "BtnSelectPath";
             BtnSelectPath.Size = new Size(25, 23);
             BtnSelectPath.TabIndex = 8;
@@ -230,7 +231,7 @@ namespace PowerPlanSwitcher
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = BtnCancel;
-            ClientSize = new Size(759, 273);
+            ClientSize = new Size(759, 262);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(BtnCancel);
             Controls.Add(BtnOk);
