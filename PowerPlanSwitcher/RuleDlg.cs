@@ -120,7 +120,7 @@ namespace PowerPlanSwitcher
 
             powerLineRule.PowerLineStatus =
                 PowerLineRule.TextToPowerLineStatus(
-                    GetSelectedString(CmbPowerScheme));
+                    GetSelectedString(CmbPowerLineStatus));
             powerLineRule.SchemeGuid =
                 GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme));
 
