@@ -53,10 +53,6 @@ namespace PowerPlanSwitcher.RuleManagement
             {
                 StopEngine();
 
-                // BatteryMonitor isn't reliant on rules,
-                // so we start it even when we don't have any rules.
-                StartBatteryMonitor();
-
                 this.rules = rules;
                 if (!rules.Any())
                 {
@@ -67,6 +63,8 @@ namespace PowerPlanSwitcher.RuleManagement
                 {
                     rule.ActivationCount = 0;
                 }
+
+                StartBatteryMonitor();
 
                 StartProcessMonitor();
             }
