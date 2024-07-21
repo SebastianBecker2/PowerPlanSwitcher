@@ -14,8 +14,8 @@ namespace PowerPlanSwitcher
                 .Cast<(Guid schemeGuid, string name)>()
                 .ToList();
 
-        private readonly List<PathCheckType> ruleTypes =
-            Enum.GetValues(typeof(PathCheckType)).Cast<PathCheckType>().ToList();
+        private readonly List<ComparisonType> ruleTypes =
+            Enum.GetValues(typeof(ComparisonType)).Cast<ComparisonType>().ToList();
 
         public RuleDlg() => InitializeComponent();
 
@@ -90,7 +90,7 @@ namespace PowerPlanSwitcher
 
             using var dlg = new CommonOpenFileDialog
             {
-                IsFolderPicker = type == PathCheckType.StartsWith,
+                IsFolderPicker = type == ComparisonType.StartsWith,
             };
 
             if (dlg.ShowDialog() != CommonFileDialogResult.Ok)
@@ -98,7 +98,7 @@ namespace PowerPlanSwitcher
                 return;
             }
 
-            if (type == PathCheckType.EndsWith)
+            if (type == ComparisonType.EndsWith)
             {
                 TxtPath.Text = Path.GetFileName(dlg.FileName);
                 return;

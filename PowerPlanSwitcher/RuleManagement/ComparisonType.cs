@@ -1,6 +1,6 @@
 namespace PowerPlanSwitcher.RuleManagement
 {
-    public enum PathCheckType
+    public enum ComparisonType
     {
         StartsWith,
         Exact,

@@ -285,7 +285,7 @@ namespace PowerPlanSwitcher
                 PowerRule = new ProcessRule
                 {
                     FilePath = processSelectionDlg.SelectedProcess!.ExecutablePath,
-                    Type = PathCheckType.Exact,
+                    Type = ComparisonType.Exact,
                 },
             };
             if (powerRuleDlg.ShowDialog() != DialogResult.OK)

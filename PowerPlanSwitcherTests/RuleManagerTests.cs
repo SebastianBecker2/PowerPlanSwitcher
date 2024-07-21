@@ -27,7 +27,7 @@ namespace PowerPlanSwitcherTests
             {
                 FilePath = $"{i}",
                 Index = i,
-                Type = PathCheckType.StartsWith,
+                Type = ComparisonType.StartsWith,
                 SchemeGuid = PowerManagerStub.CreatePowerSchemeGuid(i),
             };
 

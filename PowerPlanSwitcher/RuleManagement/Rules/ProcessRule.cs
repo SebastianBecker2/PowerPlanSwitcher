@@ -16,14 +16,14 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
             get => filePath;
             set => filePath = value.ToLowerInvariant();
         }
-        public PathCheckType Type { get; set; }
+        public ComparisonType Type { get; set; }
 
-        private static readonly List<(PathCheckType type, string text)>
+        private static readonly List<(ComparisonType type, string text)>
             PathCheckTypeText =
             [
-                (PathCheckType.Exact, "Match exact Path"),
-                (PathCheckType.StartsWith, "Path starts with"),
-                (PathCheckType.EndsWith, "Path ends with"),
+                (ComparisonType.Exact, "Match exact Path"),
+                (ComparisonType.StartsWith, "Path starts with"),
+                (ComparisonType.EndsWith, "Path ends with"),
             ];
 
         private string filePath = string.Empty;
@@ -43,11 +43,11 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
 
                 return Type switch
                 {
-                    PathCheckType.Exact => path == FilePath,
-                    PathCheckType.StartsWith => path.StartsWith(
+                    ComparisonType.Exact => path == FilePath,
+                    ComparisonType.StartsWith => path.StartsWith(
                         FilePath,
                         StringComparison.InvariantCulture),
-                    PathCheckType.EndsWith => path.EndsWith(
+                    ComparisonType.EndsWith => path.EndsWith(
                         FilePath,
                         StringComparison.InvariantCulture),
                     _ => throw new InvalidOperationException(
@@ -64,16 +64,16 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
             }
         }
 
-        public static string RuleTypeToText(PathCheckType ruleType)
+        public static string RuleTypeToText(ComparisonType ruleType)
         {
-            (PathCheckType type, string text)? entry = PathCheckTypeText
+            (ComparisonType type, string text)? entry = PathCheckTypeText
                 .FirstOrDefault(rtt => rtt.type == ruleType);
             return entry?.text ?? string.Empty;
         }
 
-        public static PathCheckType TextToRuleType(string text)
+        public static ComparisonType TextToRuleType(string text)
         {
-            (PathCheckType type, string text)? entry = PathCheckTypeText
+            (ComparisonType type, string text)? entry = PathCheckTypeText
                 .FirstOrDefault(rtt => rtt.text == text);
             return entry?.type ?? throw new InvalidOperationException(
                 "No RuleType matches the provided text. " +
