@@ -5,7 +5,7 @@ namespace PowerPlanSwitcher
     using PowerPlanSwitcher.RuleManagement;
     using PowerPlanSwitcher.RuleManagement.Rules;
 
-    public partial class PowerRuleDlg : Form
+    public partial class RuleDlg : Form
     {
         public ProcessRule? PowerRule { get; set; }
         private readonly List<(Guid guid, string name)> powerSchemes =
@@ -17,7 +17,7 @@ namespace PowerPlanSwitcher
         private readonly List<PathCheckType> ruleTypes =
             Enum.GetValues(typeof(PathCheckType)).Cast<PathCheckType>().ToList();
 
-        public PowerRuleDlg() => InitializeComponent();
+        public RuleDlg() => InitializeComponent();
 
         protected override void OnLoad(EventArgs e)
         {

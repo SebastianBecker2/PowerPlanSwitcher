@@ -280,7 +280,7 @@ namespace PowerPlanSwitcher
                 return;
             }
 
-            using var powerRuleDlg = new PowerRuleDlg
+            using var powerRuleDlg = new RuleDlg
             {
                 PowerRule = new ProcessRule
                 {
@@ -338,7 +338,7 @@ namespace PowerPlanSwitcher
 
         private void HandleBtnAddPowerRuleClick(object sender, EventArgs e)
         {
-            using var dlg = new PowerRuleDlg();
+            using var dlg = new RuleDlg();
             if (dlg.ShowDialog() != DialogResult.OK)
             {
                 return;
@@ -355,7 +355,7 @@ namespace PowerPlanSwitcher
                 return;
             }
 
-            using var dlg = new PowerRuleDlg
+            using var dlg = new RuleDlg
             {
                 PowerRule = DgvPowerRules.SelectedRows[0].Tag as ProcessRule,
             };

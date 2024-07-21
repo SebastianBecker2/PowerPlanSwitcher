@@ -1,6 +1,6 @@
 namespace PowerPlanSwitcher
 {
-    partial class PowerRuleDlg
+    partial class RuleDlg
     {
         /// <summary>
         /// Required designer variable.
@@ -28,7 +28,7 @@ namespace PowerPlanSwitcher
         /// </summary>
         private void InitializeComponent()
         {
-            var resources = new System.ComponentModel.ComponentResourceManager(typeof(PowerRuleDlg));
+            var resources = new System.ComponentModel.ComponentResourceManager(typeof(RuleDlg));
             BtnCancel = new Button();
             BtnOk = new Button();
             CmbRuleType = new ComboBox();
