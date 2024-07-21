@@ -169,21 +169,44 @@ namespace PowerPlanSwitcher.RuleManagement
         {
             lock (syncObj)
             {
-                if (BatteryMonitor!.GetPowerSchemeGuid(e.PowerLineStatus)
-                    == Guid.Empty)
+                bool? needToSwitch = null;
+                IRule? ruleToApply = null;
+
+                foreach (var rule in rules ?? [])
                 {
-                    return;
+                    if (rule is not PowerLineRule powerLineRule)
+                    {
+                        if (rule.ActivationCount == 0)
+                        {
+                            continue;
+                        }
+
+                        needToSwitch ??= false;
+                        ruleToApply ??= needToSwitch == true ? rule : null;
+                        continue;
+                    }
+
+                    if (powerLineRule.CheckRule(e.PowerLineStatus))
+                    {
+                        rule.ActivationCount = 1;
+                        needToSwitch ??= true;
+                        ruleToApply ??= needToSwitch == true ? rule : null;
+                        continue;
+                    }
+
+                    rule.ActivationCount = 0;
+                    needToSwitch ??= true;
                 }
 
-                baselinePowerSchemeGuid =
-                    BatteryMonitor!.GetPowerSchemeGuid(e.PowerLineStatus);
-
-                if (HasActiveRule())
+                if (needToSwitch == true)
                 {
-                    return;
+                    if (ruleToApply is null)
+                    {
+                        ApplyBaselinePowerScheme();
+                        return;
+                    }
+                    ApplyRule(ruleToApply);
                 }
-
-                OnRuleApplicationChanged(baselinePowerSchemeGuid, null, null);
             }
         }
 
