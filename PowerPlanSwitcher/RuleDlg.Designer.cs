@@ -43,7 +43,9 @@ namespace PowerPlanSwitcher
             LblComparisonType = new Label();
             LblPath = new Label();
             CmbPowerScheme = new ComboBox();
-            BtnSelectPath = new Button();
+            BtnSelectFile = new Button();
+            BtnSelectFromProcess = new Button();
+            BtnSelectFolder = new Button();
             tableLayoutPanel1.SuspendLayout();
             SuspendLayout();
             // 
@@ -51,7 +53,7 @@ namespace PowerPlanSwitcher
             // 
             BtnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             BtnCancel.DialogResult = DialogResult.Cancel;
-            BtnCancel.Location = new Point(672, 227);
+            BtnCancel.Location = new Point(582, 257);
             BtnCancel.Name = "BtnCancel";
             BtnCancel.Size = new Size(75, 23);
             BtnCancel.TabIndex = 4;
@@ -61,7 +63,7 @@ namespace PowerPlanSwitcher
             // BtnOk
             // 
             BtnOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            BtnOk.Location = new Point(591, 227);
+            BtnOk.Location = new Point(501, 257);
             BtnOk.Name = "BtnOk";
             BtnOk.Size = new Size(75, 23);
             BtnOk.TabIndex = 3;
@@ -72,27 +74,30 @@ namespace PowerPlanSwitcher
             // CmbComparisonType
             // 
             CmbComparisonType.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            tableLayoutPanel1.SetColumnSpan(CmbComparisonType, 3);
             CmbComparisonType.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbComparisonType.FormattingEnabled = true;
-            CmbComparisonType.Location = new Point(109, 67);
+            CmbComparisonType.Location = new Point(112, 73);
             CmbComparisonType.Name = "CmbComparisonType";
-            CmbComparisonType.Size = new Size(592, 23);
+            CmbComparisonType.Size = new Size(530, 23);
             CmbComparisonType.TabIndex = 5;
             // 
             // TxtPath
             // 
             TxtPath.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            TxtPath.Location = new Point(109, 103);
+            tableLayoutPanel1.SetColumnSpan(TxtPath, 3);
+            TxtPath.Location = new Point(112, 107);
             TxtPath.Name = "TxtPath";
-            TxtPath.Size = new Size(592, 23);
+            TxtPath.Size = new Size(530, 23);
             TxtPath.TabIndex = 6;
             // 
             // LblPowerLineStatus
             // 
+            LblPowerLineStatus.AutoSize = true;
             LblPowerLineStatus.Dock = DockStyle.Fill;
-            LblPowerLineStatus.Location = new Point(3, 133);
+            LblPowerLineStatus.Location = new Point(3, 170);
             LblPowerLineStatus.Name = "LblPowerLineStatus";
-            LblPowerLineStatus.Size = new Size(100, 36);
+            LblPowerLineStatus.Size = new Size(103, 34);
             LblPowerLineStatus.TabIndex = 7;
             LblPowerLineStatus.Text = "Power Line Status:";
             LblPowerLineStatus.TextAlign = ContentAlignment.MiddleRight;
@@ -100,50 +105,56 @@ namespace PowerPlanSwitcher
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            tableLayoutPanel1.ColumnCount = 3;
+            tableLayoutPanel1.ColumnCount = 4;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
-            tableLayoutPanel1.Controls.Add(CmbPowerLineStatus, 1, 4);
-            tableLayoutPanel1.Controls.Add(LblPowerScheme, 0, 5);
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel1.Controls.Add(CmbPowerLineStatus, 1, 5);
+            tableLayoutPanel1.Controls.Add(LblPowerScheme, 0, 6);
             tableLayoutPanel1.Controls.Add(RdbPowerLineRule, 1, 1);
             tableLayoutPanel1.Controls.Add(LblRuleType, 0, 0);
             tableLayoutPanel1.Controls.Add(RdbProcessRule, 1, 0);
             tableLayoutPanel1.Controls.Add(LblComparisonType, 0, 2);
             tableLayoutPanel1.Controls.Add(TxtPath, 1, 3);
-            tableLayoutPanel1.Controls.Add(LblPowerLineStatus, 0, 4);
+            tableLayoutPanel1.Controls.Add(LblPowerLineStatus, 0, 5);
             tableLayoutPanel1.Controls.Add(CmbComparisonType, 1, 2);
             tableLayoutPanel1.Controls.Add(LblPath, 0, 3);
-            tableLayoutPanel1.Controls.Add(CmbPowerScheme, 1, 5);
-            tableLayoutPanel1.Controls.Add(BtnSelectPath, 2, 3);
+            tableLayoutPanel1.Controls.Add(CmbPowerScheme, 1, 6);
+            tableLayoutPanel1.Controls.Add(BtnSelectFile, 1, 4);
+            tableLayoutPanel1.Controls.Add(BtnSelectFromProcess, 3, 4);
+            tableLayoutPanel1.Controls.Add(BtnSelectFolder, 2, 4);
             tableLayoutPanel1.Location = new Point(12, 12);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
-            tableLayoutPanel1.RowCount = 6;
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.Size = new Size(735, 209);
+            tableLayoutPanel1.RowCount = 7;
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 14.2857141F));
+            tableLayoutPanel1.Size = new Size(645, 239);
             tableLayoutPanel1.TabIndex = 8;
             // 
             // CmbPowerLineStatus
             // 
             CmbPowerLineStatus.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            tableLayoutPanel1.SetColumnSpan(CmbPowerLineStatus, 3);
             CmbPowerLineStatus.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbPowerLineStatus.FormattingEnabled = true;
-            CmbPowerLineStatus.Location = new Point(109, 139);
+            CmbPowerLineStatus.Location = new Point(112, 175);
             CmbPowerLineStatus.Name = "CmbPowerLineStatus";
-            CmbPowerLineStatus.Size = new Size(592, 23);
+            CmbPowerLineStatus.Size = new Size(530, 23);
             CmbPowerLineStatus.TabIndex = 12;
             // 
             // LblPowerScheme
             // 
+            LblPowerScheme.AutoSize = true;
             LblPowerScheme.Dock = DockStyle.Fill;
-            LblPowerScheme.Location = new Point(3, 169);
+            LblPowerScheme.Location = new Point(3, 204);
             LblPowerScheme.Name = "LblPowerScheme";
-            LblPowerScheme.Size = new Size(100, 40);
+            LblPowerScheme.Size = new Size(103, 35);
             LblPowerScheme.TabIndex = 11;
             LblPowerScheme.Text = "Power Plan:";
             LblPowerScheme.TextAlign = ContentAlignment.MiddleRight;
@@ -152,7 +163,8 @@ namespace PowerPlanSwitcher
             // 
             RdbPowerLineRule.Anchor = AnchorStyles.Left;
             RdbPowerLineRule.AutoSize = true;
-            RdbPowerLineRule.Location = new Point(109, 39);
+            tableLayoutPanel1.SetColumnSpan(RdbPowerLineRule, 3);
+            RdbPowerLineRule.Location = new Point(112, 41);
             RdbPowerLineRule.Name = "RdbPowerLineRule";
             RdbPowerLineRule.Size = new Size(87, 19);
             RdbPowerLineRule.TabIndex = 10;
@@ -163,10 +175,11 @@ namespace PowerPlanSwitcher
             // 
             // LblRuleType
             // 
+            LblRuleType.AutoSize = true;
             LblRuleType.Dock = DockStyle.Fill;
             LblRuleType.Location = new Point(3, 0);
             LblRuleType.Name = "LblRuleType";
-            LblRuleType.Size = new Size(100, 36);
+            LblRuleType.Size = new Size(103, 34);
             LblRuleType.TabIndex = 9;
             LblRuleType.Text = "Select Rule Type:";
             LblRuleType.TextAlign = ContentAlignment.MiddleRight;
@@ -175,7 +188,8 @@ namespace PowerPlanSwitcher
             // 
             RdbProcessRule.Anchor = AnchorStyles.Left;
             RdbProcessRule.AutoSize = true;
-            RdbProcessRule.Location = new Point(109, 8);
+            tableLayoutPanel1.SetColumnSpan(RdbProcessRule, 3);
+            RdbProcessRule.Location = new Point(112, 7);
             RdbProcessRule.Name = "RdbProcessRule";
             RdbProcessRule.Size = new Size(91, 19);
             RdbProcessRule.TabIndex = 9;
@@ -186,20 +200,22 @@ namespace PowerPlanSwitcher
             // 
             // LblComparisonType
             // 
+            LblComparisonType.AutoSize = true;
             LblComparisonType.Dock = DockStyle.Fill;
-            LblComparisonType.Location = new Point(3, 61);
+            LblComparisonType.Location = new Point(3, 68);
             LblComparisonType.Name = "LblComparisonType";
-            LblComparisonType.Size = new Size(100, 36);
+            LblComparisonType.Size = new Size(103, 34);
             LblComparisonType.TabIndex = 7;
             LblComparisonType.Text = "Comparison:";
             LblComparisonType.TextAlign = ContentAlignment.MiddleRight;
             // 
             // LblPath
             // 
+            LblPath.AutoSize = true;
             LblPath.Dock = DockStyle.Fill;
-            LblPath.Location = new Point(3, 97);
+            LblPath.Location = new Point(3, 102);
             LblPath.Name = "LblPath";
-            LblPath.Size = new Size(100, 36);
+            LblPath.Size = new Size(103, 34);
             LblPath.TabIndex = 7;
             LblPath.Text = "Path/File:";
             LblPath.TextAlign = ContentAlignment.MiddleRight;
@@ -207,23 +223,49 @@ namespace PowerPlanSwitcher
             // CmbPowerScheme
             // 
             CmbPowerScheme.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            tableLayoutPanel1.SetColumnSpan(CmbPowerScheme, 3);
             CmbPowerScheme.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbPowerScheme.FormattingEnabled = true;
-            CmbPowerScheme.Location = new Point(109, 177);
+            CmbPowerScheme.Location = new Point(112, 210);
             CmbPowerScheme.Name = "CmbPowerScheme";
-            CmbPowerScheme.Size = new Size(592, 23);
+            CmbPowerScheme.Size = new Size(530, 23);
             CmbPowerScheme.TabIndex = 5;
             // 
             // BtnSelectPath
             // 
-            BtnSelectPath.Anchor = AnchorStyles.Left;
-            BtnSelectPath.Location = new Point(707, 103);
-            BtnSelectPath.Name = "BtnSelectPath";
-            BtnSelectPath.Size = new Size(25, 23);
-            BtnSelectPath.TabIndex = 8;
-            BtnSelectPath.Text = "...";
-            BtnSelectPath.UseVisualStyleBackColor = true;
-            BtnSelectPath.Click += BtnSelectPath_Click;
+            BtnSelectFile.Anchor = AnchorStyles.Left;
+            BtnSelectFile.AutoSize = true;
+            BtnSelectFile.Location = new Point(112, 140);
+            BtnSelectFile.Name = "BtnSelectPath";
+            BtnSelectFile.Size = new Size(78, 25);
+            BtnSelectFile.TabIndex = 8;
+            BtnSelectFile.Text = "Select File...";
+            BtnSelectFile.UseVisualStyleBackColor = true;
+            BtnSelectFile.Click += BtnSelectPath_Click;
+            // 
+            // BtnSelectFromProcess
+            // 
+            BtnSelectFromProcess.Anchor = AnchorStyles.Left;
+            BtnSelectFromProcess.AutoSize = true;
+            BtnSelectFromProcess.Location = new Point(295, 140);
+            BtnSelectFromProcess.Name = "BtnSelectFromProcess";
+            BtnSelectFromProcess.Size = new Size(163, 25);
+            BtnSelectFromProcess.TabIndex = 8;
+            BtnSelectFromProcess.Text = "Select from active Process...";
+            BtnSelectFromProcess.UseVisualStyleBackColor = true;
+            BtnSelectFromProcess.Click += BtnSelectFromProcess_Click;
+            // 
+            // BtnSelectFolder
+            // 
+            BtnSelectFolder.Anchor = AnchorStyles.Left;
+            BtnSelectFolder.AutoSize = true;
+            BtnSelectFolder.Location = new Point(196, 140);
+            BtnSelectFolder.Name = "BtnSelectFolder";
+            BtnSelectFolder.Size = new Size(93, 25);
+            BtnSelectFolder.TabIndex = 13;
+            BtnSelectFolder.Text = "Select Folder...";
+            BtnSelectFolder.UseVisualStyleBackColor = true;
+            BtnSelectFolder.Click += BtnSelectFolder_Click;
             // 
             // RuleDlg
             // 
@@ -231,7 +273,7 @@ namespace PowerPlanSwitcher
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = BtnCancel;
-            ClientSize = new Size(759, 262);
+            ClientSize = new Size(669, 292);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(BtnCancel);
             Controls.Add(BtnOk);
@@ -254,11 +296,13 @@ namespace PowerPlanSwitcher
         private Label LblComparisonType;
         private Label LblPath;
         private ComboBox CmbPowerScheme;
-        private Button BtnSelectPath;
+        private Button BtnSelectFile;
         private RadioButton RdbProcessRule;
         private RadioButton RdbPowerLineRule;
         private ComboBox CmbPowerLineStatus;
         private Label LblPowerScheme;
         private Label LblRuleType;
+        private Button BtnSelectFromProcess;
+        private Button BtnSelectFolder;
     }
 }

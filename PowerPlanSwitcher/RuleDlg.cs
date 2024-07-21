@@ -39,6 +39,9 @@ namespace PowerPlanSwitcher
             CmbComparisonType.Visible = false;
             LblPath.Visible = false;
             TxtPath.Visible = false;
+            BtnSelectFile.Visible = false;
+            BtnSelectFolder.Visible = false;
+            BtnSelectFromProcess.Visible = false;
             LblPowerLineStatus.Visible = false;
             CmbPowerLineStatus.Visible = false;
 
@@ -162,24 +165,13 @@ namespace PowerPlanSwitcher
 
         private void BtnSelectPath_Click(object sender, EventArgs e)
         {
-            static string GetSelectedString(ComboBox cmb) =>
-                cmb.Items[cmb.SelectedIndex]?.ToString() ?? string.Empty;
-
-            var type = ProcessRule.TextToComparisonType(GetSelectedString(CmbComparisonType));
-
             using var dlg = new CommonOpenFileDialog
             {
-                IsFolderPicker = type == ComparisonType.StartsWith,
+                IsFolderPicker = false,
             };
 
             if (dlg.ShowDialog() != CommonFileDialogResult.Ok)
             {
-                return;
-            }
-
-            if (type == ComparisonType.EndsWith)
-            {
-                TxtPath.Text = Path.GetFileName(dlg.FileName);
                 return;
             }
 
@@ -192,12 +184,41 @@ namespace PowerPlanSwitcher
             CmbComparisonType.Visible = RdbProcessRule.Checked;
             LblPath.Visible = RdbProcessRule.Checked;
             TxtPath.Visible = RdbProcessRule.Checked;
+            BtnSelectFile.Visible = RdbProcessRule.Checked;
+            BtnSelectFolder.Visible = RdbProcessRule.Checked;
+            BtnSelectFromProcess.Visible = RdbProcessRule.Checked;
         }
 
         private void RdbPowerLineRule_CheckedChanged(object sender, EventArgs e)
         {
             LblPowerLineStatus.Visible = RdbPowerLineRule.Checked;
             CmbPowerLineStatus.Visible = RdbPowerLineRule.Checked;
+        }
+
+        private void BtnSelectFromProcess_Click(object sender, EventArgs e)
+        {
+            using var processSelectionDlg = new ProcessSelectionDlg();
+            if (processSelectionDlg.ShowDialog() != DialogResult.OK)
+            {
+                return;
+            }
+
+            TxtPath.Text = processSelectionDlg.SelectedProcess!.ExecutablePath;
+        }
+
+        private void BtnSelectFolder_Click(object sender, EventArgs e)
+        {
+            using var dlg = new CommonOpenFileDialog
+            {
+                IsFolderPicker = true,
+            };
+
+            if (dlg.ShowDialog() != CommonFileDialogResult.Ok)
+            {
+                return;
+            }
+
+            TxtPath.Text = dlg.FileName;
         }
     }
 }
