@@ -738,10 +738,10 @@ namespace PowerPlanSwitcherTests
         public void PowerLineChangeWithActiveRule()
         {
             List<Expectation> expectations = [
-                new(Reason.PowerLineChanged,1_000_000),
+                new(Reason.RuleApplied, 5),
                 new(Reason.RuleApplied, 3),
                 new(Reason.RuleApplied, 4),
-                new(Reason.BaselineApplied, 1_000_001),
+                new(Reason.RuleApplied, 6),
             ];
 
             var ruleApplicationCount = 0;
@@ -760,7 +760,15 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount++;
             };
 
-            ruleManager.StartEngine(CreateRules(1, 4));
+            ruleManager.StartEngine(
+                [
+                    CreatePowerRule(1),
+                    CreatePowerRule(2),
+                    CreatePowerRule(3),
+                    CreatePowerRule(4),
+                    CreatePowerLineRule(PowerLineStatus.Online, 5),
+                    CreatePowerLineRule(PowerLineStatus.Offline, 6),
+                ]);
             batteryManager.PowerLineStatus = PowerLineStatus.Offline;
             processMonitor.StartSimulation(
                 [
