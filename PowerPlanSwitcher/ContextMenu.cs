@@ -20,15 +20,6 @@ namespace PowerPlanSwitcher
             AddAboutButton();
             _ = Items.Add(new ToolStripSeparator());
             AddCloseButton();
-
-            //#if DEBUG
-            //            using var dlg = new SettingsDlg();
-            //            if (dlg.ShowDialog() != DialogResult.OK)
-            //            {
-            //                return;
-            //            }
-            //            OnSettingsChanged();
-            //#endif
         }
 
         private void AddPowerSchemes()
