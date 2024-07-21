@@ -170,12 +170,12 @@ namespace PowerPlanSwitcher.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("False")]
-        public bool UpgradePowerRulesToRules {
+        public bool MigratedPowerRulesToRules {
             get {
-                return ((bool)(this["UpgradePowerRulesToRules"]));
+                return ((bool)(this["MigratedPowerRulesToRules"]));
             }
             set {
-                this["UpgradePowerRulesToRules"] = value;
+                this["MigratedPowerRulesToRules"] = value;
             }
         }
     }

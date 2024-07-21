@@ -19,13 +19,53 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
             }
         }
 
-        private static List<IRule>? LoadRules() =>
-            JsonConvert.DeserializeObject<List<IRule>>(
+        private static void MigratePowerRulesToRules()
+        {
+            if (Settings.Default.MigratedPowerRulesToRules)
+            {
+                return;
+            }
+
+            var rules = JsonConvert.DeserializeObject<List<ProcessRule>>(
+                Settings.Default.PowerRules)?.Cast<IRule>()?.ToList() ?? [];
+
+            if (Settings.Default.AcPowerSchemeGuid != Guid.Empty)
+            {
+                rules.Add(new PowerLineRule()
+                {
+                    Index = rules.Count,
+                    PowerLineStatus = PowerLineStatus.Online,
+                    SchemeGuid = Settings.Default.AcPowerSchemeGuid,
+                });
+            }
+
+            if (Settings.Default.BatterPowerSchemeGuid != Guid.Empty)
+            {
+                rules.Add(new PowerLineRule()
+                {
+                    Index = rules.Count,
+                    PowerLineStatus = PowerLineStatus.Offline,
+                    SchemeGuid = Settings.Default.BatterPowerSchemeGuid,
+                });
+            }
+
+            SaveRules(rules);
+
+            Settings.Default.MigratedPowerRulesToRules = true;
+            Settings.Default.Save();
+        }
+
+        private static List<IRule>? LoadRules()
+        {
+            MigratePowerRulesToRules();
+
+            return JsonConvert.DeserializeObject<List<IRule>>(
                 Settings.Default.Rules,
                 new JsonSerializerSettings
                 {
-                    TypeNameHandling = TypeNameHandling.Auto
+                    TypeNameHandling = TypeNameHandling.Objects
                 });
+        }
 
         public static void SetRules(IEnumerable<IRule> newRules)
         {
@@ -39,7 +79,7 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
                 JsonConvert.SerializeObject(rules,
                 new JsonSerializerSettings
                 {
-                    TypeNameHandling = TypeNameHandling.Auto
+                    TypeNameHandling = TypeNameHandling.Objects
                 });
             Settings.Default.Save();
         }

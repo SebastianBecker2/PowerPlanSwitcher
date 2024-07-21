@@ -38,7 +38,7 @@
     <Setting Name="Rules" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
-    <Setting Name="UpgradePowerRulesToRules" Type="System.Boolean" Scope="User">
+    <Setting Name="MigratedPowerRulesToRules" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>
