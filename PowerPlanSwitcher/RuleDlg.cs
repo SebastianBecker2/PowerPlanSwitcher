@@ -97,16 +97,21 @@ namespace PowerPlanSwitcher
         {
             if (RdbProcessRule.Checked)
             {
-                ApplyProcessRule();
-                DialogResult = DialogResult.OK;
+                if (ApplyProcessRule())
+                {
+                    DialogResult = DialogResult.OK;
+                }
                 return;
             }
             else if (RdbPowerLineRule.Checked)
             {
-                ApplyPowerLineRule();
-                DialogResult = DialogResult.OK;
+                if (ApplyPowerLineRule())
+                {
+                    DialogResult = DialogResult.OK;
+                }
                 return;
             }
+
             _ = MessageBox.Show(
                 "Select a Rule Type!",
                 "Invalid input",
@@ -114,7 +119,7 @@ namespace PowerPlanSwitcher
                 MessageBoxIcon.Error);
         }
 
-        private void ApplyPowerLineRule()
+        private bool ApplyPowerLineRule()
         {
             var powerLineRule = Rule as PowerLineRule ?? new PowerLineRule();
 
@@ -125,9 +130,10 @@ namespace PowerPlanSwitcher
                 GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme));
 
             Rule = powerLineRule;
+            return true;
         }
 
-        private void ApplyProcessRule()
+        private bool ApplyProcessRule()
         {
             if (string.IsNullOrWhiteSpace(TxtPath.Text))
             {
@@ -136,7 +142,7 @@ namespace PowerPlanSwitcher
                     "Invalid input",
                     MessageBoxButtons.OK,
                     MessageBoxIcon.Error);
-                return;
+                return false;
             }
 
             var processRule = Rule as ProcessRule ?? new ProcessRule();
@@ -149,6 +155,7 @@ namespace PowerPlanSwitcher
                 GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme));
 
             Rule = processRule;
+            return true;
         }
 
         private void BtnSelectPath_Click(object sender, EventArgs e)
