@@ -99,11 +99,13 @@ namespace PowerPlanSwitcher
             {
                 ApplyProcessRule();
                 DialogResult = DialogResult.OK;
+                return;
             }
             else if (RdbPowerLineRule.Checked)
             {
                 ApplyPowerLineRule();
                 DialogResult = DialogResult.OK;
+                return;
             }
             _ = MessageBox.Show(
                 "Select a Rule Type!",
