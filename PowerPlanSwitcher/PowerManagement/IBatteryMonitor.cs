@@ -10,7 +10,5 @@ namespace PowerPlanSwitcher.PowerManagement
         bool HasSystemBattery { get; }
 
         PowerLineStatus PowerLineStatus { get; }
-
-        Guid GetPowerSchemeGuid(PowerLineStatus powerLineStatus);
     }
 }

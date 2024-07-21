@@ -24,18 +24,5 @@ namespace PowerPlanSwitcherTests
                 OnPowerLineStatusChanged();
             }
         }
-
-        public Guid GetPowerSchemeGuid(PowerLineStatus powerLineStatus) =>
-            powerLineStatus switch
-            {
-                PowerLineStatus.Online =>
-                    PowerManagerStub.CreatePowerSchemeGuid(1_000_000),
-                PowerLineStatus.Offline =>
-                    PowerManagerStub.CreatePowerSchemeGuid(1_000_001),
-                PowerLineStatus.Unknown =>
-                    Guid.Empty,
-                _ =>
-                    Guid.Empty,
-            };
     }
 }
