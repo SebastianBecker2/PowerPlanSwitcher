@@ -142,6 +142,7 @@ namespace PowerPlanSwitcher
                 CmbAcPowerScheme.SelectedIndex = powerSchemes.FindIndex(
                     scheme => scheme.guid
                         == Settings.Default.AcPowerSchemeGuid);
+                CmbAcPowerScheme.SelectedIndex += 1;
             }
 
             AddPowerSchemesToComboBox(CmbBatteryPowerScheme, powerSchemes);
@@ -154,6 +155,7 @@ namespace PowerPlanSwitcher
                 CmbBatteryPowerScheme.SelectedIndex = powerSchemes.FindIndex(
                     scheme => scheme.guid
                         == Settings.Default.BatterPowerSchemeGuid);
+                CmbBatteryPowerScheme.SelectedIndex += 1;
             }
 
             ChbShowToastNotifications.Checked =

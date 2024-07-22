@@ -717,6 +717,7 @@ namespace PowerPlanSwitcher
             CmbAcPowerScheme.Anchor = AnchorStyles.Left;
             CmbAcPowerScheme.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbAcPowerScheme.FormattingEnabled = true;
+            CmbAcPowerScheme.Items.AddRange(new object[] { "Off" });
             CmbAcPowerScheme.Location = new Point(43, 11);
             CmbAcPowerScheme.Margin = new Padding(10, 11, 10, 11);
             CmbAcPowerScheme.Name = "CmbAcPowerScheme";
@@ -739,6 +740,7 @@ namespace PowerPlanSwitcher
             CmbBatteryPowerScheme.Anchor = AnchorStyles.Left;
             CmbBatteryPowerScheme.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbBatteryPowerScheme.FormattingEnabled = true;
+            CmbBatteryPowerScheme.Items.AddRange(new object[] { "Off" });
             CmbBatteryPowerScheme.Location = new Point(270, 11);
             CmbBatteryPowerScheme.Margin = new Padding(10, 11, 10, 11);
             CmbBatteryPowerScheme.Name = "CmbBatteryPowerScheme";
