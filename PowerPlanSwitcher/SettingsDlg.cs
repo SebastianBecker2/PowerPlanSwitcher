@@ -18,39 +18,31 @@ namespace PowerPlanSwitcher
         public SettingsDlg()
         {
             InitializeComponent();
-            this.tabControl1.SelectedIndexChanged += new EventHandler(tabControl1_SelectedIndexChanged);
+            this.tabControl1.SelectedIndexChanged += (sender, e) => tabControl1_SelectedIndexChanged(sender, e);
             this.Size = Settings.Default.SettingsDlgSize;
             this.FormClosing += SettingsDlg_FormClosing;
         }
 
-        private Size settingsDlgOriginalMaximumSize = Size.Empty;
-        private bool mode = false;
+        private Size settingsDlgOriginalSize = Size.Empty;
         private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
         {
-            if (this.tabControl1.SelectedTab == tabPage3)
+            if (this.tabControl1.SelectedTab == tabPage3 && this.MaximumSize == Size.Empty)
             {
-                mode = true;
-                settingsDlgOriginalMaximumSize = this.Size;
+                settingsDlgOriginalSize = this.Size;
                 this.MaximumSize = new Size(721, 413);
             }
-            else if (mode)
+            else if (this.tabControl1.SelectedTab != tabPage3 && this.MaximumSize != Size.Empty)
             {
-                mode = false;
                 this.MaximumSize = Size.Empty;
-                this.Size = settingsDlgOriginalMaximumSize;
+                this.Size = settingsDlgOriginalSize;
             }
         }
 
         private void SettingsDlg_FormClosing(object sender, FormClosingEventArgs e)
         {
-            if (this.tabControl1.SelectedTab != tabPage3)
-            {
-                Settings.Default.SettingsDlgSize = this.Size;
-            }
-            else
-            {
-                Settings.Default.SettingsDlgSize = settingsDlgOriginalMaximumSize;
-            }
+            Settings.Default.SettingsDlgSize = this.tabControl1.SelectedTab != tabPage3
+                ? this.Size
+                : settingsDlgOriginalSize;
             Settings.Default.Save();
         }
 
