@@ -68,7 +68,7 @@ namespace PowerPlanSwitcher
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 23F));
-            tableLayoutPanel1.Size = new Size(282, 92);
+            tableLayoutPanel1.Size = new Size(292, 92);
             tableLayoutPanel1.TabIndex = 1;
             tableLayoutPanel1.Click += Any_Click;
             // 
@@ -106,7 +106,7 @@ namespace PowerPlanSwitcher
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel2.Controls.Add(LblPowerSchemeName, 1, 0);
             tableLayoutPanel2.Controls.Add(PibPowerSchemeIcon, 0, 0);
-            tableLayoutPanel2.Location = new Point(39, 24);
+            tableLayoutPanel2.Location = new Point(44, 24);
             tableLayoutPanel2.Margin = new Padding(0);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
@@ -145,7 +145,7 @@ namespace PowerPlanSwitcher
             LblReason.Anchor = AnchorStyles.None;
             LblReason.AutoSize = true;
             tableLayoutPanel1.SetColumnSpan(LblReason, 4);
-            LblReason.Location = new Point(119, 73);
+            LblReason.Location = new Point(124, 73);
             LblReason.Name = "LblReason";
             LblReason.Size = new Size(43, 17);
             LblReason.TabIndex = 6;
@@ -155,13 +155,13 @@ namespace PowerPlanSwitcher
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(282, 92);
+            ClientSize = new Size(292, 92);
             ControlBox = false;
             Controls.Add(tableLayoutPanel1);
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MaximumSize = new Size(282, 92);
-            MinimumSize = new Size(282, 92);
+            MaximumSize = new Size(292, 92);
+            MinimumSize = new Size(292, 92);
             Name = "ToastDlg";
             ShowIcon = false;
             ShowInTaskbar = false;
