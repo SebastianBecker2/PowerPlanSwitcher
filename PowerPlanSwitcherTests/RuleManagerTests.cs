@@ -443,9 +443,17 @@ namespace PowerPlanSwitcherTests
             List<Expectation> expectations = [new(Reason.RuleApplied, 1)];
 
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub([
-                .. ProcessMonitorStub.CreateProcesses(4, 6),
-                .. ProcessMonitorStub.CreateProcesses(0, 2)]);
+            var processMonitor = new ProcessMonitorStub(
+                [
+                    ProcessMonitorStub.CreateProcess(4),
+                    ProcessMonitorStub.CreateProcess(5),
+                    ProcessMonitorStub.CreateProcess(6),
+                    ProcessMonitorStub.CreateProcess(7),
+                    ProcessMonitorStub.CreateProcess(8),
+                    ProcessMonitorStub.CreateProcess(9),
+                    ProcessMonitorStub.CreateProcess(0),
+                    ProcessMonitorStub.CreateProcess(1),
+                ]);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
