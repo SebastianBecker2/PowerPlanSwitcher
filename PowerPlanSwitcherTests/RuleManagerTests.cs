@@ -393,6 +393,9 @@ namespace PowerPlanSwitcherTests
                 new(Reason.RuleApplied, 3),
                 new(Reason.BaselineApplied, 1_000),
                 new(Reason.RuleApplied, 3),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 3),
+                new(Reason.BaselineApplied, 1_000),
             ];
 
             var ruleApplicationCount = 0;
@@ -412,6 +415,8 @@ namespace PowerPlanSwitcherTests
             ruleManager.StartEngine(CreateRules(1, 4));
             ruleManager.StartEngine(CreateRules(0, 2));
             ruleManager.StartEngine(CreateRules(0, 4));
+            ruleManager.StartEngine(CreateRules(0, 4));
+            ruleManager.StopEngine();
 
             Assert.AreEqual(expectations.Count, ruleApplicationCount);
         }
