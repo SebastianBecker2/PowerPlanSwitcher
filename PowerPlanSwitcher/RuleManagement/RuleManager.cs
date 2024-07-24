@@ -104,6 +104,15 @@ namespace PowerPlanSwitcher.RuleManagement
         {
             lock (syncObj)
             {
+                if (HasActiveRule())
+                {
+                    ApplyBaselinePowerScheme();
+                    foreach (var rule in rules ?? [])
+                    {
+                        rule.ActivationCount = 0;
+                    }
+                }
+
                 StopBatteryMonitor();
 
                 StopProcessMonitor();
@@ -126,15 +135,6 @@ namespace PowerPlanSwitcher.RuleManagement
             if (ProcessMonitor is null)
             {
                 return;
-            }
-
-            if (HasActiveRule())
-            {
-                ApplyBaselinePowerScheme();
-                foreach (var rule in rules ?? [])
-                {
-                    rule.ActivationCount = 0;
-                }
             }
 
             ProcessMonitor.ProcessCreated -= ProcessMonitor_ProcessCreated;
