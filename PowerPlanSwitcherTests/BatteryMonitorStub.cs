@@ -4,7 +4,7 @@ namespace PowerPlanSwitcherTests
     using System.Windows.Forms;
     using PowerPlanSwitcher.PowerManagement;
 
-    internal class BatteryManagerStub(
+    internal class BatteryMonitorStub(
         PowerLineStatus powerLineStatus = PowerLineStatus.Online,
         bool hasSystemBattery = true)
         : IBatteryMonitor

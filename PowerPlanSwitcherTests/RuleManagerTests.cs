@@ -711,7 +711,7 @@ namespace PowerPlanSwitcherTests
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
                 ProcessMonitorStub.CreateProcesses(3, 7));
-            var batteryManager = new BatteryManagerStub(
+            var batteryManager = new BatteryMonitorStub(
                 PowerLineStatus.Online,
                 false);
             var ruleManager = new RuleManager(new PowerManagerStub())
@@ -749,7 +749,7 @@ namespace PowerPlanSwitcherTests
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
                 ProcessMonitorStub.CreateProcesses(3, 7));
-            var batteryManager = new BatteryManagerStub();
+            var batteryManager = new BatteryMonitorStub();
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
@@ -797,7 +797,7 @@ namespace PowerPlanSwitcherTests
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
                 ProcessMonitorStub.CreateProcesses(3, 7));
-            var batteryManager = new BatteryManagerStub();
+            var batteryManager = new BatteryMonitorStub();
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
@@ -850,7 +850,7 @@ namespace PowerPlanSwitcherTests
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
                 ProcessMonitorStub.CreateProcesses(3, 7));
-            var batteryManager = new BatteryManagerStub();
+            var batteryManager = new BatteryMonitorStub();
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
