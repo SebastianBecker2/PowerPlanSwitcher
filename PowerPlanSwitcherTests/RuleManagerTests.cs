@@ -711,7 +711,9 @@ namespace PowerPlanSwitcherTests
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
                 ProcessMonitorStub.CreateProcesses(3, 7));
-            var batteryManager = new BatteryManagerStub(false);
+            var batteryManager = new BatteryManagerStub(
+                PowerLineStatus.Online,
+                false);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,

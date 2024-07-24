@@ -4,7 +4,9 @@ namespace PowerPlanSwitcherTests
     using System.Windows.Forms;
     using PowerPlanSwitcher.PowerManagement;
 
-    internal class BatteryManagerStub(bool hasSystemBattery = true)
+    internal class BatteryManagerStub(
+        PowerLineStatus powerLineStatus = PowerLineStatus.Online,
+        bool hasSystemBattery = true)
         : IBatteryMonitor
     {
         public event EventHandler<PowerLineStatusChangedEventArgs>? PowerLineStatusChanged;
@@ -15,10 +17,11 @@ namespace PowerPlanSwitcherTests
 
         public bool HasSystemBattery { get; set; } = hasSystemBattery;
 
-        private PowerLineStatus powerLineStatus = PowerLineStatus.Online;
+        private PowerLineStatus powerLineStatus = powerLineStatus;
         public PowerLineStatus PowerLineStatus
         {
-            get => powerLineStatus; set
+            get => powerLineStatus;
+            set
             {
                 powerLineStatus = value;
                 OnPowerLineStatusChanged();
