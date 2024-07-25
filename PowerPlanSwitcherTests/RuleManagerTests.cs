@@ -22,7 +22,7 @@ namespace PowerPlanSwitcherTests
                 PowerManagerStub.CreatePowerSchemeGuid(Index);
         }
 
-        private static ProcessRule CreatePowerRule(int i) =>
+        private static ProcessRule CreateProcessRule(int i) =>
             new()
             {
                 FilePath = $"{i}",
@@ -83,9 +83,6 @@ namespace PowerPlanSwitcherTests
                 "PowerSchemeGuid doesn't match expectation");
         }
 
-        private static List<ProcessRule> CreateRules(int start, int count) =>
-            Enumerable.Range(start, count).Select(CreatePowerRule).ToList();
-
         // Rules           [  1,2,3,4          ]
         // Init Processes  [0,1     4,5,6,7,8,9]
         // Create Event    [    2              ]
@@ -105,9 +102,17 @@ namespace PowerPlanSwitcherTests
             ];
 
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub([
-                .. ProcessMonitorStub.CreateProcesses(4, 6),
-                .. ProcessMonitorStub.CreateProcesses(0, 2)]);
+            var processMonitor = new ProcessMonitorStub(
+                [
+                    ProcessMonitorStub.CreateProcess(4),
+                    ProcessMonitorStub.CreateProcess(5),
+                    ProcessMonitorStub.CreateProcess(6),
+                    ProcessMonitorStub.CreateProcess(7),
+                    ProcessMonitorStub.CreateProcess(8),
+                    ProcessMonitorStub.CreateProcess(9),
+                    ProcessMonitorStub.CreateProcess(0),
+                    ProcessMonitorStub.CreateProcess(1),
+                ]);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
@@ -119,7 +124,13 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount++;
             };
 
-            ruleManager.StartEngine(CreateRules(1, 4));
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                    CreateProcessRule(4),
+                ]);
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Create, 2),
@@ -169,14 +180,15 @@ namespace PowerPlanSwitcherTests
             ];
 
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub([
-                ProcessMonitorStub.CreateProcess(1),
-                ProcessMonitorStub.CreateProcess(1),
-                ProcessMonitorStub.CreateProcess(1),
-                ProcessMonitorStub.CreateProcess(2),
-                ProcessMonitorStub.CreateProcess(2),
-                ProcessMonitorStub.CreateProcess(2),
-            ]);
+            var processMonitor = new ProcessMonitorStub(
+                [
+                    ProcessMonitorStub.CreateProcess(1),
+                    ProcessMonitorStub.CreateProcess(1),
+                    ProcessMonitorStub.CreateProcess(1),
+                    ProcessMonitorStub.CreateProcess(2),
+                    ProcessMonitorStub.CreateProcess(2),
+                    ProcessMonitorStub.CreateProcess(2),
+                ]);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
@@ -188,17 +200,18 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount++;
             };
 
-            ruleManager.StartEngine([
-                CreatePowerRule(100),
-                CreatePowerRule(200),
-                CreatePowerRule(300),
-                CreatePowerRule(10),
-                CreatePowerRule(20),
-                CreatePowerRule(30),
-                CreatePowerRule(1),
-                CreatePowerRule(2),
-                CreatePowerRule(3),
-            ]);
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(100),
+                    CreateProcessRule(200),
+                    CreateProcessRule(300),
+                    CreateProcessRule(10),
+                    CreateProcessRule(20),
+                    CreateProcessRule(30),
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                ]);
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 2),
@@ -298,11 +311,12 @@ namespace PowerPlanSwitcherTests
             ];
 
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub([
-                ProcessMonitorStub.CreateProcess(1),
-                ProcessMonitorStub.CreateProcess(10),
-                ProcessMonitorStub.CreateProcess(100),
-            ]);
+            var processMonitor = new ProcessMonitorStub(
+                [
+                    ProcessMonitorStub.CreateProcess(1),
+                    ProcessMonitorStub.CreateProcess(10),
+                    ProcessMonitorStub.CreateProcess(100),
+                ]);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
@@ -314,80 +328,84 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount++;
             };
 
-            ruleManager.StartEngine([
-                CreatePowerRule(100),
-                CreatePowerRule(10),
-                CreatePowerRule(1),
-            ]);
-            processMonitor.StartSimulation([
-                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
-                ProcessMonitorStub.CreateAction(Action.Create, 100),
-                ProcessMonitorStub.CreateAction(Action.Create, 10),
-                ProcessMonitorStub.CreateAction(Action.Create, 1),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
-                ProcessMonitorStub.CreateAction(Action.Create, 10),
-                ProcessMonitorStub.CreateAction(Action.Create, 1),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
-                ProcessMonitorStub.CreateAction(Action.Create, 1),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
-                ProcessMonitorStub.CreateAction(Action.Create, 1),
-                ProcessMonitorStub.CreateAction(Action.Create, 10),
-                ProcessMonitorStub.CreateAction(Action.Create, 100),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
-                ProcessMonitorStub.CreateAction(Action.Create, 10),
-                ProcessMonitorStub.CreateAction(Action.Create, 100),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
-                ProcessMonitorStub.CreateAction(Action.Create, 1),
-                ProcessMonitorStub.CreateAction(Action.Create, 10),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
-                ProcessMonitorStub.CreateAction(Action.Create, 10),
-                ProcessMonitorStub.CreateAction(Action.Create, 100),
-            ]);
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(100),
+                    CreateProcessRule(10),
+                    CreateProcessRule(1),
+                ]);
+            processMonitor.StartSimulation(
+                [
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                    ProcessMonitorStub.CreateAction(Action.Create, 100),
+                    ProcessMonitorStub.CreateAction(Action.Create, 10),
+                    ProcessMonitorStub.CreateAction(Action.Create, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                    ProcessMonitorStub.CreateAction(Action.Create, 10),
+                    ProcessMonitorStub.CreateAction(Action.Create, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                    ProcessMonitorStub.CreateAction(Action.Create, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                    ProcessMonitorStub.CreateAction(Action.Create, 1),
+                    ProcessMonitorStub.CreateAction(Action.Create, 10),
+                    ProcessMonitorStub.CreateAction(Action.Create, 100),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                    ProcessMonitorStub.CreateAction(Action.Create, 10),
+                    ProcessMonitorStub.CreateAction(Action.Create, 100),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                    ProcessMonitorStub.CreateAction(Action.Create, 1),
+                    ProcessMonitorStub.CreateAction(Action.Create, 10),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                    ProcessMonitorStub.CreateAction(Action.Create, 10),
+                    ProcessMonitorStub.CreateAction(Action.Create, 100),
+                ]);
 
-            ruleManager.StartEngine([
-                CreatePowerRule(1),
-                CreatePowerRule(10),
-                CreatePowerRule(100),
-            ]);
-            processMonitor.StartSimulation([
-                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
-                ProcessMonitorStub.CreateAction(Action.Create, 100),
-                ProcessMonitorStub.CreateAction(Action.Create, 10),
-                ProcessMonitorStub.CreateAction(Action.Create, 1),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
-                ProcessMonitorStub.CreateAction(Action.Create, 10),
-                ProcessMonitorStub.CreateAction(Action.Create, 1),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
-                ProcessMonitorStub.CreateAction(Action.Create, 1),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
-                ProcessMonitorStub.CreateAction(Action.Create, 1),
-                ProcessMonitorStub.CreateAction(Action.Create, 10),
-                ProcessMonitorStub.CreateAction(Action.Create, 100),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
-                ProcessMonitorStub.CreateAction(Action.Create, 10),
-                ProcessMonitorStub.CreateAction(Action.Create, 100),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 100),
-                ProcessMonitorStub.CreateAction(Action.Create, 1),
-                ProcessMonitorStub.CreateAction(Action.Create, 10),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 1),
-                ProcessMonitorStub.CreateAction(Action.Terminate, 10),
-            ]);
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(1),
+                    CreateProcessRule(10),
+                    CreateProcessRule(100),
+                ]);
+            processMonitor.StartSimulation(
+                [
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                    ProcessMonitorStub.CreateAction(Action.Create, 100),
+                    ProcessMonitorStub.CreateAction(Action.Create, 10),
+                    ProcessMonitorStub.CreateAction(Action.Create, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                    ProcessMonitorStub.CreateAction(Action.Create, 10),
+                    ProcessMonitorStub.CreateAction(Action.Create, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                    ProcessMonitorStub.CreateAction(Action.Create, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                    ProcessMonitorStub.CreateAction(Action.Create, 1),
+                    ProcessMonitorStub.CreateAction(Action.Create, 10),
+                    ProcessMonitorStub.CreateAction(Action.Create, 100),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                    ProcessMonitorStub.CreateAction(Action.Create, 10),
+                    ProcessMonitorStub.CreateAction(Action.Create, 100),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 100),
+                    ProcessMonitorStub.CreateAction(Action.Create, 1),
+                    ProcessMonitorStub.CreateAction(Action.Create, 10),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 10),
+                ]);
 
             Assert.AreEqual(
                 expectations.Count,
@@ -409,7 +427,15 @@ namespace PowerPlanSwitcherTests
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
-                ProcessMonitorStub.CreateProcesses(3, 7));
+                [
+                    ProcessMonitorStub.CreateProcess(3),
+                    ProcessMonitorStub.CreateProcess(4),
+                    ProcessMonitorStub.CreateProcess(5),
+                    ProcessMonitorStub.CreateProcess(6),
+                    ProcessMonitorStub.CreateProcess(7),
+                    ProcessMonitorStub.CreateProcess(8),
+                    ProcessMonitorStub.CreateProcess(9),
+                ]);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
@@ -421,10 +447,32 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount++;
             };
 
-            ruleManager.StartEngine(CreateRules(1, 4));
-            ruleManager.StartEngine(CreateRules(0, 2));
-            ruleManager.StartEngine(CreateRules(0, 4));
-            ruleManager.StartEngine(CreateRules(0, 4));
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                    CreateProcessRule(4),
+                ]);
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(0),
+                    CreateProcessRule(1),
+                ]);
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(0),
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                ]);
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(0),
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                ]);
             ruleManager.StopEngine();
 
             Assert.AreEqual(
@@ -439,9 +487,17 @@ namespace PowerPlanSwitcherTests
             List<int> expectedRuleApplications = [];
 
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub([
-                .. ProcessMonitorStub.CreateProcesses(4, 6),
-                .. ProcessMonitorStub.CreateProcesses(0, 2)]);
+            var processMonitor = new ProcessMonitorStub(
+                [
+                    ProcessMonitorStub.CreateProcess(4),
+                    ProcessMonitorStub.CreateProcess(5),
+                    ProcessMonitorStub.CreateProcess(6),
+                    ProcessMonitorStub.CreateProcess(7),
+                    ProcessMonitorStub.CreateProcess(8),
+                    ProcessMonitorStub.CreateProcess(9),
+                    ProcessMonitorStub.CreateProcess(0),
+                    ProcessMonitorStub.CreateProcess(1),
+                ]);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
@@ -457,7 +513,9 @@ namespace PowerPlanSwitcherTests
         [TestMethod]
         public void InitialProcesses()
         {
-            List<Expectation> expectations = [new(Reason.RuleApplied, 1)];
+            List<Expectation> expectations = [
+                new(Reason.RuleApplied, 1)
+            ];
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
@@ -482,7 +540,13 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount++;
             };
 
-            ruleManager.StartEngine(CreateRules(1, 4));
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                    CreateProcessRule(4),
+                ]);
 
             Assert.AreEqual(
                 expectations.Count,
@@ -501,7 +565,15 @@ namespace PowerPlanSwitcherTests
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
-                ProcessMonitorStub.CreateProcesses(3, 7));
+                [
+                    ProcessMonitorStub.CreateProcess(3),
+                    ProcessMonitorStub.CreateProcess(4),
+                    ProcessMonitorStub.CreateProcess(5),
+                    ProcessMonitorStub.CreateProcess(6),
+                    ProcessMonitorStub.CreateProcess(7),
+                    ProcessMonitorStub.CreateProcess(8),
+                    ProcessMonitorStub.CreateProcess(9),
+                ]);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
@@ -513,7 +585,13 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount++;
             };
 
-            ruleManager.StartEngine(CreateRules(1, 4));
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                    CreateProcessRule(4),
+                ]);
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
@@ -530,7 +608,15 @@ namespace PowerPlanSwitcherTests
         public void UnknownActivePowerScheme()
         {
             var processMonitor = new ProcessMonitorStub(
-                ProcessMonitorStub.CreateProcesses(3, 7));
+                [
+                    ProcessMonitorStub.CreateProcess(3),
+                    ProcessMonitorStub.CreateProcess(4),
+                    ProcessMonitorStub.CreateProcess(5),
+                    ProcessMonitorStub.CreateProcess(6),
+                    ProcessMonitorStub.CreateProcess(7),
+                    ProcessMonitorStub.CreateProcess(8),
+                    ProcessMonitorStub.CreateProcess(9),
+                ]);
             var powerManager = new PowerManagerStub(Guid.Empty);
 
             _ = Assert.ThrowsException<InvalidOperationException>(() =>
@@ -554,7 +640,15 @@ namespace PowerPlanSwitcherTests
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
-                ProcessMonitorStub.CreateProcesses(3, 7));
+                [
+                    ProcessMonitorStub.CreateProcess(3),
+                    ProcessMonitorStub.CreateProcess(4),
+                    ProcessMonitorStub.CreateProcess(5),
+                    ProcessMonitorStub.CreateProcess(6),
+                    ProcessMonitorStub.CreateProcess(7),
+                    ProcessMonitorStub.CreateProcess(8),
+                    ProcessMonitorStub.CreateProcess(9),
+                ]);
             var powerManager = new PowerManagerStub();
             var ruleManager = new RuleManager(powerManager)
             {
@@ -567,7 +661,13 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount++;
             };
 
-            ruleManager.StartEngine(CreateRules(1, 4));
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                    CreateProcessRule(4),
+                ]);
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
@@ -596,9 +696,18 @@ namespace PowerPlanSwitcherTests
             ];
 
             var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub([
-                .. ProcessMonitorStub.CreateProcesses(3, 7),
-                .. ProcessMonitorStub.CreateProcesses(0, 2)]);
+            var processMonitor = new ProcessMonitorStub(
+                [
+                    ProcessMonitorStub.CreateProcess(3),
+                    ProcessMonitorStub.CreateProcess(4),
+                    ProcessMonitorStub.CreateProcess(5),
+                    ProcessMonitorStub.CreateProcess(6),
+                    ProcessMonitorStub.CreateProcess(7),
+                    ProcessMonitorStub.CreateProcess(8),
+                    ProcessMonitorStub.CreateProcess(9),
+                    ProcessMonitorStub.CreateProcess(0),
+                    ProcessMonitorStub.CreateProcess(1),
+                ]);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
@@ -610,7 +719,13 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount++;
             };
 
-            ruleManager.StartEngine(CreateRules(1, 4));
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                    CreateProcessRule(4),
+                ]);
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 0),
@@ -642,7 +757,18 @@ namespace PowerPlanSwitcherTests
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
-                ProcessMonitorStub.CreateProcesses(0, 10));
+                [
+                    ProcessMonitorStub.CreateProcess(0),
+                    ProcessMonitorStub.CreateProcess(1),
+                    ProcessMonitorStub.CreateProcess(2),
+                    ProcessMonitorStub.CreateProcess(3),
+                    ProcessMonitorStub.CreateProcess(4),
+                    ProcessMonitorStub.CreateProcess(5),
+                    ProcessMonitorStub.CreateProcess(6),
+                    ProcessMonitorStub.CreateProcess(7),
+                    ProcessMonitorStub.CreateProcess(8),
+                    ProcessMonitorStub.CreateProcess(9),
+                ]);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
@@ -654,14 +780,26 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount++;
             };
 
-            ruleManager.StartEngine(CreateRules(0, 4));
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(0),
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                ]);
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 1),
                     ProcessMonitorStub.CreateAction(Action.Terminate, 0),
                 ]);
 
-            ruleManager.StartEngine(CreateRules(6, 4));
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(6),
+                    CreateProcessRule(7),
+                    CreateProcessRule(8),
+                    CreateProcessRule(9),
+                ]);
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Create, 0),
@@ -698,9 +836,16 @@ namespace PowerPlanSwitcherTests
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
-                ProcessMonitorStub.CreateProcesses(3, 7));
+                [
+                    ProcessMonitorStub.CreateProcess(3),
+                    ProcessMonitorStub.CreateProcess(4),
+                    ProcessMonitorStub.CreateProcess(5),
+                    ProcessMonitorStub.CreateProcess(6),
+                    ProcessMonitorStub.CreateProcess(7),
+                    ProcessMonitorStub.CreateProcess(8),
+                    ProcessMonitorStub.CreateProcess(9),
+                ]);
             var powerManager = new PowerManagerStub();
-            var rules = CreateRules(1, 4);
             var ruleManager = new RuleManager(powerManager)
             {
                 ProcessMonitor = processMonitor,
@@ -712,7 +857,13 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount++;
             };
 
-            ruleManager.StartEngine(rules);
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                    CreateProcessRule(4),
+                ]);
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
@@ -720,15 +871,27 @@ namespace PowerPlanSwitcherTests
 
             ruleManager.StopEngine();
             powerManager.SetActivePowerScheme(
-                powerManager.GetPowerSchemeGuids().Skip(3).First());
-            ruleManager.StartEngine(rules);
+                powerManager.GetPowerSchemeGuids().ToList()[3]);
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                    CreateProcessRule(4),
+                ]);
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 4),
                 ]);
 
             ruleManager.StopEngine();
-            ruleManager.StartEngine(rules);
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                    CreateProcessRule(4),
+                ]);
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Create, 2),
@@ -753,7 +916,15 @@ namespace PowerPlanSwitcherTests
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
-                ProcessMonitorStub.CreateProcesses(3, 7));
+                [
+                    ProcessMonitorStub.CreateProcess(3),
+                    ProcessMonitorStub.CreateProcess(4),
+                    ProcessMonitorStub.CreateProcess(5),
+                    ProcessMonitorStub.CreateProcess(6),
+                    ProcessMonitorStub.CreateProcess(7),
+                    ProcessMonitorStub.CreateProcess(8),
+                    ProcessMonitorStub.CreateProcess(9),
+                ]);
             var batteryManager = new BatteryMonitorStub(
                 PowerLineStatus.Online,
                 false);
@@ -769,7 +940,13 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount++;
             };
 
-            ruleManager.StartEngine(CreateRules(1, 4));
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                    CreateProcessRule(4),
+                ]);
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
@@ -794,7 +971,15 @@ namespace PowerPlanSwitcherTests
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
-                ProcessMonitorStub.CreateProcesses(3, 7));
+                [
+                    ProcessMonitorStub.CreateProcess(3),
+                    ProcessMonitorStub.CreateProcess(4),
+                    ProcessMonitorStub.CreateProcess(5),
+                    ProcessMonitorStub.CreateProcess(6),
+                    ProcessMonitorStub.CreateProcess(7),
+                    ProcessMonitorStub.CreateProcess(8),
+                    ProcessMonitorStub.CreateProcess(9),
+                ]);
             var batteryManager = new BatteryMonitorStub();
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
@@ -810,10 +995,10 @@ namespace PowerPlanSwitcherTests
 
             ruleManager.StartEngine(
                 [
-                    CreatePowerRule(1),
-                    CreatePowerRule(2),
-                    CreatePowerRule(3),
-                    CreatePowerRule(4),
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                    CreateProcessRule(4),
                     CreatePowerLineRule(PowerLineStatus.Online, 5),
                     CreatePowerLineRule(PowerLineStatus.Offline, 6),
                 ]);
@@ -845,7 +1030,15 @@ namespace PowerPlanSwitcherTests
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
-                ProcessMonitorStub.CreateProcesses(3, 7));
+                [
+                    ProcessMonitorStub.CreateProcess(3),
+                    ProcessMonitorStub.CreateProcess(4),
+                    ProcessMonitorStub.CreateProcess(5),
+                    ProcessMonitorStub.CreateProcess(6),
+                    ProcessMonitorStub.CreateProcess(7),
+                    ProcessMonitorStub.CreateProcess(8),
+                    ProcessMonitorStub.CreateProcess(9),
+                ]);
             var batteryManager = new BatteryMonitorStub();
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
@@ -861,10 +1054,10 @@ namespace PowerPlanSwitcherTests
 
             ruleManager.StartEngine(
                 [
-                    CreatePowerRule(1),
-                    CreatePowerRule(2),
-                    CreatePowerRule(3),
-                    CreatePowerRule(4),
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                    CreateProcessRule(4),
                     CreatePowerLineRule(PowerLineStatus.Online, 5),
                     CreatePowerLineRule(PowerLineStatus.Offline, 6),
                 ]);
@@ -901,7 +1094,15 @@ namespace PowerPlanSwitcherTests
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
-                ProcessMonitorStub.CreateProcesses(3, 7));
+                [
+                    ProcessMonitorStub.CreateProcess(3),
+                    ProcessMonitorStub.CreateProcess(4),
+                    ProcessMonitorStub.CreateProcess(5),
+                    ProcessMonitorStub.CreateProcess(6),
+                    ProcessMonitorStub.CreateProcess(7),
+                    ProcessMonitorStub.CreateProcess(8),
+                    ProcessMonitorStub.CreateProcess(9),
+                ]);
             var batteryManager = new BatteryMonitorStub();
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
@@ -917,10 +1118,10 @@ namespace PowerPlanSwitcherTests
 
             ruleManager.StartEngine(
                 [
-                    CreatePowerRule(1),
-                    CreatePowerRule(2),
-                    CreatePowerRule(3),
-                    CreatePowerRule(4),
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                    CreateProcessRule(4),
                     CreatePowerLineRule(PowerLineStatus.Online, 5),
                     CreatePowerLineRule(PowerLineStatus.Offline, 6),
                 ]);
@@ -955,7 +1156,15 @@ namespace PowerPlanSwitcherTests
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
-                ProcessMonitorStub.CreateProcesses(3, 7));
+                [
+                    ProcessMonitorStub.CreateProcess(3),
+                    ProcessMonitorStub.CreateProcess(4),
+                    ProcessMonitorStub.CreateProcess(5),
+                    ProcessMonitorStub.CreateProcess(6),
+                    ProcessMonitorStub.CreateProcess(7),
+                    ProcessMonitorStub.CreateProcess(8),
+                    ProcessMonitorStub.CreateProcess(9),
+                ]);
             var powerManager = new PowerManagerStub();
             var ruleManager = new RuleManager(powerManager)
             {
@@ -968,16 +1177,22 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount++;
             };
 
-            ruleManager.StartEngine(CreateRules(1, 4));
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                    CreateProcessRule(4),
+                ]);
             powerManager.SetActivePowerScheme(
-                powerManager.GetPowerSchemeGuids().Skip(3).First());
+                powerManager.GetPowerSchemeGuids().ToList()[3]);
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
                     ProcessMonitorStub.CreateAction(Action.Terminate, 4),
                 ]);
             powerManager.SetActivePowerScheme(
-                powerManager.GetPowerSchemeGuids().Skip(2).First());
+                powerManager.GetPowerSchemeGuids().ToList()[2]);
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Create, 2),
