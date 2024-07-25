@@ -129,7 +129,10 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Terminate, 1),
                 ]);
 
-            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
         }
 
         [TestMethod]
@@ -242,7 +245,10 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Terminate, 2),
                 ]);
 
-            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
         }
 
         [TestMethod]
@@ -383,7 +389,10 @@ namespace PowerPlanSwitcherTests
                 ProcessMonitorStub.CreateAction(Action.Terminate, 10),
             ]);
 
-            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
         }
 
         [TestMethod]
@@ -418,7 +427,10 @@ namespace PowerPlanSwitcherTests
             ruleManager.StartEngine(CreateRules(0, 4));
             ruleManager.StopEngine();
 
-            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
         }
 
         [TestMethod]
@@ -472,7 +484,10 @@ namespace PowerPlanSwitcherTests
 
             ruleManager.StartEngine(CreateRules(1, 4));
 
-            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
         }
 
         [TestMethod]
@@ -505,7 +520,10 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Terminate, 4),
                 ]);
 
-            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
         }
 
         [TestMethod]
@@ -562,7 +580,10 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Terminate, 1),
                 ]);
 
-            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
         }
 
         [TestMethod]
@@ -601,7 +622,10 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Terminate, 4),
                 ]);
 
-            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
         }
 
         [TestMethod]
@@ -653,7 +677,10 @@ namespace PowerPlanSwitcherTests
 
             ruleManager.StopEngine();
 
-            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
         }
 
         [TestMethod]
@@ -709,7 +736,10 @@ namespace PowerPlanSwitcherTests
 
             ruleManager.StopEngine();
 
-            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
         }
 
         [TestMethod]
@@ -746,7 +776,10 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Terminate, 4),
                 ]);
 
-            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
         }
 
         [TestMethod]
@@ -791,7 +824,10 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Terminate, 4),
                 ]);
 
-            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
         }
 
         [TestMethod]
@@ -844,7 +880,10 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Terminate, 2),
                 ]);
 
-            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
         }
 
         [TestMethod]
@@ -897,7 +936,10 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Terminate, 2),
                 ]);
 
-            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
         }
 
         [TestMethod]
@@ -942,7 +984,10 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Terminate, 2),
                 ]);
 
-            Assert.AreEqual(expectations.Count, ruleApplicationCount);
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
         }
     }
 }
