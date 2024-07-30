@@ -29,7 +29,7 @@ namespace PowerPlanSwitcher
             if (this.tabControl1.SelectedTab == tabPage3 && this.MaximumSize == Size.Empty)
             {
                 settingsDlgOriginalSize = this.Size;
-                this.MaximumSize = new Size(721, 413);
+                this.MaximumSize = this.MinimumSize;
             }
             else if (this.tabControl1.SelectedTab != tabPage3 && this.MaximumSize != Size.Empty)
             {
