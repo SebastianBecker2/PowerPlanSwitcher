@@ -65,10 +65,6 @@ namespace PowerPlanSwitcher
             ChbActivateInitialPowerScheme.Checked =
                 Settings.Default.ActivateInitialPowerScheme;
             AddPowerSchemesToComboBox(CmbInitialPowerScheme, powerSchemes);
-            CmbInitialPowerScheme.Items.AddRange(powerSchemes
-                .Select(scheme => scheme.name)
-                .Cast<object>()
-                .ToArray());
             if (Settings.Default.InitialPowerSchemeGuid == Guid.Empty)
             {
                 CmbInitialPowerScheme.SelectedIndex = 0;
