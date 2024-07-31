@@ -561,6 +561,10 @@ namespace PowerPlanSwitcherTests
                 new(Reason.RuleApplied, 3),
                 new(Reason.RuleApplied, 4),
                 new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 5),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 6),
+                new(Reason.BaselineApplied, 1_000),
             ];
 
             var ruleApplicationCount = 0;
@@ -568,15 +572,12 @@ namespace PowerPlanSwitcherTests
                 [
                     ProcessMonitorStub.CreateProcess(3),
                     ProcessMonitorStub.CreateProcess(4),
-                    ProcessMonitorStub.CreateProcess(5),
-                    ProcessMonitorStub.CreateProcess(6),
-                    ProcessMonitorStub.CreateProcess(7),
-                    ProcessMonitorStub.CreateProcess(8),
-                    ProcessMonitorStub.CreateProcess(9),
                 ]);
+            var batteryMonitor = new BatteryMonitorStub();
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
+                BatteryMonitor = batteryMonitor,
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
@@ -591,12 +592,18 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(2),
                     CreateProcessRule(3),
                     CreateProcessRule(4),
+                    CreatePowerLineRule(PowerLineStatus.Offline, 5),
+                    CreatePowerLineRule(PowerLineStatus.Unknown, 6),
                 ]);
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
                     ProcessMonitorStub.CreateAction(Action.Terminate, 4),
                 ]);
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Offline;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Online;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Online;
 
             Assert.AreEqual(
                 expectations.Count,
