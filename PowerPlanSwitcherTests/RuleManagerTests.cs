@@ -906,7 +906,7 @@ namespace PowerPlanSwitcherTests
         }
 
         [TestMethod]
-        public void BatteryManagerWithoutBattery()
+        public void BatteryMonitorWithoutBattery()
         {
             List<Expectation> expectations = [
                 new(Reason.RuleApplied, 3),
@@ -925,13 +925,13 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateProcess(8),
                     ProcessMonitorStub.CreateProcess(9),
                 ]);
-            var batteryManager = new BatteryMonitorStub(
+            var batteryMonitor = new BatteryMonitorStub(
                 PowerLineStatus.Online,
                 false);
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
-                BatteryMonitor = batteryManager,
+                BatteryMonitor = batteryMonitor,
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
@@ -980,11 +980,11 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateProcess(8),
                     ProcessMonitorStub.CreateProcess(9),
                 ]);
-            var batteryManager = new BatteryMonitorStub();
+            var batteryMonitor = new BatteryMonitorStub();
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
-                BatteryMonitor = batteryManager,
+                BatteryMonitor = batteryMonitor,
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
@@ -1002,7 +1002,7 @@ namespace PowerPlanSwitcherTests
                     CreatePowerLineRule(PowerLineStatus.Online, 5),
                     CreatePowerLineRule(PowerLineStatus.Offline, 6),
                 ]);
-            batteryManager.PowerLineStatus = PowerLineStatus.Offline;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Offline;
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
@@ -1039,11 +1039,11 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateProcess(8),
                     ProcessMonitorStub.CreateProcess(9),
                 ]);
-            var batteryManager = new BatteryMonitorStub();
+            var batteryMonitor = new BatteryMonitorStub();
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
-                BatteryMonitor = batteryManager,
+                BatteryMonitor = batteryMonitor,
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
@@ -1066,7 +1066,7 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
                     ProcessMonitorStub.CreateAction(Action.Terminate, 4),
                 ]);
-            batteryManager.PowerLineStatus = PowerLineStatus.Unknown;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Create, 2),
@@ -1103,11 +1103,11 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateProcess(8),
                     ProcessMonitorStub.CreateProcess(9),
                 ]);
-            var batteryManager = new BatteryMonitorStub();
+            var batteryMonitor = new BatteryMonitorStub();
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
-                BatteryMonitor = batteryManager,
+                BatteryMonitor = batteryMonitor,
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
@@ -1130,7 +1130,7 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
                     ProcessMonitorStub.CreateAction(Action.Terminate, 4),
                 ]);
-            batteryManager.PowerLineStatus = PowerLineStatus.Offline;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Offline;
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Create, 2),
@@ -1170,11 +1170,11 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateProcess(9),
                 ]);
             var powerManager = new PowerManagerStub();
-            var batteryManager = new BatteryMonitorStub();
+            var batteryMonitor = new BatteryMonitorStub();
             var ruleManager = new RuleManager(powerManager)
             {
                 ProcessMonitor = processMonitor,
-                BatteryMonitor = batteryManager,
+                BatteryMonitor = batteryMonitor,
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
@@ -1211,11 +1211,11 @@ namespace PowerPlanSwitcherTests
                 ]);
             powerManager.SetActivePowerScheme(
                 powerManager.GetPowerSchemeGuids().ToList()[3]);
-            batteryManager.PowerLineStatus = PowerLineStatus.Unknown;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
             powerManager.SetActivePowerScheme(
                 powerManager.GetPowerSchemeGuids().ToList()[4]);
-            batteryManager.PowerLineStatus = PowerLineStatus.Offline;
-            batteryManager.PowerLineStatus = PowerLineStatus.Unknown;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Offline;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
 
             Assert.AreEqual(
                 expectations.Count,
