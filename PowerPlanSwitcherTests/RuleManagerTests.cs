@@ -1152,6 +1152,10 @@ namespace PowerPlanSwitcherTests
                 new(Reason.BaselineApplied, 1_000),
                 new(Reason.RuleApplied, 2),
                 new(Reason.BaselineApplied, 1_002),
+                new(Reason.RuleApplied, 2),
+                new(Reason.BaselineApplied, 1_002),
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_004),
             ];
 
             var ruleApplicationCount = 0;
@@ -1166,9 +1170,11 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateProcess(9),
                 ]);
             var powerManager = new PowerManagerStub();
+            var batteryManager = new BatteryMonitorStub();
             var ruleManager = new RuleManager(powerManager)
             {
                 ProcessMonitor = processMonitor,
+                BatteryMonitor = batteryManager,
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
@@ -1198,6 +1204,18 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateAction(Action.Create, 2),
                     ProcessMonitorStub.CreateAction(Action.Terminate, 2),
                 ]);
+            ruleManager.StartEngine(
+                [
+                    CreatePowerLineRule(PowerLineStatus.Offline, 1),
+                    CreatePowerLineRule(PowerLineStatus.Online, 2),
+                ]);
+            powerManager.SetActivePowerScheme(
+                powerManager.GetPowerSchemeGuids().ToList()[3]);
+            batteryManager.PowerLineStatus = PowerLineStatus.Unknown;
+            powerManager.SetActivePowerScheme(
+                powerManager.GetPowerSchemeGuids().ToList()[4]);
+            batteryManager.PowerLineStatus = PowerLineStatus.Offline;
+            batteryManager.PowerLineStatus = PowerLineStatus.Unknown;
 
             Assert.AreEqual(
                 expectations.Count,
