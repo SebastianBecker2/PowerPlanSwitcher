@@ -288,19 +288,34 @@ namespace PowerPlanSwitcher.RuleManagement
         {
             lock (syncObj)
             {
+                bool? needToSwitch = null;
                 IRule? ruleToApply = null;
 
                 foreach (var rule in rules ?? [])
                 {
-                    rule.ActivationCount += CheckRule(rule, processes);
-
-                    if (rule.ActivationCount > 0)
+                    if (rule is not ProcessRule processRule)
                     {
-                        ruleToApply ??= rule;
+                        if (rule.ActivationCount == 0)
+                        {
+                            continue;
+                        }
+
+                        needToSwitch ??= false;
+                        ruleToApply ??= needToSwitch == true ? rule : null;
+                        continue;
+                    }
+
+                    var activationCount = CheckRule(rule, processes);
+                    if (activationCount > 0)
+                    {
+                        needToSwitch ??= rule.ActivationCount == 0;
+                        rule.ActivationCount += activationCount;
+                        ruleToApply ??= needToSwitch == true ? rule : null;
+                        continue;
                     }
                 }
 
-                if (ruleToApply is not null)
+                if (needToSwitch == true && ruleToApply is not null)
                 {
                     ApplyRule(ruleToApply);
                 }
