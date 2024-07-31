@@ -28,24 +28,8 @@ namespace PowerPlanSwitcher.RuleManagement
         private readonly object syncObj = new();
         private Guid baselinePowerSchemeGuid;
 
-        public RuleManager(IPowerManager powerManager)
-        {
+        public RuleManager(IPowerManager powerManager) =>
             this.powerManager = powerManager;
-
-            if (baselinePowerSchemeGuid == Guid.Empty)
-            {
-                baselinePowerSchemeGuid =
-                    this.powerManager.GetActivePowerSchemeGuid();
-                if (baselinePowerSchemeGuid == Guid.Empty)
-                {
-                    throw new InvalidOperationException(
-                        "Unable to determine active power scheme");
-                }
-            }
-
-            this.powerManager.ActivePowerSchemeChanged +=
-                PowerManager_ActivePowerSchemeChanged;
-        }
 
         public void StartEngine(IEnumerable<IRule> rules)
         {
@@ -54,19 +38,28 @@ namespace PowerPlanSwitcher.RuleManagement
                 StopEngine();
 
                 this.rules = rules;
-                if (!rules.Any())
+                if (rules.Any())
                 {
-                    return;
+                    foreach (var rule in rules)
+                    {
+                        rule.ActivationCount = 0;
+                    }
+
+                    StartBatteryMonitor();
+
+                    StartProcessMonitor();
                 }
 
-                foreach (var rule in rules)
+                baselinePowerSchemeGuid =
+                    powerManager.GetActivePowerSchemeGuid();
+                if (baselinePowerSchemeGuid == Guid.Empty)
                 {
-                    rule.ActivationCount = 0;
+                    throw new InvalidOperationException(
+                        "Unable to determine active power scheme");
                 }
 
-                StartBatteryMonitor();
-
-                StartProcessMonitor();
+                powerManager.ActivePowerSchemeChanged +=
+                    PowerManager_ActivePowerSchemeChanged;
             }
         }
 
@@ -328,11 +321,17 @@ namespace PowerPlanSwitcher.RuleManagement
                 $"Rule {rule.Index + 1} applies",
                 rule);
 
-        private void ApplyBaselinePowerScheme() =>
+        private void ApplyBaselinePowerScheme()
+        {
+            if (baselinePowerSchemeGuid == Guid.Empty)
+            {
+                return;
+            }
             OnRuleApplicationChanged(
                 baselinePowerSchemeGuid,
                 "No rule applies",
                 null);
+        }
 
         private IRule? GetActiveRule() =>
             rules?.FirstOrDefault(r => r.ActivationCount > 0);
