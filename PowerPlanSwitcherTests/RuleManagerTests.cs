@@ -628,7 +628,7 @@ namespace PowerPlanSwitcherTests
         }
 
         [TestMethod]
-        public void ChangeToUnkownPowerScheme()
+        public void ChangeToUnknownPowerScheme()
         {
             List<Expectation> expectations = [
                 new(Reason.RuleApplied, 3),
