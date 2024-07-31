@@ -946,12 +946,18 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(2),
                     CreateProcessRule(3),
                     CreateProcessRule(4),
+                    CreatePowerLineRule(PowerLineStatus.Online, 5),
+                    CreatePowerLineRule(PowerLineStatus.Offline, 6),
+                    CreatePowerLineRule(PowerLineStatus.Unknown, 7),
                 ]);
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
                     ProcessMonitorStub.CreateAction(Action.Terminate, 4),
                 ]);
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Offline;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Online;
 
             Assert.AreEqual(
                 expectations.Count,
