@@ -753,6 +753,15 @@ namespace PowerPlanSwitcherTests
                 new(Reason.RuleApplied, 6),
                 new(Reason.RuleApplied, 7),
                 new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 0),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 0),
+                new(Reason.RuleApplied, 8),
+                new(Reason.RuleApplied, 10),
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_000),
             ];
 
             var ruleApplicationCount = 0;
@@ -769,9 +778,11 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateProcess(8),
                     ProcessMonitorStub.CreateProcess(9),
                 ]);
+            var batteryMonitor = new BatteryMonitorStub();
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
+                BatteryMonitor = batteryMonitor,
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
@@ -811,6 +822,37 @@ namespace PowerPlanSwitcherTests
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Create, 6),
+                ]);
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Offline;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Online;
+
+            ruleManager.StartEngine(
+                [
+                    CreatePowerLineRule(PowerLineStatus.Online, 0),
+                    CreatePowerLineRule(PowerLineStatus.Offline, 1),
+                ]);
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Offline;
+
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(10),
+                    CreateProcessRule(11),
+                    CreatePowerLineRule(PowerLineStatus.Offline, 0),
+                    CreatePowerLineRule(PowerLineStatus.Unknown, 1),
+                    CreateProcessRule(8),
+                    CreateProcessRule(9),
+                ]);
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Online;
+            processMonitor.StartSimulation(
+                [
+                    ProcessMonitorStub.CreateAction(Action.Create, 10),
+                ]);
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
+            processMonitor.StartSimulation(
+                [
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 10),
                 ]);
 
             ruleManager.StopEngine();
