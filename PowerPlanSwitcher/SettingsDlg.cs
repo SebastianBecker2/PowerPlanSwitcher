@@ -19,14 +19,6 @@ namespace PowerPlanSwitcher
 
         protected override void OnLoad(EventArgs e)
         {
-            static void AddPowerSchemesToComboBox(
-                ComboBox cmb,
-                List<(Guid _, string name)> powerSchemes) =>
-                cmb.Items.AddRange(powerSchemes
-                    .Select(scheme => scheme.name)
-                    .Cast<object>()
-                    .ToArray());
-
             DgvPowerSchemes.Rows.AddRange(powerSchemes
                 .Select(SchemeToRow)
                 .ToArray());
@@ -35,7 +27,6 @@ namespace PowerPlanSwitcher
 
             ChbActivateInitialPowerScheme.Checked =
                 Settings.Default.ActivateInitialPowerScheme;
-            AddPowerSchemesToComboBox(CmbInitialPowerScheme, powerSchemes);
             CmbInitialPowerScheme.Items.AddRange(powerSchemes
                 .Select(scheme => scheme.name)
                 .Cast<object>()
