@@ -1195,5 +1195,68 @@ namespace PowerPlanSwitcherTests
                 expectedRuleApplications.Count,
                 ruleApplicationCount);
         }
+
+        [TestMethod]
+        public void MixRuleTypes()
+        {
+            List<Expectation> expectations = [
+                new(Reason.RuleApplied, 1),
+                new(Reason.RuleApplied, 4),
+                new(Reason.RuleApplied, 5),
+                new(Reason.RuleApplied, 2),
+                new(Reason.RuleApplied, 5),
+                new(Reason.RuleApplied, 3),
+                new(Reason.BaselineApplied, 1_000),
+            ];
+
+            var ruleApplicationCount = 0;
+            var processMonitor = new ProcessMonitorStub(
+                [
+                    ProcessMonitorStub.CreateProcess(1),
+                    ProcessMonitorStub.CreateProcess(2),
+                ]);
+            var batteryMonitor = new BatteryMonitorStub();
+            var ruleManager = new RuleManager(new PowerManagerStub())
+            {
+                ProcessMonitor = processMonitor,
+                BatteryMonitor = batteryMonitor,
+            };
+            ruleManager.RuleApplicationChanged += (s, e) =>
+            {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
+                AssertRuleApplication(e, expectations[ruleApplicationCount]);
+                ruleApplicationCount++;
+            };
+
+            ruleManager.StartEngine(
+                [
+                    CreatePowerLineRule(PowerLineStatus.Online, 1),
+                    CreateProcessRule(2),
+                    CreatePowerLineRule(PowerLineStatus.Offline, 3),
+                    CreateProcessRule(4),
+                    CreatePowerLineRule(PowerLineStatus.Unknown, 5),
+                    CreateProcessRule(6),
+                ]);
+
+            processMonitor.StartSimulation(
+                [
+                    ProcessMonitorStub.CreateAction(Action.Create, 4),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 2),
+                ]);
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
+            processMonitor.StartSimulation(
+                [
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 4),
+                    ProcessMonitorStub.CreateAction(Action.Create, 2),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 2),
+                ]);
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Offline;
+
+            ruleManager.StopEngine();
+
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount);
+        }
     }
 }
