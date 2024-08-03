@@ -1074,5 +1074,63 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount,
                 "Unexpected count of rule applications");
         }
+
+        [TestMethod]
+        public void InitialPowerLineStatus()
+        {
+            List<Expectation> expectations = [
+                new(Reason.RuleApplied, 2),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 3),
+                new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_000),
+            ];
+
+            var ruleApplicationCount = 0;
+            var powerManager = new PowerManagerStub();
+            var batteryMonitor = new BatteryMonitorStub(PowerLineStatus.Offline);
+            var ruleManager = new RuleManager(powerManager)
+            {
+                BatteryMonitor = batteryMonitor,
+            };
+            ruleManager.RuleApplicationChanged += (s, e) =>
+            {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
+                AssertRuleApplication(e, expectations[ruleApplicationCount]);
+                ruleApplicationCount++;
+            };
+
+            ruleManager.StartEngine(
+                [
+                    CreatePowerLineRule(PowerLineStatus.Online, 1),
+                    CreatePowerLineRule(PowerLineStatus.Offline, 2),
+                    CreatePowerLineRule(PowerLineStatus.Unknown, 3),
+                ]);
+            ruleManager.StopEngine();
+
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
+            ruleManager.StartEngine(
+                [
+                    CreatePowerLineRule(PowerLineStatus.Online, 1),
+                    CreatePowerLineRule(PowerLineStatus.Offline, 2),
+                    CreatePowerLineRule(PowerLineStatus.Unknown, 3),
+                ]);
+            ruleManager.StopEngine();
+
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Online;
+            ruleManager.StartEngine(
+                [
+                    CreatePowerLineRule(PowerLineStatus.Online, 1),
+                    CreatePowerLineRule(PowerLineStatus.Offline, 2),
+                    CreatePowerLineRule(PowerLineStatus.Unknown, 3),
+                ]);
+            ruleManager.StopEngine();
+
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount,
+                "Unexpected count of rule applications");
+        }
     }
 }
