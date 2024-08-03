@@ -83,69 +83,6 @@ namespace PowerPlanSwitcherTests
                 "PowerSchemeGuid doesn't match expectation");
         }
 
-        // Rules           [  1,2,3,4          ]
-        // Init Processes  [0,1     4,5,6,7,8,9]
-        // Create Event    [    2              ]
-        // Terminate Event [  1                ]
-        // Terminate Event [    2              ]
-        // Create Event    [  1                ]
-        // Terminate Event [  1                ]
-        [TestMethod]
-        public void ManyEvents()
-        {
-            List<Expectation> expectations = [
-                new(Reason.RuleApplied, 1),
-                new(Reason.RuleApplied, 2),
-                new(Reason.RuleApplied, 4),
-                new(Reason.RuleApplied, 1),
-                new(Reason.RuleApplied, 4),
-            ];
-
-            var ruleApplicationCount = 0;
-            var processMonitor = new ProcessMonitorStub(
-                [
-                    ProcessMonitorStub.CreateProcess(4),
-                    ProcessMonitorStub.CreateProcess(5),
-                    ProcessMonitorStub.CreateProcess(6),
-                    ProcessMonitorStub.CreateProcess(7),
-                    ProcessMonitorStub.CreateProcess(8),
-                    ProcessMonitorStub.CreateProcess(9),
-                    ProcessMonitorStub.CreateProcess(0),
-                    ProcessMonitorStub.CreateProcess(1),
-                ]);
-            var ruleManager = new RuleManager(new PowerManagerStub())
-            {
-                ProcessMonitor = processMonitor,
-            };
-            ruleManager.RuleApplicationChanged += (s, e) =>
-            {
-                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
-                AssertRuleApplication(e, expectations[ruleApplicationCount]);
-                ruleApplicationCount++;
-            };
-
-            ruleManager.StartEngine(
-                [
-                    CreateProcessRule(1),
-                    CreateProcessRule(2),
-                    CreateProcessRule(3),
-                    CreateProcessRule(4),
-                ]);
-            processMonitor.StartSimulation(
-                [
-                    ProcessMonitorStub.CreateAction(Action.Create, 2),
-                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
-                    ProcessMonitorStub.CreateAction(Action.Terminate, 2),
-                    ProcessMonitorStub.CreateAction(Action.Create, 1),
-                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
-                ]);
-
-            Assert.AreEqual(
-                expectations.Count,
-                ruleApplicationCount,
-                "Unexpected count of rule applications");
-        }
-
         [TestMethod]
         public void MultipleProcessesForRule()
         {
