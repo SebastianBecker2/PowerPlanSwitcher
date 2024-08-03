@@ -1260,7 +1260,7 @@ namespace PowerPlanSwitcherTests
         }
 
         [TestMethod]
-        public void PowerLineSwitchWhileProcessRuleActive()
+        public void PowerLineSwitchWhileProcessRuleApplied()
         {
             List<Expectation> expectations = [
                 new(Reason.RuleApplied, 1),
