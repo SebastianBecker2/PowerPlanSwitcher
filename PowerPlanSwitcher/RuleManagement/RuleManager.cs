@@ -106,6 +106,8 @@ namespace PowerPlanSwitcher.RuleManagement
                 StopBatteryMonitor();
 
                 StopProcessMonitor();
+
+                baselinePowerSchemeGuid = Guid.Empty;
             }
         }
 
