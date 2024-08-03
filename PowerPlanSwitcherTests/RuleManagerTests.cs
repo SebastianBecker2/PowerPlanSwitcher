@@ -423,6 +423,8 @@ namespace PowerPlanSwitcherTests
                 new(Reason.BaselineApplied, 1_000),
                 new(Reason.RuleApplied, 3),
                 new(Reason.BaselineApplied, 1_000),
+                new(Reason.RuleApplied, 3),
+                new(Reason.BaselineApplied, 1_003),
             ];
 
             var ruleApplicationCount = 0;
@@ -436,9 +438,12 @@ namespace PowerPlanSwitcherTests
                     ProcessMonitorStub.CreateProcess(8),
                     ProcessMonitorStub.CreateProcess(9),
                 ]);
-            var ruleManager = new RuleManager(new PowerManagerStub())
+            var batteryMonitor = new BatteryMonitorStub();
+            var powerManager = new PowerManagerStub();
+            var ruleManager = new RuleManager(powerManager)
             {
                 ProcessMonitor = processMonitor,
+                BatteryMonitor = batteryMonitor,
             };
             ruleManager.RuleApplicationChanged += (s, e) =>
             {
@@ -472,6 +477,25 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(1),
                     CreateProcessRule(2),
                     CreateProcessRule(3),
+                ]);
+            ruleManager.StopEngine();
+
+            powerManager.SetActivePowerScheme(
+                powerManager.GetPowerSchemeGuids().ToList()[3]);
+
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(0),
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                ]);
+            ruleManager.StopEngine();
+
+            ruleManager.StartEngine(
+                [
+                    CreatePowerLineRule(PowerLineStatus.Offline, 0),
+                    CreatePowerLineRule(PowerLineStatus.Unknown, 1),
                 ]);
             ruleManager.StopEngine();
 
