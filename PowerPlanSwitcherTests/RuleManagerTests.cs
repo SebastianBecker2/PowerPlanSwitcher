@@ -445,7 +445,7 @@ namespace PowerPlanSwitcherTests
         [TestMethod]
         public void NoRules()
         {
-            List<int> expectedRuleApplications = [];
+            List<Expectation> expectations = [];
 
             var ruleApplicationCount = 0;
             var processMonitor = new ProcessMonitorStub(
@@ -477,7 +477,7 @@ namespace PowerPlanSwitcherTests
             batteryMonitor.PowerLineStatus = PowerLineStatus.Online;
 
             Assert.AreEqual(
-                expectedRuleApplications.Count,
+                expectations.Count,
                 ruleApplicationCount);
         }
 
@@ -1179,7 +1179,7 @@ namespace PowerPlanSwitcherTests
         [TestMethod]
         public void NoMonitors()
         {
-            List<int> expectedRuleApplications = [];
+            List<Expectation> expectations = [];
 
             var ruleApplicationCount = 0;
             var ruleManager = new RuleManager(new PowerManagerStub());
@@ -1192,7 +1192,7 @@ namespace PowerPlanSwitcherTests
             ruleManager.StopEngine();
 
             Assert.AreEqual(
-                expectedRuleApplications.Count,
+                expectations.Count,
                 ruleApplicationCount);
         }
 
