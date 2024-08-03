@@ -4,7 +4,7 @@ namespace PowerPlanSwitcher.RuleManagement
     using PowerPlanSwitcher.ProcessManagement;
     using PowerPlanSwitcher.RuleManagement.Rules;
 
-    public class RuleManager
+    public class RuleManager(IPowerManager powerManager)
     {
         public event EventHandler<RuleApplicationChangedEventArgs>?
             RuleApplicationChanged;
@@ -23,13 +23,10 @@ namespace PowerPlanSwitcher.RuleManagement
 
         public IBatteryMonitor? BatteryMonitor { get; set; }
         public IProcessMonitor? ProcessMonitor { get; set; }
-        private readonly IPowerManager powerManager;
+
         private IEnumerable<IRule>? rules;
         private readonly object syncObj = new();
         private Guid baselinePowerSchemeGuid;
-
-        public RuleManager(IPowerManager powerManager) =>
-            this.powerManager = powerManager;
 
         public void StartEngine(IEnumerable<IRule> rules)
         {
