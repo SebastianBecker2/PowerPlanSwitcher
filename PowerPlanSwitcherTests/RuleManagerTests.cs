@@ -1175,5 +1175,25 @@ namespace PowerPlanSwitcherTests
                 ruleApplicationCount,
                 "Unexpected count of rule applications");
         }
+
+        [TestMethod]
+        public void NoMonitors()
+        {
+            List<int> expectedRuleApplications = [];
+
+            var ruleApplicationCount = 0;
+            var ruleManager = new RuleManager(new PowerManagerStub());
+
+            ruleManager.StartEngine(
+                [
+                    CreatePowerLineRule(PowerLineStatus.Online, 1),
+                    CreateProcessRule(2),
+                ]);
+            ruleManager.StopEngine();
+
+            Assert.AreEqual(
+                expectedRuleApplications.Count,
+                ruleApplicationCount);
+        }
     }
 }
