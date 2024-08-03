@@ -452,19 +452,29 @@ namespace PowerPlanSwitcherTests
                 [
                     ProcessMonitorStub.CreateProcess(4),
                     ProcessMonitorStub.CreateProcess(5),
-                    ProcessMonitorStub.CreateProcess(6),
-                    ProcessMonitorStub.CreateProcess(7),
-                    ProcessMonitorStub.CreateProcess(8),
-                    ProcessMonitorStub.CreateProcess(9),
-                    ProcessMonitorStub.CreateProcess(0),
-                    ProcessMonitorStub.CreateProcess(1),
                 ]);
+            var batteryMonitor = new BatteryMonitorStub();
             var ruleManager = new RuleManager(new PowerManagerStub())
             {
                 ProcessMonitor = processMonitor,
+                BatteryMonitor = batteryMonitor,
             };
 
             ruleManager.StartEngine([]);
+
+            processMonitor.StartSimulation(
+                [
+                    ProcessMonitorStub.CreateAction(Action.Create, 1),
+                    ProcessMonitorStub.CreateAction(Action.Create, 2),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 1),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 4),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 2),
+                    ProcessMonitorStub.CreateAction(Action.Terminate, 5),
+                ]);
+
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Offline;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Online;
 
             Assert.AreEqual(
                 expectedRuleApplications.Count,
