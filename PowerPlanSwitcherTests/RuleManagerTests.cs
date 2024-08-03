@@ -1258,5 +1258,51 @@ namespace PowerPlanSwitcherTests
                 expectations.Count,
                 ruleApplicationCount);
         }
+
+        [TestMethod]
+        public void PowerLineSwitchWhileProcessRuleActive()
+        {
+            List<Expectation> expectations = [
+                new(Reason.RuleApplied, 1),
+                new(Reason.BaselineApplied, 1_000),
+            ];
+
+            var ruleApplicationCount = 0;
+            var processMonitor = new ProcessMonitorStub(
+                [
+                    ProcessMonitorStub.CreateProcess(1),
+                    ProcessMonitorStub.CreateProcess(2),
+                ]);
+            var batteryMonitor = new BatteryMonitorStub();
+            var ruleManager = new RuleManager(new PowerManagerStub())
+            {
+                ProcessMonitor = processMonitor,
+                BatteryMonitor = batteryMonitor,
+            };
+            ruleManager.RuleApplicationChanged += (s, e) =>
+            {
+                Console.WriteLine($"Applied {e.PowerSchemeGuid}");
+                AssertRuleApplication(e, expectations[ruleApplicationCount]);
+                ruleApplicationCount++;
+            };
+
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreatePowerLineRule(PowerLineStatus.Offline, 3),
+                ]);
+
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Online;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
+            batteryMonitor.PowerLineStatus = PowerLineStatus.Online;
+
+            ruleManager.StopEngine();
+
+            Assert.AreEqual(
+                expectations.Count,
+                ruleApplicationCount);
+        }
     }
 }
