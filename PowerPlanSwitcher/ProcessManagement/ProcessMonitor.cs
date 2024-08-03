@@ -41,9 +41,17 @@ namespace PowerPlanSwitcher.ProcessManagement
             }
             monitoring = true;
 
+            // If we continue to have issues with out of order events
+            // or missing events, we might have to switch to ETW.
+            // This requires admin privileges and would probably mean
+            // we need to create a background service that pushes the
+            // events to PowerPlanSwitcher. Not ideal!
+            // Though creation and termination events are forced to be
+            // handled by the same thread. Which makes out of order events
+            // impossible. This is really good.
             processCreationWatcher.Query = new WqlEventQuery(
                 "__InstanceCreationEvent",
-                new TimeSpan(0, 0, 5),
+                new TimeSpan(0, 0, 1),
                 "TargetInstance isa \"Win32_Process\"");
             processCreationWatcher.EventArrived
                 += ProcessStartWatcher_EventArrived;
@@ -51,7 +59,7 @@ namespace PowerPlanSwitcher.ProcessManagement
 
             processTerminationWatcher.Query = new WqlEventQuery(
                 "__InstanceDeletionEvent",
-                new TimeSpan(0, 0, 5),
+                new TimeSpan(0, 0, 1),
                 "TargetInstance isa \"Win32_Process\"");
             processTerminationWatcher.EventArrived
                 += ProcessEndWatcher_EventArrived;
