@@ -84,7 +84,7 @@ namespace PowerPlanSwitcherTests
         }
 
         [TestMethod]
-        public void MultipleProcessesForRule()
+        public void MultipleProcessesForProcessRule()
         {
             List<Expectation> expectations = [
                 new(Reason.RuleApplied, 1),
