@@ -585,23 +585,11 @@ namespace PowerPlanSwitcherTests
         [TestMethod]
         public void UnknownActivePowerScheme()
         {
-            var processMonitor = new ProcessMonitorStub(
-                [
-                    ProcessMonitorStub.CreateProcess(3),
-                    ProcessMonitorStub.CreateProcess(4),
-                    ProcessMonitorStub.CreateProcess(5),
-                    ProcessMonitorStub.CreateProcess(6),
-                    ProcessMonitorStub.CreateProcess(7),
-                    ProcessMonitorStub.CreateProcess(8),
-                    ProcessMonitorStub.CreateProcess(9),
-                ]);
             var powerManager = new PowerManagerStub(Guid.Empty);
+            var ruleManager = new RuleManager(powerManager);
 
             _ = Assert.ThrowsException<InvalidOperationException>(() =>
-                new RuleManager(powerManager)
-                {
-                    ProcessMonitor = processMonitor,
-                }
+                ruleManager.StartEngine([])
             );
         }
 
