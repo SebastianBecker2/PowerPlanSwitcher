@@ -83,9 +83,14 @@ namespace PowerPlanSwitcher.RuleManagement
 
         private void StartProcessMonitor()
         {
-            ProcessMonitor!.ProcessCreated += ProcessMonitor_ProcessCreated;
-            ProcessMonitor!.ProcessTerminated += ProcessMonitor_ProcessTerminated;
-            ProcessMonitor!.StartMonitoring();
+            if (ProcessMonitor is null)
+            {
+                return;
+            }
+
+            ProcessMonitor.ProcessCreated += ProcessMonitor_ProcessCreated;
+            ProcessMonitor.ProcessTerminated += ProcessMonitor_ProcessTerminated;
+            ProcessMonitor.StartMonitoring();
 
             HandleProcessesCreated(ProcessMonitor.GetUsersProcesses());
         }
