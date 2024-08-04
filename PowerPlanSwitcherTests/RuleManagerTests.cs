@@ -51,7 +51,10 @@ namespace PowerPlanSwitcherTests
             if (expectation.Reason == Reason.PowerLineChanged)
             {
                 Assert.IsNull(e.Rule, "Expected PowerLineChange");
-                Assert.IsNull(e.Reason, "Expected no reason to be provided");
+                StringAssert.Contains(
+                    e.Reason,
+                    "Battery Management",
+                    "Expected reason to be \"Battery Management\"");
                 Assert.AreEqual(
                     expectation.GetPowerSchemeGuid(),
                     e.PowerSchemeGuid,
