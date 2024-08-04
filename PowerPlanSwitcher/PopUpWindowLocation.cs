@@ -5,14 +5,15 @@ namespace PowerPlanSwitcher
     internal enum PopUpWindowLocation
     {
         BottomRight,
-        System ,
+        System,
         Center,
         Off,
     }
 
-    internal class PopUpWindowLocationHelper
+    internal static class PopUpWindowLocationHelper
     {
-        private static readonly List<(string name, PopUpWindowLocation theme)> PopUpWindowLocations =
+        private static readonly List<(string name, PopUpWindowLocation theme)>
+            PopUpWindowLocations =
         [
             ( "Bottom Right", PopUpWindowLocation.BottomRight ),
             ( "Use System Setting", PopUpWindowLocation.System ),
@@ -22,36 +23,52 @@ namespace PowerPlanSwitcher
 
         public static bool ShouldShowToast(string reason)
         {
-            string popUpWindowSetting = reason == "Battery Management"
+            var popUpWindowSetting = reason == "Battery Management"
                 ? Settings.Default.PopUpWindowLocationBM
                 : Settings.Default.PopUpWindowLocationGlobal;
 
-            return !string.IsNullOrEmpty(popUpWindowSetting) && popUpWindowSetting != "Off";
+            return
+                !string.IsNullOrEmpty(popUpWindowSetting)
+                && popUpWindowSetting != "Off";
         }
 
         public static IEnumerable<string> GetDisplayNames() =>
             PopUpWindowLocations.Select(ct => ct.name);
 
-        public static PopUpWindowLocation GetSelectedPopUpWindowLocation(string settingsValue) =>
-            PopUpWindowLocations.FirstOrDefault(
-                ct => ct.name == settingsValue,
-                new("", PopUpWindowLocation.Off))
+        public static PopUpWindowLocation GetSelectedPopUpWindowLocation(
+            string settingsValue) =>
+            PopUpWindowLocations
+                .FirstOrDefault(
+                    ct => ct.name == settingsValue,
+                    new("", PopUpWindowLocation.Off))
             .theme;
-            
-        public Point GetPositionOnTaskbar(Size windowSize, string activationReason)
+
+        public static Point GetPositionOnTaskbar(
+            Size windowSize,
+            string activationReason)
         {
-            string settingsTEMP;
+            PopUpWindowLocation popUpWindowLocation;
             if (activationReason == "Battery Management")
             {
-                settingsTEMP = Settings.Default.PopUpWindowLocationBM;
+                popUpWindowLocation = GetSelectedPopUpWindowLocation(
+                    Settings.Default.PopUpWindowLocationBM);
             }
             else
             {
-                settingsTEMP = Settings.Default.PopUpWindowLocationGlobal;
+                popUpWindowLocation = GetSelectedPopUpWindowLocation(
+                    Settings.Default.PopUpWindowLocationGlobal);
             }
-            
-            var popUpWindowLocation = GetSelectedPopUpWindowLocation(settingsTEMP);
-            if (popUpWindowLocation == PopUpWindowLocation.BottomRight)
+
+            return GetPositionOnTaskbar(
+                windowSize,
+                popUpWindowLocation);
+        }
+
+        public static Point GetPositionOnTaskbar(
+            Size windowSize,
+            PopUpWindowLocation location)
+        {
+            if (location == PopUpWindowLocation.BottomRight)
             {
                 var bounds = Taskbar.CurrentBounds;
                 switch (Taskbar.Position)
@@ -77,15 +94,25 @@ namespace PowerPlanSwitcher
                         return new Point(0, 0);
                 }
             }
-            
-            Rectangle workArea = Screen.PrimaryScreen.WorkingArea;
-            int y = workArea.Top + (workArea.Height - windowSize.Height) / 2;
-            if (popUpWindowLocation == PopUpWindowLocation.System)
+
+            var primaryScreen = Screen.PrimaryScreen;
+            if (primaryScreen is null)
             {
-                return new Point(workArea.Left + (workArea.Width - windowSize.Width), y);
+                return GetPositionOnTaskbar(
+                    windowSize,
+                    PopUpWindowLocation.BottomRight);
             }
-            
-            int x = workArea.Left + (workArea.Width - windowSize.Width) / 2;
+
+            var workArea = primaryScreen.WorkingArea;
+            var y = workArea.Top + ((workArea.Height - windowSize.Height) / 2);
+            if (location == PopUpWindowLocation.System)
+            {
+                return new Point(
+                    workArea.Left + (workArea.Width - windowSize.Width),
+                    y);
+            }
+
+            var x = workArea.Left + ((workArea.Width - windowSize.Width) / 2);
             return new Point(x, y);
         }
     }

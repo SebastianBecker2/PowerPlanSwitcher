@@ -32,7 +32,7 @@ namespace PowerPlanSwitcher
             DisplayTimer.Interval = DisplayDuration;
 
 
-            Padding = new Padding(1); //“ToastDlg” optimizes the visual display. add border (gray border)
+            Padding = new Padding(1);
             BackColor = TlpPowerSchemesBackColor;
             tableLayoutPanel1.BackColor = ButtonBackgroundColor;
 
@@ -47,7 +47,9 @@ namespace PowerPlanSwitcher
             LblReason.ForeColor = ForegroundColor;
             LblReason.BackColor = ButtonBackgroundColor;
 
-            Location = helper.GetPositionOnTaskbar(Size, LblReason.Text);
+            Location = PopUpWindowLocationHelper.GetPositionOnTaskbar(
+                Size,
+                LblReason.Text);
 
             DisplayTimer.Stop();
             DisplayTimer.Start();
@@ -82,7 +84,6 @@ namespace PowerPlanSwitcher
             }
         }
 
-        private PopUpWindowLocationHelper helper = new PopUpWindowLocationHelper();
         public static void ShowToastNotification(
             Guid activeSchemeGuid,
             string activationReason)
