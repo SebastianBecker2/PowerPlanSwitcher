@@ -5,6 +5,7 @@ namespace PowerPlanSwitcher
     using PowerPlanSwitcher.ProcessManagement;
     using PowerPlanSwitcher.Properties;
     using PowerPlanSwitcher.RuleManagement;
+    using PowerPlanSwitcher.RuleManagement.Rules;
 
     internal class AppContext : ApplicationContext
     {
@@ -28,7 +29,7 @@ namespace PowerPlanSwitcher
             };
             ruleManager.RuleApplicationChanged +=
                 RuleManager_RuleApplicationChanged;
-            ruleManager.StartEngine(PowerRule.GetPowerRules());
+            ruleManager.StartEngine(Rules.GetRules());
 
             Settings.Default.PropertyChanged +=
                 Default_PropertyChanged;
@@ -43,7 +44,7 @@ namespace PowerPlanSwitcher
                 return;
             }
 
-            ruleManager?.StartEngine(PowerRule.GetPowerRules());
+            ruleManager?.StartEngine(Rules.GetRules());
         }
 
         private void RuleManager_RuleApplicationChanged(

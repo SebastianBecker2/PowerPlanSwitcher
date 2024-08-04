@@ -158,6 +158,30 @@ namespace PowerPlanSwitcher.Properties {
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string Rules {
+            get {
+                return ((string)(this["Rules"]));
+            }
+            set {
+                this["Rules"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MigratedPowerRulesToRules {
+            get {
+                return ((bool)(this["MigratedPowerRulesToRules"]));
+            }
+            set {
+                this["MigratedPowerRulesToRules"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
         public string PopUpWindowLocationGlobal {
             get {
                 return ((string)(this["PopUpWindowLocationGlobal"]));

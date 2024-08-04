@@ -35,6 +35,12 @@
     <Setting Name="ShowToastNotifications" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">True</Value>
     </Setting>
+    <Setting Name="Rules" Type="System.String" Scope="User">
+      <Value Profile="(Default)" />
+    </Setting>
+    <Setting Name="MigratedPowerRulesToRules" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
     <Setting Name="PopUpWindowLocationGlobal" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>

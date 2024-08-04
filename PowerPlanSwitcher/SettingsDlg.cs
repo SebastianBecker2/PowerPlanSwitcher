@@ -4,7 +4,7 @@ namespace PowerPlanSwitcher
     using System.Drawing.Drawing2D;
     using Newtonsoft.Json;
     using PowerPlanSwitcher.PowerManagement;
-    using PowerPlanSwitcher.RuleManagement;
+    using PowerPlanSwitcher.RuleManagement.Rules;
     using Properties;
 
     public partial class SettingsDlg : Form
@@ -41,14 +41,6 @@ namespace PowerPlanSwitcher
 
         protected override void OnLoad(EventArgs e)
         {
-            static void AddPowerSchemesToComboBox(
-                ComboBox cmb,
-                List<(Guid _, string name)> powerSchemes) =>
-                cmb.Items.AddRange(powerSchemes
-                    .Select(scheme => scheme.name)
-                    .Cast<object>()
-                    .ToArray());
-
             DgvPowerSchemes.Rows.AddRange(powerSchemes
                 .Select(SchemeToRow)
                 .ToArray());
@@ -57,7 +49,10 @@ namespace PowerPlanSwitcher
 
             ChbActivateInitialPowerScheme.Checked =
                 Settings.Default.ActivateInitialPowerScheme;
-            AddPowerSchemesToComboBox(CmbInitialPowerScheme, powerSchemes);
+            CmbInitialPowerScheme.Items.AddRange(powerSchemes
+                .Select(scheme => scheme.name)
+                .Cast<object>()
+                .ToArray());
             if (Settings.Default.InitialPowerSchemeGuid == Guid.Empty)
             {
                 CmbInitialPowerScheme.SelectedIndex = 0;
@@ -105,50 +100,6 @@ namespace PowerPlanSwitcher
             else
             {
                 CmbPopUpWindowGlobal.SelectedIndex = 0;
-            }
-
-            CmbPopUpWindowBM.Items.AddRange(
-                PopUpWindowLocationHelper.GetDisplayNames()
-                    .Cast<object>()
-                    .ToArray());
-            index = CmbPopUpWindowBM.Items.IndexOf(
-                Settings.Default.PopUpWindowLocationBM);
-            if (index != -1 && index < CmbPopUpWindowBM.Items.Count)
-            {
-                CmbPopUpWindowBM.SelectedIndex = index;
-            }
-            else
-            {
-                CmbPopUpWindowBM.SelectedIndex = 3;
-            }
-
-            GrbBatteryManagement.Visible =
-                BatteryMonitor.Static.HasSystemBattery;
-
-            AddPowerSchemesToComboBox(CmbAcPowerScheme, powerSchemes);
-            if (Settings.Default.AcPowerSchemeGuid == Guid.Empty)
-            {
-                CmbAcPowerScheme.SelectedIndex = 0;
-            }
-            else
-            {
-                CmbAcPowerScheme.SelectedIndex = powerSchemes.FindIndex(
-                    scheme => scheme.guid
-                        == Settings.Default.AcPowerSchemeGuid);
-                CmbAcPowerScheme.SelectedIndex += 1;
-            }
-
-            AddPowerSchemesToComboBox(CmbBatteryPowerScheme, powerSchemes);
-            if (Settings.Default.BatterPowerSchemeGuid == Guid.Empty)
-            {
-                CmbBatteryPowerScheme.SelectedIndex = 0;
-            }
-            else
-            {
-                CmbBatteryPowerScheme.SelectedIndex = powerSchemes.FindIndex(
-                    scheme => scheme.guid
-                        == Settings.Default.BatterPowerSchemeGuid);
-                CmbBatteryPowerScheme.SelectedIndex += 1;
             }
 
             base.OnLoad(e);
@@ -293,11 +244,10 @@ namespace PowerPlanSwitcher
             }
             PowerSchemeSettings.SaveSettings();
 
-            PowerRule.SetPowerRules(DgvPowerRules.Rows
+            Rules.SetRules(DgvPowerRules.Rows
                 .Cast<DataGridViewRow>()
-                .Select(r => r.Tag as PowerRule)
-                .Cast<PowerRule>());
-            PowerRule.SavePowerRules();
+                .Select(r => r.Tag as IRule)
+                .Cast<IRule>());
 
             static string GetSelectedString(ComboBox cmb)
             {
@@ -325,62 +275,23 @@ namespace PowerPlanSwitcher
             Settings.Default.PopUpWindowLocationGlobal =
                 CmbPopUpWindowGlobal.SelectedItem as string;
 
-            Settings.Default.PopUpWindowLocationBM =
-                CmbPopUpWindowBM.SelectedItem as string;
-
-            Settings.Default.AcPowerSchemeGuid =
-                GetPowerSchemeGuid(GetSelectedString(CmbAcPowerScheme));
-            Settings.Default.BatterPowerSchemeGuid =
-                GetPowerSchemeGuid(GetSelectedString(CmbBatteryPowerScheme));
-
             Settings.Default.Save();
 
             DialogResult = DialogResult.OK;
         }
 
-        private void HandleBtnCreateRuleFromProcessClick(
-            object sender,
-            EventArgs e)
+        private static DataGridViewRow RuleToRow(IRule rule)
         {
-            using var processSelectionDlg = new ProcessSelectionDlg();
-            if (processSelectionDlg.ShowDialog() != DialogResult.OK)
-            {
-                return;
-            }
-
-            using var powerRuleDlg = new PowerRuleDlg
-            {
-                PowerRule = new PowerRule
-                {
-                    FilePath = processSelectionDlg.SelectedProcess!.ExecutablePath,
-                    Type = RuleType.Exact,
-                },
-            };
-            if (powerRuleDlg.ShowDialog() != DialogResult.OK)
-            {
-                return;
-            }
-
-            powerRuleDlg.PowerRule!.Index = DgvPowerRules.RowCount;
-            _ = DgvPowerRules.Rows.Add(PowerRuleToRow(powerRuleDlg.PowerRule));
-        }
-
-        private static DataGridViewRow PowerRuleToRow(PowerRule powerRule)
-        {
-            var row = new DataGridViewRow { Tag = powerRule, };
-            var setting = PowerSchemeSettings.GetSetting(powerRule.SchemeGuid);
+            var row = new DataGridViewRow { Tag = rule, };
+            var setting = PowerSchemeSettings.GetSetting(rule.SchemeGuid);
             row.Cells.AddRange(
                 new DataGridViewTextBoxCell
                 {
-                    Value = powerRule.Index + 1,
+                    Value = rule.Index + 1,
                 },
                 new DataGridViewTextBoxCell
                 {
-                    Value = PowerRule.RuleTypeToText(powerRule.Type),
-                },
-                new DataGridViewTextBoxCell
-                {
-                    Value = powerRule.FilePath,
+                    Value = rule.GetDescription(),
                 },
                 new DataGridViewImageCell
                 {
@@ -391,33 +302,33 @@ namespace PowerPlanSwitcher
                 {
                     Value =
                         PowerManager.Static.GetPowerSchemeName(
-                            powerRule.SchemeGuid)
-                        ?? powerRule.SchemeGuid.ToString(),
+                            rule.SchemeGuid)
+                        ?? rule.SchemeGuid.ToString(),
                 },
                 new DataGridViewCheckBoxCell
                 {
-                    Value = powerRule.ActivationCount,
+                    Value = rule.ActivationCount,
                 });
 
             return row;
         }
 
         private void UpdatePowerRules() =>
-            DgvPowerRules.Rows.AddRange(PowerRule.GetPowerRules()
+            DgvPowerRules.Rows.AddRange(Rules.GetRules()
                 .OrderBy(r => r.Index)
-                .Select(PowerRuleToRow)
+                .Select(RuleToRow)
                 .ToArray());
 
         private void HandleBtnAddPowerRuleClick(object sender, EventArgs e)
         {
-            using var dlg = new PowerRuleDlg();
+            using var dlg = new RuleDlg();
             if (dlg.ShowDialog() != DialogResult.OK)
             {
                 return;
             }
 
-            dlg.PowerRule!.Index = DgvPowerRules.RowCount;
-            _ = DgvPowerRules.Rows.Add(PowerRuleToRow(dlg.PowerRule));
+            dlg.Rule!.Index = DgvPowerRules.RowCount;
+            _ = DgvPowerRules.Rows.Add(RuleToRow(dlg.Rule));
         }
 
         private void HandleBtnEditPowerRuleClick(object sender, EventArgs e)
@@ -427,20 +338,20 @@ namespace PowerPlanSwitcher
                 return;
             }
 
-            using var dlg = new PowerRuleDlg
+            using var dlg = new RuleDlg
             {
-                PowerRule = DgvPowerRules.SelectedRows[0].Tag as PowerRule,
+                Rule = DgvPowerRules.SelectedRows[0].Tag as IRule,
             };
             if (dlg.ShowDialog() != DialogResult.OK)
             {
                 return;
             }
 
-            DgvPowerRules.Rows.RemoveAt(dlg.PowerRule!.Index);
+            DgvPowerRules.Rows.RemoveAt(dlg.Rule!.Index);
             DgvPowerRules.Rows.Insert(
-                dlg.PowerRule!.Index,
-                PowerRuleToRow(dlg.PowerRule));
-            DgvPowerRules.Rows[dlg.PowerRule!.Index].Selected = true;
+                dlg.Rule!.Index,
+                RuleToRow(dlg.Rule));
+            DgvPowerRules.Rows[dlg.Rule!.Index].Selected = true;
         }
 
         private void HandleBtnDeletePowerRuleClick(object sender, EventArgs e)
@@ -455,7 +366,7 @@ namespace PowerPlanSwitcher
             for (; index < DgvPowerRules.Rows.Count; index++)
             {
                 var row = DgvPowerRules.Rows[index];
-                (row.Tag as PowerRule)!.Index = index;
+                (row.Tag as IRule)!.Index = index;
                 row.Cells["DgcRuleIndex"].Value = index;
             }
         }
@@ -468,7 +379,7 @@ namespace PowerPlanSwitcher
             }
 
             var row = DgvPowerRules.SelectedRows[0];
-            var powerRule = row.Tag as PowerRule;
+            var powerRule = row.Tag as IRule;
             if (powerRule!.Index == 0)
             {
                 return;
@@ -479,8 +390,8 @@ namespace PowerPlanSwitcher
 
             var otherRow = DgvPowerRules.Rows[powerRule.Index];
             otherRow.Cells["DgcRuleIndex"].Value =
-                ++(otherRow.Tag as PowerRule)!.Index;
-            row.Cells["DgcRuleIndex"].Value = --(row.Tag as PowerRule)!.Index;
+                ++(otherRow.Tag as IRule)!.Index;
+            row.Cells["DgcRuleIndex"].Value = --(row.Tag as IRule)!.Index;
 
             row.Selected = true;
         }
@@ -493,7 +404,7 @@ namespace PowerPlanSwitcher
             }
 
             var row = DgvPowerRules.SelectedRows[0];
-            var powerRule = row.Tag as PowerRule;
+            var powerRule = row.Tag as IRule;
             if (powerRule!.Index == DgvPowerRules.RowCount - 1)
             {
                 return;
@@ -504,8 +415,8 @@ namespace PowerPlanSwitcher
 
             var otherRow = DgvPowerRules.Rows[powerRule.Index];
             otherRow.Cells["DgcRuleIndex"].Value =
-                --(otherRow.Tag as PowerRule)!.Index;
-            row.Cells["DgcRuleIndex"].Value = ++(row.Tag as PowerRule)!.Index;
+                --(otherRow.Tag as IRule)!.Index;
+            row.Cells["DgcRuleIndex"].Value = ++(row.Tag as IRule)!.Index;
 
             row.Selected = true;
         }
@@ -529,7 +440,7 @@ namespace PowerPlanSwitcher
 
             foreach (var r in DgvPowerRules.Rows
                 .Cast<DataGridViewRow>()
-                .Where(r => (r.Tag as PowerRule)!.SchemeGuid == guid))
+                .Where(r => (r.Tag as IRule)!.SchemeGuid == guid))
             {
                 r.Cells["DgcRuleSchemeIcon"].Value = null;
             }
@@ -563,7 +474,7 @@ namespace PowerPlanSwitcher
 
             foreach (var r in DgvPowerRules.Rows
                 .Cast<DataGridViewRow>()
-                .Where(r => (r.Tag as PowerRule)!.SchemeGuid == guid))
+                .Where(r => (r.Tag as IRule)!.SchemeGuid == guid))
             {
                 r.Cells["DgcRuleSchemeIcon"].Value = image;
             }

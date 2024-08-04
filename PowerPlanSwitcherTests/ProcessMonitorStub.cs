@@ -22,13 +22,6 @@ namespace PowerPlanSwitcherTests
         public static CachedProcessStub CreateProcess(int i) =>
             new() { ExecutablePath = $"{i}", ProcessId = i };
 
-        public static List<ICachedProcess> CreateProcesses(
-            int start,
-            int count) =>
-            [.. Enumerable
-                .Range(start, count)
-                .Select(CreateProcess)];
-
         public event EventHandler<ProcessEventArgs>? ProcessCreated;
         protected virtual void OnProcessCreated(ICachedProcess process) =>
             ProcessCreated?.Invoke(this, new ProcessEventArgs(process));
