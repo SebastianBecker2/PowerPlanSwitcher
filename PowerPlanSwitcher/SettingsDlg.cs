@@ -15,35 +15,28 @@ namespace PowerPlanSwitcher
                 .Cast<(Guid schemeGuid, string name)>()
                 .ToList();
 
+        private Size settingsDlgOriginalSize = Size.Empty;
+
         public SettingsDlg()
         {
             InitializeComponent();
-            this.tabControl1.SelectedIndexChanged += (sender, e) => tabControl1_SelectedIndexChanged(sender, e);
-            this.Size = Settings.Default.SettingsDlgSize;
-            this.FormClosing += SettingsDlg_FormClosing;
+            TacSettingsCategories.SelectedIndexChanged +=
+                TacSettingsCategories_SelectedIndexChanged;
+            Size = Settings.Default.SettingsDlgSize;
         }
 
-        private Size settingsDlgOriginalSize = Size.Empty;
-        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        protected override void OnFormClosing(FormClosingEventArgs e)
         {
-            if (this.tabControl1.SelectedTab == tabPage3 && this.MaximumSize == Size.Empty)
+            if (TacSettingsCategories.SelectedTab != TapOtherSettings)
             {
-                settingsDlgOriginalSize = this.Size;
-                this.MaximumSize = this.MinimumSize;
+                Settings.Default.SettingsDlgSize = Size;
             }
-            else if (this.tabControl1.SelectedTab != tabPage3 && this.MaximumSize != Size.Empty)
+            else
             {
-                this.MaximumSize = Size.Empty;
-                this.Size = settingsDlgOriginalSize;
+                Settings.Default.SettingsDlgSize = settingsDlgOriginalSize;
             }
-        }
-
-        private void SettingsDlg_FormClosing(object sender, FormClosingEventArgs e)
-        {
-            Settings.Default.SettingsDlgSize = this.tabControl1.SelectedTab != tabPage3
-                ? this.Size
-                : settingsDlgOriginalSize;
             Settings.Default.Save();
+            base.OnFormClosing(e);
         }
 
         protected override void OnLoad(EventArgs e)
@@ -99,10 +92,12 @@ namespace PowerPlanSwitcher
                 CmbColorTheme.SelectedIndex = 0;
             }
 
-            CmbPopUpWindowGlobal.Items.AddRange(PopUpWindowLocationHelper.GetDisplayNames()
-                .Cast<object>()
-                .ToArray());
-            index = CmbPopUpWindowGlobal.Items.IndexOf(Settings.Default.PopUpWindowLocationGlobal);
+            CmbPopUpWindowGlobal.Items.AddRange(
+                PopUpWindowLocationHelper.GetDisplayNames()
+                    .Cast<object>()
+                    .ToArray());
+            index = CmbPopUpWindowGlobal.Items.IndexOf(
+                Settings.Default.PopUpWindowLocationGlobal);
             if (index != -1 && index < CmbPopUpWindowGlobal.Items.Count)
             {
                 CmbPopUpWindowGlobal.SelectedIndex = index;
@@ -111,11 +106,13 @@ namespace PowerPlanSwitcher
             {
                 CmbPopUpWindowGlobal.SelectedIndex = 0;
             }
-            
-            CmbPopUpWindowBM.Items.AddRange(PopUpWindowLocationHelper.GetDisplayNames()
-                .Cast<object>()
-                .ToArray());
-            index = CmbPopUpWindowBM.Items.IndexOf(Settings.Default.PopUpWindowLocationBM);
+
+            CmbPopUpWindowBM.Items.AddRange(
+                PopUpWindowLocationHelper.GetDisplayNames()
+                    .Cast<object>()
+                    .ToArray());
+            index = CmbPopUpWindowBM.Items.IndexOf(
+                Settings.Default.PopUpWindowLocationBM);
             if (index != -1 && index < CmbPopUpWindowBM.Items.Count)
             {
                 CmbPopUpWindowBM.SelectedIndex = index;
@@ -242,6 +239,24 @@ namespace PowerPlanSwitcher
             return result;
         }
 
+        private void TacSettingsCategories_SelectedIndexChanged(
+            object? sender,
+            EventArgs e)
+        {
+            if (TacSettingsCategories.SelectedTab == TapOtherSettings
+                && MaximumSize == Size.Empty)
+            {
+                settingsDlgOriginalSize = Size;
+                MaximumSize = MinimumSize;
+            }
+            else if (TacSettingsCategories.SelectedTab != TapOtherSettings
+                && MaximumSize != Size.Empty)
+            {
+                MaximumSize = Size.Empty;
+                Size = settingsDlgOriginalSize;
+            }
+        }
+
         private void HandleDlgPowerSchemesVisibleCellClick(
             object sender,
             DataGridViewCellMouseEventArgs e)
@@ -310,9 +325,11 @@ namespace PowerPlanSwitcher
 
             Settings.Default.ColorTheme = CmbColorTheme.SelectedItem as string;
 
-            Settings.Default.PopUpWindowLocationGlobal = CmbPopUpWindowGlobal.SelectedItem as string;
-            
-            Settings.Default.PopUpWindowLocationBM = CmbPopUpWindowBM.SelectedItem as string;
+            Settings.Default.PopUpWindowLocationGlobal =
+                CmbPopUpWindowGlobal.SelectedItem as string;
+
+            Settings.Default.PopUpWindowLocationBM =
+                CmbPopUpWindowBM.SelectedItem as string;
 
             Settings.Default.AcPowerSchemeGuid =
                 GetPowerSchemeGuid(GetSelectedString(CmbAcPowerScheme));
