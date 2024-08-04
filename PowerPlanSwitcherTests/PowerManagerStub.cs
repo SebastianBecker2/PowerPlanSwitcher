@@ -2,7 +2,6 @@ namespace PowerPlanSwitcherTests
 {
     using System;
     using System.Collections.Generic;
-    using PowerPlanSwitcher;
     using PowerPlanSwitcher.PowerManagement;
 
     internal class PowerManagerStub : IPowerManager
