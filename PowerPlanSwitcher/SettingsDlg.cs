@@ -15,7 +15,36 @@ namespace PowerPlanSwitcher
                 .Cast<(Guid schemeGuid, string name)>()
                 .ToList();
 
-        public SettingsDlg() => InitializeComponent();
+        public SettingsDlg()
+        {
+            InitializeComponent();
+            this.tabControl1.SelectedIndexChanged += (sender, e) => tabControl1_SelectedIndexChanged(sender, e);
+            this.Size = Settings.Default.SettingsDlgSize;
+            this.FormClosing += SettingsDlg_FormClosing;
+        }
+
+        private Size settingsDlgOriginalSize = Size.Empty;
+        private void tabControl1_SelectedIndexChanged(object sender, EventArgs e)
+        {
+            if (this.tabControl1.SelectedTab == tabPage3 && this.MaximumSize == Size.Empty)
+            {
+                settingsDlgOriginalSize = this.Size;
+                this.MaximumSize = this.MinimumSize;
+            }
+            else if (this.tabControl1.SelectedTab != tabPage3 && this.MaximumSize != Size.Empty)
+            {
+                this.MaximumSize = Size.Empty;
+                this.Size = settingsDlgOriginalSize;
+            }
+        }
+
+        private void SettingsDlg_FormClosing(object sender, FormClosingEventArgs e)
+        {
+            Settings.Default.SettingsDlgSize = this.tabControl1.SelectedTab != tabPage3
+                ? this.Size
+                : settingsDlgOriginalSize;
+            Settings.Default.Save();
+        }
 
         protected override void OnLoad(EventArgs e)
         {
@@ -36,10 +65,6 @@ namespace PowerPlanSwitcher
             ChbActivateInitialPowerScheme.Checked =
                 Settings.Default.ActivateInitialPowerScheme;
             AddPowerSchemesToComboBox(CmbInitialPowerScheme, powerSchemes);
-            CmbInitialPowerScheme.Items.AddRange(powerSchemes
-                .Select(scheme => scheme.name)
-                .Cast<object>()
-                .ToArray());
             if (Settings.Default.InitialPowerSchemeGuid == Guid.Empty)
             {
                 CmbInitialPowerScheme.SelectedIndex = 0;
@@ -74,6 +99,32 @@ namespace PowerPlanSwitcher
                 CmbColorTheme.SelectedIndex = 0;
             }
 
+            CmbPopUpWindowGlobal.Items.AddRange(PopUpWindowLocationHelper.GetDisplayNames()
+                .Cast<object>()
+                .ToArray());
+            index = CmbPopUpWindowGlobal.Items.IndexOf(Settings.Default.PopUpWindowLocationGlobal);
+            if (index != -1 && index < CmbPopUpWindowGlobal.Items.Count)
+            {
+                CmbPopUpWindowGlobal.SelectedIndex = index;
+            }
+            else
+            {
+                CmbPopUpWindowGlobal.SelectedIndex = 0;
+            }
+            
+            CmbPopUpWindowBM.Items.AddRange(PopUpWindowLocationHelper.GetDisplayNames()
+                .Cast<object>()
+                .ToArray());
+            index = CmbPopUpWindowBM.Items.IndexOf(Settings.Default.PopUpWindowLocationBM);
+            if (index != -1 && index < CmbPopUpWindowBM.Items.Count)
+            {
+                CmbPopUpWindowBM.SelectedIndex = index;
+            }
+            else
+            {
+                CmbPopUpWindowBM.SelectedIndex = 3;
+            }
+
             GrbBatteryManagement.Visible =
                 BatteryMonitor.Static.HasSystemBattery;
 
@@ -87,6 +138,7 @@ namespace PowerPlanSwitcher
                 CmbAcPowerScheme.SelectedIndex = powerSchemes.FindIndex(
                     scheme => scheme.guid
                         == Settings.Default.AcPowerSchemeGuid);
+                CmbAcPowerScheme.SelectedIndex += 1;
             }
 
             AddPowerSchemesToComboBox(CmbBatteryPowerScheme, powerSchemes);
@@ -99,6 +151,7 @@ namespace PowerPlanSwitcher
                 CmbBatteryPowerScheme.SelectedIndex = powerSchemes.FindIndex(
                     scheme => scheme.guid
                         == Settings.Default.BatterPowerSchemeGuid);
+                CmbBatteryPowerScheme.SelectedIndex += 1;
             }
 
             ChbShowToastNotifications.Checked =
@@ -256,6 +309,10 @@ namespace PowerPlanSwitcher
             Settings.Default.CycleOnlyVisible = RdbCycleVisible.Checked;
 
             Settings.Default.ColorTheme = CmbColorTheme.SelectedItem as string;
+
+            Settings.Default.PopUpWindowLocationGlobal = CmbPopUpWindowGlobal.SelectedItem as string;
+            
+            Settings.Default.PopUpWindowLocationBM = CmbPopUpWindowBM.SelectedItem as string;
 
             Settings.Default.AcPowerSchemeGuid =
                 GetPowerSchemeGuid(GetSelectedString(CmbAcPowerScheme));

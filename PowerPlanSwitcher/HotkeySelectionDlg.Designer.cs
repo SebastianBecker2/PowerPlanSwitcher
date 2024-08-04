@@ -1,4 +1,4 @@
-﻿namespace PowerPlanSwitcher
+namespace PowerPlanSwitcher
 {
     partial class HotkeySelectionDlg
     {
@@ -41,9 +41,9 @@
             // 
             BtnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             BtnCancel.DialogResult = DialogResult.Cancel;
-            BtnCancel.Location = new Point(168, 117);
+            BtnCancel.Location = new Point(168, 133);
             BtnCancel.Name = "BtnCancel";
-            BtnCancel.Size = new Size(75, 23);
+            BtnCancel.Size = new Size(75, 26);
             BtnCancel.TabIndex = 4;
             BtnCancel.TabStop = false;
             BtnCancel.Text = "Cancel";
@@ -53,9 +53,9 @@
             // 
             BtnOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             BtnOk.DialogResult = DialogResult.OK;
-            BtnOk.Location = new Point(87, 117);
+            BtnOk.Location = new Point(87, 133);
             BtnOk.Name = "BtnOk";
-            BtnOk.Size = new Size(75, 23);
+            BtnOk.Size = new Size(75, 26);
             BtnOk.TabIndex = 3;
             BtnOk.TabStop = false;
             BtnOk.Text = "OK";
@@ -67,7 +67,7 @@
             label1.Dock = DockStyle.Fill;
             label1.Location = new Point(3, 0);
             label1.Name = "label1";
-            label1.Size = new Size(225, 49);
+            label1.Size = new Size(225, 56);
             label1.TabIndex = 5;
             label1.Text = "Selected Hotkey:";
             label1.TextAlign = ContentAlignment.MiddleCenter;
@@ -76,11 +76,11 @@
             // 
             LblHotkeyPreview.AutoSize = true;
             LblHotkeyPreview.Dock = DockStyle.Fill;
-            LblHotkeyPreview.Location = new Point(3, 49);
+            LblHotkeyPreview.Location = new Point(3, 56);
             LblHotkeyPreview.Name = "LblHotkeyPreview";
-            LblHotkeyPreview.Size = new Size(225, 50);
+            LblHotkeyPreview.Size = new Size(225, 56);
             LblHotkeyPreview.TabIndex = 6;
-            LblHotkeyPreview.Text = "-";
+            LblHotkeyPreview.Text = "[ ---------- ]";
             LblHotkeyPreview.TextAlign = ContentAlignment.MiddleCenter;
             // 
             // tableLayoutPanel1
@@ -91,19 +91,19 @@
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
             tableLayoutPanel1.Controls.Add(label1, 0, 0);
             tableLayoutPanel1.Controls.Add(LblHotkeyPreview, 0, 1);
-            tableLayoutPanel1.Location = new Point(12, 12);
+            tableLayoutPanel1.Location = new Point(12, 14);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 2;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel1.Size = new Size(231, 99);
+            tableLayoutPanel1.Size = new Size(231, 112);
             tableLayoutPanel1.TabIndex = 7;
             // 
             // HotkeySelectionDlg
             // 
-            AutoScaleDimensions = new SizeF(7F, 15F);
+            AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(255, 152);
+            ClientSize = new Size(255, 172);
             Controls.Add(tableLayoutPanel1);
             Controls.Add(BtnCancel);
             Controls.Add(BtnOk);

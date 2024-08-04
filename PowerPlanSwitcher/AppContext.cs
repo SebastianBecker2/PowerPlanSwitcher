@@ -57,12 +57,10 @@ namespace PowerPlanSwitcher
 
             powerManager.SetActivePowerScheme(e.PowerSchemeGuid);
 
-            if (e.Reason is null)
+            if (e.Reason != null && PopUpWindowLocationHelper.ShouldShowToast(e.Reason))
             {
-                return;
+                ToastDlg.ShowToastNotification(e.PowerSchemeGuid, e.Reason);
             }
-
-            ToastDlg.ShowToastNotification(e.PowerSchemeGuid, e.Reason);
         }
 
         protected override void Dispose(bool disposing)

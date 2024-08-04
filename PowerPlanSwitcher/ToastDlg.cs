@@ -14,12 +14,16 @@ namespace PowerPlanSwitcher
 
         private static Color ButtonBackgroundColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? SystemColors.Control
-            : Color.FromArgb(0x15, 0x15, 0x14);
+            ? Color.WhiteSmoke
+            : Color.FromArgb(0x15, 0x15, 0x15);
         private static Color ForegroundColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? SystemColors.ControlText
-            : SystemColors.HighlightText;
+            ? Color.Black
+            : Color.White;
+        private static Color TlpPowerSchemesBackColor =>
+            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
+            ? Color.Silver
+            : Color.DimGray;
 
         public ToastDlg() => InitializeComponent();
 
@@ -27,7 +31,10 @@ namespace PowerPlanSwitcher
         {
             DisplayTimer.Interval = DisplayDuration;
 
-            BackColor = ButtonBackgroundColor;
+
+            Padding = new Padding(1); //“ToastDlg” optimizes the visual display. add border (gray border)
+            BackColor = TlpPowerSchemesBackColor;
+            tableLayoutPanel1.BackColor = ButtonBackgroundColor;
 
             PibAppIcon.BackColor = ButtonBackgroundColor;
             LblTitle.ForeColor = ForegroundColor;
@@ -40,7 +47,7 @@ namespace PowerPlanSwitcher
             LblReason.ForeColor = ForegroundColor;
             LblReason.BackColor = ButtonBackgroundColor;
 
-            Location = GetPositionOnTaskbar(Size);
+            Location = helper.GetPositionOnTaskbar(Size, LblReason.Text);
 
             DisplayTimer.Stop();
             DisplayTimer.Start();
@@ -61,33 +68,6 @@ namespace PowerPlanSwitcher
             }
         }
 
-        private static Point GetPositionOnTaskbar(Size windowSize)
-        {
-            var bounds = Taskbar.CurrentBounds;
-            switch (Taskbar.Position)
-            {
-                case TaskbarPosition.Left:
-                    bounds.Location += bounds.Size;
-                    return new Point(bounds.X, bounds.Y - windowSize.Height);
-
-                case TaskbarPosition.Top:
-                    bounds.Location += bounds.Size;
-                    return new Point(bounds.X - windowSize.Width, bounds.Y);
-
-                case TaskbarPosition.Right:
-                    bounds.Location -= windowSize;
-                    return new Point(bounds.X, bounds.Y + bounds.Height);
-
-                case TaskbarPosition.Bottom:
-                    bounds.Location -= windowSize;
-                    return new Point(bounds.X + bounds.Width, bounds.Y);
-
-                case TaskbarPosition.Unknown:
-                default:
-                    return new Point(0, 0);
-            }
-        }
-
         private void Any_Click(object sender, EventArgs e) => Dispose();
 
         private void DisplayTimer_Tick(object sender, EventArgs e) => Dispose();
@@ -102,6 +82,7 @@ namespace PowerPlanSwitcher
             }
         }
 
+        private PopUpWindowLocationHelper helper = new PopUpWindowLocationHelper();
         public static void ShowToastNotification(
             Guid activeSchemeGuid,
             string activationReason)

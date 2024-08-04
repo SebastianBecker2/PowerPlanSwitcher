@@ -6,24 +6,24 @@ namespace PowerPlanSwitcher
     {
         private static Color ButtonBackgroundColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? SystemColors.Control
-            : Color.FromArgb(0x15, 0x15, 0x14);
+            ? Color.WhiteSmoke
+            : Color.FromArgb(0x15, 0x15, 0x15);
         private static Color SelectedButtonBackgroundColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? SystemColors.ControlLight
-            : Color.FromArgb(0x25, 0x25, 0x25);
+            ? Color.FromArgb(0xEb, 0xEb, 0xEb)
+            : Color.FromArgb(0x20, 0x20, 0x20);
         private static Color ForegroundColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? SystemColors.ControlText
-            : SystemColors.HighlightText;
+            ? Color.Black
+            : Color.White;
         private static Color FAMOBColor =>
             ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? Color.FromArgb(0xD8, 0xD8, 0xD8)
-            : Color.FromArgb(0x35, 0x35, 0x35);
-        private static Color FormBackgroundColor =>
-            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? Color.DarkGray
+            ? Color.White
             : Color.Black;
+        private static Color TlpPowerSchemesBackColor =>
+            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
+            ? Color.Silver
+            : Color.DimGray;
 
         private const int ButtonHeight = 50;
         private const int ButtonWidth = 360;
@@ -52,7 +52,7 @@ namespace PowerPlanSwitcher
                     ? SelectedButtonBackgroundColor
                     : ButtonBackgroundColor,
                 Margin = Padding.Empty,
-                Text = active ? "(Active) " + name : name,
+                Text = active ? "(Active) " + name : " " + name,
                 Font = new Font(Font.FontFamily, 12),
                 Tag = guid,
                 Dock = DockStyle.Fill,
@@ -71,8 +71,7 @@ namespace PowerPlanSwitcher
 
         protected override void OnLoad(EventArgs e)
         {
-            BackColor = FormBackgroundColor;
-            TlpPowerSchemes.BackColor = ButtonBackgroundColor;
+            TlpPowerSchemes.BackColor = TlpPowerSchemesBackColor;
 
             var activeSchemeGuid = PowerManager.Static.GetActivePowerSchemeGuid();
 

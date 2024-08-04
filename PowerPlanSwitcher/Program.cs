@@ -79,9 +79,12 @@ namespace PowerPlanSwitcher
             index = (index + 1) % schemes.Count;
 
             PowerManager.Static.SetActivePowerScheme(schemes[index]);
-            ToastDlg.ShowToastNotification(
-                schemes[index],
-                "Cycle hotkey pressed");
+            if (PopUpWindowLocationHelper.ShouldShowToast("hotkey"))
+            {
+                ToastDlg.ShowToastNotification(
+                    schemes[index],
+                    "Cycle hotkey pressed");
+            }
         }
 
         private static void HandlePowerSchemeHotkeyPressed(
