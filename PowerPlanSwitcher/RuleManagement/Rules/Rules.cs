@@ -3,6 +3,7 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
     using System.Collections.Generic;
     using System.Linq;
     using Newtonsoft.Json;
+    using PowerPlanSwitcher.PowerManagement;
     using PowerPlanSwitcher.Properties;
 
     internal class Rules
@@ -23,6 +24,13 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
         {
             if (Settings.Default.MigratedPowerRulesToRules)
             {
+                return;
+            }
+
+            if (!BatteryMonitor.Static.HasSystemBattery)
+            {
+                Settings.Default.MigratedPowerRulesToRules = true;
+                Settings.Default.Save();
                 return;
             }
 
