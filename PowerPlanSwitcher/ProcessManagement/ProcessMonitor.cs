@@ -1,7 +1,7 @@
 namespace PowerPlanSwitcher.ProcessManagement
 {
     using System.Diagnostics;
-    using System.Management;
+    using Timer = System.Threading.Timer;
 
     public class ProcessMonitor : IDisposable, IProcessMonitor
     {
@@ -28,10 +28,14 @@ namespace PowerPlanSwitcher.ProcessManagement
         protected virtual void OnProcessTerminated(ICachedProcess process) =>
             OnProcessTerminated(new ProcessEventArgs(process));
 
+        private const int UpdateTimerInterval = 2000;
+        private IEnumerable<ICachedProcess> previousProcesses = [];
+        private readonly Timer updateTimer;
         private bool disposedValue;
-        private readonly ManagementEventWatcher processCreationWatcher = new();
-        private readonly ManagementEventWatcher processTerminationWatcher = new();
         private bool monitoring;
+
+        public ProcessMonitor() =>
+            updateTimer = new Timer(HandleUpdateTimerTick);
 
         public void StartMonitoring()
         {
@@ -41,62 +45,42 @@ namespace PowerPlanSwitcher.ProcessManagement
             }
             monitoring = true;
 
-            // If we continue to have issues with out of order events
-            // or missing events, we might have to switch to ETW.
-            // This requires admin privileges and would probably mean
-            // we need to create a background service that pushes the
-            // events to PowerPlanSwitcher. Not ideal!
-            // Though creation and termination events are forced to be
-            // handled by the same thread. Which makes out of order events
-            // impossible. This is really good.
-            processCreationWatcher.Query = new WqlEventQuery(
-                "__InstanceCreationEvent",
-                new TimeSpan(0, 0, 1),
-                "TargetInstance isa \"Win32_Process\"");
-            processCreationWatcher.EventArrived
-                += ProcessStartWatcher_EventArrived;
-            processCreationWatcher.Start();
-
-            processTerminationWatcher.Query = new WqlEventQuery(
-                "__InstanceDeletionEvent",
-                new TimeSpan(0, 0, 1),
-                "TargetInstance isa \"Win32_Process\"");
-            processTerminationWatcher.EventArrived
-                += ProcessEndWatcher_EventArrived;
-            processTerminationWatcher.Start();
+            _ = updateTimer.Change(0, Timeout.Infinite);
         }
 
         public void StopMonitoring()
         {
-            processCreationWatcher.Stop();
-            processTerminationWatcher.Stop();
+            _ = updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
             monitoring = false;
         }
 
-        private void ProcessStartWatcher_EventArrived(
-            object sender,
-            EventArrivedEventArgs e)
+        private void HandleUpdateTimerTick(object? _)
         {
-            var process = (ManagementBaseObject)e.NewEvent["TargetInstance"];
-            var cachedProcess = CachedProcess.CreateFromWin32Process(process);
-            if (cachedProcess is null)
+            try
             {
-                return;
-            }
-            OnProcessCreated(cachedProcess);
-        }
+                var currentProcesses = GetUsersProcesses().ToList();
 
-        private void ProcessEndWatcher_EventArrived(
-            object sender,
-            EventArrivedEventArgs e)
-        {
-            var process = (ManagementBaseObject)e.NewEvent["TargetInstance"];
-            var cachedProcess = CachedProcess.CreateFromWin32Process(process);
-            if (cachedProcess is null)
-            {
-                return;
+                var addedProcesses = currentProcesses.Except(previousProcesses).ToList();
+                var removedProcesses = previousProcesses.Except(currentProcesses).ToList();
+
+                foreach (var addedProcess in addedProcesses)
+                {
+                    OnProcessCreated(addedProcess);
+                }
+
+                foreach (var removedProcess in removedProcesses)
+                {
+                    OnProcessTerminated(removedProcess);
+                }
+
+                previousProcesses = currentProcesses;
             }
-            OnProcessTerminated(cachedProcess);
+            finally
+            {
+                _ = updateTimer.Change(
+                    UpdateTimerInterval,
+                    Timeout.Infinite);
+            }
         }
 
         public IEnumerable<ICachedProcess> GetUsersProcesses() =>
@@ -111,8 +95,7 @@ namespace PowerPlanSwitcher.ProcessManagement
 
             if (disposing)
             {
-                processCreationWatcher?.Dispose();
-                processTerminationWatcher?.Dispose();
+                updateTimer.Dispose();
             }
             disposedValue = true;
         }
