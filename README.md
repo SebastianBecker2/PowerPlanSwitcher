@@ -12,23 +12,22 @@ Switch your power plan easily and quickly by clicking the tray-icon.
 
 Or let PowerPlanSwitcher automatically switch between power plans depending on what you do.
 
-![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/a9f6a8e8-77d9-47af-b9cf-a70cf97f2bd2)
+![image](https://github.com/user-attachments/assets/e8360cd0-7346-40e6-8642-3fc747e70574)
 
-Create rules easily by selecting an active process.
+Create Process Rules that activate when a certain process is started.
 
-![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/08d490dd-b4db-4758-b539-f6fc551985cf)
+![image](https://github.com/user-attachments/assets/3a8380ce-86a9-4333-a91e-b0c5927e3f5f)
 
-Or define the rule manually by matching the path of the executable as "Match exact path", "Path starts with" or "Path ends with".
+Or Energy Rules that activate when plugging or unplugging your laptop.
 
-![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/93bb14bb-becc-4143-a79a-3ab1131bc531)
+![image](https://github.com/user-attachments/assets/4ca069f4-a5a7-41e9-aac6-87340585937c)
 
 Furher settings allow you to:
 - Configure a global hotkey to cycle through your power plans.
 - Set your prefered color theme.
 - Specify the display of notifications when a power plan is switched by a rule or a hotkey press.
-- Define the default power plans to use when your laptop is plugged in or using the battery.
 
-![image](https://github.com/user-attachments/assets/e254f238-e27f-46c0-96ab-b0da9f168882)
+![image](https://github.com/user-attachments/assets/977071cc-3aa3-4436-9bad-f4fcdfe95bd9)
 
 PowerPlanSwitcher is using the following tools, resources and libraries:
 
