@@ -1,11 +1,11 @@
-﻿<Project Sdk="Microsoft.NET.Sdk">
+<Project Sdk="Microsoft.NET.Sdk">
   <PropertyGroup>
     <OutputType>WinExe</OutputType>
     <TargetFramework>net8.0-windows</TargetFramework>
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <VersionPrefix>1.2.0</VersionPrefix>
+    <VersionPrefix>1.2.1</VersionPrefix>
     <ApplicationIcon>Resources\power_surge.ico</ApplicationIcon>
     <Description>Tray-Icon tool to show the currently selected windows power plan, switch it manually and automatically.
 
