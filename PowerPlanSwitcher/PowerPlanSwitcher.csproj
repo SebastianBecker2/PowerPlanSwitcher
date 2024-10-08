@@ -5,7 +5,7 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
-    <VersionPrefix>1.2.1</VersionPrefix>
+    <VersionPrefix>1.2.2</VersionPrefix>
     <ApplicationIcon>Resources\power_surge.ico</ApplicationIcon>
     <Description>Tray-Icon tool to show the currently selected windows power plan, switch it manually and automatically.
 
