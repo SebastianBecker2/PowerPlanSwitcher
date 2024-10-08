@@ -39,7 +39,7 @@ namespace PowerPlanSwitcher
             object? sender,
             PropertyChangedEventArgs e)
         {
-            if (e.PropertyName != "PowerRules")
+            if (e.PropertyName != "Rules")
             {
                 return;
             }
