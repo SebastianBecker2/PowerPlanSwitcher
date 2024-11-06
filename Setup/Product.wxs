@@ -51,8 +51,8 @@
 
     <!-- Icon definition -->
     <Fragment>
-        <Icon Id="ProductIcon.exe" SourceFile="$(var.PowerPlanSwitcher.TargetPath)" />
-        <Property Id="ARPPRODUCTICON" Value="ProductIcon.exe" />
+        <Icon Id="ProductIcon.ico" SourceFile="$(var.SolutionDir)PowerPlanSwitcher\Resources\power_surge.ico" />
+        <Property Id="ARPPRODUCTICON" Value="ProductIcon.ico" />
     </Fragment>
 
     <!-- File actions -->
@@ -65,14 +65,14 @@
                 <Shortcut Id="ProductStartMenuShortcut"
                           Directory="ProgramMenuFolder"
                           Name="$(var.ProductName)"
-                          Icon="ProductIcon.exe"
+                          Icon="ProductIcon.ico"
                           WorkingDirectory="INSTALLFOLDER"
                           Advertise="yes" />
 
                 <Shortcut Id="ProductAutoStartShortcut"
                           Directory="StartupFolder"
                           Name="$(var.ProductName)"
-                          Icon="ProductIcon.exe"
+                          Icon="ProductIcon.ico"
                           WorkingDirectory="INSTALLFOLDER"
                           Advertise="yes" />
 
