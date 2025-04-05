@@ -52,12 +52,8 @@ namespace PowerPlanSwitcher
         {
             var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
                 Settings.Default.CyclePowerSchemeHotkey);
-            if (cycleHotkey is null)
-            {
-                return;
-            }
 
-            if (AreHotkeyEqual(e, cycleHotkey))
+            if (cycleHotkey is not null && AreHotkeyEqual(e, cycleHotkey))
             {
                 HandleCycleHotkeyPressed();
                 return;
