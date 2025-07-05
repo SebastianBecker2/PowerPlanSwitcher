@@ -1,64 +1,57 @@
-<?xml version="1.0" encoding="UTF-8"?>
-<Wix xmlns="http://schemas.microsoft.com/wix/2006/wi"
-     xmlns:util="http://schemas.microsoft.com/wix/UtilExtension">
+<Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
     <?include $(sys.CURRENTDIR)\Config.wxi?>
 
-    <Product Id="*"
-             Name="$(var.ProductName)"
+    <Package Name="$(var.ProductName)"
              Language="1033"
              Version="!(bind.FileVersion.Product.exe)"
              Manufacturer="$(var.Manufacturer)"
-             UpgradeCode="$(var.UpgradeCode)">
-
-        <Package InstallerVersion="200"
-                 Compressed="yes"
-                 InstallScope="perMachine" />
+             UpgradeCode="$(var.UpgradeCode)"
+             InstallerVersion="200">
 
         <MajorUpgrade AllowSameVersionUpgrades="yes"
                       DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
-        
+
         <MediaTemplate EmbedCab="yes" />
 
-        <?if $(var.Platform) = x64 ?>
-        <?define Win64 = "yes" ?>
-        <?define PlatformProgramFilesFolder = "ProgramFiles64Folder" ?>
-        <?else ?>
-        <?define Win64 = "no" ?>
-        <?define PlatformProgramFilesFolder = "ProgramFilesFolder" ?>
-        <?endif ?>
-
-        <Feature Id="ProductFeature" Title="$(var.ProductComponent)" Level="1">
+        <Feature Id="ProductFeature"
+                 Title="$(var.ProductComponent)"
+                 Level="1">
             <ComponentGroupRef Id="ProductComponents" />
         </Feature>
 
         <CustomActionRef Id="LaunchProduct" />
-        
+
         <UIRef Id="UISequence" />
-    </Product>
+    </Package>
 
     <!-- Directory definitions -->
     <Fragment>
-        <Directory Id="TARGETDIR" Name="SourceDir">
-            <Directory Id="$(var.PlatformProgramFilesFolder)">
-                <Directory Id="PRODUCTFOLDER" Name="$(var.ProductComponent)">
-                </Directory>
+        <StandardDirectory Id="ProgramFiles64Folder">
+            <Directory Id="PRODUCTFOLDER"
+                       Name="$(var.ProductComponent)">
             </Directory>
+        </StandardDirectory>
 
-            <Directory Id="ProgramMenuFolder" />
-            <Directory Id="StartupFolder" />
-        </Directory>
+        <StandardDirectory Id="ProgramMenuFolder" />
+        <StandardDirectory Id="StartupFolder" />
     </Fragment>
 
     <!-- Icon definition -->
     <Fragment>
-        <Icon Id="ProductIcon.ico" SourceFile="$(var.SolutionDir)PowerPlanSwitcher\Resources\power_surge.ico" />
-        <Property Id="ARPPRODUCTICON" Value="ProductIcon.ico" />
+        <Icon Id="ProductIcon.ico"
+              SourceFile="$(var.SolutionDir)PowerPlanSwitcher\Resources\power_surge.ico" />
+        <Property Id="ARPPRODUCTICON"
+                  Value="ProductIcon.ico" />
     </Fragment>
 
     <!-- File actions -->
     <Fragment>
-        <ComponentGroup Id="ProductComponents" Directory="PRODUCTFOLDER">
-            <Component Id="ProductComponent" Win64="$(var.Win64)" Guid="EC4DAFD1-0E6C-4FDE-AF27-BBBFE3C11770">
+        <ComponentGroup Id="ProductComponents"
+                        Directory="PRODUCTFOLDER">
+            <Component Id="ProductComponent"
+                       Guid="EC4DAFD1-0E6C-4FDE-AF27-BBBFE3C11770"
+                       Bitness="always64">
                 <File Id="Product.exe"
                       Source="$(var.PowerPlanSwitcher.TargetDir)..\publish\PowerPlanSwitcher.exe" />
 
@@ -82,57 +75,62 @@
 
     <!-- Custom Actions -->
     <Fragment>
-        <Property Id="WixShellExecTarget" Value="[#Product.exe]" />
+        <Property Id="WixShellExecTarget"
+                  Value="[#Product.exe]" />
         <CustomAction Id="LaunchProduct"
-                      BinaryKey="WixCA"
                       DllEntry="WixShellExec"
                       Impersonate="yes"
-                      Return="ignore" />
+                      Return="ignore"
+                      BinaryRef="Wix4UtilCA_X86" />
 
         <Property Id="QtExecCmdLine"
-          Value='"[WindowsFolder]\System32\taskkill.exe" /IM PowerPlanSwitcher.exe'/>
+                  Value="&quot;[WindowsFolder]\System32\taskkill.exe&quot; /IM PowerPlanSwitcher.exe" />
         <CustomAction Id="CloseProduct"
-                      BinaryKey="WixCA"
-                      DllEntry="CAQuietExec"
+                      DllEntry="WixQuietExec"
                       Execute="immediate"
-                      Return="ignore" />
+                      Return="ignore"
+                      BinaryRef="Wix4UtilCA_X86" />
 
         <CustomAction Id="UpdateCmdToKill"
-                      Property="QtExecCmdLine"
-                      Value='"[WindowsFolder]\System32\taskkill.exe" /F /IM PowerPlanSwitcher.exe'
-                      Execute='immediate'
+                      Property="WixQuietExecCmdLine"
+                      Value="&quot;[WindowsFolder]\System32\taskkill.exe&quot; /F /IM PowerPlanSwitcher.exe"
+                      Execute="immediate"
                       Return="check" />
 
         <CustomAction Id="KillProduct"
-                      BinaryKey="WixCA"
-                      DllEntry="CAQuietExec"
+                      DllEntry="WixQuietExec"
                       Execute="immediate"
-                      Return="ignore" />
+                      Return="ignore"
+                      BinaryRef="Wix4UtilCA_X86" />
 
         <InstallExecuteSequence>
-            <Custom Action="LaunchProduct" After="InstallFinalize" />
-            <Custom Action="CloseProduct" Before="LaunchConditions" />
-            <Custom Action="UpdateCmdToKill" After="CloseProduct" />
-            <Custom Action='KillProduct' After="UpdateCmdToKill" />
+            <Custom Action="LaunchProduct"
+                    After="InstallFinalize" />
+            <Custom Action="CloseProduct"
+                    Before="LaunchConditions" />
+            <Custom Action="UpdateCmdToKill"
+                    After="CloseProduct" />
+            <Custom Action="KillProduct"
+                    After="UpdateCmdToKill" />
         </InstallExecuteSequence>
     </Fragment>
-    
+
     <!-- UI Sequence -->
     <Fragment>
         <UI Id="UISequence">
-            <UIRef Id="WixUI_FeatureTree" />
-            
+            <ui:WixUI Id="WixUI_FeatureTree" />
+
             <!-- Skip license dialog -->
             <Publish Dialog="WelcomeDlg"
                      Control="Next"
                      Event="NewDialog"
                      Value="CustomizeDlg"
-                     Order="2">1</Publish>
+                     Order="2" />
             <Publish Dialog="CustomizeDlg"
                      Control="Back"
                      Event="NewDialog"
                      Value="WelcomeDlg"
-                     Order="2">1</Publish>
+                     Order="2" />
         </UI>
     </Fragment>
 
