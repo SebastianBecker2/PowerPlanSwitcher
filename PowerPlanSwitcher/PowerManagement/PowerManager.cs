@@ -98,7 +98,7 @@ namespace PowerPlanSwitcher.PowerManagement
 
             if (PowerSettingRegisterNotification(
                 GUID_ACTIVE_POWERSCHEME,
-                DEVICE_NOTIFY.DEVICE_NOTIFY_CALLBACK,
+                DEVICE_PWR_NOTIFY.DEVICE_NOTIFY_CALLBACK,
                 powerSettingsChangedCallback,
                 out powerSettingsChangedCallbackHandler).Failed)
             {
