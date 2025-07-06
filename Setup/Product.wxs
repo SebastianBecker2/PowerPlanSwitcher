@@ -49,11 +49,17 @@
     <Fragment>
         <ComponentGroup Id="ProductComponents"
                         Directory="PRODUCTFOLDER">
+            <Files Include="$(var.PowerPlanSwitcher.ProjectDir)bin\publish\*.*">
+                <Exclude Files="$(var.PowerPlanSwitcher.ProjectDir)bin\publish\PowerPlanSwitcher.exe" />
+            </Files>
+            <Files Include="$(var.PowerPlanSwitcher.ProjectDir)bin\publish\Resources\*.*"
+                   Subdirectory="Resources"/>
+            
             <Component Id="ProductComponent"
                        Guid="EC4DAFD1-0E6C-4FDE-AF27-BBBFE3C11770"
                        Bitness="always64">
                 <File Id="Product.exe"
-                      Source="$(var.PowerPlanSwitcher.TargetDir)..\publish\PowerPlanSwitcher.exe" />
+                      Source="$(var.PowerPlanSwitcher.ProjectDir)bin\publish\PowerPlanSwitcher.exe" />
 
                 <Shortcut Id="ProductStartMenuShortcut"
                           Directory="ProgramMenuFolder"
