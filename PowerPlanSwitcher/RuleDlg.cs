@@ -10,20 +10,15 @@ namespace PowerPlanSwitcher
         public IRule? Rule { get; set; }
 
         private static readonly List<(Guid guid, string name)> PowerSchemes =
-            PowerManager.Static.GetPowerSchemes()
+            [.. PowerManager.Static.GetPowerSchemes()
                 .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
-                .Cast<(Guid schemeGuid, string name)>()
-                .ToList();
+                .Cast<(Guid schemeGuid, string name)>()];
 
         private static readonly List<ComparisonType> ComparisonTypes =
-            Enum.GetValues(typeof(ComparisonType))
-                .Cast<ComparisonType>()
-                .ToList();
+            [.. Enum.GetValues(typeof(ComparisonType)).Cast<ComparisonType>()];
 
         private static readonly List<PowerLineStatus> PowerLineStatuses =
-            Enum.GetValues(typeof(PowerLineStatus))
-                .Cast<PowerLineStatus>()
-                .ToList();
+            [.. Enum.GetValues(typeof(PowerLineStatus)).Cast<PowerLineStatus>()];
 
         private static string GetSelectedString(ComboBox cmb) =>
             cmb.Items[cmb.SelectedIndex]?.ToString() ?? string.Empty;
@@ -45,20 +40,17 @@ namespace PowerPlanSwitcher
             LblPowerLineStatus.Visible = false;
             CmbPowerLineStatus.Visible = false;
 
-            CmbComparisonType.Items.AddRange(ComparisonTypes
+            CmbComparisonType.Items.AddRange([.. ComparisonTypes
                 .Select(ProcessRule.ComparisonTypeToText)
-                .Cast<object>()
-                .ToArray());
+                .Cast<object>()]);
 
-            CmbPowerLineStatus.Items.AddRange(PowerLineStatuses
+            CmbPowerLineStatus.Items.AddRange([.. PowerLineStatuses
                 .Select(PowerLineRule.PowerLineStatusToText)
-                .Cast<object>()
-                .ToArray());
+                .Cast<object>()]);
 
-            CmbPowerScheme.Items.AddRange(PowerSchemes
+            CmbPowerScheme.Items.AddRange([.. PowerSchemes
                 .Select(scheme => scheme.name)
-                .Cast<object>()
-                .ToArray());
+                .Cast<object>()]);
 
             if (Rule is ProcessRule processRule)
             {

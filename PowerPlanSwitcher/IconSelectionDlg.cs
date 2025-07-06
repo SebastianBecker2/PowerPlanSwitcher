@@ -31,15 +31,14 @@ namespace PowerPlanSwitcher
         private void UpdateLsvIcons()
         {
             LsvIcons.Items.Clear();
-            LsvIcons.Items.AddRange(ImlIcons.Images.Keys
+            LsvIcons.Items.AddRange([.. ImlIcons.Images.Keys
                 .Cast<string>()
                 .Where(k => k.Contains(TxtFilter.Text, StringComparison.InvariantCultureIgnoreCase))
                 .Select(k => new ListViewItem
                 {
                     ImageIndex = ImlIcons.Images.IndexOfKey(k),
                     Text = k,
-                })
-                .ToArray());
+                })]);
         }
 
         private void BtnSelectFile_Click(object sender, EventArgs e)

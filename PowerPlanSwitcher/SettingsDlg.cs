@@ -10,10 +10,9 @@ namespace PowerPlanSwitcher
     public partial class SettingsDlg : Form
     {
         private readonly List<(Guid guid, string name)> powerSchemes =
-            PowerManager.Static.GetPowerSchemes()
+            [.. PowerManager.Static.GetPowerSchemes()
                 .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
-                .Cast<(Guid schemeGuid, string name)>()
-                .ToList();
+                .Cast<(Guid schemeGuid, string name)>()];
 
         private Size settingsDlgOriginalSize = Size.Empty;
 
@@ -41,18 +40,15 @@ namespace PowerPlanSwitcher
 
         protected override void OnLoad(EventArgs e)
         {
-            DgvPowerSchemes.Rows.AddRange(powerSchemes
-                .Select(SchemeToRow)
-                .ToArray());
+            DgvPowerSchemes.Rows.AddRange([.. powerSchemes.Select(SchemeToRow)]);
 
             UpdatePowerRules();
 
             ChbActivateInitialPowerScheme.Checked =
                 Settings.Default.ActivateInitialPowerScheme;
-            CmbInitialPowerScheme.Items.AddRange(powerSchemes
+            CmbInitialPowerScheme.Items.AddRange([.. powerSchemes
                 .Select(scheme => scheme.name)
-                .Cast<object>()
-                .ToArray());
+                .Cast<object>()]);
             if (Settings.Default.InitialPowerSchemeGuid == Guid.Empty)
             {
                 CmbInitialPowerScheme.SelectedIndex = 0;
@@ -74,9 +70,7 @@ namespace PowerPlanSwitcher
             RdbCycleAll.Checked = !Settings.Default.CycleOnlyVisible;
             RdbCycleVisible.Checked = Settings.Default.CycleOnlyVisible;
 
-            CmbColorTheme.Items.AddRange(ColorThemeHelper.GetDisplayNames()
-                .Cast<object>()
-                .ToArray());
+            CmbColorTheme.Items.AddRange([.. ColorThemeHelper.GetDisplayNames().Cast<object>()]);
             var index = CmbColorTheme.Items.IndexOf(Settings.Default.ColorTheme);
             if (index != -1 && index < CmbColorTheme.Items.Count)
             {
@@ -88,9 +82,7 @@ namespace PowerPlanSwitcher
             }
 
             CmbPopUpWindowGlobal.Items.AddRange(
-                PopUpWindowLocationHelper.GetDisplayNames()
-                    .Cast<object>()
-                    .ToArray());
+                [.. PopUpWindowLocationHelper.GetDisplayNames().Cast<object>()]);
             index = CmbPopUpWindowGlobal.Items.IndexOf(
                 Settings.Default.PopUpWindowLocationGlobal);
             if (index != -1 && index < CmbPopUpWindowGlobal.Items.Count)
@@ -314,10 +306,9 @@ namespace PowerPlanSwitcher
         }
 
         private void UpdatePowerRules() =>
-            DgvPowerRules.Rows.AddRange(Rules.GetRules()
+            DgvPowerRules.Rows.AddRange([.. Rules.GetRules()
                 .OrderBy(r => r.Index)
-                .Select(RuleToRow)
-                .ToArray());
+                .Select(RuleToRow)]);
 
         private void HandleBtnAddPowerRuleClick(object sender, EventArgs e)
         {

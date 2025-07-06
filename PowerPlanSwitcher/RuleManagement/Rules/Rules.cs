@@ -77,7 +77,7 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
 
         public static void SetRules(IEnumerable<IRule> newRules)
         {
-            rules = newRules.ToList();
+            rules = [.. newRules];
             SaveRules(rules);
         }
 
