@@ -1,6 +1,7 @@
 namespace PowerPlanSwitcher
 {
     using PowerPlanSwitcher.PowerManagement;
+    using Serilog;
 
     public partial class PowerSchemeSelectorDlg : Form
     {
@@ -62,6 +63,9 @@ namespace PowerPlanSwitcher
 
             button.Click += (_, _) =>
             {
+                Log.Information(
+                    "Activating power scheme: {SchemeGuid} Reason: PowerSchemeSelectorDlg",
+                    guid, name);
                 PowerManager.Static.SetActivePowerScheme((Guid)button.Tag);
                 Close();
             };

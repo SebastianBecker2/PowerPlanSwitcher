@@ -17,9 +17,10 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
 - [WindowsAPICodePack](https://github.com/contre/Windows-API-Code-Pack-1.1)
 - [Vanara](https://github.com/dahall/Vanara)
 - [Serilog](https://serilog.net/)
-- [WiX Toolset 3.1](https://wixtoolset.org/)
-- [HotkeyManager](https://github.com/SebastianBecker2/HotkeyManager)
-</Description>
+- [SkiaSharp](https://github.com/mono/SkiaSharp)
+- [SevenZipSharp](https://github.com/squid-box/SevenZipSharp)
+- [WiX Toolset 6](https://wixtoolset.org/)
+- [HotkeyManager](https://github.com/SebastianBecker2/HotkeyManager)</Description>
     <Authors>Sebastian Becker</Authors>
     <AssemblyVersion></AssemblyVersion>
     <FileVersion></FileVersion>
@@ -35,6 +36,8 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
     <PackageReference Include="Serilog" Version="4.3.0" />
     <PackageReference Include="Serilog.Sinks.File" Version="7.0.0" />
+    <PackageReference Include="SkiaSharp" Version="3.119.0" />
+    <PackageReference Include="Squid-Box.SevenZipSharp" Version="1.6.2.24" />
     <PackageReference Include="Vanara.PInvoke.PowrProf" Version="4.1.6" />
     <PackageReference Include="Vanara.PInvoke.Security" Version="4.1.6" />
     <PackageReference Include="Vanara.PInvoke.User32" Version="4.1.6" />
@@ -63,6 +66,12 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
     <None Update="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
       <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
+    <None Update="Resources\7z.dll">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\7z_license.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
 </Project>

@@ -1,11 +1,13 @@
 namespace PowerPlanSwitcher
 {
     using System.ComponentModel;
+    using System.Configuration;
     using PowerPlanSwitcher.PowerManagement;
     using PowerPlanSwitcher.ProcessManagement;
     using PowerPlanSwitcher.Properties;
     using PowerPlanSwitcher.RuleManagement;
     using PowerPlanSwitcher.RuleManagement.Rules;
+    using Serilog;
 
     internal class AppContext : ApplicationContext
     {
@@ -22,6 +24,11 @@ namespace PowerPlanSwitcher
             powerManager.ActivePowerSchemeChanged +=
                 (s, e) => trayIcon.UpdateIcon(e.ActiveSchemeGuid);
 
+            powerManager.ActivePowerSchemeChanged += (s, e) =>
+                Log.Information(
+                    "Actived power scheme: {SchemeGuid}",
+                    e.ActiveSchemeGuid);
+
             ruleManager = new(powerManager)
             {
                 BatteryMonitor = batteryMonitor,
@@ -33,6 +40,22 @@ namespace PowerPlanSwitcher
 
             Settings.Default.PropertyChanged +=
                 Default_PropertyChanged;
+            Settings.Default.SettingChanging +=
+                Default_SettingChanging;
+        }
+
+        private void Default_SettingChanging(
+            object sender,
+            SettingChangingEventArgs e)
+        {
+            if (Equals(Settings.Default[e.SettingName], e.NewValue))
+            {
+                return;
+            }
+
+            Log.Information(
+                "Setting changing: {SettingName} Old Value: {OldValue} New Value: {NewValue}",
+                e.SettingName, Settings.Default[e.SettingName], e.NewValue);
         }
 
         private void Default_PropertyChanged(
@@ -56,6 +79,9 @@ namespace PowerPlanSwitcher
                 return;
             }
 
+            Log.Information(
+                "Activating power scheme: {PowerSchemeGuid} Reason: {Reason}",
+                e.PowerSchemeGuid, e.Reason ?? "<Missing Reason>");
             powerManager.SetActivePowerScheme(e.PowerSchemeGuid);
 
             if (e.Reason != null && PopUpWindowLocationHelper.ShouldShowToast(e.Reason))

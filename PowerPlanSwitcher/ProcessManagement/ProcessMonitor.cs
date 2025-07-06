@@ -1,6 +1,7 @@
 namespace PowerPlanSwitcher.ProcessManagement
 {
     using System.Diagnostics;
+    using Serilog;
     using Timer = System.Threading.Timer;
 
     public class ProcessMonitor : IDisposable, IProcessMonitor
@@ -65,11 +66,17 @@ namespace PowerPlanSwitcher.ProcessManagement
 
                 foreach (var addedProcess in addedProcesses)
                 {
+                    Log.Information(
+                        "Process created: {ExecutablePath} ({ProcessId})",
+                        addedProcess.ExecutablePath, addedProcess.ProcessId);
                     OnProcessCreated(addedProcess);
                 }
 
                 foreach (var removedProcess in removedProcesses)
                 {
+                    Log.Information(
+                        "Process terminated: {ExecutablePath} ({ProcessId})",
+                        removedProcess.ExecutablePath, removedProcess.ProcessId);
                     OnProcessTerminated(removedProcess);
                 }
 

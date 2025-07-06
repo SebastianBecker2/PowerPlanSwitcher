@@ -1,7 +1,6 @@
 namespace PowerPlanSwitcher.PowerManagement
 {
     using Microsoft.Win32;
-    using PowerPlanSwitcher.Properties;
 
     public class BatteryMonitor : IBatteryMonitor
     {

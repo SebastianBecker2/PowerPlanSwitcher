@@ -54,13 +54,13 @@ namespace PowerPlanSwitcher
             tableLayoutPanel.Margin = new Padding(4, 3, 4, 3);
             tableLayoutPanel.Name = "tableLayoutPanel";
             tableLayoutPanel.RowCount = 6;
-            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
-            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
-            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
-            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
-            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 10F));
-            tableLayoutPanel.Size = new Size(604, 398);
+            tableLayoutPanel.RowStyles.Add(new RowStyle());
+            tableLayoutPanel.RowStyles.Add(new RowStyle());
+            tableLayoutPanel.RowStyles.Add(new RowStyle());
+            tableLayoutPanel.RowStyles.Add(new RowStyle());
+            tableLayoutPanel.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel.RowStyles.Add(new RowStyle());
+            tableLayoutPanel.Size = new Size(604, 368);
             tableLayoutPanel.TabIndex = 0;
             // 
             // labelProductName
@@ -78,7 +78,7 @@ namespace PowerPlanSwitcher
             // labelVersion
             // 
             labelVersion.Dock = DockStyle.Fill;
-            labelVersion.Location = new Point(108, 39);
+            labelVersion.Location = new Point(108, 20);
             labelVersion.Margin = new Padding(7, 0, 4, 0);
             labelVersion.MaximumSize = new Size(0, 20);
             labelVersion.Name = "labelVersion";
@@ -90,7 +90,7 @@ namespace PowerPlanSwitcher
             // labelCopyright
             // 
             labelCopyright.Dock = DockStyle.Fill;
-            labelCopyright.Location = new Point(108, 78);
+            labelCopyright.Location = new Point(108, 40);
             labelCopyright.Margin = new Padding(7, 0, 4, 0);
             labelCopyright.MaximumSize = new Size(0, 20);
             labelCopyright.Name = "labelCopyright";
@@ -102,7 +102,7 @@ namespace PowerPlanSwitcher
             // labelCompanyName
             // 
             labelCompanyName.Dock = DockStyle.Fill;
-            labelCompanyName.Location = new Point(108, 117);
+            labelCompanyName.Location = new Point(108, 60);
             labelCompanyName.Margin = new Padding(7, 0, 4, 0);
             labelCompanyName.MaximumSize = new Size(0, 20);
             labelCompanyName.Name = "labelCompanyName";
@@ -114,22 +114,21 @@ namespace PowerPlanSwitcher
             // textBoxDescription
             // 
             textBoxDescription.Dock = DockStyle.Fill;
-            textBoxDescription.Location = new Point(108, 159);
+            textBoxDescription.Location = new Point(108, 83);
             textBoxDescription.Margin = new Padding(7, 3, 4, 3);
             textBoxDescription.Multiline = true;
             textBoxDescription.Name = "textBoxDescription";
             textBoxDescription.ReadOnly = true;
             textBoxDescription.ScrollBars = ScrollBars.Both;
-            textBoxDescription.Size = new Size(492, 193);
+            textBoxDescription.Size = new Size(492, 249);
             textBoxDescription.TabIndex = 23;
             textBoxDescription.TabStop = false;
-            textBoxDescription.Text = resources.GetString("textBoxDescription.Text");
             // 
             // okButton
             // 
             okButton.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             okButton.DialogResult = DialogResult.Cancel;
-            okButton.Location = new Point(512, 368);
+            okButton.Location = new Point(512, 338);
             okButton.Margin = new Padding(4, 3, 4, 3);
             okButton.Name = "okButton";
             okButton.Size = new Size(88, 27);
@@ -142,7 +141,7 @@ namespace PowerPlanSwitcher
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = okButton;
-            ClientSize = new Size(624, 418);
+            ClientSize = new Size(624, 388);
             Controls.Add(tableLayoutPanel);
             FormBorderStyle = FormBorderStyle.FixedDialog;
             Icon = (Icon)resources.GetObject("$this.Icon");

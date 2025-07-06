@@ -28,6 +28,7 @@ namespace PowerPlanSwitcher
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             var dataGridViewCellStyle1 = new DataGridViewCellStyle();
             var resources = new System.ComponentModel.ComponentResourceManager(typeof(SettingsDlg));
             DgvPowerSchemes = new DataGridView();
@@ -74,6 +75,13 @@ namespace PowerPlanSwitcher
             groupBox3 = new GroupBox();
             tableLayoutPanel8 = new TableLayoutPanel();
             CmbPopUpWindowGlobal = new ComboBox();
+            groupBox2 = new GroupBox();
+            tableLayoutPanel3 = new TableLayoutPanel();
+            ChbExtendedLogging = new CheckBox();
+            BtnOpenLogFolder = new Button();
+            BtnExportLog = new Button();
+            PibLoggingInfo = new PictureBox();
+            TipHints = new ToolTip(components);
             ((System.ComponentModel.ISupportInitialize)DgvPowerSchemes).BeginInit();
             ((System.ComponentModel.ISupportInitialize)DgvPowerRules).BeginInit();
             tableLayoutPanel1.SuspendLayout();
@@ -89,6 +97,9 @@ namespace PowerPlanSwitcher
             tableLayoutPanel6.SuspendLayout();
             groupBox3.SuspendLayout();
             tableLayoutPanel8.SuspendLayout();
+            groupBox2.SuspendLayout();
+            tableLayoutPanel3.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)PibLoggingInfo).BeginInit();
             SuspendLayout();
             // 
             // DgvPowerSchemes
@@ -293,7 +304,7 @@ namespace PowerPlanSwitcher
             CmbColorTheme.Anchor = AnchorStyles.None;
             CmbColorTheme.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbColorTheme.FormattingEnabled = true;
-            CmbColorTheme.Location = new Point(81, 29);
+            CmbColorTheme.Location = new Point(24, 29);
             CmbColorTheme.Name = "CmbColorTheme";
             CmbColorTheme.Size = new Size(170, 23);
             CmbColorTheme.TabIndex = 17;
@@ -466,12 +477,14 @@ namespace PowerPlanSwitcher
             // 
             // tableLayoutPanel5
             // 
-            tableLayoutPanel5.ColumnCount = 2;
-            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel5.ColumnCount = 3;
+            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel5.Controls.Add(groupBox4, 0, 0);
             tableLayoutPanel5.Controls.Add(groupBox1, 0, 1);
             tableLayoutPanel5.Controls.Add(groupBox3, 1, 1);
+            tableLayoutPanel5.Controls.Add(groupBox2, 2, 1);
             tableLayoutPanel5.Dock = DockStyle.Fill;
             tableLayoutPanel5.Location = new Point(3, 3);
             tableLayoutPanel5.Name = "tableLayoutPanel5";
@@ -483,7 +496,7 @@ namespace PowerPlanSwitcher
             // 
             // groupBox4
             // 
-            tableLayoutPanel5.SetColumnSpan(groupBox4, 2);
+            tableLayoutPanel5.SetColumnSpan(groupBox4, 3);
             groupBox4.Controls.Add(tableLayoutPanel4);
             groupBox4.Dock = DockStyle.Fill;
             groupBox4.Location = new Point(3, 3);
@@ -520,7 +533,7 @@ namespace PowerPlanSwitcher
             RdbCycleAll.Dock = DockStyle.Left;
             RdbCycleAll.Location = new Point(433, 3);
             RdbCycleAll.Name = "RdbCycleAll";
-            RdbCycleAll.Size = new Size(226, 47);
+            RdbCycleAll.Size = new Size(225, 47);
             RdbCycleAll.TabIndex = 26;
             RdbCycleAll.TabStop = true;
             RdbCycleAll.Text = "Cycle through all existing Power Plans";
@@ -586,7 +599,7 @@ namespace PowerPlanSwitcher
             groupBox1.Dock = DockStyle.Fill;
             groupBox1.Location = new Point(3, 137);
             groupBox1.Name = "groupBox1";
-            groupBox1.Size = new Size(339, 104);
+            groupBox1.Size = new Size(224, 104);
             groupBox1.TabIndex = 30;
             groupBox1.TabStop = false;
             groupBox1.Text = "Color Theme";
@@ -603,16 +616,16 @@ namespace PowerPlanSwitcher
             tableLayoutPanel6.RowCount = 1;
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel6.Size = new Size(333, 82);
+            tableLayoutPanel6.Size = new Size(218, 82);
             tableLayoutPanel6.TabIndex = 0;
             // 
             // groupBox3
             // 
             groupBox3.Controls.Add(tableLayoutPanel8);
             groupBox3.Dock = DockStyle.Fill;
-            groupBox3.Location = new Point(348, 137);
+            groupBox3.Location = new Point(233, 137);
             groupBox3.Name = "groupBox3";
-            groupBox3.Size = new Size(340, 104);
+            groupBox3.Size = new Size(224, 104);
             groupBox3.TabIndex = 33;
             groupBox3.TabStop = false;
             groupBox3.Text = "Notification Location";
@@ -627,7 +640,7 @@ namespace PowerPlanSwitcher
             tableLayoutPanel8.Name = "tableLayoutPanel8";
             tableLayoutPanel8.RowCount = 1;
             tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel8.Size = new Size(334, 82);
+            tableLayoutPanel8.Size = new Size(218, 82);
             tableLayoutPanel8.TabIndex = 0;
             // 
             // CmbPopUpWindowGlobal
@@ -635,10 +648,95 @@ namespace PowerPlanSwitcher
             CmbPopUpWindowGlobal.Anchor = AnchorStyles.None;
             CmbPopUpWindowGlobal.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbPopUpWindowGlobal.FormattingEnabled = true;
-            CmbPopUpWindowGlobal.Location = new Point(82, 29);
+            CmbPopUpWindowGlobal.Location = new Point(24, 29);
             CmbPopUpWindowGlobal.Name = "CmbPopUpWindowGlobal";
             CmbPopUpWindowGlobal.Size = new Size(170, 23);
             CmbPopUpWindowGlobal.TabIndex = 17;
+            // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(tableLayoutPanel3);
+            groupBox2.Dock = DockStyle.Fill;
+            groupBox2.Location = new Point(463, 137);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(225, 104);
+            groupBox2.TabIndex = 34;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Logging";
+            // 
+            // tableLayoutPanel3
+            // 
+            tableLayoutPanel3.ColumnCount = 4;
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.Controls.Add(PibLoggingInfo, 2, 0);
+            tableLayoutPanel3.Controls.Add(ChbExtendedLogging, 1, 0);
+            tableLayoutPanel3.Controls.Add(BtnOpenLogFolder, 1, 1);
+            tableLayoutPanel3.Controls.Add(BtnExportLog, 1, 2);
+            tableLayoutPanel3.Dock = DockStyle.Fill;
+            tableLayoutPanel3.Location = new Point(3, 19);
+            tableLayoutPanel3.Name = "tableLayoutPanel3";
+            tableLayoutPanel3.RowCount = 3;
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel3.Size = new Size(219, 82);
+            tableLayoutPanel3.TabIndex = 1;
+            // 
+            // ChbExtendedLogging
+            // 
+            ChbExtendedLogging.Anchor = AnchorStyles.None;
+            ChbExtendedLogging.AutoSize = true;
+            ChbExtendedLogging.Location = new Point(32, 4);
+            ChbExtendedLogging.Name = "ChbExtendedLogging";
+            ChbExtendedLogging.Size = new Size(121, 19);
+            ChbExtendedLogging.TabIndex = 0;
+            ChbExtendedLogging.Text = "Extended Logging";
+            ChbExtendedLogging.UseVisualStyleBackColor = true;
+            // 
+            // BtnOpenLogFolder
+            // 
+            BtnOpenLogFolder.Anchor = AnchorStyles.None;
+            BtnOpenLogFolder.Location = new Point(24, 30);
+            BtnOpenLogFolder.Name = "BtnOpenLogFolder";
+            BtnOpenLogFolder.Size = new Size(138, 21);
+            BtnOpenLogFolder.TabIndex = 1;
+            BtnOpenLogFolder.Text = "Open log folder";
+            BtnOpenLogFolder.UseVisualStyleBackColor = true;
+            BtnOpenLogFolder.Click += BtnOpenLogFolder_Click;
+            // 
+            // BtnExportLog
+            // 
+            BtnExportLog.Anchor = AnchorStyles.None;
+            BtnExportLog.Location = new Point(24, 57);
+            BtnExportLog.Name = "BtnExportLog";
+            BtnExportLog.Size = new Size(138, 22);
+            BtnExportLog.TabIndex = 1;
+            BtnExportLog.Text = "Export log to zip";
+            BtnExportLog.UseVisualStyleBackColor = true;
+            BtnExportLog.Click += BtnExportLog_Click;
+            // 
+            // PibLoggingInfo
+            // 
+            PibLoggingInfo.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            PibLoggingInfo.Image = Properties.Resources.info_rhombus;
+            PibLoggingInfo.Location = new Point(165, 0);
+            PibLoggingInfo.Margin = new Padding(0);
+            PibLoggingInfo.Name = "PibLoggingInfo";
+            tableLayoutPanel3.SetRowSpan(PibLoggingInfo, 3);
+            PibLoggingInfo.Size = new Size(32, 32);
+            PibLoggingInfo.SizeMode = PictureBoxSizeMode.AutoSize;
+            PibLoggingInfo.TabIndex = 2;
+            PibLoggingInfo.TabStop = false;
+            PibLoggingInfo.Click += PibLoggingInfo_Click;
+            // 
+            // TipHints
+            // 
+            TipHints.ShowAlways = true;
+            TipHints.UseAnimation = false;
+            TipHints.UseFading = false;
             // 
             // SettingsDlg
             // 
@@ -671,6 +769,10 @@ namespace PowerPlanSwitcher
             tableLayoutPanel6.ResumeLayout(false);
             groupBox3.ResumeLayout(false);
             tableLayoutPanel8.ResumeLayout(false);
+            groupBox2.ResumeLayout(false);
+            tableLayoutPanel3.ResumeLayout(false);
+            tableLayoutPanel3.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)PibLoggingInfo).EndInit();
             ResumeLayout(false);
         }
 
@@ -720,5 +822,12 @@ namespace PowerPlanSwitcher
         private DataGridViewTextBoxColumn DgcRuleSchemeName;
         private DataGridViewCheckBoxColumn DgcActive;
         private ComboBox CmbPopUpWindowGlobal;
+        private GroupBox groupBox2;
+        private TableLayoutPanel tableLayoutPanel3;
+        private CheckBox ChbExtendedLogging;
+        private Button BtnOpenLogFolder;
+        private Button BtnExportLog;
+        private PictureBox PibLoggingInfo;
+        private ToolTip TipHints;
     }
 }

@@ -22,6 +22,15 @@ namespace PowerPlanSwitcher
             TacSettingsCategories.SelectedIndexChanged +=
                 TacSettingsCategories_SelectedIndexChanged;
             Size = Settings.Default.SettingsDlgSize;
+
+            var text = $"Regular logging only captures critical errors, " +
+                $"such as crash-related exceptions.{Environment.NewLine}" +
+                $"Extended logging maybe have performance implication." +
+                $"{Environment.NewLine}Extended log files will include basic " +
+                $"information about running processes {Environment.NewLine}" +
+                $"(process ID, executable path and start/stop times) " +
+                $"{Environment.NewLine}which may be considered sensitive data.";
+            TipHints.SetToolTip(PibLoggingInfo, text);
         }
 
         protected override void OnFormClosing(FormClosingEventArgs e)
@@ -93,6 +102,8 @@ namespace PowerPlanSwitcher
             {
                 CmbPopUpWindowGlobal.SelectedIndex = 0;
             }
+
+            ChbExtendedLogging.Checked = Settings.Default.ExtendedLogging;
 
             base.OnLoad(e);
         }
@@ -223,6 +234,10 @@ namespace PowerPlanSwitcher
 
         private void HandleBtnOkClick(object sender, EventArgs e)
         {
+            // Update logging settings immediately to make sure we get all
+            // log events from settings changes if it's activated.
+            Program.UpdateLogLevelSwitch(ChbExtendedLogging.Checked);
+
             foreach (DataGridViewRow row in DgvPowerSchemes.Rows)
             {
                 var schemeGuid = (Guid)row.Tag!;
@@ -266,6 +281,8 @@ namespace PowerPlanSwitcher
 
             Settings.Default.PopUpWindowLocationGlobal =
                 CmbPopUpWindowGlobal.SelectedItem as string;
+
+            Settings.Default.ExtendedLogging = ChbExtendedLogging.Checked;
 
             Settings.Default.Save();
 
@@ -603,5 +620,19 @@ namespace PowerPlanSwitcher
 
             HandleBtnEditPowerRuleClick(sender, e);
         }
+
+        private void PibLoggingInfo_Click(object sender, EventArgs e) =>
+            TipHints.Show(
+                TipHints.GetToolTip(PibLoggingInfo),
+                PibLoggingInfo,
+                0,
+                PibLoggingInfo.Height,
+                3000);
+
+        private void BtnOpenLogFolder_Click(object sender, EventArgs e) =>
+            Program.OpenLogPath();
+
+        private void BtnExportLog_Click(object sender, EventArgs e) =>
+            Program.ExportLog();
     }
 }

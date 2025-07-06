@@ -5,6 +5,7 @@ namespace PowerPlanSwitcher
     using System.Drawing.Imaging;
     using Newtonsoft.Json;
     using Properties;
+    using SkiaSharp;
 
     internal static class PowerSchemeSettings
     {
@@ -24,8 +25,18 @@ namespace PowerPlanSwitcher
 
                 try
                 {
-                    return Image.FromStream(
-                        new MemoryStream(Convert.FromBase64String(base64)));
+                    var imageBytes = Convert.FromBase64String(base64);
+
+                    using var skData = SKData.CreateCopy(imageBytes);
+                    using var skImage = SKImage.FromEncodedData(skData)
+                        ?? throw new InvalidOperationException(
+                            "Failed to decode image data.");
+
+                    using var encoded = skImage.Encode(
+                        SKEncodedImageFormat.Png,
+                        100);
+                    using var pngStream = new MemoryStream(encoded.ToArray());
+                    return Image.FromStream(pngStream);
                 }
                 catch (FormatException)
                 {
@@ -44,16 +55,18 @@ namespace PowerPlanSwitcher
                     return;
                 }
 
-                var ms = new MemoryStream();
-                var format = image.RawFormat;
-                if (Equals(image.RawFormat, ImageFormat.Bmp)
-                    || Equals(image.RawFormat, ImageFormat.MemoryBmp))
-                {
-                    format = ImageFormat.Png;
-                }
-                image.Save(ms, format);
-                var imageBytes = ms.ToArray();
-                writer.WriteValue(imageBytes);
+                // !Deterministically! serializing image
+                // Important right now to recognize changes in settings.
+
+                using var ms = new MemoryStream();
+                image.Save(ms, ImageFormat.Png);
+                _ = ms.Seek(0, SeekOrigin.Begin);
+
+                using var skData = SKData.Create(ms);
+                using var skImage = SKImage.FromEncodedData(skData);
+
+                using var encoded = skImage.Encode(SKEncodedImageFormat.Png, 100);
+                writer.WriteValue(Convert.ToBase64String(encoded.ToArray()));
             }
 
             public override bool CanConvert(Type objectType) =>
