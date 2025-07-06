@@ -4,12 +4,12 @@ namespace PowerPlanSwitcher.ProcessManagement
 
     public interface IProcessMonitor
     {
-        event EventHandler<ProcessEventArgs>? ProcessCreated;
-        event EventHandler<ProcessEventArgs>? ProcessTerminated;
+        public event EventHandler<ProcessEventArgs>? ProcessCreated;
+        public event EventHandler<ProcessEventArgs>? ProcessTerminated;
 
-        void StartMonitoring();
-        void StopMonitoring();
+        public void StartMonitoring();
+        public void StopMonitoring();
 
-        IEnumerable<ICachedProcess> GetUsersProcesses();
+        public IEnumerable<ICachedProcess> GetUsersProcesses();
     }
 }

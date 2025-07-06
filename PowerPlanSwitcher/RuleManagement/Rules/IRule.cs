@@ -4,10 +4,10 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
 
     public interface IRule
     {
-        int ActivationCount { get; set; }
-        int Index { get; set; }
-        Guid SchemeGuid { get; set; }
+        public int ActivationCount { get; set; }
+        public int Index { get; set; }
+        public Guid SchemeGuid { get; set; }
 
-        string GetDescription();
+        public string GetDescription();
     }
 }

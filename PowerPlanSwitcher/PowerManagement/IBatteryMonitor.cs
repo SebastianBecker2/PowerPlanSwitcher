@@ -4,11 +4,11 @@ namespace PowerPlanSwitcher.PowerManagement
 
     public interface IBatteryMonitor
     {
-        event EventHandler<PowerLineStatusChangedEventArgs>?
+        public event EventHandler<PowerLineStatusChangedEventArgs>?
             PowerLineStatusChanged;
 
-        bool HasSystemBattery { get; }
+        public bool HasSystemBattery { get; }
 
-        PowerLineStatus PowerLineStatus { get; }
+        public PowerLineStatus PowerLineStatus { get; }
     }
 }

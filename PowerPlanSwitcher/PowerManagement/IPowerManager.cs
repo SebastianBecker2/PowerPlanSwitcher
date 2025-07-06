@@ -5,12 +5,12 @@ namespace PowerPlanSwitcher.PowerManagement
 
     public interface IPowerManager
     {
-        event EventHandler<ActivePowerSchemeChangedEventArgs>? ActivePowerSchemeChanged;
+        public event EventHandler<ActivePowerSchemeChangedEventArgs>? ActivePowerSchemeChanged;
 
-        Guid GetActivePowerSchemeGuid();
-        IEnumerable<Guid> GetPowerSchemeGuids();
-        string? GetPowerSchemeName(Guid schemeGuid);
-        IEnumerable<(Guid guid, string? name)> GetPowerSchemes();
-        void SetActivePowerScheme(Guid schemeGuid);
+        public Guid GetActivePowerSchemeGuid();
+        public IEnumerable<Guid> GetPowerSchemeGuids();
+        public string? GetPowerSchemeName(Guid schemeGuid);
+        public IEnumerable<(Guid guid, string? name)> GetPowerSchemes();
+        public void SetActivePowerScheme(Guid schemeGuid);
     }
 }
