@@ -41,8 +41,6 @@
     <Fragment>
         <Icon Id="ProductIcon.ico"
               SourceFile="$(var.SolutionDir)PowerPlanSwitcher\Resources\power_surge.ico" />
-        <Property Id="ARPPRODUCTICON"
-                  Value="ProductIcon.ico" />
     </Fragment>
 
     <!-- File actions -->
