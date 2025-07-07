@@ -63,14 +63,14 @@
                           Directory="ProgramMenuFolder"
                           Name="$(var.ProductName)"
                           Icon="ProductIcon.ico"
-                          WorkingDirectory="INSTALLFOLDER"
+                          WorkingDirectory="PRODUCTFOLDER"
                           Advertise="yes" />
 
                 <Shortcut Id="ProductAutoStartShortcut"
                           Directory="StartupFolder"
                           Name="$(var.ProductName)"
                           Icon="ProductIcon.ico"
-                          WorkingDirectory="INSTALLFOLDER"
+                          WorkingDirectory="PRODUCTFOLDER"
                           Advertise="yes" />
 
             </Component>
