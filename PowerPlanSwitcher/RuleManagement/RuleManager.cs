@@ -90,9 +90,6 @@ namespace PowerPlanSwitcher.RuleManagement
 
             ProcessMonitor.ProcessCreated += ProcessMonitor_ProcessCreated;
             ProcessMonitor.ProcessTerminated += ProcessMonitor_ProcessTerminated;
-            ProcessMonitor.StartMonitoring();
-
-            HandleProcessesCreated(ProcessMonitor.GetUsersProcesses());
         }
 
         public void StopEngine()
@@ -280,45 +277,6 @@ namespace PowerPlanSwitcher.RuleManagement
             }
         }
 
-        private void HandleProcessesCreated(
-            IEnumerable<ICachedProcess> processes)
-        {
-            lock (syncObj)
-            {
-                bool? needToSwitch = null;
-                IRule? ruleToApply = null;
-
-                foreach (var rule in rules ?? [])
-                {
-                    if (rule is not ProcessRule processRule)
-                    {
-                        if (rule.ActivationCount == 0)
-                        {
-                            continue;
-                        }
-
-                        needToSwitch ??= false;
-                        ruleToApply ??= needToSwitch == true ? rule : null;
-                        continue;
-                    }
-
-                    var activationCount = CheckRule(rule, processes);
-                    if (activationCount > 0)
-                    {
-                        needToSwitch ??= rule.ActivationCount == 0;
-                        rule.ActivationCount += activationCount;
-                        ruleToApply ??= needToSwitch == true ? rule : null;
-                        continue;
-                    }
-                }
-
-                if (needToSwitch == true && ruleToApply is not null)
-                {
-                    ApplyRule(ruleToApply);
-                }
-            }
-        }
-
         private void ApplyRule(IRule rule) =>
             OnRuleApplicationChanged(
                 rule.SchemeGuid,
@@ -350,10 +308,5 @@ namespace PowerPlanSwitcher.RuleManagement
             }
             return false;
         }
-
-        private static int CheckRule(
-            IRule rule,
-            IEnumerable<ICachedProcess> processes) =>
-            processes.Count(p => CheckRule(rule, p));
     }
 }

@@ -38,6 +38,10 @@ namespace PowerPlanSwitcher
                 RuleManager_RuleApplicationChanged;
             ruleManager.StartEngine(Rules.GetRules());
 
+            // ProcessMonitor has to be started after RuleManager was started.
+            // Otherweise events might be missed
+            processMonitor.StartMonitoring();
+
             Settings.Default.PropertyChanged +=
                 Default_PropertyChanged;
             Settings.Default.SettingChanging +=
