@@ -1,7 +1,12 @@
+#pragma warning disable CA1707 // Identifiers should not contain underscores
+
 namespace PowerPlanSwitcherTests
 {
     using System;
     using System.Windows.Forms;
+    using FakeItEasy;
+    using PowerPlanSwitcher.PowerManagement;
+    using PowerPlanSwitcher.ProcessManagement;
     using PowerPlanSwitcher.RuleManagement;
     using PowerPlanSwitcher.RuleManagement.Rules;
 
@@ -591,7 +596,7 @@ namespace PowerPlanSwitcherTests
             var powerManager = new PowerManagerStub(Guid.Empty);
             var ruleManager = new RuleManager(powerManager);
 
-            _ = Assert.ThrowsException<InvalidOperationException>(() =>
+            _ = Assert.ThrowsExactly<InvalidOperationException>(() =>
                 ruleManager.StartEngine([])
             );
         }
@@ -1307,5 +1312,65 @@ namespace PowerPlanSwitcherTests
                 expectations.Count,
                 ruleApplicationCount);
         }
+
+        /// <summary>
+        /// Tests that a process already running before startup correctly
+        /// activates the associated rule and deactivates it after the process
+        /// terminates.
+        /// </summary>
+        [TestMethod]
+        public void ProcessIsAlreadyRunningBeforeStartup_ShouldDeactivateRuleAfterTermination()
+        {
+            var fakeProcess = A.Fake<ICachedProcess>();
+            _ = A.CallTo(() => fakeProcess.ExecutablePath).Returns("test.exe");
+            _ = A.CallTo(() => fakeProcess.ProcessId).Returns(1234);
+            _ = A.CallTo(() => fakeProcess.ProcessName).Returns("test.exe");
+            var fakePowerManager = A.Fake<IPowerManager>();
+            _ = A.CallTo(() => fakePowerManager.GetActivePowerSchemeGuid())
+                .Returns(Guid.NewGuid());
+            var fakeProcessMonitor = A.Fake<IProcessMonitor>();
+            _ = A.CallTo(() => fakeProcessMonitor.GetUsersProcesses())
+                .Returns(new List<ICachedProcess>() { fakeProcess });
+
+            var rules = new List<IRule>() {
+                new ProcessRule()
+                {
+                    FilePath = "test.exe",
+                    Type = ComparisonType.EndsWith,
+                    SchemeGuid = Guid.NewGuid(),
+                },
+            };
+
+            var ruleManager = new RuleManager(fakePowerManager)
+            {
+                ProcessMonitor = fakeProcessMonitor,
+            };
+            RuleApplicationChangedEventArgs? receivedArgs = null;
+            ruleManager.RuleApplicationChanged += (s, e) => receivedArgs = e;
+            ruleManager.StartEngine(rules);
+
+            fakeProcessMonitor.ProcessCreated += Raise
+                .With(new ProcessEventArgs(fakeProcess));
+
+            Assert.IsNotNull(
+                receivedArgs,
+                "Rule was not applied when process was running at start.");
+            Assert.IsNotNull(
+                receivedArgs.Rule,
+                "Rule was not applied when process was running at start.");
+            Assert.AreEqual(
+                receivedArgs.Rule.SchemeGuid,
+                rules[0].SchemeGuid,
+                "Correct rule was not applied when process was running at start.");
+
+            fakeProcessMonitor.ProcessTerminated += Raise
+                .With(new ProcessEventArgs(fakeProcess));
+
+            Assert.IsNull(
+                receivedArgs.Rule,
+                "Default PowerScheme was not applied when process was terminated.");
+        }
     }
 }
+
+#pragma warning restore CA1707 // Identifiers should not contain underscores
