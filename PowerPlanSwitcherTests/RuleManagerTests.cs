@@ -13,6 +13,27 @@ namespace PowerPlanSwitcherTests
     [TestClass]
     public class RuleManagerTests
     {
+        private static int ruleIndex;
+        private static ProcessRule CreateTestProcessRule(
+            string path,
+            Guid scheme = default,
+            ComparisonType type = ComparisonType.EndsWith)
+        {
+            if (scheme == Guid.Empty)
+            {
+                scheme = Guid.NewGuid();
+            }
+
+            return new ProcessRule
+            {
+                FilePath = path,
+                Index = ruleIndex++,
+                SchemeGuid = scheme,
+                Type = type,
+            };
+        }
+
+
         private enum Reason
         {
             RuleApplied,
@@ -1314,60 +1335,63 @@ namespace PowerPlanSwitcherTests
         }
 
         /// <summary>
-        /// Tests that a process already running before startup correctly
-        /// activates the associated rule and deactivates it after the process
-        /// terminates.
+        /// Verifies that a process already running at RuleManager startup
+        /// triggers its associated rule, and that the rule is properly
+        /// deactivated when the process terminates.
         /// </summary>
         [TestMethod]
-        public void ProcessIsAlreadyRunningBeforeStartup_ShouldDeactivateRuleAfterTermination()
+        public void
+            ProcessIsAlreadyRunningBeforeStartup_OnProcessTermination_ShouldDeactivateRule()
         {
-            var fakeProcess = A.Fake<ICachedProcess>();
-            _ = A.CallTo(() => fakeProcess.ExecutablePath).Returns("test.exe");
-            _ = A.CallTo(() => fakeProcess.ProcessId).Returns(1234);
-            _ = A.CallTo(() => fakeProcess.ProcessName).Returns("test.exe");
+            // Arrange
+            var initialScheme = Guid.NewGuid();
+            var testRuleScheme = Guid.NewGuid();
+            var testExecutable = "test.exe";
+
+            var fakeProcess = A.Fake<IProcess>();
+            _ = A.CallTo(() => fakeProcess.ExecutablePath).Returns(testExecutable);
+
             var fakePowerManager = A.Fake<IPowerManager>();
             _ = A.CallTo(() => fakePowerManager.GetActivePowerSchemeGuid())
-                .Returns(Guid.NewGuid());
-            var fakeProcessMonitor = A.Fake<IProcessMonitor>();
-            _ = A.CallTo(() => fakeProcessMonitor.GetUsersProcesses())
-                .Returns(new List<ICachedProcess>() { fakeProcess });
+                .Returns(initialScheme);
 
-            var rules = new List<IRule>() {
-                new ProcessRule()
-                {
-                    FilePath = "test.exe",
-                    Type = ComparisonType.EndsWith,
-                    SchemeGuid = Guid.NewGuid(),
-                },
-            };
+            var fakeProcessMonitor = A.Fake<IProcessMonitor>();
+            // fakeProcessMonitor returning fakeProcess simulates process
+            // already running at RuleManager startup.
+            _ = A.CallTo(() => fakeProcessMonitor.GetUsersProcesses())
+                .Returns([fakeProcess]);
 
             var ruleManager = new RuleManager(fakePowerManager)
             {
                 ProcessMonitor = fakeProcessMonitor,
             };
-            RuleApplicationChangedEventArgs? receivedArgs = null;
-            ruleManager.RuleApplicationChanged += (s, e) => receivedArgs = e;
-            ruleManager.StartEngine(rules);
+            IRule? appliedRule = null;
+            ruleManager.RuleApplicationChanged += (s, e) => appliedRule = e?.Rule;
+            ruleManager.StartEngine(
+            [
+                CreateTestProcessRule(testExecutable, testRuleScheme)
+            ]);
 
+            // Act 1
             fakeProcessMonitor.ProcessCreated += Raise
                 .With(new ProcessEventArgs(fakeProcess));
 
+            // Assert 1
             Assert.IsNotNull(
-                receivedArgs,
-                "Rule was not applied when process was running at start.");
-            Assert.IsNotNull(
-                receivedArgs.Rule,
-                "Rule was not applied when process was running at start.");
-            Assert.AreEqual(
-                receivedArgs.Rule.SchemeGuid,
-                rules[0].SchemeGuid,
-                "Correct rule was not applied when process was running at start.");
+                appliedRule,
+                "No process rule was not applied for already running process.");
+            Assert.AreEqual(testRuleScheme, appliedRule.SchemeGuid,
+                "Appropriate process rule was not applied for already running process.");
+            Assert.AreEqual(1, appliedRule.ActivationCount,
+                "Process rule activation count is not 1 for already running process.");
 
+            // Act 2
             fakeProcessMonitor.ProcessTerminated += Raise
                 .With(new ProcessEventArgs(fakeProcess));
 
+            // Assert 2
             Assert.IsNull(
-                receivedArgs.Rule,
+                appliedRule,
                 "Default PowerScheme was not applied when process was terminated.");
         }
     }
