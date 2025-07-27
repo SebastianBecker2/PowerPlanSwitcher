@@ -13,21 +13,39 @@ namespace PowerPlanSwitcherTests
     [TestClass]
     public class RuleManagerTests
     {
+        private record RuleSnapshot(Guid SchemeGuid, int ActivationCount)
+        {
+            public static RuleSnapshot? Create(IRule? rule)
+            {
+                if (rule is null)
+                {
+                    return null;
+                }
+                return new RuleSnapshot(rule.SchemeGuid, rule.ActivationCount);
+            }
+        }
+
         private static int ruleIndex;
         private static ProcessRule CreateTestProcessRule(
             string path,
             Guid scheme = default,
-            ComparisonType type = ComparisonType.EndsWith)
+            ComparisonType type = ComparisonType.EndsWith,
+            int? index = null)
         {
             if (scheme == Guid.Empty)
             {
                 scheme = Guid.NewGuid();
             }
 
+            if (!index.HasValue)
+            {
+                index = ruleIndex++;
+            }
+
             return new ProcessRule
             {
                 FilePath = path,
-                Index = ruleIndex++,
+                Index = index.Value,
                 SchemeGuid = scheme,
                 Type = type,
             };
@@ -1341,7 +1359,7 @@ namespace PowerPlanSwitcherTests
         /// </summary>
         [TestMethod]
         public void
-            ProcessIsAlreadyRunningBeforeStartup_OnProcessTermination_ShouldDeactivateRule()
+            ProcessIsRunningBeforeStartup_OnProcessTermination_ShouldDeactivateRule()
         {
             // Arrange
             var initialScheme = Guid.NewGuid();
@@ -1365,33 +1383,38 @@ namespace PowerPlanSwitcherTests
             {
                 ProcessMonitor = fakeProcessMonitor,
             };
-            IRule? appliedRule = null;
-            ruleManager.RuleApplicationChanged += (s, e) => appliedRule = e?.Rule;
+            List<RuleSnapshot?> ruleTimeline = [];
+            ruleManager.RuleApplicationChanged += (s, e) =>
+                ruleTimeline.Add(RuleSnapshot.Create(e?.Rule));
             ruleManager.StartEngine(
             [
-                CreateTestProcessRule(testExecutable, testRuleScheme)
+                CreateTestProcessRule(testExecutable, testRuleScheme),
             ]);
 
-            // Act 1
+            // Act
             fakeProcessMonitor.ProcessCreated += Raise
                 .With(new ProcessEventArgs(fakeProcess));
-
-            // Assert 1
-            Assert.IsNotNull(
-                appliedRule,
-                "No process rule was not applied for already running process.");
-            Assert.AreEqual(testRuleScheme, appliedRule.SchemeGuid,
-                "Appropriate process rule was not applied for already running process.");
-            Assert.AreEqual(1, appliedRule.ActivationCount,
-                "Process rule activation count is not 1 for already running process.");
-
-            // Act 2
             fakeProcessMonitor.ProcessTerminated += Raise
                 .With(new ProcessEventArgs(fakeProcess));
 
-            // Assert 2
+            // Assert 
+            Assert.AreEqual(
+                2,
+                ruleTimeline.Count,
+                "Unexpected number of rules changes after process was terminated.");
+            Assert.IsNotNull(
+                ruleTimeline[0],
+                "No process rule was applied for already running process.");
+            Assert.AreEqual(
+                testRuleScheme,
+                ruleTimeline[0]!.SchemeGuid,
+                "Appropriate process rule was not applied for already running process.");
+            Assert.AreEqual(
+                1,
+                ruleTimeline[0]!.ActivationCount,
+                "Process rule activation count is not 1 for already running process.");
             Assert.IsNull(
-                appliedRule,
+                ruleTimeline[1],
                 "Default PowerScheme was not applied when process was terminated.");
         }
     }
