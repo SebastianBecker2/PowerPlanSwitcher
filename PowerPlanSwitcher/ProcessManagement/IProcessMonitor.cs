@@ -10,6 +10,6 @@ namespace PowerPlanSwitcher.ProcessManagement
         public void StartMonitoring();
         public void StopMonitoring();
 
-        public IEnumerable<ICachedProcess> GetUsersProcesses();
+        public IEnumerable<IProcess> GetUsersProcesses();
     }
 }

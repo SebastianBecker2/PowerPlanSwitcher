@@ -31,7 +31,7 @@ namespace PowerPlanSwitcher.RuleManagement.Rules
         public string GetDescription() =>
             $"Process -> {ComparisonTypeToText(Type)} -> {FilePath}";
 
-        public bool CheckRule(ICachedProcess process)
+        public bool CheckRule(IProcess process)
         {
             try
             {

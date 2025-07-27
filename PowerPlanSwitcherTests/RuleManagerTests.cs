@@ -196,6 +196,7 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(2),
                     CreateProcessRule(3),
                 ]);
+            processMonitor.StartMonitoring();
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 2),
@@ -252,6 +253,8 @@ namespace PowerPlanSwitcherTests
         public void ProcessForMultipleProcessRules()
         {
             List<Expectation> expectations = [
+                new(Reason.RuleApplied, 1),
+                new(Reason.RuleApplied, 10),
                 new(Reason.RuleApplied, 100),
                 new(Reason.RuleApplied, 10),
                 new(Reason.RuleApplied, 1),
@@ -318,6 +321,7 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(10),
                     CreateProcessRule(1),
                 ]);
+            processMonitor.StartMonitoring();
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 100),
@@ -359,6 +363,7 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(10),
                     CreateProcessRule(100),
                 ]);
+            processMonitor.StartMonitoring();
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 10),
@@ -443,18 +448,13 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(3),
                     CreateProcessRule(4),
                 ]);
+            processMonitor.StartMonitoring();
             ruleManager.StartEngine(
                 [
                     CreateProcessRule(0),
                     CreateProcessRule(1),
                 ]);
-            ruleManager.StartEngine(
-                [
-                    CreateProcessRule(0),
-                    CreateProcessRule(1),
-                    CreateProcessRule(2),
-                    CreateProcessRule(3),
-                ]);
+            processMonitor.StartMonitoring();
             ruleManager.StartEngine(
                 [
                     CreateProcessRule(0),
@@ -462,6 +462,15 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(2),
                     CreateProcessRule(3),
                 ]);
+            processMonitor.StartMonitoring();
+            ruleManager.StartEngine(
+                [
+                    CreateProcessRule(0),
+                    CreateProcessRule(1),
+                    CreateProcessRule(2),
+                    CreateProcessRule(3),
+                ]);
+            processMonitor.StartMonitoring();
             ruleManager.StopEngine();
 
             powerManager.SetActivePowerScheme(
@@ -474,6 +483,7 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(2),
                     CreateProcessRule(3),
                 ]);
+            processMonitor.StartMonitoring();
             ruleManager.StopEngine();
 
             ruleManager.StartEngine(
@@ -481,6 +491,7 @@ namespace PowerPlanSwitcherTests
                     CreatePowerLineRule(PowerLineStatus.Offline, 0),
                     CreatePowerLineRule(PowerLineStatus.Unknown, 1),
                 ]);
+            processMonitor.StartMonitoring();
             ruleManager.StopEngine();
 
             Assert.AreEqual(
@@ -532,6 +543,7 @@ namespace PowerPlanSwitcherTests
         public void InitialProcesses()
         {
             List<Expectation> expectations = [
+                new(Reason.RuleApplied, 4),
                 new(Reason.RuleApplied, 1)
             ];
 
@@ -565,6 +577,7 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(3),
                     CreateProcessRule(4),
                 ]);
+            processMonitor.StartMonitoring();
 
             Assert.AreEqual(
                 expectations.Count,
@@ -613,6 +626,7 @@ namespace PowerPlanSwitcherTests
                     CreatePowerLineRule(PowerLineStatus.Offline, 5),
                     CreatePowerLineRule(PowerLineStatus.Unknown, 6),
                 ]);
+            processMonitor.StartMonitoring();
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
@@ -681,6 +695,7 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(3),
                     CreateProcessRule(4),
                 ]);
+            processMonitor.StartMonitoring();
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
@@ -703,6 +718,7 @@ namespace PowerPlanSwitcherTests
         public void ProcessTermination()
         {
             List<Expectation> expectations = [
+                new(Reason.RuleApplied, 3),
                 new(Reason.RuleApplied, 1),
                 new(Reason.RuleApplied, 4),
                 new(Reason.BaselineApplied, 1_000),
@@ -739,6 +755,7 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(3),
                     CreateProcessRule(4),
                 ]);
+            processMonitor.StartMonitoring();
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 0),
@@ -811,6 +828,7 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(2),
                     CreateProcessRule(3),
                 ]);
+            processMonitor.StartMonitoring();
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 1),
@@ -824,6 +842,7 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(8),
                     CreateProcessRule(9),
                 ]);
+            processMonitor.StartMonitoring();
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Create, 0),
@@ -832,6 +851,7 @@ namespace PowerPlanSwitcherTests
                 ]);
 
             ruleManager.StartEngine([]);
+            processMonitor.StartMonitoring();
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Create, 6),
@@ -845,6 +865,7 @@ namespace PowerPlanSwitcherTests
                     CreatePowerLineRule(PowerLineStatus.Online, 0),
                     CreatePowerLineRule(PowerLineStatus.Offline, 1),
                 ]);
+            processMonitor.StartMonitoring();
             batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
             batteryMonitor.PowerLineStatus = PowerLineStatus.Offline;
 
@@ -857,6 +878,7 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(8),
                     CreateProcessRule(9),
                 ]);
+            processMonitor.StartMonitoring();
             batteryMonitor.PowerLineStatus = PowerLineStatus.Online;
             processMonitor.StartSimulation(
                 [
@@ -922,6 +944,7 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(3),
                     CreateProcessRule(4),
                 ]);
+            processMonitor.StartMonitoring();
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
@@ -937,6 +960,7 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(3),
                     CreateProcessRule(4),
                 ]);
+            processMonitor.StartMonitoring();
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 4),
@@ -950,6 +974,7 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(3),
                     CreateProcessRule(4),
                 ]);
+            processMonitor.StartMonitoring();
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Create, 2),
@@ -962,6 +987,7 @@ namespace PowerPlanSwitcherTests
                     CreatePowerLineRule(PowerLineStatus.Offline, 2),
                     CreatePowerLineRule(PowerLineStatus.Unknown, 3),
                 ]);
+            processMonitor.StartMonitoring();
             batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
 
             ruleManager.StopEngine();
@@ -972,6 +998,7 @@ namespace PowerPlanSwitcherTests
                     CreatePowerLineRule(PowerLineStatus.Offline, 2),
                     CreatePowerLineRule(PowerLineStatus.Unknown, 3),
                 ]);
+            processMonitor.StartMonitoring();
             batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
 
             ruleManager.StopEngine();
@@ -1027,6 +1054,7 @@ namespace PowerPlanSwitcherTests
                     CreatePowerLineRule(PowerLineStatus.Offline, 6),
                     CreatePowerLineRule(PowerLineStatus.Unknown, 7),
                 ]);
+            processMonitor.StartMonitoring();
             processMonitor.StartSimulation(
                 [
                     ProcessMonitorStub.CreateAction(Action.Terminate, 3),
@@ -1089,6 +1117,7 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(3),
                     CreateProcessRule(4),
                 ]);
+            processMonitor.StartMonitoring();
             powerManager.SetActivePowerScheme(
                 powerManager.GetPowerSchemeGuids().ToList()[3]);
             processMonitor.StartSimulation(
@@ -1339,6 +1368,7 @@ namespace PowerPlanSwitcherTests
                     CreateProcessRule(2),
                     CreatePowerLineRule(PowerLineStatus.Offline, 3),
                 ]);
+            processMonitor.StartMonitoring();
 
             batteryMonitor.PowerLineStatus = PowerLineStatus.Unknown;
             batteryMonitor.PowerLineStatus = PowerLineStatus.Online;

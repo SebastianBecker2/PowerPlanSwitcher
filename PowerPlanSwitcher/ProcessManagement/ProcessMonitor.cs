@@ -1,6 +1,5 @@
 namespace PowerPlanSwitcher.ProcessManagement
 {
-    using System.Diagnostics;
     using Serilog;
     using Timer = System.Threading.Timer;
 
@@ -10,27 +9,27 @@ namespace PowerPlanSwitcher.ProcessManagement
         public static class Static
 #pragma warning restore CA1716 // Identifiers should not match keywords
         {
-            public static IEnumerable<ICachedProcess> GetUsersProcesses() =>
-            Process.GetProcesses()
-                .Select(CachedProcess.CreateFromProcess)
-                .Where(p => p is not null && !p.IsOwnProcess)
-                .Cast<CachedProcess>();
+            public static IEnumerable<IProcess> GetUsersProcesses() =>
+                System.Diagnostics.Process.GetProcesses()
+                    .Select(Process.CreateFromProcess)
+                    .Where(p => p is not null && !p.IsOwnProcess)
+                    .Cast<Process>();
         }
 
         public event EventHandler<ProcessEventArgs>? ProcessCreated;
         protected virtual void OnProcessCreated(ProcessEventArgs e) =>
             ProcessCreated?.Invoke(this, e);
-        protected virtual void OnProcessCreated(ICachedProcess process) =>
+        protected virtual void OnProcessCreated(IProcess process) =>
             OnProcessCreated(new ProcessEventArgs(process));
 
         public event EventHandler<ProcessEventArgs>? ProcessTerminated;
         protected virtual void OnProcessTerminated(ProcessEventArgs e) =>
             ProcessTerminated?.Invoke(this, e);
-        protected virtual void OnProcessTerminated(ICachedProcess process) =>
+        protected virtual void OnProcessTerminated(IProcess process) =>
             OnProcessTerminated(new ProcessEventArgs(process));
 
         private const int UpdateTimerInterval = 2000;
-        private IEnumerable<ICachedProcess> previousProcesses = [];
+        private IEnumerable<IProcess> previousProcesses = [];
         private readonly Timer updateTimer;
         private bool disposedValue;
         private bool monitoring;
@@ -61,22 +60,32 @@ namespace PowerPlanSwitcher.ProcessManagement
             {
                 var currentProcesses = GetUsersProcesses().ToList();
 
-                var addedProcesses = currentProcesses.Except(previousProcesses).ToList();
-                var removedProcesses = previousProcesses.Except(currentProcesses).ToList();
+                var addedProcesses = currentProcesses
+                    .Except(previousProcesses)
+                    .ToList();
+                var removedProcesses = previousProcesses
+                    .Except(currentProcesses)
+                    .ToList();
 
                 foreach (var addedProcess in addedProcesses)
                 {
                     Log.Information(
-                        "Process created: {ExecutablePath} ({ProcessId})",
-                        addedProcess.ExecutablePath, addedProcess.ProcessId);
+                        "Process created: {ProcessId} " +
+                        "{ProcessName} {ExecutablePath}",
+                        addedProcess.ProcessId,
+                        addedProcess.ProcessName,
+                        addedProcess.ExecutablePath);
                     OnProcessCreated(addedProcess);
                 }
 
                 foreach (var removedProcess in removedProcesses)
                 {
                     Log.Information(
-                        "Process terminated: {ExecutablePath} ({ProcessId})",
-                        removedProcess.ExecutablePath, removedProcess.ProcessId);
+                        "Process terminated: {ProcessId} " +
+                        "{ProcessName} {ExecutablePath}",
+                        removedProcess.ProcessId,
+                        removedProcess.ProcessName,
+                        removedProcess.ExecutablePath);
                     OnProcessTerminated(removedProcess);
                 }
 
@@ -90,7 +99,7 @@ namespace PowerPlanSwitcher.ProcessManagement
             }
         }
 
-        public IEnumerable<ICachedProcess> GetUsersProcesses() =>
+        public IEnumerable<IProcess> GetUsersProcesses() =>
             Static.GetUsersProcesses();
 
         protected virtual void Dispose(bool disposing)

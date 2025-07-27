@@ -1,32 +1,10 @@
 namespace PowerPlanSwitcher
 {
-    using System.ComponentModel;
-    using System.Diagnostics;
     using PowerPlanSwitcher.ProcessManagement;
 
     public partial class ProcessSelectionDlg : Form
     {
-        private sealed class SortableProcess
-        {
-            public ICachedProcess Process { get; }
-            public DateTime StartTime { get; } = DateTime.MinValue;
-
-            public SortableProcess(ICachedProcess process)
-            {
-                Process = process;
-                try
-                {
-                    StartTime = System.Diagnostics.Process
-                        .GetProcessById(process.ProcessId)
-                        .StartTime;
-                }
-                catch (ArgumentException) { }
-                catch (Win32Exception) { }
-                catch (InvalidOperationException) { }
-            }
-        }
-
-        public ICachedProcess? SelectedProcess { get; set; }
+        public IProcess? SelectedProcess { get; set; }
 
         public ProcessSelectionDlg() => InitializeComponent();
 
@@ -36,15 +14,14 @@ namespace PowerPlanSwitcher
             base.OnLoad(e);
         }
 
-        private static DataGridViewRow? ProcessWithStartTimeToRow(
-            SortableProcess sortableProcess)
+        private static DataGridViewRow? ProcessToRow(IProcess process)
         {
             var row = new DataGridViewRow
             {
-                Tag = sortableProcess,
+                Tag = process,
             };
 
-            var fileName = sortableProcess.Process.ExecutablePath;
+            var fileName = process.ExecutablePath;
             if (string.IsNullOrWhiteSpace(fileName))
             {
                 return null;
@@ -58,15 +35,27 @@ namespace PowerPlanSwitcher
                 },
                 new DataGridViewTextBoxCell
                 {
-                    Value = sortableProcess.Process.ProcessId,
+                    Value = process.ProcessId,
                 },
                 new DataGridViewTextBoxCell
                 {
-                    Value = sortableProcess.Process.ProcessName,
+                    Value = process.ProcessName,
                 },
+                //new DataGridViewTextBoxCell
+                //{
+                //    Value = process.MainWindowTitle,
+                //},
+                //new DataGridViewTextBoxCell
+                //{
+                //    Value = process.BasePriority,
+                //},
+                //new DataGridViewTextBoxCell
+                //{
+                //    Value = process.PriorityClass,
+                //},
                 new DataGridViewTextBoxCell
                 {
-                    Value = sortableProcess.StartTime,
+                    Value = process.StartTime,
                 },
                 new DataGridViewTextBoxCell
                 {
@@ -79,31 +68,16 @@ namespace PowerPlanSwitcher
         {
             DgvProcesses.Rows.Clear();
 
-            using var processMonitor = new ProcessMonitor();
-            foreach (var sortableProcess in
-                processMonitor.GetUsersProcesses()
-                .Select(p => new SortableProcess(p))
-                .OrderByDescending(t => t.StartTime))
+            foreach (var process in
+                ProcessMonitor.Static.GetUsersProcesses()
+                .OrderByDescending(p => p.StartTime))
             {
-                try
+                var row = ProcessToRow(process);
+                if (row is null)
                 {
-                    var row = ProcessWithStartTimeToRow(sortableProcess);
-                    if (row is null)
-                    {
-                        continue;
-                    }
-                    _ = DgvProcesses.Rows.Add(row);
+                    continue;
                 }
-                catch (Win32Exception)
-                {
-                    Debug.Print($"Couldn't get process module of " +
-                        $"{sortableProcess.Process.ProcessName}");
-                }
-                catch (InvalidOperationException)
-                {
-                    Debug.Print($"Process " +
-                        $"{sortableProcess.Process.ProcessName} just exited");
-                }
+                _ = DgvProcesses.Rows.Add(row);
             }
         }
 
@@ -115,7 +89,7 @@ namespace PowerPlanSwitcher
             }
 
             SelectedProcess =
-                (DgvProcesses.SelectedRows[0].Tag as SortableProcess)!.Process;
+                (DgvProcesses.SelectedRows[0].Tag as IProcess)!;
             DialogResult = DialogResult.OK;
         }
 
@@ -123,15 +97,18 @@ namespace PowerPlanSwitcher
             object sender,
             DataGridViewSortCompareEventArgs e)
         {
-            var process1 = DgvProcesses.Rows[e.RowIndex1].Tag as SortableProcess;
-            Debug.Assert(process1 is not null);
-            var process2 = DgvProcesses.Rows[e.RowIndex2].Tag as SortableProcess;
-            Debug.Assert(process2 is not null);
+            var process1 = DgvProcesses.Rows[e.RowIndex1].Tag as IProcess;
+            System.Diagnostics.Debug.Assert(process1 is not null);
+            var process2 = DgvProcesses.Rows[e.RowIndex2].Tag as IProcess;
+            System.Diagnostics.Debug.Assert(process2 is not null);
 
             if (e.Column == DgcProcessStartTime)
             {
                 e.Handled = true;
-                e.SortResult = process1.StartTime < process2.StartTime ? -1 : 1;
+                e.SortResult =
+                    process1.StartTime < process2.StartTime
+                    ? -1
+                    : 1;
             }
         }
 

@@ -11,39 +11,45 @@ namespace PowerPlanSwitcherTests
     }
 
     internal partial class ProcessMonitorStub(
-        List<ICachedProcess> initialProcesses)
+        List<IProcess> initialProcesses)
         : IProcessMonitor
     {
-        public static (Action Action, ICachedProcess Process) CreateAction(
+        public static (Action Action, IProcess Process) CreateAction(
             Action action,
             int i) =>
             (action, CreateProcess(i));
 
-        public static CachedProcessStub CreateProcess(int i) =>
+        public static ProcessStub CreateProcess(int i) =>
             new() { ExecutablePath = $"{i}", ProcessId = i };
 
         public event EventHandler<ProcessEventArgs>? ProcessCreated;
-        protected virtual void OnProcessCreated(ICachedProcess process) =>
+        protected virtual void OnProcessCreated(IProcess process) =>
             ProcessCreated?.Invoke(this, new ProcessEventArgs(process));
         public event EventHandler<ProcessEventArgs>? ProcessTerminated;
-        protected virtual void OnProcessTerminated(ICachedProcess process) =>
+        protected virtual void OnProcessTerminated(IProcess process) =>
             ProcessTerminated?.Invoke(this, new ProcessEventArgs(process));
 
-        public IEnumerable<ICachedProcess> GetUsersProcesses() =>
+        public IEnumerable<IProcess> GetUsersProcesses() =>
             initialProcesses;
 
-        public void StartMonitoring() { }
+        public void StartMonitoring()
+        {
+            foreach (var p in initialProcesses)
+            {
+                OnProcessCreated(p);
+            }
+        }
 
         public void StartSimulation(
-            IEnumerable<(Action Action, ICachedProcess Process)> processActions)
+            IEnumerable<(Action Action, IProcess Process)> processActions)
         {
-            void Create(ICachedProcess p)
+            void Create(IProcess p)
             {
                 initialProcesses.Add(p);
                 OnProcessCreated(p);
             }
 
-            void Terminate(ICachedProcess p)
+            void Terminate(IProcess p)
             {
                 if (!initialProcesses.Remove(p))
                 {

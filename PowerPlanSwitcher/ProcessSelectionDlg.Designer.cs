@@ -1,4 +1,4 @@
-﻿namespace PowerPlanSwitcher
+namespace PowerPlanSwitcher
 {
     partial class ProcessSelectionDlg
     {
@@ -111,7 +111,7 @@
             DgcProcessStartTime.HeaderText = "Start Time";
             DgcProcessStartTime.Name = "DgcProcessStartTime";
             DgcProcessStartTime.ReadOnly = true;
-            DgcProcessStartTime.Width = 85;
+            DgcProcessStartTime.Width = 86;
             // 
             // DgcProcessPath
             // 

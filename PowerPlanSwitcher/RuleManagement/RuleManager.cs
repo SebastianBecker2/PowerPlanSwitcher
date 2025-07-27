@@ -300,7 +300,7 @@ namespace PowerPlanSwitcher.RuleManagement
 
         private bool HasActiveRule() => GetActiveRule() is not null;
 
-        private static bool CheckRule(IRule rule, ICachedProcess process)
+        private static bool CheckRule(IRule rule, IProcess process)
         {
             if (rule is ProcessRule powerRule)
             {
