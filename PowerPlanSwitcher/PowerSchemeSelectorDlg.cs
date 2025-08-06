@@ -64,8 +64,10 @@ namespace PowerPlanSwitcher
             button.Click += (_, _) =>
             {
                 Log.Information(
-                    "Activating power scheme: {SchemeGuid} Reason: PowerSchemeSelectorDlg",
-                    guid, name);
+                    "Activating power scheme: {PowerSchemeName} " +
+                    "{PowerSchemeGuid} Reason: User selection",
+                    name,
+                    guid);
                 PowerManager.Static.SetActivePowerScheme((Guid)button.Tag);
                 Close();
             };

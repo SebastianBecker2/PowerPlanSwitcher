@@ -183,7 +183,9 @@ namespace PowerPlanSwitcher
             index = (index + 1) % schemes.Count;
 
             Log.Information(
-                "Activating power scheme: {SchemeGuid} Reason: Cycle Hotkey",
+                "Activating power scheme: {PowerSchemeName} " +
+                "{PowerSchemeGuid} Reason: Cycle Hotkey",
+                PowerManager.Static.GetPowerSchemeName(schemes[index]) ?? "<No Name>",
                 schemes[index]);
             PowerManager.Static.SetActivePowerScheme(schemes[index]);
             if (PopUpWindowLocationHelper.ShouldShowToast("hotkey"))
@@ -197,16 +199,16 @@ namespace PowerPlanSwitcher
         private static void HandlePowerSchemeHotkeyPressed(
             HotkeyPressedEventArgs e)
         {
-            var (guid, _) = PowerManager.Static.GetPowerSchemes()
-            .FirstOrDefault(ps =>
-            {
-                var setting = PowerSchemeSettings.GetSetting(ps.guid);
-                if (setting is null || setting.Hotkey is null)
+            var (guid, name) = PowerManager.Static.GetPowerSchemes()
+                .FirstOrDefault(ps =>
                 {
-                    return false;
-                }
-                return AreHotkeyEqual(e, setting.Hotkey);
-            });
+                    var setting = PowerSchemeSettings.GetSetting(ps.guid);
+                    if (setting is null || setting.Hotkey is null)
+                    {
+                        return false;
+                    }
+                    return AreHotkeyEqual(e, setting.Hotkey);
+                });
 
             if (guid == Guid.Empty)
             {
@@ -214,7 +216,9 @@ namespace PowerPlanSwitcher
             }
 
             Log.Information(
-                "Activating power scheme: {SchemeGuid} Reason: Direct Hotkey",
+                "Activating power scheme: {PowerSchemeName} " +
+                "{PowerSchemeGuid} Reason: Direct Hotkey",
+                name,
                 guid);
             PowerManager.Static.SetActivePowerScheme(guid);
             ToastDlg.ShowToastNotification(guid, "Power Plan hotkey pressed");
@@ -262,7 +266,10 @@ namespace PowerPlanSwitcher
                 Settings.Default.InitialPowerSchemeGuid != Guid.Empty)
             {
                 Log.Information(
-                    "Activating power scheme: {SchemeGuid} Reason: Initial Power Scheme",
+                    "Activating power scheme: {PowerSchemeName} " +
+                    "{PowerSchemeGuid} Reason: Initial Power Scheme",
+                    PowerManager.Static.GetPowerSchemeName(
+                        Settings.Default.InitialPowerSchemeGuid) ?? "<No Name>",
                     Settings.Default.InitialPowerSchemeGuid);
                 PowerManager.Static.SetActivePowerScheme(
                     Settings.Default.InitialPowerSchemeGuid);

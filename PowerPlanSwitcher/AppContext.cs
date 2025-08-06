@@ -26,7 +26,8 @@ namespace PowerPlanSwitcher
 
             powerManager.ActivePowerSchemeChanged += (s, e) =>
                 Log.Information(
-                    "Actived power scheme: {SchemeGuid}",
+                    "System activated power scheme: {PowerSchemeName} {PowerSchemeGuid}",
+                    powerManager.GetPowerSchemeName(e.ActiveSchemeGuid) ?? "<No Name>",
                     e.ActiveSchemeGuid);
 
             ruleManager = new(powerManager)
@@ -84,8 +85,12 @@ namespace PowerPlanSwitcher
             }
 
             Log.Information(
-                "Activating power scheme: {PowerSchemeGuid} Reason: {Reason}",
-                e.PowerSchemeGuid, e.Reason ?? "<Missing Reason>");
+                "Activating power scheme: {PowerSchemeName} " +
+                "{PowerSchemeGuid} Reason: {Reason}",
+                PowerManager.Static.GetPowerSchemeName(
+                    e.PowerSchemeGuid) ?? "<No Name>",
+                e.PowerSchemeGuid,
+                e.Reason ?? "<Missing Reason>");
             powerManager.SetActivePowerScheme(e.PowerSchemeGuid);
 
             if (e.Reason != null && PopUpWindowLocationHelper.ShouldShowToast(e.Reason))

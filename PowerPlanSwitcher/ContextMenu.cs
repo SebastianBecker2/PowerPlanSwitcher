@@ -1,6 +1,7 @@
 namespace PowerPlanSwitcher
 {
     using PowerPlanSwitcher.PowerManagement;
+    using Serilog;
 
     internal class ContextMenu : ContextMenuStrip
     {
@@ -41,7 +42,14 @@ namespace PowerPlanSwitcher
                 };
 
                 button.Click += (_, _) =>
+                {
+                    Log.Information(
+                        "Activating power scheme: {PowerSchemeName} " +
+                        "{PowerSchemeGuid} Reason: User selection",
+                        name,
+                        guid);
                     PowerManager.Static.SetActivePowerScheme(guid);
+                };
 
                 _ = Items.Add(button);
             }
