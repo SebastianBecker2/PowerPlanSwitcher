@@ -26,8 +26,9 @@ Furher settings allow you to:
 - Configure a global hotkey to cycle through your power plans.
 - Set your prefered color theme.
 - Specify the display of notifications when a power plan is switched by a rule or a hotkey press.
+- Activate extended logging.
 
-![image](https://github.com/user-attachments/assets/977071cc-3aa3-4436-9bad-f4fcdfe95bd9)
+<img width="707" height="351" alt="image" src="https://github.com/user-attachments/assets/884ee63a-1c6e-402c-9a1a-e112f8785050" />
 
 PowerPlanSwitcher is using the following tools, resources and libraries:
 
