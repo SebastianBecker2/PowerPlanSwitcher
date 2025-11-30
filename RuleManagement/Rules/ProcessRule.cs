@@ -1,21 +1,19 @@
 namespace RuleManagement.Rules;
 
 using System.ComponentModel;
-using Newtonsoft.Json;
 using ProcessManagement;
 
-public class ProcessRule : IRule
+public class ProcessRule(
+    IProcessMonitor processMonitor,
+    ProcessRuleDto dto)
+    : Rule,
+    IRule
 {
-    [JsonIgnore]
-    public int ActivationCount { get; set; }
-    public int Index { get; set; }
-    public Guid SchemeGuid { get; set; }
-    public string FilePath
-    {
-        get => filePath;
-        set => filePath = value.ToLowerInvariant();
-    }
-    public ComparisonType Type { get; set; }
+    public IRuleDto Dto => dto;
+    public int Index => dto.Index;
+    public Guid SchemeGuid => dto.SchemeGuid;
+    public string FilePath => dto.FilePath;
+    public ComparisonType Type => dto.Type;
 
     private static readonly List<(ComparisonType type, string text)>
         ComparisonTypeText =
@@ -25,12 +23,10 @@ public class ProcessRule : IRule
             (ComparisonType.EndsWith, "Path ends with"),
         ];
 
-    private string filePath = string.Empty;
-
     public string GetDescription() =>
         $"Process -> {ComparisonTypeToText(Type)} -> {FilePath}";
 
-    public bool CheckRule(IProcess process)
+    private bool CheckRule(IProcess process)
     {
         try
         {
@@ -63,14 +59,14 @@ public class ProcessRule : IRule
         }
     }
 
-    public static string ComparisonTypeToText(ComparisonType ruleType)
+    private static string ComparisonTypeToText(ComparisonType ruleType)
     {
         (ComparisonType type, string text)? entry = ComparisonTypeText
             .FirstOrDefault(rtt => rtt.type == ruleType);
         return entry?.text ?? string.Empty;
     }
 
-    public static ComparisonType TextToComparisonType(string text)
+    private static ComparisonType TextToComparisonType(string text)
     {
         (ComparisonType type, string text)? entry = ComparisonTypeText
             .FirstOrDefault(rtt => rtt.text == text);

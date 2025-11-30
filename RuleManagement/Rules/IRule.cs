@@ -4,9 +4,10 @@ using System;
 
 public interface IRule
 {
-    public int ActivationCount { get; set; }
-    public int Index { get; set; }
-    public Guid SchemeGuid { get; set; }
+    public int TriggerCount { get; set; }
+    public IRuleDto Dto { get; }
 
     public string GetDescription();
+
+    public event EventHandler<TriggeredEventArgs>? Triggered;
 }

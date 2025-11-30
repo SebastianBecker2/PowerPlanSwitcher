@@ -1,16 +1,19 @@
 namespace RuleManagement.Rules;
 
 using System;
-using Newtonsoft.Json;
 using PowerManagement;
 
-public class PowerLineRule : IRule
+public class PowerLineRule(
+    IBatteryMonitor batteryMonitor,
+    PowerLineRuleDto dto)
+    : Rule,
+    IRule
 {
-    [JsonIgnore]
-    public int ActivationCount { get; set; }
-    public int Index { get; set; }
-    public Guid SchemeGuid { get; set; }
-    public PowerLineStatus PowerLineStatus { get; set; }
+    public IRuleDto Dto => dto;
+    public int Index => dto.Index;
+    public Guid SchemeGuid => dto.SchemeGuid;
+    public PowerLineStatus PowerLineStatus => dto.PowerLineStatus;
+
 
     private static readonly List<(PowerLineStatus status, string text)>
         PowerLineStatusText =
@@ -23,10 +26,10 @@ public class PowerLineRule : IRule
     public string GetDescription() =>
         $"Power Line -> {PowerLineStatusToText(PowerLineStatus)}";
 
-    public bool CheckRule(PowerLineStatus powerLineStatus) =>
+    private bool CheckRule(PowerLineStatus powerLineStatus) =>
         PowerLineStatus == powerLineStatus;
 
-    public static string PowerLineStatusToText(
+    private static string PowerLineStatusToText(
         PowerLineStatus powerLineStatus)
     {
         (PowerLineStatus status, string text)? entry = PowerLineStatusText
@@ -34,7 +37,7 @@ public class PowerLineRule : IRule
         return entry?.text ?? string.Empty;
     }
 
-    public static PowerLineStatus TextToPowerLineStatus(string text)
+    private static PowerLineStatus TextToPowerLineStatus(string text)
     {
         (PowerLineStatus status, string text)? entry = PowerLineStatusText
             .FirstOrDefault(rtt => rtt.text == text);
