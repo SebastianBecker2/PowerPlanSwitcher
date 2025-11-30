@@ -1,8 +1,7 @@
-namespace PowerPlanSwitcher.PowerManagement
+namespace PowerManagement;
+
+public class ActivePowerSchemeChangedEventArgs(Guid activeSchemeGuid)
+    : EventArgs
 {
-    public class ActivePowerSchemeChangedEventArgs(Guid activeSchemeGuid)
-        : EventArgs
-    {
-        public Guid ActiveSchemeGuid { get; } = activeSchemeGuid;
-    }
+    public Guid ActiveSchemeGuid { get; } = activeSchemeGuid;
 }

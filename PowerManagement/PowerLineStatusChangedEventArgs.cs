@@ -1,11 +1,10 @@
-namespace PowerPlanSwitcher.PowerManagement
-{
-    using System;
+namespace PowerManagement;
 
-    public class PowerLineStatusChangedEventArgs(
-        PowerLineStatus powerLineStatus)
-        : EventArgs
-    {
-        public PowerLineStatus PowerLineStatus { get; set; } = powerLineStatus;
-    }
+using System;
+
+public class PowerLineStatusChangedEventArgs(
+    PowerLineStatus powerLineStatus)
+    : EventArgs
+{
+    public PowerLineStatus PowerLineStatus { get; set; } = powerLineStatus;
 }
