@@ -75,7 +75,4 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
-  <ItemGroup>
-    <Folder Include="RuleManagement\" />
-  </ItemGroup>
 </Project>
