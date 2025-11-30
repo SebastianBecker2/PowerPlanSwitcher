@@ -6,4 +6,10 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
+  <ItemGroup>
+    <PackageReference Include="Vanara.PInvoke.Kernel32" Version="4.1.6" />
+    <PackageReference Include="Vanara.PInvoke.PowrProf" Version="4.1.6" />
+    <PackageReference Include="Vanara.PInvoke.User32" Version="4.1.6" />
+  </ItemGroup>
+
 </Project>
