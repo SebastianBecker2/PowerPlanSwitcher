@@ -1,96 +1,92 @@
-using PowerPlanSwitcher.RuleManagement.Rules;
-
 namespace RuleManagement.Rules;
 
 using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
-using PowerPlanSwitcher.PowerManagement;
-using PowerPlanSwitcher.Properties;
+using PowerManagement;
 
 internal class Rules
 {
-    private static List<IRule>? rules;
-    private static readonly object Lock = new();
+    private List<IRule> rules = [];
 
-    public static IEnumerable<IRule> GetRules()
+    public event EventHandler<RulesUpdatedEventArgs>? RulesUpdated;
+
+    public Rules(
+        string ruleJson,
+        bool migratedPowerRulesToRules,
+        Guid acPowerSchemeGuid,
+        Guid batterPowerSchemeGuid)
     {
-        lock (Lock)
+        if (!migratedPowerRulesToRules)
         {
-            rules ??= LoadRules();
-            return rules ?? [];
+            // Overwrite json with migrated version
+            ruleJson = MigratePowerRulesToRules(ruleJson, acPowerSchemeGuid, batterPowerSchemeGuid);
         }
+
+        rules = LoadRules(ruleJson);
     }
 
-    private static void MigratePowerRulesToRules()
-    {
-        if (Settings.Default.MigratedPowerRulesToRules)
-        {
-            return;
-        }
+    public IEnumerable<IRule> GetRules() => rules ?? [];
 
+    private static string MigratePowerRulesToRules(
+        string ruleJson,
+        Guid acPowerSchemeGuid,
+        Guid batterPowerSchemeGuid)
+    {
         if (!BatteryMonitor.Static.HasSystemBattery)
         {
-            Settings.Default.MigratedPowerRulesToRules = true;
-            Settings.Default.Save();
-            return;
+            return ruleJson;
         }
 
         var rules = JsonConvert.DeserializeObject<List<ProcessRule>>(
-            Settings.Default.PowerRules)?.Cast<IRule>()?.ToList() ?? [];
+            ruleJson)?.Cast<IRule>()?.ToList() ?? [];
 
-        if (Settings.Default.AcPowerSchemeGuid != Guid.Empty)
+        if (acPowerSchemeGuid != Guid.Empty)
         {
             rules.Add(new PowerLineRule()
             {
                 Index = rules.Count,
                 PowerLineStatus = PowerLineStatus.Online,
-                SchemeGuid = Settings.Default.AcPowerSchemeGuid,
+                SchemeGuid = acPowerSchemeGuid,
             });
         }
 
-        if (Settings.Default.BatterPowerSchemeGuid != Guid.Empty)
+        if (batterPowerSchemeGuid != Guid.Empty)
         {
             rules.Add(new PowerLineRule()
             {
                 Index = rules.Count,
                 PowerLineStatus = PowerLineStatus.Offline,
-                SchemeGuid = Settings.Default.BatterPowerSchemeGuid,
+                SchemeGuid = batterPowerSchemeGuid,
             });
         }
 
-        SaveRules(rules);
-
-        Settings.Default.MigratedPowerRulesToRules = true;
-        Settings.Default.Save();
-    }
-
-    private static List<IRule>? LoadRules()
-    {
-        MigratePowerRulesToRules();
-
-        return JsonConvert.DeserializeObject<List<IRule>>(
-            Settings.Default.Rules,
+        return JsonConvert.SerializeObject(rules,
             new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Objects
             });
     }
 
-    public static void SetRules(IEnumerable<IRule> newRules)
+    private static List<IRule> LoadRules(string ruleJson) =>
+        JsonConvert.DeserializeObject<List<IRule>>(
+            ruleJson,
+            new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects
+            })
+            ?? [];
+
+    public void SetRules(IEnumerable<IRule> newRules)
     {
         rules = [.. newRules];
-        SaveRules(rules);
-    }
 
-    private static void SaveRules(IEnumerable<IRule> rules)
-    {
-        Settings.Default.Rules =
-            JsonConvert.SerializeObject(rules,
+        var json = JsonConvert.SerializeObject(rules,
             new JsonSerializerSettings
             {
                 TypeNameHandling = TypeNameHandling.Objects
             });
-        Settings.Default.Save();
+
+        RulesUpdated?.Invoke(this, new RulesUpdatedEventArgs(json));
     }
 }

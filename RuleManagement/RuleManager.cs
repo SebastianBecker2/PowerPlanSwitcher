@@ -1,7 +1,7 @@
 namespace RuleManagement;
 
-using PowerPlanSwitcher.PowerManagement;
-using PowerPlanSwitcher.ProcessManagement;
+using PowerManagement;
+using ProcessManagement;
 using RuleManagement.Rules;
 
 public class RuleManager(IPowerManager powerManager)

@@ -1,6 +1,7 @@
 namespace RuleManagement;
 
 using System;
+using RuleManagement.Rules;
 
 public class RuleApplicationChangedEventArgs(
     Guid powerSchemeGuid,

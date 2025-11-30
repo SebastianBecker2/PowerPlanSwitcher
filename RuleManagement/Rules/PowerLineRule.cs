@@ -2,6 +2,7 @@ namespace RuleManagement.Rules;
 
 using System;
 using Newtonsoft.Json;
+using PowerManagement;
 
 public class PowerLineRule : IRule
 {

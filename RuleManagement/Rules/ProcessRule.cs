@@ -2,7 +2,7 @@ namespace RuleManagement.Rules;
 
 using System.ComponentModel;
 using Newtonsoft.Json;
-using PowerPlanSwitcher.ProcessManagement;
+using ProcessManagement;
 
 public class ProcessRule : IRule
 {
