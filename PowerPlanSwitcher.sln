@@ -15,6 +15,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugCmd", "DebugCmd\DebugC
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessManagement", "ProcessManagement\ProcessManagement.csproj", "{E8F60E65-E7BF-472D-A367-CB423D6D9D67}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuleManagement", "RuleManagement\RuleManagement.csproj", "{4DA97782-706D-4BFE-8CFF-68D1F2364031}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -69,6 +71,14 @@ Global
 		{E8F60E65-E7BF-472D-A367-CB423D6D9D67}.Release|Any CPU.Build.0 = Release|Any CPU
 		{E8F60E65-E7BF-472D-A367-CB423D6D9D67}.Release|x64.ActiveCfg = Release|Any CPU
 		{E8F60E65-E7BF-472D-A367-CB423D6D9D67}.Release|x64.Build.0 = Release|Any CPU
+		{4DA97782-706D-4BFE-8CFF-68D1F2364031}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{4DA97782-706D-4BFE-8CFF-68D1F2364031}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{4DA97782-706D-4BFE-8CFF-68D1F2364031}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{4DA97782-706D-4BFE-8CFF-68D1F2364031}.Debug|x64.Build.0 = Debug|Any CPU
+		{4DA97782-706D-4BFE-8CFF-68D1F2364031}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{4DA97782-706D-4BFE-8CFF-68D1F2364031}.Release|Any CPU.Build.0 = Release|Any CPU
+		{4DA97782-706D-4BFE-8CFF-68D1F2364031}.Release|x64.ActiveCfg = Release|Any CPU
+		{4DA97782-706D-4BFE-8CFF-68D1F2364031}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
