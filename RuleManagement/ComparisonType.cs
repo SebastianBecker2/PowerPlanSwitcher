@@ -1,9 +1,8 @@
-namespace PowerPlanSwitcher.RuleManagement
+namespace RuleManagement;
+
+public enum ComparisonType
 {
-    public enum ComparisonType
-    {
-        StartsWith,
-        Exact,
-        EndsWith,
-    }
+    StartsWith,
+    Exact,
+    EndsWith,
 }

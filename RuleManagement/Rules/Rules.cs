@@ -1,95 +1,96 @@
-namespace PowerPlanSwitcher.RuleManagement.Rules
+using PowerPlanSwitcher.RuleManagement.Rules;
+
+namespace RuleManagement.Rules;
+
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
+using PowerPlanSwitcher.PowerManagement;
+using PowerPlanSwitcher.Properties;
+
+internal class Rules
 {
-    using System.Collections.Generic;
-    using System.Linq;
-    using Newtonsoft.Json;
-    using PowerPlanSwitcher.PowerManagement;
-    using PowerPlanSwitcher.Properties;
+    private static List<IRule>? rules;
+    private static readonly object Lock = new();
 
-    internal class Rules
+    public static IEnumerable<IRule> GetRules()
     {
-        private static List<IRule>? rules;
-        private static readonly object Lock = new();
-
-        public static IEnumerable<IRule> GetRules()
+        lock (Lock)
         {
-            lock (Lock)
-            {
-                rules ??= LoadRules();
-                return rules ?? [];
-            }
+            rules ??= LoadRules();
+            return rules ?? [];
+        }
+    }
+
+    private static void MigratePowerRulesToRules()
+    {
+        if (Settings.Default.MigratedPowerRulesToRules)
+        {
+            return;
         }
 
-        private static void MigratePowerRulesToRules()
+        if (!BatteryMonitor.Static.HasSystemBattery)
         {
-            if (Settings.Default.MigratedPowerRulesToRules)
-            {
-                return;
-            }
-
-            if (!BatteryMonitor.Static.HasSystemBattery)
-            {
-                Settings.Default.MigratedPowerRulesToRules = true;
-                Settings.Default.Save();
-                return;
-            }
-
-            var rules = JsonConvert.DeserializeObject<List<ProcessRule>>(
-                Settings.Default.PowerRules)?.Cast<IRule>()?.ToList() ?? [];
-
-            if (Settings.Default.AcPowerSchemeGuid != Guid.Empty)
-            {
-                rules.Add(new PowerLineRule()
-                {
-                    Index = rules.Count,
-                    PowerLineStatus = PowerLineStatus.Online,
-                    SchemeGuid = Settings.Default.AcPowerSchemeGuid,
-                });
-            }
-
-            if (Settings.Default.BatterPowerSchemeGuid != Guid.Empty)
-            {
-                rules.Add(new PowerLineRule()
-                {
-                    Index = rules.Count,
-                    PowerLineStatus = PowerLineStatus.Offline,
-                    SchemeGuid = Settings.Default.BatterPowerSchemeGuid,
-                });
-            }
-
-            SaveRules(rules);
-
             Settings.Default.MigratedPowerRulesToRules = true;
             Settings.Default.Save();
+            return;
         }
 
-        private static List<IRule>? LoadRules()
+        var rules = JsonConvert.DeserializeObject<List<ProcessRule>>(
+            Settings.Default.PowerRules)?.Cast<IRule>()?.ToList() ?? [];
+
+        if (Settings.Default.AcPowerSchemeGuid != Guid.Empty)
         {
-            MigratePowerRulesToRules();
-
-            return JsonConvert.DeserializeObject<List<IRule>>(
-                Settings.Default.Rules,
-                new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.Objects
-                });
+            rules.Add(new PowerLineRule()
+            {
+                Index = rules.Count,
+                PowerLineStatus = PowerLineStatus.Online,
+                SchemeGuid = Settings.Default.AcPowerSchemeGuid,
+            });
         }
 
-        public static void SetRules(IEnumerable<IRule> newRules)
+        if (Settings.Default.BatterPowerSchemeGuid != Guid.Empty)
         {
-            rules = [.. newRules];
-            SaveRules(rules);
+            rules.Add(new PowerLineRule()
+            {
+                Index = rules.Count,
+                PowerLineStatus = PowerLineStatus.Offline,
+                SchemeGuid = Settings.Default.BatterPowerSchemeGuid,
+            });
         }
 
-        private static void SaveRules(IEnumerable<IRule> rules)
-        {
-            Settings.Default.Rules =
-                JsonConvert.SerializeObject(rules,
-                new JsonSerializerSettings
-                {
-                    TypeNameHandling = TypeNameHandling.Objects
-                });
-            Settings.Default.Save();
-        }
+        SaveRules(rules);
+
+        Settings.Default.MigratedPowerRulesToRules = true;
+        Settings.Default.Save();
+    }
+
+    private static List<IRule>? LoadRules()
+    {
+        MigratePowerRulesToRules();
+
+        return JsonConvert.DeserializeObject<List<IRule>>(
+            Settings.Default.Rules,
+            new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects
+            });
+    }
+
+    public static void SetRules(IEnumerable<IRule> newRules)
+    {
+        rules = [.. newRules];
+        SaveRules(rules);
+    }
+
+    private static void SaveRules(IEnumerable<IRule> rules)
+    {
+        Settings.Default.Rules =
+            JsonConvert.SerializeObject(rules,
+            new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects
+            });
+        Settings.Default.Save();
     }
 }
