@@ -5,7 +5,7 @@ using System.Linq;
 using Newtonsoft.Json;
 using PowerManagement;
 
-public class Rules
+public class RuleManager
 {
     public class RuleContainerProbe
     {
@@ -22,7 +22,7 @@ public class Rules
 
     public event EventHandler<RulesUpdatedEventArgs>? RulesUpdated;
 
-    public Rules(
+    public RuleManager(
         string ruleJson,
         MigrationPolicy migrationPolicy,
         IBatteryMonitor batteryMonitor,
