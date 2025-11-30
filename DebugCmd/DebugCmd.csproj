@@ -8,7 +8,13 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="9.0.0" />
+  </ItemGroup>
+
+  <ItemGroup>
     <ProjectReference Include="..\PowerManagement\PowerManagement.csproj" />
+    <ProjectReference Include="..\ProcessManagement\ProcessManagement.csproj" />
+    <ProjectReference Include="..\RuleManagement\RuleManagement.csproj" />
   </ItemGroup>
 
 </Project>
