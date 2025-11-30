@@ -1,9 +1,8 @@
-namespace PowerPlanSwitcher.ProcessManagement
-{
-    using System;
+namespace ProcessManagement;
 
-    public class ProcessEventArgs(IProcess process) : EventArgs
-    {
-        public IProcess Process { get; set; } = process;
-    }
+using System;
+
+public class ProcessEventArgs(IProcess process) : EventArgs
+{
+    public IProcess Process { get; set; } = process;
 }
