@@ -3,17 +3,13 @@ namespace RuleManagement.Rules;
 using System.ComponentModel;
 using ProcessManagement;
 
-public class ProcessRule(
-    IProcessMonitor processMonitor,
-    ProcessRuleDto dto)
-    : Rule,
-    IRule
+public class ProcessRule
+    : Rule<ProcessRuleDto>,
+    IRule<ProcessRuleDto>
 {
-    public IRuleDto Dto => dto;
-    public int Index => dto.Index;
-    public Guid SchemeGuid => dto.SchemeGuid;
-    public string FilePath => dto.FilePath;
-    public ComparisonType Type => dto.Type;
+    public Guid SchemeGuid => Dto.SchemeGuid;
+    public string FilePath => Dto.FilePath;
+    public ComparisonType Type => Dto.Type;
 
     private static readonly List<(ComparisonType type, string text)>
         ComparisonTypeText =
@@ -22,8 +18,37 @@ public class ProcessRule(
             (ComparisonType.StartsWith, "Path starts with"),
             (ComparisonType.EndsWith, "Path ends with"),
         ];
+    private static readonly IReadOnlyDictionary<string, ComparisonType> TextToTypeMap =
+        ComparisonTypeText.ToDictionary(entry => entry.text, entry => entry.type, StringComparer.Ordinal);
 
-    public string GetDescription() =>
+    public ProcessRule(
+        IProcessMonitor processMonitor,
+        ProcessRuleDto processRuleDto)
+        : base(processRuleDto)
+    {
+        processMonitor.ProcessCreated += ProcessMonitor_ProcessCreated;
+        processMonitor.ProcessTerminated += ProcessMonitor_ProcessTerminated;
+    }
+
+    private void ProcessMonitor_ProcessCreated(object? sender, ProcessEventArgs e)
+    {
+
+        if (CheckRule(e.Process))
+        {
+            TriggerCount++;
+        }
+    }
+
+    private void ProcessMonitor_ProcessTerminated(object? sender, ProcessEventArgs e)
+    {
+        // If rule applies
+        if (CheckRule(e.Process))
+        {
+            TriggerCount = Math.Max(TriggerCount - 1, 0);
+        }
+    }
+
+    public override string GetDescription() =>
         $"Process -> {ComparisonTypeToText(Type)} -> {FilePath}";
 
     private bool CheckRule(IProcess process)
@@ -68,10 +93,12 @@ public class ProcessRule(
 
     private static ComparisonType TextToComparisonType(string text)
     {
-        (ComparisonType type, string text)? entry = ComparisonTypeText
-            .FirstOrDefault(rtt => rtt.text == text);
-        return entry?.type ?? throw new InvalidOperationException(
-            "No RuleType matches the provided text. " +
-            "Unable to convert to RuleType!");
+        if (!TextToTypeMap.TryGetValue(text, out var type))
+        {
+            throw new InvalidOperationException(
+                "No RuleType matches the provided text. " +
+                "Unable to convert to RuleType!");
+        }
+        return type;
     }
 }

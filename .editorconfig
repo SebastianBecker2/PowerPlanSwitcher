@@ -11,6 +11,10 @@ root = true
 
 # This file is the top-most EditorConfig file
 
+# Override for test project
+[RuleManagementTest/*.cs]
+dotnet_diagnostic.CA1707.severity = none
+
 # All Files
 [*]
 guidelines = 80

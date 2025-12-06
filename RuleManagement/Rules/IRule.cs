@@ -4,10 +4,13 @@ using System;
 
 public interface IRule
 {
-    public int TriggerCount { get; set; }
+    public int TriggerCount { get; }
     public IRuleDto Dto { get; }
-
     public string GetDescription();
+    public event EventHandler<TriggerChangedEventArgs>? TriggerChanged;
+}
 
-    public event EventHandler<TriggeredEventArgs>? Triggered;
+public interface IRule<TDto> : IRule where TDto : IRuleDto
+{
+    public new TDto Dto { get; }
 }

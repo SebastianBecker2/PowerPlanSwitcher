@@ -15,8 +15,6 @@ public class RuleFactory(
         {
             ProcessRuleDto processDto => new ProcessRule(processMonitor, processDto),
             PowerLineRuleDto powerLineDto => new PowerLineRule(powerManager, powerLineDto),
-            //AfkRuleDto afkDto => new AfkRule(_afkMonitor, afkDto),
             _ => throw new NotSupportedException($"Unknown rule DTO type: {dto.GetType().Name}")
         };
-
 }

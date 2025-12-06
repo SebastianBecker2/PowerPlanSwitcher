@@ -11,8 +11,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "PowerPlanSwitcherTests", "P
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "PowerManagement", "PowerManagement\PowerManagement.csproj", "{4CF166FC-5BEB-4961-B5B5-28B05737111D}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DebugCmd", "DebugCmd\DebugCmd.csproj", "{B5084D8F-94FB-461A-949B-15B221B58E39}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "ProcessManagement", "ProcessManagement\ProcessManagement.csproj", "{E8F60E65-E7BF-472D-A367-CB423D6D9D67}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuleManagement", "RuleManagement\RuleManagement.csproj", "{4DA97782-706D-4BFE-8CFF-68D1F2364031}"
@@ -57,14 +55,6 @@ Global
 		{4CF166FC-5BEB-4961-B5B5-28B05737111D}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4CF166FC-5BEB-4961-B5B5-28B05737111D}.Release|x64.ActiveCfg = Release|Any CPU
 		{4CF166FC-5BEB-4961-B5B5-28B05737111D}.Release|x64.Build.0 = Release|Any CPU
-		{B5084D8F-94FB-461A-949B-15B221B58E39}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{B5084D8F-94FB-461A-949B-15B221B58E39}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{B5084D8F-94FB-461A-949B-15B221B58E39}.Debug|x64.ActiveCfg = Debug|Any CPU
-		{B5084D8F-94FB-461A-949B-15B221B58E39}.Debug|x64.Build.0 = Debug|Any CPU
-		{B5084D8F-94FB-461A-949B-15B221B58E39}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{B5084D8F-94FB-461A-949B-15B221B58E39}.Release|Any CPU.Build.0 = Release|Any CPU
-		{B5084D8F-94FB-461A-949B-15B221B58E39}.Release|x64.ActiveCfg = Release|Any CPU
-		{B5084D8F-94FB-461A-949B-15B221B58E39}.Release|x64.Build.0 = Release|Any CPU
 		{E8F60E65-E7BF-472D-A367-CB423D6D9D67}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{E8F60E65-E7BF-472D-A367-CB423D6D9D67}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{E8F60E65-E7BF-472D-A367-CB423D6D9D67}.Debug|x64.ActiveCfg = Debug|Any CPU

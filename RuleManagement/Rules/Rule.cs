@@ -2,12 +2,29 @@ namespace RuleManagement.Rules;
 
 using Newtonsoft.Json;
 
-public abstract class Rule
+public abstract class Rule<TDto>(TDto dto) : IRule<TDto> where TDto : IRuleDto
 {
     [JsonIgnore]
-    public int TriggerCount { get; set; }
+    public int TriggerCount
+    {
+        get => triggerCount;
+        protected set
+        {
+            triggerCount = value;
+            OnTriggerChanged(this);
+        }
+    }
+    private int triggerCount;
 
-    public event EventHandler<TriggeredEventArgs>? Triggered;
-    protected void OnTriggered(IRule rule) =>
-        Triggered?.Invoke(this, new TriggeredEventArgs(rule));
+    // Strongly typed DTO
+    public TDto Dto { get; } = dto;
+
+    // Explicit implementation for the non-generic interface
+    IRuleDto IRule.Dto => Dto;
+
+    public abstract string GetDescription();
+
+    public event EventHandler<TriggerChangedEventArgs>? TriggerChanged;
+    protected void OnTriggerChanged(IRule<TDto> rule) =>
+        TriggerChanged?.Invoke(this, new TriggerChangedEventArgs(rule));
 }

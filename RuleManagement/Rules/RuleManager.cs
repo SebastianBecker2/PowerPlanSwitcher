@@ -7,7 +7,7 @@ using PowerManagement;
 
 public class RuleManager
 {
-    public class RuleContainerProbe
+    private class RuleContainerProbe
     {
         public int? SchemaVersion { get; set; }
     }
@@ -18,9 +18,12 @@ public class RuleManager
     }
 
     private List<IRule> rules = [];
-    private readonly RuleFactory ruleFactory;
+    public IRule? AppliedRule { get; private set; }
 
     public event EventHandler<RulesUpdatedEventArgs>? RulesUpdated;
+    public event EventHandler<RuleApplicationChangedEventArgs>? RuleApplicationChanged;
+
+    public RuleManager() { }
 
     public RuleManager(
         string ruleJson,
@@ -28,22 +31,85 @@ public class RuleManager
         IBatteryMonitor batteryMonitor,
         RuleFactory ruleFactory)
     {
-        this.ruleFactory = ruleFactory;
-
         // Overwrite json with migrated version
         ruleJson = MigratePowerRulesToRules(
             ruleJson,
             migrationPolicy,
             batteryMonitor);
 
-        rules = LoadRules(ruleJson);
+        rules = LoadRules(ruleJson, ruleFactory);
+        Subscribe(rules);
+    }
+
+    private void Rule_TriggerChanged(object? sender, TriggerChangedEventArgs e)
+    {
+        if (sender is not IRule rule)
+        {
+            throw new InvalidCastException("Sender was not an IRule.");
+        }
+
+        var index = rules.IndexOf(rule);
+
+        // If rule is not triggered, apply the next triggered rule
+        // or no rule (nextRule == null) if no other rule is triggered
+        if (rule.TriggerCount == 0)
+        {
+            var nextRule = rules.FirstOrDefault(r => r.TriggerCount > 0);
+            // Next triggered rule is already applied
+            if (nextRule == AppliedRule)
+            {
+                return;
+            }
+            AppliedRule = nextRule;
+            RuleApplicationChanged?.Invoke(this, new RuleApplicationChangedEventArgs(nextRule));
+            return;
+        }
+
+        var firstTriggeredRuleIndex = rules.FindIndex(r => r.TriggerCount > 0);
+
+        // The rule is the highest with a TriggerCount > 1
+        // so if the TriggerCount is exactly 1, we still need to apply it
+        // otherwise it was already applied.
+        if (index == firstTriggeredRuleIndex && rule.TriggerCount == 1)
+        {
+            AppliedRule = rule;
+            RuleApplicationChanged?.Invoke(this, new RuleApplicationChangedEventArgs(rule));
+            return;
+        }
+
+        // The triggered rule has to be applied
+        // if no other rule with higher prio is triggered
+        if (firstTriggeredRuleIndex == -1 || firstTriggeredRuleIndex > index)
+        {
+            AppliedRule = rule;
+            RuleApplicationChanged?.Invoke(this, new RuleApplicationChangedEventArgs(rule));
+            return;
+        }
     }
 
     public IEnumerable<IRule> GetRules() => rules ?? [];
 
+    private void Subscribe(IEnumerable<IRule> rules)
+    {
+        foreach (var rule in rules)
+        {
+            rule.TriggerChanged += Rule_TriggerChanged;
+        }
+    }
+
+    private void Unsubscribe(IEnumerable<IRule> rules)
+    {
+        foreach (var rule in rules)
+        {
+            rule.TriggerChanged -= Rule_TriggerChanged;
+        }
+    }
+
     public void SetRules(IEnumerable<IRule> newRules)
     {
+        Unsubscribe(rules);
         rules = [.. newRules];
+        Subscribe(rules);
 
         var ruleContainer = new RuleContainer
         {
@@ -80,7 +146,6 @@ public class RuleManager
 
                 rules.Add(new PowerLineRuleDto()
                 {
-                    Index = rules.Count,
                     PowerLineStatus = PowerLineStatus.Online,
                     SchemeGuid = migrationPolicy.AcPowerSchemeGuid,
                 });
@@ -90,7 +155,6 @@ public class RuleManager
             {
                 rules.Add(new PowerLineRuleDto()
                 {
-                    Index = rules.Count,
                     PowerLineStatus = PowerLineStatus.Offline,
                     SchemeGuid = migrationPolicy.BatterPowerSchemeGuid,
                 });
@@ -125,7 +189,7 @@ public class RuleManager
         }
     }
 
-    private List<IRule> LoadRules(string json)
+    private static List<IRule> LoadRules(string json, RuleFactory ruleFactory)
     {
         var version = DetectSchemaVersion(json);
 
@@ -147,7 +211,8 @@ public class RuleManager
         {
             // Schema v1: container with DTOs
             var container = JsonConvert.DeserializeObject<RuleContainer>(json,
-                new JsonSerializerSettings {
+                new JsonSerializerSettings
+                {
                     TypeNameHandling = TypeNameHandling.Objects
                 });
 
@@ -164,5 +229,4 @@ public class RuleManager
                 $"Unsupported schema version {version}");
         }
     }
-
 }
