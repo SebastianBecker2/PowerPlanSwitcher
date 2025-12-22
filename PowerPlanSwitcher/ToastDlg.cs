@@ -1,118 +1,117 @@
-namespace PowerPlanSwitcher
+namespace PowerPlanSwitcher;
+
+using System;
+using System.Windows.Forms;
+using PowerManagement;
+using static Vanara.PInvoke.User32;
+
+public partial class ToastDlg : Form
 {
-    using System;
-    using System.Windows.Forms;
-    using PowerManagement;
-    using static Vanara.PInvoke.User32;
+    private static readonly int DisplayDuration = 2000;
 
-    public partial class ToastDlg : Form
+    private static SynchronizationContext? syncContext;
+    private static ToastDlg? toastDlg;
+
+    private static Color ButtonBackgroundColor =>
+        ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
+        ? Color.WhiteSmoke
+        : Color.FromArgb(0x15, 0x15, 0x15);
+    private static Color ForegroundColor =>
+        ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
+        ? Color.Black
+        : Color.White;
+    private static Color TlpPowerSchemesBackColor =>
+        ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
+        ? Color.Silver
+        : Color.DimGray;
+
+    public ToastDlg() => InitializeComponent();
+
+    protected override void OnLoad(EventArgs e)
     {
-        private static readonly int DisplayDuration = 2000;
+        DisplayTimer.Interval = DisplayDuration;
 
-        private static SynchronizationContext? syncContext;
-        private static ToastDlg? toastDlg;
 
-        private static Color ButtonBackgroundColor =>
-            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? Color.WhiteSmoke
-            : Color.FromArgb(0x15, 0x15, 0x15);
-        private static Color ForegroundColor =>
-            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? Color.Black
-            : Color.White;
-        private static Color TlpPowerSchemesBackColor =>
-            ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
-            ? Color.Silver
-            : Color.DimGray;
+        Padding = new Padding(1);
+        BackColor = TlpPowerSchemesBackColor;
+        tableLayoutPanel1.BackColor = ButtonBackgroundColor;
 
-        public ToastDlg() => InitializeComponent();
+        PibAppIcon.BackColor = ButtonBackgroundColor;
+        LblTitle.ForeColor = ForegroundColor;
+        LblTitle.BackColor = ButtonBackgroundColor;
 
-        protected override void OnLoad(EventArgs e)
+        PibPowerSchemeIcon.BackColor = ButtonBackgroundColor;
+        LblPowerSchemeName.ForeColor = ForegroundColor;
+        LblPowerSchemeName.BackColor = ButtonBackgroundColor;
+
+        LblReason.ForeColor = ForegroundColor;
+        LblReason.BackColor = ButtonBackgroundColor;
+
+        Location = PopUpWindowLocationHelper.GetPositionOnTaskbar(
+            Size,
+            LblReason.Text);
+
+        DisplayTimer.Stop();
+        DisplayTimer.Start();
+
+        base.OnLoad(e);
+    }
+
+    protected override CreateParams CreateParams
+    {
+        get
         {
-            DisplayTimer.Interval = DisplayDuration;
+            var cp = base.CreateParams;
+            // turn on WS_EX_TOOLWINDOW style bit
+            // Used to hide the banner from alt+tab
+            // source: https://www.csharp411.com/hide-form-from-alttab/
+            cp.ExStyle |= (int)WindowStylesEx.WS_EX_TOOLWINDOW;
+            return cp;
+        }
+    }
 
+    private void Any_Click(object sender, EventArgs e) => Dispose();
 
-            Padding = new Padding(1);
-            BackColor = TlpPowerSchemesBackColor;
-            tableLayoutPanel1.BackColor = ButtonBackgroundColor;
+    private void DisplayTimer_Tick(object sender, EventArgs e) => Dispose();
 
-            PibAppIcon.BackColor = ButtonBackgroundColor;
-            LblTitle.ForeColor = ForegroundColor;
-            LblTitle.BackColor = ButtonBackgroundColor;
+    public static void Initialize()
+    {
+        syncContext = SynchronizationContext.Current;
+        if (syncContext is not WindowsFormsSynchronizationContext)
+        {
+            throw new InvalidOperationException(
+                "Initialize must be called from an UI thread");
+        }
+    }
 
-            PibPowerSchemeIcon.BackColor = ButtonBackgroundColor;
-            LblPowerSchemeName.ForeColor = ForegroundColor;
-            LblPowerSchemeName.BackColor = ButtonBackgroundColor;
-
-            LblReason.ForeColor = ForegroundColor;
-            LblReason.BackColor = ButtonBackgroundColor;
-
-            Location = PopUpWindowLocationHelper.GetPositionOnTaskbar(
-                Size,
-                LblReason.Text);
-
-            DisplayTimer.Stop();
-            DisplayTimer.Start();
-
-            base.OnLoad(e);
+    public static void ShowToastNotification(
+        Guid activeSchemeGuid,
+        string activationReason)
+    {
+        if (syncContext is null)
+        {
+            throw new InvalidOperationException(
+                "ToastNotification was not initialized before use");
         }
 
-        protected override CreateParams CreateParams
+        syncContext.Send(_ =>
         {
-            get
+            if (toastDlg == null)
             {
-                var cp = base.CreateParams;
-                // turn on WS_EX_TOOLWINDOW style bit
-                // Used to hide the banner from alt+tab
-                // source: https://www.csharp411.com/hide-form-from-alttab/
-                cp.ExStyle |= (int)WindowStylesEx.WS_EX_TOOLWINDOW;
-                return cp;
-            }
-        }
-
-        private void Any_Click(object sender, EventArgs e) => Dispose();
-
-        private void DisplayTimer_Tick(object sender, EventArgs e) => Dispose();
-
-        public static void Initialize()
-        {
-            syncContext = SynchronizationContext.Current;
-            if (syncContext is not WindowsFormsSynchronizationContext)
-            {
-                throw new InvalidOperationException(
-                    "Initialize must be called from an UI thread");
-            }
-        }
-
-        public static void ShowToastNotification(
-            Guid activeSchemeGuid,
-            string activationReason)
-        {
-            if (syncContext is null)
-            {
-                throw new InvalidOperationException(
-                    "ToastNotification was not initialized before use");
+                toastDlg = new ToastDlg();
+                toastDlg.Disposed += (_, _) => toastDlg = null;
             }
 
-            syncContext.Send(_ =>
-            {
-                if (toastDlg == null)
-                {
-                    toastDlg = new ToastDlg();
-                    toastDlg.Disposed += (_, _) => toastDlg = null;
-                }
+            toastDlg.PibPowerSchemeIcon.Image =
+                PowerSchemeSettings.GetSetting(activeSchemeGuid)?.Icon;
+            toastDlg.LblPowerSchemeName.Text =
+                PowerManager.Static.GetPowerSchemeName(activeSchemeGuid);
+            toastDlg.LblReason.Text = activationReason;
 
-                toastDlg.PibPowerSchemeIcon.Image =
-                    PowerSchemeSettings.GetSetting(activeSchemeGuid)?.Icon;
-                toastDlg.LblPowerSchemeName.Text =
-                    PowerManager.Static.GetPowerSchemeName(activeSchemeGuid);
-                toastDlg.LblReason.Text = activationReason;
+            toastDlg.DisplayTimer.Stop();
+            toastDlg.DisplayTimer.Start();
 
-                toastDlg.DisplayTimer.Stop();
-                toastDlg.DisplayTimer.Start();
-
-                toastDlg.Show();
-            }, null);
-        }
+            toastDlg.Show();
+        }, null);
     }
 }

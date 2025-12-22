@@ -1,355 +1,354 @@
-namespace PowerPlanSwitcher
+namespace PowerPlanSwitcher;
+
+using System.Diagnostics;
+using Autofac;
+using Hotkeys;
+using Newtonsoft.Json;
+using PowerManagement;
+using ProcessManagement;
+using Properties;
+using RuleManagement;
+using RuleManagement.Rules;
+using Serilog;
+using Serilog.Core;
+using Serilog.Formatting.Json;
+using SevenZip;
+
+internal static class Program
 {
-    using System.Diagnostics;
-    using Autofac;
-    using Hotkeys;
-    using Newtonsoft.Json;
-    using PowerManagement;
-    using ProcessManagement;
-    using Properties;
-    using RuleManagement;
-    using RuleManagement.Rules;
-    using Serilog;
-    using Serilog.Core;
-    using Serilog.Formatting.Json;
-    using SevenZip;
-
-    internal static class Program
-    {
-        private static readonly string AssemblyTitle =
-            AboutBox.AssemblyTitle ?? "";
-        private static readonly string LogFileName =
+    private static readonly string AssemblyTitle =
+        AboutBox.AssemblyTitle ?? "";
+    private static readonly string LogFileName =
 #if DEBUG
-            $"{AssemblyTitle}.debug-.log";
+        $"{AssemblyTitle}.debug-.log";
 #else
-            $"{AssemblyTitle}-.log";
+        $"{AssemblyTitle}-.log";
 #endif
-        private static readonly string LogFileNamePattern =
-            $"{AssemblyTitle}*.log";
-        private static readonly string LocalAppDataPath =
-            Environment.GetFolderPath(
-                Environment.SpecialFolder.LocalApplicationData);
-        private static readonly string LogPath =
-            Path.Combine(LocalAppDataPath, AssemblyTitle);
-        private static readonly string LogFilePath =
-            Path.Combine(LogPath, LogFileName);
-        private static readonly string ZipLibraryPath =
-            Path.Combine("Resources", "7z.dll");
+    private static readonly string LogFileNamePattern =
+        $"{AssemblyTitle}*.log";
+    private static readonly string LocalAppDataPath =
+        Environment.GetFolderPath(
+            Environment.SpecialFolder.LocalApplicationData);
+    private static readonly string LogPath =
+        Path.Combine(LocalAppDataPath, AssemblyTitle);
+    private static readonly string LogFilePath =
+        Path.Combine(LogPath, LogFileName);
+    private static readonly string ZipLibraryPath =
+        Path.Combine("Resources", "7z.dll");
 
-        private static LoggingLevelSwitch LogLevelSwitch { get; } =
-            new LoggingLevelSwitch(Serilog.Events.LogEventLevel.Fatal);
+    private static LoggingLevelSwitch LogLevelSwitch { get; } =
+        new LoggingLevelSwitch(Serilog.Events.LogEventLevel.Fatal);
 
-        public static void UpdateLogLevelSwitch(bool useExtendedLogging) =>
-            LogLevelSwitch.MinimumLevel = useExtendedLogging
-                ? Serilog.Events.LogEventLevel.Verbose
-                : Serilog.Events.LogEventLevel.Fatal;
+    public static void UpdateLogLevelSwitch(bool useExtendedLogging) =>
+        LogLevelSwitch.MinimumLevel = useExtendedLogging
+            ? Serilog.Events.LogEventLevel.Verbose
+            : Serilog.Events.LogEventLevel.Fatal;
 
-        public static void OpenLogPath()
+    public static void OpenLogPath()
+    {
+        if (!Directory.Exists(LogPath))
         {
-            if (!Directory.Exists(LogPath))
-            {
-                _ = Directory.CreateDirectory(LogPath);
-            }
-            try
-            {
-                _ = System.Diagnostics.Process.Start(new ProcessStartInfo
-                {
-                    FileName = LogPath,
-                    UseShellExecute = true,
-                    Verb = "open"
-                });
-            }
-            catch (Exception ex)
-            {
-                _ = MessageBox.Show(
-                    $"Failed to open log path: {LogPath}",
-                    "Open log path",
-                    MessageBoxButtons.OK,
-                    MessageBoxIcon.Error);
-                Log.Error(ex, "Failed to open log path: {LogPath}", LogPath);
-            }
+            _ = Directory.CreateDirectory(LogPath);
         }
-
-        public static void ExportLog()
+        try
         {
-            if (!Directory.Exists(LogPath))
+            _ = System.Diagnostics.Process.Start(new ProcessStartInfo
             {
-                Log.Error("Log path does not exist: {LogPath}", LogPath);
-                return;
-            }
-            try
-            {
-                using var saveAsDlg = new SaveFileDialog()
-                {
-                    Title = "Export Log",
-                    Filter = "7zip Files (*.7z)|*.7z",
-                    InitialDirectory = LogPath,
-                    FileName = $"{AssemblyTitle}.log.7z"
-                };
-                if (saveAsDlg.ShowDialog() != DialogResult.OK)
-                {
-                    return;
-                }
-
-                using var passwordDlg = new CreatePasswordDlg();
-                if (passwordDlg.ShowDialog() != DialogResult.OK)
-                {
-                    return;
-                }
-
-                SevenZipCompressor compressor = new()
-                {
-                    CompressionLevel = CompressionLevel.Ultra,
-                    ArchiveFormat = OutArchiveFormat.SevenZip,
-                    CompressionMethod = CompressionMethod.BZip2,
-                    EncryptHeaders = true
-                };
-
-                var logFiles = Directory.GetFiles(LogPath, LogFileNamePattern);
-
-                if (string.IsNullOrWhiteSpace(passwordDlg.Password))
-                {
-                    compressor.CompressFiles(
-                        saveAsDlg.FileName,
-                        logFiles);
-                }
-                else
-                {
-                    compressor.CompressFilesEncrypted(
-                       saveAsDlg.FileName,
-                       passwordDlg.Password,
-                       logFiles);
-                }
-
-                Log.Information(
-                    "Log exported to: {ExportFilePath}",
-                    saveAsDlg.FileName);
-            }
-            catch (Exception ex)
-            {
-                Log.Error(ex, "Failed to export log.");
-            }
+                FileName = LogPath,
+                UseShellExecute = true,
+                Verb = "open"
+            });
         }
-
-        public static void RegisterHotkeys(HotkeyManager hotkeyManager)
+        catch (Exception ex)
         {
-            var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
-                Settings.Default.CyclePowerSchemeHotkey);
-            if (cycleHotkey is not null)
-            {
-                _ = hotkeyManager.AddHotkey(
-                    cycleHotkey.Key,
-                    cycleHotkey.Modifier);
-            }
-
-            foreach (var hotkey in PowerManager.Static.GetPowerSchemes()
-                .Select(ps => PowerSchemeSettings.GetSetting(ps.guid)?.Hotkey)
-                .Where(h => h is not null))
-            {
-                _ = hotkeyManager.AddHotkey(hotkey!.Key, hotkey!.Modifier);
-            }
+            _ = MessageBox.Show(
+                $"Failed to open log path: {LogPath}",
+                "Open log path",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+            Log.Error(ex, "Failed to open log path: {LogPath}", LogPath);
         }
+    }
 
-        private static bool AreHotkeyEqual(
-            HotkeyPressedEventArgs left,
-            Hotkey right) =>
-            left.PressedKey == right.Key
-            && left.ModifierKeys == right.Modifier;
-
-        private static void HotkeyManager_HotkeyPressed(
-            object? sender,
-            HotkeyPressedEventArgs e)
+    public static void ExportLog()
+    {
+        if (!Directory.Exists(LogPath))
         {
-            var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
-                Settings.Default.CyclePowerSchemeHotkey);
-
-            if (cycleHotkey is not null && AreHotkeyEqual(e, cycleHotkey))
+            Log.Error("Log path does not exist: {LogPath}", LogPath);
+            return;
+        }
+        try
+        {
+            using var saveAsDlg = new SaveFileDialog()
             {
-                HandleCycleHotkeyPressed();
+                Title = "Export Log",
+                Filter = "7zip Files (*.7z)|*.7z",
+                InitialDirectory = LogPath,
+                FileName = $"{AssemblyTitle}.log.7z"
+            };
+            if (saveAsDlg.ShowDialog() != DialogResult.OK)
+            {
                 return;
             }
 
-            HandlePowerSchemeHotkeyPressed(e);
-        }
-
-        private static void HandleCycleHotkeyPressed()
-        {
-            var schemes = PowerManager.Static.GetPowerSchemeGuids()
-                .Where(ps => !Settings.Default.CycleOnlyVisible
-                    || (PowerSchemeSettings.GetSetting(ps)?.Visible ?? false))
-                .ToList();
-
-            var active = PowerManager.Static.GetActivePowerSchemeGuid();
-
-            var index = active == Guid.Empty ? 0 : schemes.IndexOf(active);
-            index = (index + 1) % schemes.Count;
-
-            Log.Information(
-                "Activating power scheme: {PowerSchemeName} " +
-                "{PowerSchemeGuid} Reason: Cycle Hotkey",
-                PowerManager.Static.GetPowerSchemeName(schemes[index]) ?? "<No Name>",
-                schemes[index]);
-            PowerManager.Static.SetActivePowerScheme(schemes[index]);
-            if (PopUpWindowLocationHelper.ShouldShowToast("hotkey"))
-            {
-                ToastDlg.ShowToastNotification(
-                    schemes[index],
-                    "Cycle hotkey pressed");
-            }
-        }
-
-        private static void HandlePowerSchemeHotkeyPressed(
-            HotkeyPressedEventArgs e)
-        {
-            var (guid, name) = PowerManager.Static.GetPowerSchemes()
-                .FirstOrDefault(ps =>
-                {
-                    var setting = PowerSchemeSettings.GetSetting(ps.guid);
-                    if (setting is null || setting.Hotkey is null)
-                    {
-                        return false;
-                    }
-                    return AreHotkeyEqual(e, setting.Hotkey);
-                });
-
-            if (guid == Guid.Empty)
+            using var passwordDlg = new CreatePasswordDlg();
+            if (passwordDlg.ShowDialog() != DialogResult.OK)
             {
                 return;
+            }
+
+            SevenZipCompressor compressor = new()
+            {
+                CompressionLevel = CompressionLevel.Ultra,
+                ArchiveFormat = OutArchiveFormat.SevenZip,
+                CompressionMethod = CompressionMethod.BZip2,
+                EncryptHeaders = true
+            };
+
+            var logFiles = Directory.GetFiles(LogPath, LogFileNamePattern);
+
+            if (string.IsNullOrWhiteSpace(passwordDlg.Password))
+            {
+                compressor.CompressFiles(
+                    saveAsDlg.FileName,
+                    logFiles);
+            }
+            else
+            {
+                compressor.CompressFilesEncrypted(
+                   saveAsDlg.FileName,
+                   passwordDlg.Password,
+                   logFiles);
             }
 
             Log.Information(
-                "Activating power scheme: {PowerSchemeName} " +
-                "{PowerSchemeGuid} Reason: Direct Hotkey",
-                name,
-                guid);
-            PowerManager.Static.SetActivePowerScheme(guid);
-            ToastDlg.ShowToastNotification(guid, "Power Plan hotkey pressed");
+                "Log exported to: {ExportFilePath}",
+                saveAsDlg.FileName);
+        }
+        catch (Exception ex)
+        {
+            Log.Error(ex, "Failed to export log.");
+        }
+    }
+
+    public static void RegisterHotkeys(HotkeyManager hotkeyManager)
+    {
+        var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
+            Settings.Default.CyclePowerSchemeHotkey);
+        if (cycleHotkey is not null)
+        {
+            _ = hotkeyManager.AddHotkey(
+                cycleHotkey.Key,
+                cycleHotkey.Modifier);
         }
 
-        /// <summary>
-        ///  The main entry point for the application.
-        /// </summary>
-        [STAThread]
-        private static void Main()
+        foreach (var hotkey in PowerManager.Static.GetPowerSchemes()
+            .Select(ps => PowerSchemeSettings.GetSetting(ps.guid)?.Hotkey)
+            .Where(h => h is not null))
         {
-            if (Settings.Default.UpgradeRequired)
-            {
-                Settings.Default.Upgrade();
-                Settings.Default.UpgradeRequired = false;
-                Settings.Default.Save();
-            }
+            _ = hotkeyManager.AddHotkey(hotkey!.Key, hotkey!.Modifier);
+        }
+    }
 
-            UpdateLogLevelSwitch(Settings.Default.ExtendedLogging);
+    private static bool AreHotkeyEqual(
+        HotkeyPressedEventArgs left,
+        Hotkey right) =>
+        left.PressedKey == right.Key
+        && left.ModifierKeys == right.Modifier;
+
+    private static void HotkeyManager_HotkeyPressed(
+        object? sender,
+        HotkeyPressedEventArgs e)
+    {
+        var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
+            Settings.Default.CyclePowerSchemeHotkey);
+
+        if (cycleHotkey is not null && AreHotkeyEqual(e, cycleHotkey))
+        {
+            HandleCycleHotkeyPressed();
+            return;
+        }
+
+        HandlePowerSchemeHotkeyPressed(e);
+    }
+
+    private static void HandleCycleHotkeyPressed()
+    {
+        var schemes = PowerManager.Static.GetPowerSchemeGuids()
+            .Where(ps => !Settings.Default.CycleOnlyVisible
+                || (PowerSchemeSettings.GetSetting(ps)?.Visible ?? false))
+            .ToList();
+
+        var active = PowerManager.Static.GetActivePowerSchemeGuid();
+
+        var index = active == Guid.Empty ? 0 : schemes.IndexOf(active);
+        index = (index + 1) % schemes.Count;
+
+        Log.Information(
+            "Activating power scheme: {PowerSchemeName} " +
+            "{PowerSchemeGuid} Reason: Cycle Hotkey",
+            PowerManager.Static.GetPowerSchemeName(schemes[index]) ?? "<No Name>",
+            schemes[index]);
+        PowerManager.Static.SetActivePowerScheme(schemes[index]);
+        if (PopUpWindowLocationHelper.ShouldShowToast("hotkey"))
+        {
+            ToastDlg.ShowToastNotification(
+                schemes[index],
+                "Cycle hotkey pressed");
+        }
+    }
+
+    private static void HandlePowerSchemeHotkeyPressed(
+        HotkeyPressedEventArgs e)
+    {
+        var (guid, name) = PowerManager.Static.GetPowerSchemes()
+            .FirstOrDefault(ps =>
+            {
+                var setting = PowerSchemeSettings.GetSetting(ps.guid);
+                if (setting is null || setting.Hotkey is null)
+                {
+                    return false;
+                }
+                return AreHotkeyEqual(e, setting.Hotkey);
+            });
+
+        if (guid == Guid.Empty)
+        {
+            return;
+        }
+
+        Log.Information(
+            "Activating power scheme: {PowerSchemeName} " +
+            "{PowerSchemeGuid} Reason: Direct Hotkey",
+            name,
+            guid);
+        PowerManager.Static.SetActivePowerScheme(guid);
+        ToastDlg.ShowToastNotification(guid, "Power Plan hotkey pressed");
+    }
+
+    /// <summary>
+    ///  The main entry point for the application.
+    /// </summary>
+    [STAThread]
+    private static void Main()
+    {
+        if (Settings.Default.UpgradeRequired)
+        {
+            Settings.Default.Upgrade();
+            Settings.Default.UpgradeRequired = false;
+            Settings.Default.Save();
+        }
+
+        UpdateLogLevelSwitch(Settings.Default.ExtendedLogging);
 #pragma warning disable CA1305 // Specify IFormatProvider
-            Log.Logger = new LoggerConfiguration()
-                .MinimumLevel.ControlledBy(LogLevelSwitch)
-                .WriteTo.File(
-                    path: LogFilePath,
-                    formatter: new JsonFormatter(),
-                    rollingInterval: RollingInterval.Day,
-                    fileSizeLimitBytes: 500 * 1024 * 1024,
-                    retainedFileTimeLimit: TimeSpan.FromDays(7),
-                    restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose)
-                .CreateLogger();
+        Log.Logger = new LoggerConfiguration()
+            .MinimumLevel.ControlledBy(LogLevelSwitch)
+            .WriteTo.File(
+                path: LogFilePath,
+                formatter: new JsonFormatter(),
+                rollingInterval: RollingInterval.Day,
+                fileSizeLimitBytes: 500 * 1024 * 1024,
+                retainedFileTimeLimit: TimeSpan.FromDays(7),
+                restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose)
+            .CreateLogger();
 #pragma warning restore CA1305 // Specify IFormatProvider
 
-            Log.Information("Application started.");
+        Log.Information("Application started.");
 
-            SevenZipBase.SetLibraryPath(ZipLibraryPath);
+        SevenZipBase.SetLibraryPath(ZipLibraryPath);
 
-            AppDomain.CurrentDomain.UnhandledException += (s, e) =>
-                Log.Fatal(e.ExceptionObject as Exception, "Unhandled Exception");
+        AppDomain.CurrentDomain.UnhandledException += (s, e) =>
+            Log.Fatal(e.ExceptionObject as Exception, "Unhandled Exception");
 
-            // To customize application configuration such as set high DPI settings or default font,
-            // see https://aka.ms/applicationconfiguration.
-            ApplicationConfiguration.Initialize();
+        // To customize application configuration such as set high DPI settings or default font,
+        // see https://aka.ms/applicationconfiguration.
+        ApplicationConfiguration.Initialize();
 
-            var builder = new ContainerBuilder();
-            _ = builder.RegisterInstance(Log.Logger)
-                .As<ILogger>()
-                .SingleInstance();
+        var builder = new ContainerBuilder();
+        _ = builder.RegisterInstance(Log.Logger)
+            .As<ILogger>()
+            .SingleInstance();
 
-            _ = builder.RegisterType<BatteryMonitor>()
-                .As<IBatteryMonitor>()
-                .SingleInstance();
-            _ = builder.RegisterType<ProcessMonitor>()
-                .As<IProcessMonitor>()
-                .SingleInstance();
-            _ = builder.RegisterType<PowerManager>()
-                .As<IPowerManager>()
-                .SingleInstance();
-            _ = builder.RegisterType<RuleFactory>()
-                .AsSelf()
-                .SingleInstance();
-            _ = builder.RegisterType<HotkeyManager>()
-                .AsSelf()
-                .SingleInstance();
-
-            _ = builder.Register(c =>
-            {
-                var battery = c.Resolve<IBatteryMonitor>();
-                var factory = c.Resolve<RuleFactory>();
-
-                var ruleJson = Settings.Default.Rules;
-                var migrationPolicy = new MigrationPolicy(
-                    MigratedPowerRulesToRules: Settings.Default.MigratedPowerRulesToRules,
-                    AcPowerSchemeGuid: Settings.Default.AcPowerSchemeGuid,
-                    BatterPowerSchemeGuid: Settings.Default.BatterPowerSchemeGuid);
-
-                return new RuleManager(factory, ruleJson, migrationPolicy, battery);
-            })
+        _ = builder.RegisterType<BatteryMonitor>()
+            .As<IBatteryMonitor>()
+            .SingleInstance();
+        _ = builder.RegisterType<ProcessMonitor>()
+            .As<IProcessMonitor>()
+            .SingleInstance();
+        _ = builder.RegisterType<PowerManager>()
+            .As<IPowerManager>()
+            .SingleInstance();
+        _ = builder.RegisterType<RuleFactory>()
+            .AsSelf()
+            .SingleInstance();
+        _ = builder.RegisterType<HotkeyManager>()
             .AsSelf()
             .SingleInstance();
 
-            _ = builder.RegisterType<AppContext>()
-                .AsSelf();
-            _ = builder.RegisterType<SettingsDlg>();
-            _ = builder.RegisterType<HotkeySelectionDlg>();
-            _ = builder.RegisterType<ContextMenu>();
-            _ = builder.RegisterType<TrayIcon>();
+        _ = builder.Register(c =>
+        {
+            var battery = c.Resolve<IBatteryMonitor>();
+            var factory = c.Resolve<RuleFactory>();
 
-            var container = builder.Build();
+            var ruleJson = Settings.Default.Rules;
+            var migrationPolicy = new MigrationPolicy(
+                MigratedPowerRulesToRules: Settings.Default.MigratedPowerRulesToRules,
+                AcPowerSchemeGuid: Settings.Default.AcPowerSchemeGuid,
+                BatterPowerSchemeGuid: Settings.Default.BatterPowerSchemeGuid);
 
-            if (Settings.Default.ActivateInitialPowerScheme &&
-                Settings.Default.InitialPowerSchemeGuid != Guid.Empty)
-            {
-                Log.Information(
-                    "Activating power scheme: {PowerSchemeName} " +
-                    "{PowerSchemeGuid} Reason: Initial Power Scheme",
-                    PowerManager.Static.GetPowerSchemeName(
-                        Settings.Default.InitialPowerSchemeGuid) ?? "<No Name>",
-                    Settings.Default.InitialPowerSchemeGuid);
-                PowerManager.Static.SetActivePowerScheme(
-                    Settings.Default.InitialPowerSchemeGuid);
-            }
+            return new RuleManager(factory, ruleJson, migrationPolicy, battery);
+        })
+        .AsSelf()
+        .SingleInstance();
 
-            var ruleManager = container.Resolve<RuleManager>();
-            ruleManager.RulesUpdated += (_, e) =>
-            {
-                Settings.Default.Rules = e.Serialized;
-                Settings.Default.Save();
-            };
+        _ = builder.RegisterType<AppContext>()
+            .AsSelf();
+        _ = builder.RegisterType<SettingsDlg>();
+        _ = builder.RegisterType<HotkeySelectionDlg>();
+        _ = builder.RegisterType<ContextMenu>();
+        _ = builder.RegisterType<TrayIcon>();
 
-            var processManager = container.Resolve<IProcessMonitor>();
-            processManager.StartMonitoring();
+        var container = builder.Build();
 
-            // Resolve AppContext and run
-            using (var scope = container.BeginLifetimeScope())
-            {
-                var appContext = scope.Resolve<AppContext>();
-                var hotkeyManager = scope.Resolve<HotkeyManager>();
-
-                RegisterHotkeys(hotkeyManager); // still uses static Program.HotkeyManager
-
-                hotkeyManager.HotkeyPressed += HotkeyManager_HotkeyPressed;
-
-                Microsoft.Win32.SystemEvents.EventsThreadShutdown += (s, e) =>
-                    Application.Exit();
-
-                Application.Run(appContext);
-            }
-
-            Log.Information("Application exited gracefully.");
+        if (Settings.Default.ActivateInitialPowerScheme &&
+            Settings.Default.InitialPowerSchemeGuid != Guid.Empty)
+        {
+            Log.Information(
+                "Activating power scheme: {PowerSchemeName} " +
+                "{PowerSchemeGuid} Reason: Initial Power Scheme",
+                PowerManager.Static.GetPowerSchemeName(
+                    Settings.Default.InitialPowerSchemeGuid) ?? "<No Name>",
+                Settings.Default.InitialPowerSchemeGuid);
+            PowerManager.Static.SetActivePowerScheme(
+                Settings.Default.InitialPowerSchemeGuid);
         }
+
+        var ruleManager = container.Resolve<RuleManager>();
+        ruleManager.RulesUpdated += (_, e) =>
+        {
+            Settings.Default.Rules = e.Serialized;
+            Settings.Default.Save();
+        };
+
+        var processManager = container.Resolve<IProcessMonitor>();
+        processManager.StartMonitoring();
+
+        // Resolve AppContext and run
+        using (var scope = container.BeginLifetimeScope())
+        {
+            var appContext = scope.Resolve<AppContext>();
+            var hotkeyManager = scope.Resolve<HotkeyManager>();
+
+            RegisterHotkeys(hotkeyManager); // still uses static Program.HotkeyManager
+
+            hotkeyManager.HotkeyPressed += HotkeyManager_HotkeyPressed;
+
+            Microsoft.Win32.SystemEvents.EventsThreadShutdown += (s, e) =>
+                Application.Exit();
+
+            Application.Run(appContext);
+        }
+
+        Log.Information("Application exited gracefully.");
     }
 }
