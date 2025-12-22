@@ -28,18 +28,25 @@ public class RuleManager
     public event EventHandler<RuleApplicationChangedEventArgs>? RuleApplicationChanged;
 
     public RuleManager(
-        string ruleJson,
-        MigrationPolicy migrationPolicy,
-        IBatteryMonitor batteryMonitor,
-        RuleFactory ruleFactory)
+        RuleFactory ruleFactory,
+        string? ruleJson = null,
+        MigrationPolicy? migrationPolicy = null,
+        IBatteryMonitor? batteryMonitor = null)
     {
         this.ruleFactory = ruleFactory;
 
+        if (string.IsNullOrWhiteSpace(ruleJson)
+            || migrationPolicy is null
+            || batteryMonitor is null)
+        {
+            return;
+        }
+
         // Overwrite json with migrated version
         ruleJson = MigratePowerRulesToRules(
-            ruleJson,
-            migrationPolicy,
-            batteryMonitor);
+        ruleJson,
+        migrationPolicy,
+        batteryMonitor);
 
         rules = LoadRules(ruleJson, ruleFactory);
         Subscribe(rules);

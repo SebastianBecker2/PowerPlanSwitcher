@@ -296,7 +296,7 @@ namespace PowerPlanSwitcher
                     AcPowerSchemeGuid: Settings.Default.AcPowerSchemeGuid,
                     BatterPowerSchemeGuid: Settings.Default.BatterPowerSchemeGuid);
 
-                return new RuleManager(ruleJson, migrationPolicy, battery, factory);
+                return new RuleManager(factory, ruleJson, migrationPolicy, battery);
             })
             .AsSelf()
             .SingleInstance();

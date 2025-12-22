@@ -50,7 +50,11 @@ public sealed class RuleManagerTest
             ]
         }";
 
-        var manager = new RuleManager(version1Json, migrationPolicy, batteryMonitor, ruleFactory);
+        var manager = new RuleManager(
+            ruleFactory,
+            version1Json,
+            migrationPolicy,
+            batteryMonitor);
         var rules = manager.GetRules().ToList();
 
         Assert.AreEqual(2, rules.Count);
@@ -92,7 +96,11 @@ public sealed class RuleManagerTest
           }
         ]";
 
-        var manager = new RuleManager(legacyJson, migrationPolicy, batteryMonitor, ruleFactory);
+        var manager = new RuleManager(
+            ruleFactory,
+            legacyJson,
+            migrationPolicy,
+            batteryMonitor);
         var rules = manager.GetRules().ToList();
 
         Assert.AreEqual(4, rules.Count, "Migration adds 2 PowerLineRules to the initial 2 ProcessRules");
@@ -144,7 +152,11 @@ public sealed class RuleManagerTest
           }
         ]";
 
-        var manager = new RuleManager(legacyJson, migrationPolicy, batteryMonitor, ruleFactory);
+        var manager = new RuleManager(
+            ruleFactory,
+            legacyJson,
+            migrationPolicy,
+            batteryMonitor);
         var rules = manager.GetRules().ToList();
 
         Assert.AreEqual(2, rules.Count);
@@ -190,7 +202,11 @@ public sealed class RuleManagerTest
             ""SchemaVersion"": 1
         }";
 
-        var manager = new RuleManager(originalJson, migrationPolicy, batteryMonitor, ruleFactory);
+        var manager = new RuleManager(
+            ruleFactory,
+            originalJson,
+            migrationPolicy,
+            batteryMonitor);
 
         string? serializedFromEvent = null;
         manager.RulesUpdated += (s, e) => serializedFromEvent = e.Serialized;
@@ -255,7 +271,11 @@ public sealed class RuleManagerTest
         // Assert
         Assert.IsNotNull(serializedFromEvent, "RulesUpdated event should fire");
 
-        manager = new RuleManager(serializedFromEvent, migrationPolicy, batteryMonitor, ruleFactory);
+        manager = new RuleManager(
+            ruleFactory,
+            serializedFromEvent,
+            migrationPolicy,
+            batteryMonitor);
         var deserializedRules = manager.GetRules();
 
         Assert.AreEqual(rules.Count, deserializedRules.Count(), "Rule count should match after round-trip");
@@ -446,7 +466,7 @@ public sealed class RuleManagerTest
 
         // Act & Assert
         _ = Assert.ThrowsException<NotSupportedException>(() =>
-            new RuleManager(invalidJson, migrationPolicy, batteryMonitor, ruleFactory));
+            new RuleManager(ruleFactory, invalidJson, migrationPolicy, batteryMonitor));
     }
 
     [TestMethod]
