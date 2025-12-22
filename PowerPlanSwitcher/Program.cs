@@ -1,19 +1,21 @@
 namespace PowerPlanSwitcher
 {
-    using Hotkeys;
-    using Properties;
-    using Serilog;
-    using Newtonsoft.Json;
-    using PowerPlanSwitcher.PowerManagement;
-    using Serilog.Formatting.Json;
-    using Serilog.Core;
     using System.Diagnostics;
+    using Autofac;
+    using Hotkeys;
+    using Newtonsoft.Json;
+    using PowerManagement;
+    using ProcessManagement;
+    using Properties;
+    using RuleManagement;
+    using RuleManagement.Rules;
+    using Serilog;
+    using Serilog.Core;
+    using Serilog.Formatting.Json;
     using SevenZip;
 
     internal static class Program
     {
-        public static readonly HotkeyManager HotkeyManager = new();
-
         private static readonly string AssemblyTitle =
             AboutBox.AssemblyTitle ?? "";
         private static readonly string LogFileName =
@@ -50,7 +52,7 @@ namespace PowerPlanSwitcher
             }
             try
             {
-                _ = Process.Start(new ProcessStartInfo
+                _ = System.Diagnostics.Process.Start(new ProcessStartInfo
                 {
                     FileName = LogPath,
                     UseShellExecute = true,
@@ -129,13 +131,13 @@ namespace PowerPlanSwitcher
             }
         }
 
-        public static void RegisterHotkeys()
+        public static void RegisterHotkeys(HotkeyManager hotkeyManager)
         {
             var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
                 Settings.Default.CyclePowerSchemeHotkey);
             if (cycleHotkey is not null)
             {
-                _ = HotkeyManager.AddHotkey(
+                _ = hotkeyManager.AddHotkey(
                     cycleHotkey.Key,
                     cycleHotkey.Modifier);
             }
@@ -144,7 +146,7 @@ namespace PowerPlanSwitcher
                 .Select(ps => PowerSchemeSettings.GetSetting(ps.guid)?.Hotkey)
                 .Where(h => h is not null))
             {
-                _ = HotkeyManager.AddHotkey(hotkey!.Key, hotkey!.Modifier);
+                _ = hotkeyManager.AddHotkey(hotkey!.Key, hotkey!.Modifier);
             }
         }
 
@@ -262,6 +264,52 @@ namespace PowerPlanSwitcher
             // see https://aka.ms/applicationconfiguration.
             ApplicationConfiguration.Initialize();
 
+            var builder = new ContainerBuilder();
+            _ = builder.RegisterInstance(Log.Logger)
+                .As<ILogger>()
+                .SingleInstance();
+
+            _ = builder.RegisterType<BatteryMonitor>()
+                .As<IBatteryMonitor>()
+                .SingleInstance();
+            _ = builder.RegisterType<ProcessMonitor>()
+                .As<IProcessMonitor>()
+                .SingleInstance();
+            _ = builder.RegisterType<PowerManager>()
+                .As<IPowerManager>()
+                .SingleInstance();
+            _ = builder.RegisterType<RuleFactory>()
+                .AsSelf()
+                .SingleInstance();
+            _ = builder.RegisterType<HotkeyManager>()
+                .AsSelf()
+                .SingleInstance();
+
+            _ = builder.Register(c =>
+            {
+                var battery = c.Resolve<IBatteryMonitor>();
+                var factory = c.Resolve<RuleFactory>();
+
+                var ruleJson = Settings.Default.Rules;
+                var migrationPolicy = new MigrationPolicy(
+                    MigratedPowerRulesToRules: Settings.Default.MigratedPowerRulesToRules,
+                    AcPowerSchemeGuid: Settings.Default.AcPowerSchemeGuid,
+                    BatterPowerSchemeGuid: Settings.Default.BatterPowerSchemeGuid);
+
+                return new RuleManager(ruleJson, migrationPolicy, battery, factory);
+            })
+            .AsSelf()
+            .SingleInstance();
+
+            _ = builder.RegisterType<AppContext>()
+                .AsSelf();
+            _ = builder.RegisterType<SettingsDlg>();
+            _ = builder.RegisterType<HotkeySelectionDlg>();
+            _ = builder.RegisterType<ContextMenu>();
+            _ = builder.RegisterType<TrayIcon>();
+
+            var container = builder.Build();
+
             if (Settings.Default.ActivateInitialPowerScheme &&
                 Settings.Default.InitialPowerSchemeGuid != Guid.Empty)
             {
@@ -275,14 +323,31 @@ namespace PowerPlanSwitcher
                     Settings.Default.InitialPowerSchemeGuid);
             }
 
-            RegisterHotkeys();
+            var ruleManager = container.Resolve<RuleManager>();
+            ruleManager.RulesUpdated += (_, e) =>
+            {
+                Settings.Default.Rules = e.Serialized;
+                Settings.Default.Save();
+            };
 
-            HotkeyManager.HotkeyPressed += HotkeyManager_HotkeyPressed;
+            var processManager = container.Resolve<IProcessMonitor>();
+            processManager.StartMonitoring();
 
-            Microsoft.Win32.SystemEvents.EventsThreadShutdown += (s, e) =>
-                Application.Exit();
+            // Resolve AppContext and run
+            using (var scope = container.BeginLifetimeScope())
+            {
+                var appContext = scope.Resolve<AppContext>();
+                var hotkeyManager = scope.Resolve<HotkeyManager>();
 
-            Application.Run(new AppContext());
+                RegisterHotkeys(hotkeyManager); // still uses static Program.HotkeyManager
+
+                hotkeyManager.HotkeyPressed += HotkeyManager_HotkeyPressed;
+
+                Microsoft.Win32.SystemEvents.EventsThreadShutdown += (s, e) =>
+                    Application.Exit();
+
+                Application.Run(appContext);
+            }
 
             Log.Information("Application exited gracefully.");
         }

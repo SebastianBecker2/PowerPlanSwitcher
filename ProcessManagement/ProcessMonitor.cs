@@ -1,7 +1,8 @@
 namespace ProcessManagement;
 
+using System.Runtime.InteropServices;
 using Serilog;
-using Timer = Timer;
+using static Vanara.PInvoke.Kernel32;
 
 public class ProcessMonitor : IDisposable, IProcessMonitor
 {
@@ -9,8 +10,29 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
     public static class Static
 #pragma warning restore CA1716 // Identifiers should not match keywords
     {
+        private static IEnumerable<PROCESSENTRY32> EnumerateProcesses()
+        {
+            using var snapshot = CreateToolhelp32Snapshot(TH32CS.TH32CS_SNAPPROCESS, 0);
+
+            var entry = new PROCESSENTRY32
+            {
+                dwSize = (uint)Marshal.SizeOf(typeof(PROCESSENTRY32))
+            };
+
+            if (!Process32First(snapshot, ref entry))
+            {
+                yield break;
+            }
+
+            do
+            {
+                yield return entry;
+            }
+            while (Process32Next(snapshot, ref entry));
+        }
+
         public static IEnumerable<IProcess> GetUsersProcesses() =>
-            System.Diagnostics.Process.GetProcesses()
+            EnumerateProcesses()
                 .Select(Process.CreateFromProcess)
                 .Where(p => p is not null && !p.IsOwnProcess)
                 .Cast<Process>();

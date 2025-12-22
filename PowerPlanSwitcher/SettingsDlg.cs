@@ -2,13 +2,24 @@ namespace PowerPlanSwitcher
 {
     using System.Data;
     using System.Drawing.Drawing2D;
+    using Autofac;
     using Newtonsoft.Json;
-    using PowerPlanSwitcher.PowerManagement;
-    using PowerPlanSwitcher.RuleManagement.Rules;
+    using PowerManagement;
     using Properties;
+    using RuleManagement;
+    using RuleManagement.Rules;
 
     public partial class SettingsDlg : Form
     {
+        private class RuleWrapper(IRuleDto dto, int triggerCount)
+        {
+            public IRuleDto Dto { get; set; } = dto;
+            public int TriggerCount { get; set; } = triggerCount;
+
+            public RuleWrapper(IRuleDto dto) : this(dto, 0) { }
+            public RuleWrapper(IRule rule) : this(rule.Dto, rule.TriggerCount) { }
+        }
+
         private readonly List<(Guid guid, string name)> powerSchemes =
             [.. PowerManager.Static.GetPowerSchemes()
                 .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
@@ -16,8 +27,16 @@ namespace PowerPlanSwitcher
 
         private Size settingsDlgOriginalSize = Size.Empty;
 
-        public SettingsDlg()
+        public IEnumerable<IRuleDto> RuleDto => [.. rules.Select(r => r.Dto)];
+        private readonly IEnumerable<RuleWrapper> rules;
+
+        private readonly ILifetimeScope scope;
+
+        public SettingsDlg(ILifetimeScope scope)
         {
+            this.scope = scope;
+            rules = scope.Resolve<RuleManager>().GetRules().Select(r => new RuleWrapper(r));
+
             InitializeComponent();
             TacSettingsCategories.SelectedIndexChanged +=
                 TacSettingsCategories_SelectedIndexChanged;
@@ -25,7 +44,7 @@ namespace PowerPlanSwitcher
 
             var text = $"Regular logging only captures critical errors, " +
                 $"such as crash-related exceptions.{Environment.NewLine}" +
-                $"Extended logging maybe have performance implication." +
+                $"Extended logging may have performance implication." +
                 $"{Environment.NewLine}Extended log files will include basic " +
                 $"information about running processes {Environment.NewLine}" +
                 $"(process ID, executable path and start/stop times) " +
@@ -251,11 +270,6 @@ namespace PowerPlanSwitcher
             }
             PowerSchemeSettings.SaveSettings();
 
-            Rules.SetRules(DgvPowerRules.Rows
-                .Cast<DataGridViewRow>()
-                .Select(r => r.Tag as IRule)
-                .Cast<IRule>());
-
             static string GetSelectedString(ComboBox cmb)
             {
                 if (cmb.SelectedIndex == -1)
@@ -289,18 +303,22 @@ namespace PowerPlanSwitcher
             DialogResult = DialogResult.OK;
         }
 
-        private static DataGridViewRow RuleToRow(IRule rule)
+        private static DataGridViewRow RuleToRow(IRule rule) =>
+            RuleWrapperToRow(new RuleWrapper(rule));
+
+        private static DataGridViewRow RuleDtoToRow(IRuleDto dto) =>
+            RuleWrapperToRow(new RuleWrapper(dto));
+
+        private static DataGridViewRow RuleWrapperToRow(RuleWrapper rule)
         {
+            var dto = rule.Dto;
             var row = new DataGridViewRow { Tag = rule, };
-            var setting = PowerSchemeSettings.GetSetting(rule.SchemeGuid);
+            var setting = PowerSchemeSettings.GetSetting(dto.SchemeGuid);
             row.Cells.AddRange(
+                new DataGridViewTextBoxCell(),
                 new DataGridViewTextBoxCell
                 {
-                    Value = rule.Index + 1,
-                },
-                new DataGridViewTextBoxCell
-                {
-                    Value = rule.GetDescription(),
+                    Value = dto.GetDescription(),
                 },
                 new DataGridViewImageCell
                 {
@@ -311,121 +329,91 @@ namespace PowerPlanSwitcher
                 {
                     Value =
                         PowerManager.Static.GetPowerSchemeName(
-                            rule.SchemeGuid)
-                        ?? rule.SchemeGuid.ToString(),
+                            dto.SchemeGuid)
+                        ?? dto.SchemeGuid.ToString(),
                 },
-                new DataGridViewCheckBoxCell
+                new DataGridViewTextBoxCell
                 {
-                    Value = rule.ActivationCount,
+                    Value = rule.TriggerCount,
                 });
 
             return row;
         }
 
         private void UpdatePowerRules() =>
-            DgvPowerRules.Rows.AddRange([.. Rules.GetRules()
-                .OrderBy(r => r.Index)
-                .Select(RuleToRow)]);
+            DgvRules.Rows.AddRange([.. rules.Select(RuleWrapperToRow)]);
 
         private void HandleBtnAddPowerRuleClick(object sender, EventArgs e)
         {
             using var dlg = new RuleDlg();
-            if (dlg.ShowDialog() != DialogResult.OK)
+            if (dlg.ShowDialog() != DialogResult.OK || dlg.RuleDto is null)
             {
                 return;
             }
 
-            dlg.Rule!.Index = DgvPowerRules.RowCount;
-            _ = DgvPowerRules.Rows.Add(RuleToRow(dlg.Rule));
+            _ = DgvRules.Rows.Add(RuleDtoToRow(dlg.RuleDto));
         }
 
         private void HandleBtnEditPowerRuleClick(object sender, EventArgs e)
         {
-            if (DgvPowerRules.SelectedRows.Count == 0)
+            if (DgvRules.SelectedRows.Count == 0)
             {
                 return;
             }
 
+            var index = DgvRules.SelectedRows[0].Index;
+            var rule = DgvRules.SelectedRows[0].Tag as RuleWrapper
+                ?? throw new InvalidOperationException(
+                    "Selected row does not have a valid Rule tag.");
+
             using var dlg = new RuleDlg
             {
-                Rule = DgvPowerRules.SelectedRows[0].Tag as IRule,
+                RuleDto = rule.Dto,
             };
             if (dlg.ShowDialog() != DialogResult.OK)
             {
                 return;
             }
 
-            DgvPowerRules.Rows.RemoveAt(dlg.Rule!.Index);
-            DgvPowerRules.Rows.Insert(
-                dlg.Rule!.Index,
-                RuleToRow(dlg.Rule));
-            DgvPowerRules.Rows[dlg.Rule!.Index].Selected = true;
+            DgvRules.Rows.RemoveAt(index);
+            DgvRules.Rows.Insert(index, RuleDtoToRow(dlg.RuleDto));
+            DgvRules.Rows[index].Selected = true;
         }
 
         private void HandleBtnDeletePowerRuleClick(object sender, EventArgs e)
         {
-            if (DgvPowerRules.SelectedRows.Count == 0)
+            if (DgvRules.SelectedRows.Count == 0)
             {
                 return;
             }
 
-            var index = DgvPowerRules.SelectedRows[0].Index;
-            DgvPowerRules.Rows.RemoveAt(index);
-            for (; index < DgvPowerRules.Rows.Count; index++)
-            {
-                var row = DgvPowerRules.Rows[index];
-                (row.Tag as IRule)!.Index = index;
-                row.Cells["DgcRuleIndex"].Value = index;
-            }
+            var index = DgvRules.SelectedRows[0].Index;
+            DgvRules.Rows.RemoveAt(index);
         }
 
         private void HandleBtnAscentPowerRuleClick(object sender, EventArgs e)
         {
-            if (DgvPowerRules.SelectedRows.Count == 0)
+            if (DgvRules.SelectedRows.Count == 0)
             {
                 return;
             }
 
-            var row = DgvPowerRules.SelectedRows[0];
-            var powerRule = row.Tag as IRule;
-            if (powerRule!.Index == 0)
-            {
-                return;
-            }
-
-            DgvPowerRules.Rows.Remove(row);
-            DgvPowerRules.Rows.Insert(powerRule!.Index - 1, row);
-
-            var otherRow = DgvPowerRules.Rows[powerRule.Index];
-            otherRow.Cells["DgcRuleIndex"].Value =
-                ++(otherRow.Tag as IRule)!.Index;
-            row.Cells["DgcRuleIndex"].Value = --(row.Tag as IRule)!.Index;
-
+            var row = DgvRules.SelectedRows[0];
+            DgvRules.Rows.Remove(row);
+            DgvRules.Rows.Insert(row.Index - 1, row);
             row.Selected = true;
         }
 
         private void HandleBtnDescentPowerRuleClick(object sender, EventArgs e)
         {
-            if (DgvPowerRules.SelectedRows.Count == 0)
+            if (DgvRules.SelectedRows.Count == 0)
             {
                 return;
             }
 
-            var row = DgvPowerRules.SelectedRows[0];
-            var powerRule = row.Tag as IRule;
-            if (powerRule!.Index == DgvPowerRules.RowCount - 1)
-            {
-                return;
-            }
-
-            DgvPowerRules.Rows.Remove(row);
-            DgvPowerRules.Rows.Insert(powerRule!.Index + 1, row);
-
-            var otherRow = DgvPowerRules.Rows[powerRule.Index];
-            otherRow.Cells["DgcRuleIndex"].Value =
-                --(otherRow.Tag as IRule)!.Index;
-            row.Cells["DgcRuleIndex"].Value = ++(row.Tag as IRule)!.Index;
-
+            var row = DgvRules.SelectedRows[0];
+            DgvRules.Rows.Remove(row);
+            DgvRules.Rows.Insert(row.Index + 1, row);
             row.Selected = true;
         }
 
@@ -446,9 +434,9 @@ namespace PowerPlanSwitcher
             row.Cells["DgcIcon"].Value = null;
             var guid = (Guid)row.Tag!;
 
-            foreach (var r in DgvPowerRules.Rows
+            foreach (var r in DgvRules.Rows
                 .Cast<DataGridViewRow>()
-                .Where(r => (r.Tag as IRule)!.SchemeGuid == guid))
+                .Where(r => (r.Tag as RuleWrapper)!.Dto.SchemeGuid == guid))
             {
                 r.Cells["DgcRuleSchemeIcon"].Value = null;
             }
@@ -480,9 +468,9 @@ namespace PowerPlanSwitcher
             row.Cells["DgcIcon"].Value = image;
             var guid = (Guid)row.Tag!;
 
-            foreach (var r in DgvPowerRules.Rows
+            foreach (var r in DgvRules.Rows
                 .Cast<DataGridViewRow>()
-                .Where(r => (r.Tag as IRule)!.SchemeGuid == guid))
+                .Where(r => (r.Tag as IRule)!.Dto.SchemeGuid == guid))
             {
                 r.Cells["DgcRuleSchemeIcon"].Value = image;
             }
@@ -498,7 +486,7 @@ namespace PowerPlanSwitcher
             var cell = row.Cells["DgcHotkey"];
             var name = row.Cells["DgcName"].Value;
 
-            using var dlg = new HotkeySelectionDlg();
+            using var dlg = scope.Resolve<HotkeySelectionDlg>();
             if (dlg.ShowDialog() != DialogResult.OK)
             {
                 return;
@@ -566,7 +554,7 @@ namespace PowerPlanSwitcher
 
         private void BtnSetCycleHotkey_Click(object sender, EventArgs e)
         {
-            using var dlg = new HotkeySelectionDlg();
+            using var dlg = scope.Resolve<HotkeySelectionDlg>();
             if (dlg.ShowDialog() != DialogResult.OK)
             {
                 return;
@@ -613,7 +601,7 @@ namespace PowerPlanSwitcher
             object sender,
             DataGridViewCellEventArgs e)
         {
-            if (e.RowIndex < 0 || e.RowIndex >= DgvPowerRules.RowCount)
+            if (e.RowIndex < 0 || e.RowIndex >= DgvRules.RowCount)
             {
                 return;
             }

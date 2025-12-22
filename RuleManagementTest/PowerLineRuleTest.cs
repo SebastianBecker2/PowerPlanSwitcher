@@ -65,10 +65,9 @@ public sealed class PowerLineRuleTest
     {
         // Arrange
         var dto = new PowerLineRuleDto { SchemeGuid = Guid.NewGuid(), PowerLineStatus = PowerLineStatus.Offline };
-        var rule = new PowerLineRule(batteryMonitor, dto);
 
         // Act
-        var description = rule.GetDescription();
+        var description = dto.GetDescription();
 
         // Assert
         Assert.AreEqual("Power Line -> On battery", description);
@@ -78,8 +77,8 @@ public sealed class PowerLineRuleTest
     public void TextToPowerLineStatus_InvalidText_Throws()
     {
         // Arrange
-        var method = typeof(PowerLineRule)
-            .GetMethod("TextToPowerLineStatus", BindingFlags.NonPublic | BindingFlags.Static);
+        var method = typeof(PowerLineRuleDto)
+            .GetMethod("TextToPowerLineStatus", BindingFlags.Public | BindingFlags.Static);
         Assert.IsNotNull(method);
 
         // Act & Assert
@@ -91,8 +90,8 @@ public sealed class PowerLineRuleTest
     public void PowerLineStatusToText_UnknownStatus_ReturnsEmptyString()
     {
         // Arrange
-        var method = typeof(PowerLineRule)
-            .GetMethod("PowerLineStatusToText", BindingFlags.NonPublic | BindingFlags.Static);
+        var method = typeof(PowerLineRuleDto)
+            .GetMethod("PowerLineStatusToText", BindingFlags.Public | BindingFlags.Static);
         Assert.IsNotNull(method);
 
         // Act

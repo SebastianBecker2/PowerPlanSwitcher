@@ -1,6 +1,7 @@
 namespace PowerPlanSwitcher
 {
-    using PowerPlanSwitcher.PowerManagement;
+    using Autofac;
+    using PowerManagement;
     using Properties;
 
     internal class TrayIcon : IDisposable
@@ -16,9 +17,9 @@ namespace PowerPlanSwitcher
             Visible = true,
         };
 
-        public TrayIcon()
+        public TrayIcon(ILifetimeScope scope)
         {
-            var contextMenu = new ContextMenu();
+            var contextMenu = scope.Resolve<ContextMenu>();
             notifyIcon.ContextMenuStrip = contextMenu;
             Settings.Default.PropertyChanged += (_, _) => UpdateIcon();
 

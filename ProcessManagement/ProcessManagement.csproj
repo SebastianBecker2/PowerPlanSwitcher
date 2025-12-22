@@ -8,6 +8,7 @@
 
   <ItemGroup>
     <PackageReference Include="Serilog" Version="4.3.0" />
+    <PackageReference Include="Vanara.PInvoke.Kernel32" Version="4.1.6" />
   </ItemGroup>
 
 </Project>

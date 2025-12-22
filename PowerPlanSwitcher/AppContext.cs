@@ -1,24 +1,25 @@
 namespace PowerPlanSwitcher
 {
-    using System.ComponentModel;
     using System.Configuration;
-    using PowerPlanSwitcher.PowerManagement;
-    using PowerPlanSwitcher.ProcessManagement;
+    using Autofac;
+    using PowerManagement;
     using PowerPlanSwitcher.Properties;
-    using PowerPlanSwitcher.RuleManagement;
-    using PowerPlanSwitcher.RuleManagement.Rules;
+    using RuleManagement;
     using Serilog;
 
     internal class AppContext : ApplicationContext
     {
-        private readonly PowerManager powerManager = new();
-        private readonly BatteryMonitor batteryMonitor = new();
-        private readonly ProcessMonitor processMonitor = new();
-        private readonly RuleManager? ruleManager;
-        private readonly TrayIcon trayIcon = new();
+        private readonly IPowerManager powerManager;
+        private readonly TrayIcon trayIcon;
+        private Guid BaselineSchemeGuid { get; set; } =
+            PowerManager.Static.GetActivePowerSchemeGuid();
 
-        public AppContext()
+        public AppContext(ILifetimeScope scope)
         {
+            trayIcon = scope.Resolve<TrayIcon>();
+            powerManager = scope.Resolve<IPowerManager>();
+            var ruleManager = scope.Resolve<RuleManager>();
+
             ToastDlg.Initialize();
 
             powerManager.ActivePowerSchemeChanged +=
@@ -30,21 +31,24 @@ namespace PowerPlanSwitcher
                     powerManager.GetPowerSchemeName(e.ActiveSchemeGuid) ?? "<No Name>",
                     e.ActiveSchemeGuid);
 
-            ruleManager = new(powerManager)
+            powerManager.ActivePowerSchemeChanged += (s, e) =>
             {
-                BatteryMonitor = batteryMonitor,
-                ProcessMonitor = processMonitor
+                if (ruleManager.AppliedRule is not null)
+                {
+                    return;
+                }
+
+                if (e.ActiveSchemeGuid == Guid.Empty)
+                {
+                    return;
+                }
+
+                BaselineSchemeGuid = e.ActiveSchemeGuid;
             };
+
             ruleManager.RuleApplicationChanged +=
                 RuleManager_RuleApplicationChanged;
-            ruleManager.StartEngine(Rules.GetRules());
 
-            // ProcessMonitor has to be started after RuleManager was started.
-            // Otherweise events might be missed
-            processMonitor.StartMonitoring();
-
-            Settings.Default.PropertyChanged +=
-                Default_PropertyChanged;
             Settings.Default.SettingChanging +=
                 Default_SettingChanging;
         }
@@ -63,39 +67,46 @@ namespace PowerPlanSwitcher
                 e.SettingName, Settings.Default[e.SettingName], e.NewValue);
         }
 
-        private void Default_PropertyChanged(
-            object? sender,
-            PropertyChangedEventArgs e)
-        {
-            if (e.PropertyName != "Rules")
-            {
-                return;
-            }
-
-            ruleManager?.StartEngine(Rules.GetRules());
-        }
-
         private void RuleManager_RuleApplicationChanged(
             object? sender,
             RuleApplicationChangedEventArgs e)
         {
-            if (e.PowerSchemeGuid == powerManager.GetActivePowerSchemeGuid())
+            if (e.Rule is null)
+            {
+                Log.Information(
+                    "Activating power scheme: {PowerSchemeName} " +
+                    "{PowerSchemeGuid} Reason: {Reason}",
+                    "<No Name>",
+                    BaselineSchemeGuid,
+                    "Restore baseline");
+                powerManager.SetActivePowerScheme(BaselineSchemeGuid);
+                return;
+            }
+
+            var schemeGuid = e.Rule.Dto.SchemeGuid;
+            if (schemeGuid == powerManager.GetActivePowerSchemeGuid())
             {
                 return;
             }
 
+            var schemeName =
+                PowerManager.Static.GetPowerSchemeName(
+                    schemeGuid)
+                ?? "<No Name>";
+
+            var reason = "Rule applied";
+
             Log.Information(
                 "Activating power scheme: {PowerSchemeName} " +
                 "{PowerSchemeGuid} Reason: {Reason}",
-                PowerManager.Static.GetPowerSchemeName(
-                    e.PowerSchemeGuid) ?? "<No Name>",
-                e.PowerSchemeGuid,
-                e.Reason ?? "<Missing Reason>");
-            powerManager.SetActivePowerScheme(e.PowerSchemeGuid);
+                schemeName,
+                schemeGuid,
+                reason);
+            powerManager.SetActivePowerScheme(schemeGuid);
 
-            if (e.Reason != null && PopUpWindowLocationHelper.ShouldShowToast(e.Reason))
+            if (PopUpWindowLocationHelper.ShouldShowToast(reason))
             {
-                ToastDlg.ShowToastNotification(e.PowerSchemeGuid, e.Reason);
+                ToastDlg.ShowToastNotification(schemeGuid, reason);
             }
         }
 
@@ -103,9 +114,6 @@ namespace PowerPlanSwitcher
         {
             if (disposing)
             {
-                ruleManager?.StopEngine();
-                processMonitor.Dispose();
-                powerManager.Dispose();
                 trayIcon.Dispose();
             }
             base.Dispose(disposing);

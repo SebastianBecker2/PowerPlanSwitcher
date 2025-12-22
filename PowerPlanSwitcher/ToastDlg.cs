@@ -2,7 +2,7 @@ namespace PowerPlanSwitcher
 {
     using System;
     using System.Windows.Forms;
-    using PowerPlanSwitcher.PowerManagement;
+    using PowerManagement;
     using static Vanara.PInvoke.User32;
 
     public partial class ToastDlg : Form

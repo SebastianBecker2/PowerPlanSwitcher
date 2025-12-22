@@ -1,6 +1,6 @@
 namespace PowerPlanSwitcher
 {
-    using PowerPlanSwitcher.PowerManagement;
+    using PowerManagement;
     using Serilog;
 
     public partial class PowerSchemeSelectorDlg : Form

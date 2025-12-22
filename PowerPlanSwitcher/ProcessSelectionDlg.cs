@@ -1,6 +1,6 @@
 namespace PowerPlanSwitcher
 {
-    using PowerPlanSwitcher.ProcessManagement;
+    using ProcessManagement;
 
     public partial class ProcessSelectionDlg : Form
     {

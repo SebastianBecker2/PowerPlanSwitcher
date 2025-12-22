@@ -85,11 +85,9 @@ public sealed class ProcessRuleTest
     [TestMethod]
     public void GetDescription_ReturnsExpectedText()
     {
-        var processMonitor = A.Fake<IProcessMonitor>();
         var dto = new ProcessRuleDto { FilePath = "test.exe", Type = ComparisonType.StartsWith, SchemeGuid = Guid.NewGuid() };
-        var rule = new ProcessRule(processMonitor, dto);
 
-        var description = rule.GetDescription();
+        var description = dto.GetDescription();
 
         Assert.AreEqual("Process -> Path starts with -> test.exe", description);
     }
@@ -97,8 +95,8 @@ public sealed class ProcessRuleTest
     [TestMethod]
     public void ComparisonTypeToText_UnknownType_ReturnsEmptyString()
     {
-        var method = typeof(ProcessRule)
-            .GetMethod("ComparisonTypeToText", BindingFlags.NonPublic | BindingFlags.Static);
+        var method = typeof(ProcessRuleDto)
+            .GetMethod("ComparisonTypeToText", BindingFlags.Public | BindingFlags.Static);
         Assert.IsNotNull(method);
 
         var result = method.Invoke(null, [(ComparisonType)999]);
@@ -109,8 +107,8 @@ public sealed class ProcessRuleTest
     [TestMethod]
     public void TextToComparisonType_InvalidText_Throws()
     {
-        var method = typeof(ProcessRule)
-            .GetMethod("TextToComparisonType", BindingFlags.NonPublic | BindingFlags.Static);
+        var method = typeof(ProcessRuleDto)
+            .GetMethod("TextToComparisonType", BindingFlags.Public | BindingFlags.Static);
         Assert.IsNotNull(method);
 
         try

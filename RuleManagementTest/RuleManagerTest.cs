@@ -19,7 +19,8 @@ public sealed class RuleManagerTest
     {
         batteryMonitor = A.Fake<IBatteryMonitor>();
         processMonitor = A.Fake<IProcessMonitor>();
-        ruleFactory = A.Fake<RuleFactory>();
+
+        ruleFactory = new RuleFactory(batteryMonitor, processMonitor);
     }
 
     [TestMethod]
@@ -172,7 +173,7 @@ public sealed class RuleManagerTest
 
         var originalJson = /*lang=json,strict*/ @"
         {
-            ""$type"": ""RuleManagement.Rules.RuleManager+RuleContainer, RuleManagement"",
+            ""$type"": ""RuleManagement.RuleManager+RuleContainer, RuleManagement"",
             ""Rules"": [
                 {
                     ""$type"": ""RuleManagement.Rules.ProcessRuleDto, RuleManagement"",
@@ -239,7 +240,7 @@ public sealed class RuleManagerTest
                     SchemeGuid = CreateGuid('4')
                 }),
             ];
-        var manager = new RuleManager();
+        var manager = new RuleManager(ruleFactory);
         string? serializedFromEvent = null;
         manager.RulesUpdated += (s, e) => serializedFromEvent = e.Serialized;
         var migrationPolicy = new MigrationPolicy(
@@ -290,7 +291,7 @@ public sealed class RuleManagerTest
             CreateTestRule('1'),
             ];
 
-        var manager = new RuleManager();
+        var manager = new RuleManager(ruleFactory);
         manager.SetRules(rules);
 
         IRule? appliedRuleFromEvent = null;
@@ -314,7 +315,7 @@ public sealed class RuleManagerTest
             CreateTestRule('2'),
             ];
 
-        var manager = new RuleManager();
+        var manager = new RuleManager(ruleFactory);
         manager.SetRules(rules);
 
         IRule? appliedRuleFromEvent = null;
@@ -338,7 +339,7 @@ public sealed class RuleManagerTest
             CreateTestRule('1'),
             ];
 
-        var manager = new RuleManager();
+        var manager = new RuleManager(ruleFactory);
         manager.SetRules(rules);
 
         var eventFireCount = 0;
@@ -369,7 +370,7 @@ public sealed class RuleManagerTest
             CreateTestRule('2'),
             ];
 
-        var manager = new RuleManager();
+        var manager = new RuleManager(ruleFactory);
         manager.SetRules(rules);
 
         List<IRule?> appliedRules = [];
@@ -398,7 +399,7 @@ public sealed class RuleManagerTest
             CreateTestRule('2'),
         };
 
-        var manager = new RuleManager();
+        var manager = new RuleManager(ruleFactory);
         manager.SetRules(rules);
 
         var eventFireCount = 0;
@@ -416,7 +417,7 @@ public sealed class RuleManagerTest
     public void EmptyRuleSet_ReturnsEmptyRules()
     {
         // Arrange
-        var manager = new RuleManager();
+        var manager = new RuleManager(ruleFactory);
         manager.SetRules(Array.Empty<IRule>());
 
         // Act
@@ -454,7 +455,7 @@ public sealed class RuleManagerTest
         // Arrange
         var rules = new List<TestRule> { CreateTestRule('1') };
 
-        var manager = new RuleManager();
+        var manager = new RuleManager(ruleFactory);
         manager.SetRules(rules);
 
         List<IRule?> appliedRules = [];
@@ -481,7 +482,7 @@ public sealed class RuleManagerTest
             CreateTestRule('2'), // lower priority (index 1)
         };
 
-        var manager = new RuleManager();
+        var manager = new RuleManager(ruleFactory);
         manager.SetRules(rules);
 
         List<IRule?> appliedRules = [];
@@ -506,7 +507,7 @@ public sealed class RuleManagerTest
             CreateTestRule('2'), // lower priority (index 1)
         };
 
-        var manager = new RuleManager();
+        var manager = new RuleManager(ruleFactory);
         manager.SetRules(rules);
 
         var eventFireCount = 0;
@@ -531,7 +532,7 @@ public sealed class RuleManagerTest
     public void TriggerChanged_WithNonRuleSender_Throws()
     {
         // Arrange
-        var manager = new RuleManager();
+        var manager = new RuleManager(ruleFactory);
         var method = typeof(RuleManager)
             .GetMethod("Rule_TriggerChanged", BindingFlags.NonPublic | BindingFlags.Instance);
         Assert.IsNotNull(method, "Rule_TriggerChanged should exist");
@@ -552,6 +553,57 @@ public sealed class RuleManagerTest
             Assert.IsInstanceOfType(tie.InnerException, typeof(InvalidCastException),
                 "InnerException should be InvalidCastException when sender is not IRule.");
         }
+    }
+
+    [TestMethod]
+    public void CallingSetRules_BehavesConsistent_ForAllOverloads()
+    {
+        // Arrange
+        List<IRule> rules = [
+            new PowerLineRule(
+                batteryMonitor,
+                new PowerLineRuleDto {
+                    PowerLineStatus = PowerLineStatus.Online,
+                    SchemeGuid = CreateGuid('1')
+                }),
+            new PowerLineRule(
+                batteryMonitor,
+                new PowerLineRuleDto {
+                    PowerLineStatus = PowerLineStatus.Online,
+                    SchemeGuid = CreateGuid('2')
+                }),
+            new ProcessRule(
+                processMonitor,
+                new ProcessRuleDto {
+                    FilePath = "testPath",
+                    Type = ComparisonType.StartsWith,
+                    SchemeGuid = CreateGuid('3')
+                }),
+            new ProcessRule(
+                processMonitor,
+                new ProcessRuleDto {
+                    FilePath = "anotherTestPath",
+                    Type = ComparisonType.Exact,
+                    SchemeGuid = CreateGuid('4')
+                }),
+            ];
+        var manager = new RuleManager(ruleFactory);
+        List<string> serializedFromEvent = [];
+        manager.RulesUpdated += (s, e) => serializedFromEvent.Add(e.Serialized);
+        var migrationPolicy = new MigrationPolicy(
+            MigratedPowerRulesToRules: true,
+            AcPowerSchemeGuid: CreateGuid('5'),
+            BatterPowerSchemeGuid: CreateGuid('6')
+        );
+
+        // Act
+        manager.SetRules(rules);
+        manager.SetRules(rules.Select(r => r.Dto));
+
+        // Assert
+        Assert.AreEqual(2, serializedFromEvent.Count);
+        Assert.IsFalse(string.IsNullOrEmpty(serializedFromEvent[0]));
+        Assert.AreEqual(serializedFromEvent[0], serializedFromEvent[1]);
     }
 
     private static void AssertRule(IRule rule, PowerLineRuleDto dto)

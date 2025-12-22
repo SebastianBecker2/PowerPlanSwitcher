@@ -11,16 +11,6 @@ public class ProcessRule
     public string FilePath => Dto.FilePath;
     public ComparisonType Type => Dto.Type;
 
-    private static readonly List<(ComparisonType type, string text)>
-        ComparisonTypeText =
-        [
-            (ComparisonType.Exact, "Match exact Path"),
-            (ComparisonType.StartsWith, "Path starts with"),
-            (ComparisonType.EndsWith, "Path ends with"),
-        ];
-    private static readonly IReadOnlyDictionary<string, ComparisonType> TextToTypeMap =
-        ComparisonTypeText.ToDictionary(entry => entry.text, entry => entry.type, StringComparer.Ordinal);
-
     public ProcessRule(
         IProcessMonitor processMonitor,
         ProcessRuleDto processRuleDto)
@@ -32,7 +22,6 @@ public class ProcessRule
 
     private void ProcessMonitor_ProcessCreated(object? sender, ProcessEventArgs e)
     {
-
         if (CheckRule(e.Process))
         {
             TriggerCount++;
@@ -47,9 +36,6 @@ public class ProcessRule
             TriggerCount = Math.Max(TriggerCount - 1, 0);
         }
     }
-
-    public override string GetDescription() =>
-        $"Process -> {ComparisonTypeToText(Type)} -> {FilePath}";
 
     private bool CheckRule(IProcess process)
     {
@@ -82,23 +68,5 @@ public class ProcessRule
         {
             return false;
         }
-    }
-
-    private static string ComparisonTypeToText(ComparisonType ruleType)
-    {
-        (ComparisonType type, string text)? entry = ComparisonTypeText
-            .FirstOrDefault(rtt => rtt.type == ruleType);
-        return entry?.text ?? string.Empty;
-    }
-
-    private static ComparisonType TextToComparisonType(string text)
-    {
-        if (!TextToTypeMap.TryGetValue(text, out var type))
-        {
-            throw new InvalidOperationException(
-                "No RuleType matches the provided text. " +
-                "Unable to convert to RuleType!");
-        }
-        return type;
     }
 }

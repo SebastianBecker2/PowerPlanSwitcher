@@ -1,4 +1,4 @@
-namespace RuleManagement.Rules;
+namespace RuleManagement;
 
 public class RulesUpdatedEventArgs(string serialized) : EventArgs
 {

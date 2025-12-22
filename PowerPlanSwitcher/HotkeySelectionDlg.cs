@@ -7,18 +7,23 @@ namespace PowerPlanSwitcher
     public partial class HotkeySelectionDlg : Form
     {
         public Hotkey? Hotkey { get; set; }
+        private readonly HotkeyManager hotkeyManager;
 
-        public HotkeySelectionDlg() => InitializeComponent();
+        public HotkeySelectionDlg(HotkeyManager hotkeyManager)
+        {
+            this.hotkeyManager = hotkeyManager;
+            InitializeComponent();
+        }
 
         protected override void OnLoad(EventArgs e)
         {
-            Program.HotkeyManager.KeyPressed += HotkeyManager_KeyPressed;
+            hotkeyManager.KeyPressed += HotkeyManager_KeyPressed;
             base.OnLoad(e);
         }
 
         protected override void OnClosed(EventArgs e)
         {
-            Program.HotkeyManager.KeyPressed -= HotkeyManager_KeyPressed;
+            hotkeyManager.KeyPressed -= HotkeyManager_KeyPressed;
             base.OnClosed(e);
         }
 

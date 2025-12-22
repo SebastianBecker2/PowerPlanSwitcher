@@ -33,6 +33,7 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
     <Content Include="Resources\power_surge.ico" />
   </ItemGroup>
   <ItemGroup>
+    <PackageReference Include="Autofac" Version="9.0.0" />
     <PackageReference Include="HotkeyManager" Version="1.0.1" />
     <PackageReference Include="Microsoft-WindowsAPICodePack-Shell" Version="1.1.5" />
     <PackageReference Include="Serilog" Version="4.3.0" />
@@ -44,6 +45,11 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
     <PackageReference Include="Vanara.PInvoke.User32" Version="4.1.6" />
     <PackageReference Include="Newtonsoft.Json" Version="13.0.3" />
     <PackageReference Include="System.Management" Version="9.0.6" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\PowerManagement\PowerManagement.csproj" />
+    <ProjectReference Include="..\ProcessManagement\ProcessManagement.csproj" />
+    <ProjectReference Include="..\RuleManagement\RuleManagement.csproj" />
   </ItemGroup>
   <ItemGroup>
     <Compile Update="Properties\Resources.Designer.cs">

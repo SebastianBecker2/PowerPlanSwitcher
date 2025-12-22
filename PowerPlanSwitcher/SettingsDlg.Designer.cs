@@ -38,12 +38,7 @@ namespace PowerPlanSwitcher
             DgcHotkey = new DataGridViewTextBoxColumn();
             BtnOk = new Button();
             BtnCancel = new Button();
-            DgvPowerRules = new DataGridView();
-            DgcRuleIndex = new DataGridViewTextBoxColumn();
-            DgcRuleDescription = new DataGridViewTextBoxColumn();
-            DgcRuleSchemeIcon = new DataGridViewImageColumn();
-            DgcRuleSchemeName = new DataGridViewTextBoxColumn();
-            DgcActive = new DataGridViewCheckBoxColumn();
+            DgvRules = new DataGridView();
             BtnAddPowerRule = new Button();
             BtnEditPowerRule = new Button();
             BtnAscentPowerRule = new Button();
@@ -77,13 +72,18 @@ namespace PowerPlanSwitcher
             CmbPopUpWindowGlobal = new ComboBox();
             groupBox2 = new GroupBox();
             tableLayoutPanel3 = new TableLayoutPanel();
+            PibLoggingInfo = new PictureBox();
             ChbExtendedLogging = new CheckBox();
             BtnOpenLogFolder = new Button();
             BtnExportLog = new Button();
-            PibLoggingInfo = new PictureBox();
             TipHints = new ToolTip(components);
+            DgcRuleIndex = new DataGridViewTextBoxColumn();
+            DgcRuleDescription = new DataGridViewTextBoxColumn();
+            DgcRuleSchemeIcon = new DataGridViewImageColumn();
+            DgcRuleSchemeName = new DataGridViewTextBoxColumn();
+            DgcTriggerCount = new DataGridViewCheckBoxColumn();
             ((System.ComponentModel.ISupportInitialize)DgvPowerSchemes).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)DgvPowerRules).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)DgvRules).BeginInit();
             tableLayoutPanel1.SuspendLayout();
             tableLayoutPanel2.SuspendLayout();
             TacSettingsCategories.SuspendLayout();
@@ -180,64 +180,25 @@ namespace PowerPlanSwitcher
             BtnCancel.Text = "Cancel";
             BtnCancel.UseVisualStyleBackColor = true;
             // 
-            // DgvPowerRules
+            // DgvRules
             // 
-            DgvPowerRules.AllowUserToAddRows = false;
-            DgvPowerRules.AllowUserToDeleteRows = false;
-            DgvPowerRules.AllowUserToResizeColumns = false;
-            DgvPowerRules.AllowUserToResizeRows = false;
-            DgvPowerRules.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            DgvPowerRules.Columns.AddRange(new DataGridViewColumn[] { DgcRuleIndex, DgcRuleDescription, DgcRuleSchemeIcon, DgcRuleSchemeName, DgcActive });
-            tableLayoutPanel1.SetColumnSpan(DgvPowerRules, 5);
-            DgvPowerRules.Dock = DockStyle.Fill;
-            DgvPowerRules.Location = new Point(3, 3);
-            DgvPowerRules.MultiSelect = false;
-            DgvPowerRules.Name = "DgvPowerRules";
-            DgvPowerRules.RowHeadersVisible = false;
-            DgvPowerRules.RowTemplate.Height = 26;
-            DgvPowerRules.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
-            DgvPowerRules.Size = new Size(685, 158);
-            DgvPowerRules.TabIndex = 7;
-            DgvPowerRules.CellContentDoubleClick += DgvPowerRules_CellContentDoubleClick;
-            // 
-            // DgcRuleIndex
-            // 
-            DgcRuleIndex.Frozen = true;
-            DgcRuleIndex.HeaderText = "ID";
-            DgcRuleIndex.Name = "DgcRuleIndex";
-            DgcRuleIndex.ReadOnly = true;
-            DgcRuleIndex.Width = 30;
-            // 
-            // DgcRuleDescription
-            // 
-            DgcRuleDescription.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
-            DgcRuleDescription.HeaderText = "Description";
-            DgcRuleDescription.Name = "DgcRuleDescription";
-            DgcRuleDescription.ReadOnly = true;
-            // 
-            // DgcRuleSchemeIcon
-            // 
-            DgcRuleSchemeIcon.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            DgcRuleSchemeIcon.HeaderText = "Icon";
-            DgcRuleSchemeIcon.Name = "DgcRuleSchemeIcon";
-            DgcRuleSchemeIcon.ReadOnly = true;
-            DgcRuleSchemeIcon.Width = 36;
-            // 
-            // DgcRuleSchemeName
-            // 
-            DgcRuleSchemeName.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            DgcRuleSchemeName.HeaderText = "Power Plan";
-            DgcRuleSchemeName.Name = "DgcRuleSchemeName";
-            DgcRuleSchemeName.ReadOnly = true;
-            DgcRuleSchemeName.Width = 91;
-            // 
-            // DgcActive
-            // 
-            DgcActive.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            DgcActive.HeaderText = "Active";
-            DgcActive.Name = "DgcActive";
-            DgcActive.ReadOnly = true;
-            DgcActive.Width = 46;
+            DgvRules.AllowUserToAddRows = false;
+            DgvRules.AllowUserToDeleteRows = false;
+            DgvRules.AllowUserToResizeColumns = false;
+            DgvRules.AllowUserToResizeRows = false;
+            DgvRules.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            DgvRules.Columns.AddRange(new DataGridViewColumn[] { DgcRuleIndex, DgcRuleDescription, DgcRuleSchemeIcon, DgcRuleSchemeName, DgcTriggerCount });
+            tableLayoutPanel1.SetColumnSpan(DgvRules, 5);
+            DgvRules.Dock = DockStyle.Fill;
+            DgvRules.Location = new Point(3, 3);
+            DgvRules.MultiSelect = false;
+            DgvRules.Name = "DgvRules";
+            DgvRules.RowHeadersVisible = false;
+            DgvRules.RowTemplate.Height = 26;
+            DgvRules.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            DgvRules.Size = new Size(685, 158);
+            DgvRules.TabIndex = 7;
+            DgvRules.CellContentDoubleClick += DgvPowerRules_CellContentDoubleClick;
             // 
             // BtnAddPowerRule
             // 
@@ -318,7 +279,7 @@ namespace PowerPlanSwitcher
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel1.Controls.Add(DgvPowerRules, 0, 0);
+            tableLayoutPanel1.Controls.Add(DgvRules, 0, 0);
             tableLayoutPanel1.Controls.Add(BtnDeletePowerRule, 2, 1);
             tableLayoutPanel1.Controls.Add(BtnDescentPowerRule, 4, 1);
             tableLayoutPanel1.Controls.Add(BtnAscentPowerRule, 3, 1);
@@ -685,6 +646,20 @@ namespace PowerPlanSwitcher
             tableLayoutPanel3.Size = new Size(219, 82);
             tableLayoutPanel3.TabIndex = 1;
             // 
+            // PibLoggingInfo
+            // 
+            PibLoggingInfo.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+            PibLoggingInfo.Image = Properties.Resources.info_rhombus;
+            PibLoggingInfo.Location = new Point(165, 0);
+            PibLoggingInfo.Margin = new Padding(0);
+            PibLoggingInfo.Name = "PibLoggingInfo";
+            tableLayoutPanel3.SetRowSpan(PibLoggingInfo, 3);
+            PibLoggingInfo.Size = new Size(32, 32);
+            PibLoggingInfo.SizeMode = PictureBoxSizeMode.AutoSize;
+            PibLoggingInfo.TabIndex = 2;
+            PibLoggingInfo.TabStop = false;
+            PibLoggingInfo.Click += PibLoggingInfo_Click;
+            // 
             // ChbExtendedLogging
             // 
             ChbExtendedLogging.Anchor = AnchorStyles.None;
@@ -718,25 +693,50 @@ namespace PowerPlanSwitcher
             BtnExportLog.UseVisualStyleBackColor = true;
             BtnExportLog.Click += BtnExportLog_Click;
             // 
-            // PibLoggingInfo
-            // 
-            PibLoggingInfo.Anchor = AnchorStyles.Top | AnchorStyles.Right;
-            PibLoggingInfo.Image = Properties.Resources.info_rhombus;
-            PibLoggingInfo.Location = new Point(165, 0);
-            PibLoggingInfo.Margin = new Padding(0);
-            PibLoggingInfo.Name = "PibLoggingInfo";
-            tableLayoutPanel3.SetRowSpan(PibLoggingInfo, 3);
-            PibLoggingInfo.Size = new Size(32, 32);
-            PibLoggingInfo.SizeMode = PictureBoxSizeMode.AutoSize;
-            PibLoggingInfo.TabIndex = 2;
-            PibLoggingInfo.TabStop = false;
-            PibLoggingInfo.Click += PibLoggingInfo_Click;
-            // 
             // TipHints
             // 
             TipHints.ShowAlways = true;
             TipHints.UseAnimation = false;
             TipHints.UseFading = false;
+            // 
+            // DgcRuleIndex
+            // 
+            DgcRuleIndex.Frozen = true;
+            DgcRuleIndex.HeaderText = "ID";
+            DgcRuleIndex.Name = "DgcRuleIndex";
+            DgcRuleIndex.ReadOnly = true;
+            DgcRuleIndex.Width = 30;
+            // 
+            // DgcRuleDescription
+            // 
+            DgcRuleDescription.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
+            DgcRuleDescription.HeaderText = "Description";
+            DgcRuleDescription.Name = "DgcRuleDescription";
+            DgcRuleDescription.ReadOnly = true;
+            // 
+            // DgcRuleSchemeIcon
+            // 
+            DgcRuleSchemeIcon.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcRuleSchemeIcon.HeaderText = "Icon";
+            DgcRuleSchemeIcon.Name = "DgcRuleSchemeIcon";
+            DgcRuleSchemeIcon.ReadOnly = true;
+            DgcRuleSchemeIcon.Width = 36;
+            // 
+            // DgcRuleSchemeName
+            // 
+            DgcRuleSchemeName.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcRuleSchemeName.HeaderText = "Power Plan";
+            DgcRuleSchemeName.Name = "DgcRuleSchemeName";
+            DgcRuleSchemeName.ReadOnly = true;
+            DgcRuleSchemeName.Width = 91;
+            // 
+            // DgcTriggerCount
+            // 
+            DgcTriggerCount.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
+            DgcTriggerCount.HeaderText = "Triggered";
+            DgcTriggerCount.Name = "DgcTriggerCount";
+            DgcTriggerCount.ReadOnly = true;
+            DgcTriggerCount.Width = 63;
             // 
             // SettingsDlg
             // 
@@ -753,7 +753,7 @@ namespace PowerPlanSwitcher
             Name = "SettingsDlg";
             Text = "PowerPlanSwitcher - Settings";
             ((System.ComponentModel.ISupportInitialize)DgvPowerSchemes).EndInit();
-            ((System.ComponentModel.ISupportInitialize)DgvPowerRules).EndInit();
+            ((System.ComponentModel.ISupportInitialize)DgvRules).EndInit();
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel2.ResumeLayout(false);
             tableLayoutPanel2.PerformLayout();
@@ -781,7 +781,7 @@ namespace PowerPlanSwitcher
         private DataGridView DgvPowerSchemes;
         private Button BtnOk;
         private Button BtnCancel;
-        private DataGridView DgvPowerRules;
+        private DataGridView DgvRules;
         private Button BtnAddPowerRule;
         private Button BtnEditPowerRule;
         private Button BtnAscentPowerRule;
@@ -816,11 +816,6 @@ namespace PowerPlanSwitcher
         private DataGridViewTextBoxColumn DgcHotkey;
         private GroupBox groupBox3;
         private TableLayoutPanel tableLayoutPanel8;
-        private DataGridViewTextBoxColumn DgcRuleIndex;
-        private DataGridViewTextBoxColumn DgcRuleDescription;
-        private DataGridViewImageColumn DgcRuleSchemeIcon;
-        private DataGridViewTextBoxColumn DgcRuleSchemeName;
-        private DataGridViewCheckBoxColumn DgcActive;
         private ComboBox CmbPopUpWindowGlobal;
         private GroupBox groupBox2;
         private TableLayoutPanel tableLayoutPanel3;
@@ -829,5 +824,10 @@ namespace PowerPlanSwitcher
         private Button BtnExportLog;
         private PictureBox PibLoggingInfo;
         private ToolTip TipHints;
+        private DataGridViewTextBoxColumn DgcRuleIndex;
+        private DataGridViewTextBoxColumn DgcRuleDescription;
+        private DataGridViewImageColumn DgcRuleSchemeIcon;
+        private DataGridViewTextBoxColumn DgcRuleSchemeName;
+        private DataGridViewCheckBoxColumn DgcTriggerCount;
     }
 }

@@ -6,7 +6,7 @@ public interface IRule
 {
     public int TriggerCount { get; }
     public IRuleDto Dto { get; }
-    public string GetDescription();
+
     public event EventHandler<TriggerChangedEventArgs>? TriggerChanged;
 }
 

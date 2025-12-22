@@ -1,311 +1,239 @@
-//namespace RuleManagement;
+namespace RuleManagement;
 
-//using PowerManagement;
-//using ProcessManagement;
-//using RuleManagement.Rules;
+using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json;
+using PowerManagement;
+using RuleManagement.Rules;
 
-//public class RuleManager(IPowerManager powerManager)
-//{
-//    public event EventHandler<RuleApplicationChangedEventArgs>?
-//        RuleApplicationChanged;
-//    protected virtual void OnRuleApplicationChanged(
-//        RuleApplicationChangedEventArgs args) =>
-//        RuleApplicationChanged?.Invoke(this, args);
-//    protected virtual void OnRuleApplicationChanged(
-//        Guid powerSchemeGuid,
-//        string? reason,
-//        IRule? rule) =>
-//        OnRuleApplicationChanged(
-//            new RuleApplicationChangedEventArgs(
-//                powerSchemeGuid,
-//                reason,
-//                rule));
+public class RuleManager
+{
+    private class RuleContainerProbe
+    {
+        public int? SchemaVersion { get; set; }
+    }
 
-//    public IBatteryMonitor? BatteryMonitor { get; set; }
-//    public IProcessMonitor? ProcessMonitor { get; set; }
+    private class RuleContainer : RuleContainerProbe
+    {
+        public List<IRuleDto> Rules { get; set; } = [];
+    }
 
-//    private IEnumerable<IRule>? rules;
-//    private readonly object syncObj = new();
-//    private Guid baselinePowerSchemeGuid;
+    private readonly RuleFactory ruleFactory;
 
-//    public void StartEngine(IEnumerable<IRule> rules)
-//    {
-//        lock (syncObj)
-//        {
-//            StopEngine();
+    private List<IRule> rules = [];
 
-//            this.rules = rules;
-//            if (rules.Any())
-//            {
-//                foreach (var rule in rules)
-//                {
-//                    rule.TriggerCount = 0;
-//                }
+    public IRule? AppliedRule { get; private set; }
 
-//                StartBatteryMonitor();
+    public event EventHandler<RulesUpdatedEventArgs>? RulesUpdated;
+    public event EventHandler<RuleApplicationChangedEventArgs>? RuleApplicationChanged;
 
-//                StartProcessMonitor();
-//            }
+    public RuleManager(
+        string ruleJson,
+        MigrationPolicy migrationPolicy,
+        IBatteryMonitor batteryMonitor,
+        RuleFactory ruleFactory)
+    {
+        this.ruleFactory = ruleFactory;
 
-//            baselinePowerSchemeGuid =
-//                powerManager.GetActivePowerSchemeGuid();
-//            if (baselinePowerSchemeGuid == Guid.Empty)
-//            {
-//                throw new InvalidOperationException(
-//                    "Unable to determine active power scheme");
-//            }
+        // Overwrite json with migrated version
+        ruleJson = MigratePowerRulesToRules(
+            ruleJson,
+            migrationPolicy,
+            batteryMonitor);
 
-//            powerManager.ActivePowerSchemeChanged +=
-//                PowerManager_ActivePowerSchemeChanged;
-//        }
-//    }
+        rules = LoadRules(ruleJson, ruleFactory);
+        Subscribe(rules);
+    }
 
-//    private void StartBatteryMonitor()
-//    {
-//        if (BatteryMonitor is null)
-//        {
-//            return;
-//        }
+    private void Rule_TriggerChanged(object? sender, TriggerChangedEventArgs e)
+    {
+        if (sender is not IRule rule)
+        {
+            throw new InvalidCastException("Sender was not an IRule.");
+        }
 
-//        if (!BatteryMonitor.HasSystemBattery)
-//        {
-//            return;
-//        }
+        var index = rules.IndexOf(rule);
 
-//        BatteryMonitor.PowerLineStatusChanged +=
-//            BatteryMonitor_PowerLineStatusChanged;
+        // If rule is not triggered, apply the next triggered rule
+        // or no rule (nextRule == null) if no other rule is triggered
+        if (rule.TriggerCount == 0)
+        {
+            var nextRule = rules.FirstOrDefault(r => r.TriggerCount > 0);
+            // Next triggered rule is already applied
+            if (nextRule == AppliedRule)
+            {
+                return;
+            }
+            AppliedRule = nextRule;
+            RuleApplicationChanged?.Invoke(this, new RuleApplicationChangedEventArgs(nextRule));
+            return;
+        }
 
-//        BatteryMonitor_PowerLineStatusChanged(
-//            BatteryMonitor,
-//            new PowerLineStatusChangedEventArgs(
-//                BatteryMonitor.PowerLineStatus));
-//    }
+        var firstTriggeredRuleIndex = rules.FindIndex(r => r.TriggerCount > 0);
 
-//    private void StartProcessMonitor()
-//    {
-//        if (ProcessMonitor is null)
-//        {
-//            return;
-//        }
+        // The rule is the highest with a TriggerCount > 1
+        // so if the TriggerCount is exactly 1, we still need to apply it
+        // otherwise it was already applied.
+        if (index == firstTriggeredRuleIndex && rule.TriggerCount == 1)
+        {
+            AppliedRule = rule;
+            RuleApplicationChanged?.Invoke(this, new RuleApplicationChangedEventArgs(rule));
+            return;
+        }
 
-//        ProcessMonitor.ProcessCreated += ProcessMonitor_ProcessCreated;
-//        ProcessMonitor.ProcessTerminated += ProcessMonitor_ProcessTerminated;
-//    }
+        // The triggered rule has to be applied
+        // if no other rule with higher prio is triggered
+        if (firstTriggeredRuleIndex == -1 || firstTriggeredRuleIndex > index)
+        {
+            AppliedRule = rule;
+            RuleApplicationChanged?.Invoke(this, new RuleApplicationChangedEventArgs(rule));
+            return;
+        }
+    }
 
-//    public void StopEngine()
-//    {
-//        lock (syncObj)
-//        {
-//            if (HasActiveRule())
-//            {
-//                ApplyBaselinePowerScheme();
-//                foreach (var rule in rules ?? [])
-//                {
-//                    rule.TriggerCount = 0;
-//                }
-//            }
+    public IEnumerable<IRule> GetRules() => rules ?? [];
 
-//            StopBatteryMonitor();
+    private void Subscribe(IEnumerable<IRule> rules)
+    {
+        foreach (var rule in rules)
+        {
+            rule.TriggerChanged += Rule_TriggerChanged;
+        }
+    }
 
-//            StopProcessMonitor();
+    private void Unsubscribe(IEnumerable<IRule> rules)
+    {
+        foreach (var rule in rules)
+        {
+            rule.TriggerChanged -= Rule_TriggerChanged;
+        }
+    }
 
-//            baselinePowerSchemeGuid = Guid.Empty;
-//        }
-//    }
+    public void SetRules(IEnumerable<IRuleDto> newRuleDtos) =>
+        SetRules(newRuleDtos.Select(ruleFactory.Create));
 
-//    private void StopBatteryMonitor()
-//    {
-//        if (BatteryMonitor is null)
-//        {
-//            return;
-//        }
+    public void SetRules(IEnumerable<IRule> newRules)
+    {
+        Unsubscribe(rules);
+        rules = [.. newRules];
+        Subscribe(rules);
 
-//        BatteryMonitor.PowerLineStatusChanged -=
-//            BatteryMonitor_PowerLineStatusChanged;
-//    }
+        var ruleContainer = new RuleContainer
+        {
+            SchemaVersion = 1,
+            Rules = [.. rules.Select(r => r.Dto)],
+        };
+        var json = JsonConvert.SerializeObject(
+            ruleContainer,
+            new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects
+            });
 
-//    private void StopProcessMonitor()
-//    {
-//        if (ProcessMonitor is null)
-//        {
-//            return;
-//        }
+        RulesUpdated?.Invoke(this, new RulesUpdatedEventArgs(json));
+    }
 
-//        ProcessMonitor.ProcessCreated -= ProcessMonitor_ProcessCreated;
-//        ProcessMonitor.ProcessTerminated -= ProcessMonitor_ProcessTerminated;
-//    }
+    private static string MigratePowerRulesToRules(
+        string ruleJson,
+        MigrationPolicy migrationPolicy,
+        IBatteryMonitor batteryMonitor)
+    {
+        if (migrationPolicy.MigratedPowerRulesToRules)
+        {
+            return ruleJson;
+        }
 
-//    private void PowerManager_ActivePowerSchemeChanged(
-//        object? sender,
-//        ActivePowerSchemeChangedEventArgs e)
-//    {
-//        lock (syncObj)
-//        {
-//            if (HasActiveRule())
-//            {
-//                return;
-//            }
+        var rules = JsonConvert.DeserializeObject<List<ProcessRuleDto>>(
+            ruleJson)?.Cast<IRuleDto>()?.ToList() ?? [];
 
-//            if (e.ActiveSchemeGuid == Guid.Empty)
-//            {
-//                return;
-//            }
+        if (batteryMonitor.HasSystemBattery)
+        {
+            if (migrationPolicy.AcPowerSchemeGuid != Guid.Empty)
+            {
 
-//            baselinePowerSchemeGuid = e.ActiveSchemeGuid;
-//        }
-//    }
+                rules.Add(new PowerLineRuleDto()
+                {
+                    PowerLineStatus = PowerLineStatus.Online,
+                    SchemeGuid = migrationPolicy.AcPowerSchemeGuid,
+                });
+            }
 
-//    private void BatteryMonitor_PowerLineStatusChanged(
-//        object? sender,
-//        PowerLineStatusChangedEventArgs e)
-//    {
-//        lock (syncObj)
-//        {
-//            bool? needToSwitch = null;
-//            IRule? ruleToApply = null;
+            if (migrationPolicy.BatterPowerSchemeGuid != Guid.Empty)
+            {
+                rules.Add(new PowerLineRuleDto()
+                {
+                    PowerLineStatus = PowerLineStatus.Offline,
+                    SchemeGuid = migrationPolicy.BatterPowerSchemeGuid,
+                });
+            }
+        }
 
-//            foreach (var rule in rules ?? [])
-//            {
-//                if (rule is not PowerLineRule powerLineRule)
-//                {
-//                    if (rule.TriggerCount == 0)
-//                    {
-//                        continue;
-//                    }
+        RuleContainer ruleContainer = new()
+        {
+            SchemaVersion = 1,
+            Rules = rules,
+        };
 
-//                    needToSwitch ??= false;
-//                    ruleToApply ??= needToSwitch == true ? rule : null;
-//                    continue;
-//                }
+        return JsonConvert.SerializeObject(ruleContainer,
+            new JsonSerializerSettings
+            {
+                TypeNameHandling = TypeNameHandling.Objects
+            });
+    }
 
-//                if (powerLineRule.CheckRule(e.PowerLineStatus))
-//                {
-//                    rule.TriggerCount = 1;
-//                    needToSwitch ??= true;
-//                    ruleToApply ??= needToSwitch == true ? rule : null;
-//                    continue;
-//                }
+    private static int DetectSchemaVersion(string json)
+    {
+        try
+        {
+            var probe = JsonConvert.DeserializeObject<RuleContainerProbe>(json);
+            // 0 = Post-Migration but pre-schema versioning
+            return probe?.SchemaVersion ?? 0;
+        }
+        catch
+        {
+            // If it's just a raw array, parsing into RuleContainerProbe will fail
+            return 0;
+        }
+    }
 
-//                rule.TriggerCount = 0;
-//                needToSwitch ??= true;
-//            }
+    private static List<IRule> LoadRules(string json, RuleFactory ruleFactory)
+    {
+        var version = DetectSchemaVersion(json);
 
-//            if (needToSwitch == true)
-//            {
-//                if (ruleToApply is null)
-//                {
-//                    ApplyBaselinePowerScheme();
-//                    return;
-//                }
-//                ApplyRule(ruleToApply);
-//            }
-//        }
-//    }
+        if (version == 0)
+        {
+            // Schema v0: container with rules still using old types
+            var dtos = JsonConvert.DeserializeObject<List<IRuleDto>>(
+                json,
+                new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Objects,
+                    SerializationBinder = new RuleTypeBinder()
+                })
+                ?? [];
 
-//    private void ProcessMonitor_ProcessCreated(
-//        object? sender,
-//        ProcessEventArgs e)
-//    {
-//        lock (syncObj)
-//        {
-//            var higherRuleActive = false;
-//            foreach (var rule in rules ?? [])
-//            {
-//                if (rule.TriggerCount > 0)
-//                {
-//                    higherRuleActive = true;
-//                }
+            return [.. dtos.Select(ruleFactory.Create)];
+        }
+        else if (version == 1)
+        {
+            // Schema v1: container with DTOs
+            var container = JsonConvert.DeserializeObject<RuleContainer>(json,
+                new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Objects
+                });
 
-//                if (!CheckRule(rule, e.Process))
-//                {
-//                    continue;
-//                }
-//                rule.TriggerCount++;
+            if (container is null)
+            {
+                return [];
+            }
 
-//                if (higherRuleActive)
-//                {
-//                    continue;
-//                }
-//                higherRuleActive = true;
-
-//                ApplyRule(rule);
-//            }
-//        }
-//    }
-
-//    private void ProcessMonitor_ProcessTerminated(
-//        object? sender,
-//        ProcessEventArgs e)
-//    {
-//        lock (syncObj)
-//        {
-//            bool? needToSwitch = null;
-//            IRule? ruleToApply = null;
-
-//            foreach (var rule in rules ?? [])
-//            {
-//                if (CheckRule(rule, e.Process))
-//                {
-//                    rule.TriggerCount =
-//                        Math.Max(rule.TriggerCount - 1, 0);
-
-//                    needToSwitch ??= rule.TriggerCount == 0;
-//                    if (rule.TriggerCount > 0)
-//                    {
-//                        ruleToApply ??= needToSwitch == true ? rule : null;
-//                    }
-
-//                    continue;
-//                }
-
-//                if (rule.TriggerCount > 0)
-//                {
-//                    needToSwitch ??= false;
-//                    ruleToApply ??= needToSwitch == true ? rule : null;
-//                }
-//            }
-
-//            if (needToSwitch == true)
-//            {
-//                if (ruleToApply is null)
-//                {
-//                    ApplyBaselinePowerScheme();
-//                    return;
-//                }
-//                ApplyRule(ruleToApply);
-//            }
-//        }
-//    }
-
-//    private void ApplyRule(IRule rule) =>
-//        OnRuleApplicationChanged(
-//            rule.SchemeGuid,
-//            $"Rule {rule.Index + 1} applies",
-//            rule);
-
-//    private void ApplyBaselinePowerScheme()
-//    {
-//        if (baselinePowerSchemeGuid == Guid.Empty)
-//        {
-//            return;
-//        }
-//        OnRuleApplicationChanged(
-//            baselinePowerSchemeGuid,
-//            "No rule applies",
-//            null);
-//    }
-
-//    private IRule? GetActiveRule() =>
-//        rules?.FirstOrDefault(r => r.TriggerCount > 0);
-
-//    private bool HasActiveRule() => GetActiveRule() is not null;
-
-//    private static bool CheckRule(IRule rule, IProcess process)
-//    {
-//        if (rule is ProcessRule powerRule)
-//        {
-//            return powerRule.CheckRule(process);
-//        }
-//        return false;
-//    }
-//}
+            return [.. container.Rules.Select(ruleFactory.Create)];
+        }
+        else
+        {
+            throw new NotSupportedException(
+                $"Unsupported schema version {version}");
+        }
+    }
+}

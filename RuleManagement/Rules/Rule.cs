@@ -22,8 +22,6 @@ public abstract class Rule<TDto>(TDto dto) : IRule<TDto> where TDto : IRuleDto
     // Explicit implementation for the non-generic interface
     IRuleDto IRule.Dto => Dto;
 
-    public abstract string GetDescription();
-
     public event EventHandler<TriggerChangedEventArgs>? TriggerChanged;
     protected void OnTriggerChanged(IRule<TDto> rule) =>
         TriggerChanged?.Invoke(this, new TriggerChangedEventArgs(rule));

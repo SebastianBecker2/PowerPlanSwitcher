@@ -1,13 +1,13 @@
 namespace PowerPlanSwitcher
 {
     using Microsoft.WindowsAPICodePack.Dialogs;
-    using PowerPlanSwitcher.PowerManagement;
-    using PowerPlanSwitcher.RuleManagement;
-    using PowerPlanSwitcher.RuleManagement.Rules;
+    using PowerManagement;
+    using RuleManagement;
+    using RuleManagement.Rules;
 
     public partial class RuleDlg : Form
     {
-        public IRule? Rule { get; set; }
+        public IRuleDto? RuleDto { get; set; }
 
         private static readonly List<(Guid guid, string name)> PowerSchemes =
             [.. PowerManager.Static.GetPowerSchemes()
@@ -41,44 +41,44 @@ namespace PowerPlanSwitcher
             CmbPowerLineStatus.Visible = false;
 
             CmbComparisonType.Items.AddRange([.. ComparisonTypes
-                .Select(ProcessRule.ComparisonTypeToText)
+                .Select(ProcessRuleDto.ComparisonTypeToText)
                 .Cast<object>()]);
 
             CmbPowerLineStatus.Items.AddRange([.. PowerLineStatuses
-                .Select(PowerLineRule.PowerLineStatusToText)
+                .Select(PowerLineRuleDto.PowerLineStatusToText)
                 .Cast<object>()]);
 
             CmbPowerScheme.Items.AddRange([.. PowerSchemes
                 .Select(scheme => scheme.name)
                 .Cast<object>()]);
 
-            if (Rule is ProcessRule processRule)
+            if (RuleDto is ProcessRuleDto processRuleDto)
             {
                 RdbProcessRule.Checked = true;
                 CmbComparisonType.SelectedIndex =
-                    ComparisonTypes.IndexOf(processRule.Type);
-                TxtPath.Text = processRule.FilePath;
+                    ComparisonTypes.IndexOf(processRuleDto.Type);
+                TxtPath.Text = processRuleDto.FilePath;
             }
             else
             {
                 CmbComparisonType.SelectedIndex = 0;
             }
 
-            if (Rule is PowerLineRule powerLineRule)
+            if (RuleDto is PowerLineRuleDto powerLineRuleDto)
             {
                 RdbPowerLineRule.Checked = true;
                 CmbPowerLineStatus.SelectedIndex =
-                    PowerLineStatuses.IndexOf(powerLineRule.PowerLineStatus);
+                    PowerLineStatuses.IndexOf(powerLineRuleDto.PowerLineStatus);
             }
             else
             {
                 CmbPowerLineStatus.SelectedIndex = 0;
             }
 
-            if (Rule is not null && Rule.SchemeGuid != Guid.Empty)
+            if (RuleDto is not null && RuleDto.SchemeGuid != Guid.Empty)
             {
                 CmbPowerScheme.SelectedIndex = PowerSchemes.FindIndex(
-                    scheme => scheme.guid == Rule.SchemeGuid);
+                    scheme => scheme.guid == RuleDto.SchemeGuid);
             }
             else
             {
@@ -116,16 +116,15 @@ namespace PowerPlanSwitcher
 
         private bool ApplyPowerLineRule()
         {
-            var powerLineRule = Rule as PowerLineRule ?? new PowerLineRule();
-            powerLineRule.Index = Rule?.Index ?? 0;
-
-            powerLineRule.PowerLineStatus =
-                PowerLineRule.TextToPowerLineStatus(
-                    GetSelectedString(CmbPowerLineStatus));
-            powerLineRule.SchemeGuid =
-                GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme));
-
-            Rule = powerLineRule;
+            RuleDto = new PowerLineRuleDto()
+            {
+                PowerLineStatus =
+                    PowerLineRuleDto.TextToPowerLineStatus(
+                        GetSelectedString(CmbPowerLineStatus)),
+                SchemeGuid =
+                    GetPowerSchemeGuid(
+                        GetSelectedString(CmbPowerScheme))
+            };
             return true;
         }
 
@@ -141,17 +140,12 @@ namespace PowerPlanSwitcher
                 return false;
             }
 
-            var processRule = Rule as ProcessRule ?? new ProcessRule();
-            processRule.Index = Rule?.Index ?? 0;
-
-            processRule.Type =
-                ProcessRule.TextToComparisonType(
-                    GetSelectedString(CmbComparisonType));
-            processRule.FilePath = TxtPath.Text;
-            processRule.SchemeGuid =
-                GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme));
-
-            Rule = processRule;
+            RuleDto = new ProcessRuleDto
+            {
+                Type = ProcessRuleDto.TextToComparisonType(GetSelectedString(CmbComparisonType)),
+                FilePath = TxtPath.Text,
+                SchemeGuid = GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme))
+            };
             return true;
         }
 

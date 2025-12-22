@@ -6,6 +6,8 @@ using RuleManagement.Rules;
 internal class TestRuleDto : IRuleDto
 {
     public Guid SchemeGuid { get; set; }
+
+    public string GetDescription() => "";
 }
 
 internal class TestRule(TestRuleDto dto) : IRule<TestRuleDto>
@@ -29,5 +31,5 @@ internal class TestRule(TestRuleDto dto) : IRule<TestRuleDto>
 
     public event EventHandler<TriggerChangedEventArgs>? TriggerChanged;
 
-    public string GetDescription() => "";
+    public static string GetDescription() => "";
 }
