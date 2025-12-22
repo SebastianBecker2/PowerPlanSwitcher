@@ -330,9 +330,6 @@ internal static class Program
             Settings.Default.Save();
         };
 
-        var processManager = container.Resolve<IProcessMonitor>();
-        processManager.StartMonitoring();
-
         // Resolve AppContext and run
         using (var scope = container.BeginLifetimeScope())
         {

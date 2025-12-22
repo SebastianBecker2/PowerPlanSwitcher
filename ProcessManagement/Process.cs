@@ -52,6 +52,8 @@ public class Process : IProcess
                 ProcessId = processId,
                 ProcessName = processEntry.szExeFile,
                 StartTime = startTime.Value,
+                ExecutablePath = executablePath.ToLowerInvariant(),
+                MainWindowTitle = mainWindowTitle,
             };
 
             lock (CacheLock)

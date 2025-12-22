@@ -30,7 +30,6 @@ public class ProcessRule
 
     private void ProcessMonitor_ProcessTerminated(object? sender, ProcessEventArgs e)
     {
-        // If rule applies
         if (CheckRule(e.Process))
         {
             TriggerCount = Math.Max(TriggerCount - 1, 0);

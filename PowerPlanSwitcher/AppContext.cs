@@ -3,6 +3,7 @@ namespace PowerPlanSwitcher;
 using System.Configuration;
 using PowerManagement;
 using PowerPlanSwitcher.Properties;
+using ProcessManagement;
 using RuleManagement;
 using Serilog;
 
@@ -15,7 +16,8 @@ internal class AppContext : ApplicationContext
     public AppContext(
         TrayIcon trayIcon,
         IPowerManager powerManager,
-        RuleManager ruleManager)
+        RuleManager ruleManager,
+        IProcessMonitor processMonitor)
     {
         TrayIcon = trayIcon;
         PowerManager = powerManager;
@@ -53,6 +55,8 @@ internal class AppContext : ApplicationContext
 
         Settings.Default.SettingChanging +=
             Default_SettingChanging;
+
+        processMonitor.StartMonitoring();
     }
 
     private void Default_SettingChanging(
