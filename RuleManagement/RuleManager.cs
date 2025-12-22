@@ -44,9 +44,9 @@ public class RuleManager
 
         // Overwrite json with migrated version
         ruleJson = MigratePowerRulesToRules(
-        ruleJson,
-        migrationPolicy,
-        batteryMonitor);
+            ruleJson,
+            migrationPolicy,
+            batteryMonitor);
 
         rules = LoadRules(ruleJson, ruleFactory);
         Subscribe(rules);
