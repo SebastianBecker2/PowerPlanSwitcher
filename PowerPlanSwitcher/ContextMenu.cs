@@ -1,19 +1,20 @@
 namespace PowerPlanSwitcher;
 
-using Autofac;
 using Hotkeys;
 using PowerManagement;
 using Serilog;
 
 internal class ContextMenu : ContextMenuStrip
 {
-    private readonly HotkeyManager hotkeyManager;
-    private readonly ILifetimeScope scope;
+    private HotkeyManager HotkeyManager { get; init; }
+    private Func<SettingsDlg> SettingsDlgFactory { get; init; }
 
-    public ContextMenu(ILifetimeScope scope)
+    public ContextMenu(
+        HotkeyManager hotkeyManager,
+        Func<SettingsDlg> settingsDlgFactory)
     {
-        this.scope = scope;
-        hotkeyManager = scope.Resolve<HotkeyManager>();
+        HotkeyManager = hotkeyManager;
+        SettingsDlgFactory = settingsDlgFactory;
 
         BuildContextMenu();
 
@@ -72,15 +73,15 @@ internal class ContextMenu : ContextMenuStrip
 
         button.Click += (_, _) =>
         {
-            hotkeyManager.RemoveAllHotkeys();
+            HotkeyManager.RemoveAllHotkeys();
             try
             {
-                using var dlg = scope.Resolve<SettingsDlg>();
+                using var dlg = SettingsDlgFactory();
                 _ = dlg.ShowDialog();
             }
             finally
             {
-                Program.RegisterHotkeys(hotkeyManager);
+                Program.RegisterHotkeys(HotkeyManager);
             }
         };
 

@@ -1,7 +1,6 @@
 namespace PowerPlanSwitcher;
 
 using System.Configuration;
-using Autofac;
 using PowerManagement;
 using PowerPlanSwitcher.Properties;
 using RuleManagement;
@@ -9,16 +8,19 @@ using Serilog;
 
 internal class AppContext : ApplicationContext
 {
-    private readonly IPowerManager powerManager;
-    private readonly TrayIcon trayIcon;
-    private Guid BaselineSchemeGuid { get; set; } =
-        PowerManager.Static.GetActivePowerSchemeGuid();
+    private IPowerManager PowerManager { get; init; }
+    private TrayIcon TrayIcon { get; init; }
+    private Guid BaselineSchemeGuid { get; set; }
 
-    public AppContext(ILifetimeScope scope)
+    public AppContext(
+        TrayIcon trayIcon,
+        IPowerManager powerManager,
+        RuleManager ruleManager)
     {
-        trayIcon = scope.Resolve<TrayIcon>();
-        powerManager = scope.Resolve<IPowerManager>();
-        var ruleManager = scope.Resolve<RuleManager>();
+        TrayIcon = trayIcon;
+        PowerManager = powerManager;
+
+        BaselineSchemeGuid = powerManager.GetActivePowerSchemeGuid();
 
         ToastDlg.Initialize();
 
@@ -79,18 +81,18 @@ internal class AppContext : ApplicationContext
                 "<No Name>",
                 BaselineSchemeGuid,
                 "Restore baseline");
-            powerManager.SetActivePowerScheme(BaselineSchemeGuid);
+            PowerManager.SetActivePowerScheme(BaselineSchemeGuid);
             return;
         }
 
         var schemeGuid = e.Rule.Dto.SchemeGuid;
-        if (schemeGuid == powerManager.GetActivePowerSchemeGuid())
+        if (schemeGuid == PowerManager.GetActivePowerSchemeGuid())
         {
             return;
         }
 
         var schemeName =
-            PowerManager.Static.GetPowerSchemeName(
+            PowerManagement.PowerManager.Static.GetPowerSchemeName(
                 schemeGuid)
             ?? "<No Name>";
 
@@ -102,7 +104,7 @@ internal class AppContext : ApplicationContext
             schemeName,
             schemeGuid,
             reason);
-        powerManager.SetActivePowerScheme(schemeGuid);
+        PowerManager.SetActivePowerScheme(schemeGuid);
 
         if (PopUpWindowLocationHelper.ShouldShowToast(reason))
         {
@@ -114,7 +116,7 @@ internal class AppContext : ApplicationContext
     {
         if (disposing)
         {
-            trayIcon.Dispose();
+            TrayIcon.Dispose();
         }
         base.Dispose(disposing);
     }

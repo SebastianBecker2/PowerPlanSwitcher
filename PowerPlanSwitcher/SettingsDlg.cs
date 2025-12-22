@@ -25,17 +25,18 @@ public partial class SettingsDlg : Form
             .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
             .Cast<(Guid schemeGuid, string name)>()];
 
-    private Size settingsDlgOriginalSize = Size.Empty;
+    private Size SettingsDlgOriginalSize { get; set; } = Size.Empty;
 
-    public IEnumerable<IRuleDto> RuleDto => [.. rules.Select(r => r.Dto)];
-    private readonly IEnumerable<RuleWrapper> rules;
+    public IEnumerable<IRuleDto> RuleDto => [.. Rules.Select(r => r.Dto)];
+    private IEnumerable<RuleWrapper> Rules { get; init; }
 
-    private readonly ILifetimeScope scope;
+    private Func<HotkeySelectionDlg> HotkeySelectionDlgFactory { get; init; }
 
-    public SettingsDlg(ILifetimeScope scope)
+    public SettingsDlg(RuleManager ruleManager, Func<HotkeySelectionDlg> hotkeySelectionDlgFactory)
     {
-        this.scope = scope;
-        rules = scope.Resolve<RuleManager>().GetRules().Select(r => new RuleWrapper(r));
+        HotkeySelectionDlgFactory = hotkeySelectionDlgFactory;
+
+        Rules = ruleManager.GetRules().Select(r => new RuleWrapper(r));
 
         InitializeComponent();
         TacSettingsCategories.SelectedIndexChanged +=
@@ -60,7 +61,7 @@ public partial class SettingsDlg : Form
         }
         else
         {
-            Settings.Default.SettingsDlgSize = settingsDlgOriginalSize;
+            Settings.Default.SettingsDlgSize = SettingsDlgOriginalSize;
         }
         Settings.Default.Save();
         base.OnFormClosing(e);
@@ -216,14 +217,14 @@ public partial class SettingsDlg : Form
         if (TacSettingsCategories.SelectedTab == TapOtherSettings
             && MaximumSize == Size.Empty)
         {
-            settingsDlgOriginalSize = Size;
+            SettingsDlgOriginalSize = Size;
             MaximumSize = MinimumSize;
         }
         else if (TacSettingsCategories.SelectedTab != TapOtherSettings
             && MaximumSize != Size.Empty)
         {
             MaximumSize = Size.Empty;
-            Size = settingsDlgOriginalSize;
+            Size = SettingsDlgOriginalSize;
         }
     }
 
@@ -303,9 +304,6 @@ public partial class SettingsDlg : Form
         DialogResult = DialogResult.OK;
     }
 
-    private static DataGridViewRow RuleToRow(IRule rule) =>
-        RuleWrapperToRow(new RuleWrapper(rule));
-
     private static DataGridViewRow RuleDtoToRow(IRuleDto dto) =>
         RuleWrapperToRow(new RuleWrapper(dto));
 
@@ -341,7 +339,7 @@ public partial class SettingsDlg : Form
     }
 
     private void UpdatePowerRules() =>
-        DgvRules.Rows.AddRange([.. rules.Select(RuleWrapperToRow)]);
+        DgvRules.Rows.AddRange([.. Rules.Select(RuleWrapperToRow)]);
 
     private void HandleBtnAddPowerRuleClick(object sender, EventArgs e)
     {
@@ -486,7 +484,7 @@ public partial class SettingsDlg : Form
         var cell = row.Cells["DgcHotkey"];
         var name = row.Cells["DgcName"].Value;
 
-        using var dlg = scope.Resolve<HotkeySelectionDlg>();
+        using var dlg = HotkeySelectionDlgFactory();
         if (dlg.ShowDialog() != DialogResult.OK)
         {
             return;
@@ -554,7 +552,7 @@ public partial class SettingsDlg : Form
 
     private void BtnSetCycleHotkey_Click(object sender, EventArgs e)
     {
-        using var dlg = scope.Resolve<HotkeySelectionDlg>();
+        using var dlg = HotkeySelectionDlgFactory();
         if (dlg.ShowDialog() != DialogResult.OK)
         {
             return;
