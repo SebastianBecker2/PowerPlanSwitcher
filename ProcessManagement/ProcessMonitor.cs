@@ -50,14 +50,18 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
     protected virtual void OnProcessTerminated(IProcess process) =>
         OnProcessTerminated(new ProcessEventArgs(process));
 
-    private const int UpdateTimerInterval = 2000;
+    private readonly TimeSpan updateTimerInterval = TimeSpan.FromMilliseconds(2000);
     private IEnumerable<IProcess> previousProcesses = [];
     private readonly Timer updateTimer;
+    private volatile bool monitoring;
     private bool disposedValue;
-    private bool monitoring;
 
     public ProcessMonitor() =>
-        updateTimer = new Timer(HandleUpdateTimerTick);
+        updateTimer = new Timer(
+            HandleUpdateTimerTick,
+            null,
+            Timeout.InfiniteTimeSpan,
+            Timeout.InfiniteTimeSpan);
 
     public void StartMonitoring()
     {
@@ -67,12 +71,14 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
         }
         monitoring = true;
 
-        _ = updateTimer.Change(0, Timeout.Infinite);
+        _ = updateTimer.Change(TimeSpan.Zero, Timeout.InfiniteTimeSpan);
     }
 
     public void StopMonitoring()
     {
-        _ = updateTimer.Change(Timeout.Infinite, Timeout.Infinite);
+        _ = updateTimer.Change(
+            Timeout.InfiniteTimeSpan,
+            Timeout.InfiniteTimeSpan);
         monitoring = false;
     }
 
@@ -115,9 +121,12 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
         }
         finally
         {
-            _ = updateTimer.Change(
-                UpdateTimerInterval,
-                Timeout.Infinite);
+            if (monitoring)
+            {
+                _ = updateTimer.Change(
+                    updateTimerInterval,
+                    Timeout.InfiniteTimeSpan);
+            }
         }
     }
 
