@@ -5,6 +5,7 @@ using PowerManagement;
 using PowerPlanSwitcher.Properties;
 using ProcessManagement;
 using RuleManagement;
+using RuleManagement.Events;
 using Serilog;
 
 internal class AppContext : ApplicationContext

@@ -1,6 +1,8 @@
 namespace RuleManagement.Rules;
 
 using Newtonsoft.Json;
+using RuleManagement.Dto;
+using RuleManagement.Events;
 
 public abstract class Rule<TDto>(TDto dto) : IRule<TDto> where TDto : IRuleDto
 {

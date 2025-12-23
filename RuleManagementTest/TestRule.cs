@@ -1,6 +1,8 @@
 namespace RuleManagementTest;
 
 using System;
+using RuleManagement.Dto;
+using RuleManagement.Events;
 using RuleManagement.Rules;
 
 internal class TestRuleDto : IRuleDto

@@ -1,4 +1,4 @@
-namespace RuleManagement.Rules;
+namespace RuleManagement.Dto;
 
 public abstract class RuleDto
 {

@@ -5,6 +5,7 @@ using System.Reflection;
 using FakeItEasy;
 using ProcessManagement;
 using RuleManagement;
+using RuleManagement.Dto;
 using RuleManagement.Rules;
 
 [TestClass]

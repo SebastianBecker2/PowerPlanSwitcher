@@ -5,6 +5,8 @@ using FakeItEasy;
 using PowerManagement;
 using ProcessManagement;
 using RuleManagement;
+using RuleManagement.Dto;
+using RuleManagement.Events;
 using RuleManagement.Rules;
 
 [TestClass]
@@ -37,12 +39,12 @@ public sealed class RuleManagerTest
             ""SchemaVersion"": 1,
             ""Rules"": [
                 {
-                    ""$type"": ""RuleManagement.Rules.PowerLineRuleDto, RuleManagement"",
+                    ""$type"": ""RuleManagement.Dto.PowerLineRuleDto, RuleManagement"",
                     ""PowerLineStatus"": 0,
                     ""SchemeGuid"": ""a1841308-3541-4fab-bc81-f71556f20b4a""
                 },
                 {
-                    ""$type"": ""RuleManagement.Rules.ProcessRuleDto, RuleManagement"",
+                    ""$type"": ""RuleManagement.Dto.ProcessRuleDto, RuleManagement"",
                     ""FilePath"": ""testpath"",
                     ""Type"": 0,
                     ""SchemeGuid"": ""381b4222-f694-41f0-9685-ff5bb260df2e""
@@ -188,13 +190,13 @@ public sealed class RuleManagerTest
             ""$type"": ""RuleManagement.RuleManager+RuleContainer, RuleManagement"",
             ""Rules"": [
                 {
-                    ""$type"": ""RuleManagement.Rules.ProcessRuleDto, RuleManagement"",
+                    ""$type"": ""RuleManagement.Dto.ProcessRuleDto, RuleManagement"",
                     ""FilePath"": ""testpath"",
                     ""Type"": 0,
                     ""SchemeGuid"": ""381b4222-f694-41f0-9685-ff5bb260df2e""
                 },
                 {
-                    ""$type"": ""RuleManagement.Rules.PowerLineRuleDto, RuleManagement"",
+                    ""$type"": ""RuleManagement.Dto.PowerLineRuleDto, RuleManagement"",
                     ""PowerLineStatus"": 1,
                     ""SchemeGuid"": ""11111111-1111-1111-1111-111111111111""
                 }

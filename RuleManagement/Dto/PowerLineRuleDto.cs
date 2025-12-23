@@ -1,4 +1,4 @@
-namespace RuleManagement.Rules;
+namespace RuleManagement.Dto;
 
 using PowerManagement;
 

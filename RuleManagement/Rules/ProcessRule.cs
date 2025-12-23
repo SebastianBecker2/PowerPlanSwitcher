@@ -2,6 +2,7 @@ namespace RuleManagement.Rules;
 
 using System.ComponentModel;
 using ProcessManagement;
+using RuleManagement.Dto;
 
 public class ProcessRule
     : Rule<ProcessRuleDto>,

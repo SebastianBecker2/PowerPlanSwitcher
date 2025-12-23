@@ -4,6 +4,8 @@ using System.Collections.Generic;
 using System.Linq;
 using Newtonsoft.Json;
 using PowerManagement;
+using RuleManagement.Dto;
+using RuleManagement.Events;
 using RuleManagement.Rules;
 
 public class RuleManager

@@ -1,6 +1,7 @@
-namespace RuleManagement.Rules;
+namespace RuleManagement;
 
 using Newtonsoft.Json.Serialization;
+using RuleManagement.Dto;
 
 internal class RuleTypeBinder : ISerializationBinder
 {

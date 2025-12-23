@@ -7,6 +7,7 @@ using Newtonsoft.Json;
 using PowerManagement;
 using Properties;
 using RuleManagement;
+using RuleManagement.Dto;
 using RuleManagement.Rules;
 
 public partial class SettingsDlg : Form

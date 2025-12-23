@@ -1,7 +1,9 @@
-namespace RuleManagement.Rules;
+namespace RuleManagement;
 
 using PowerManagement;
 using ProcessManagement;
+using RuleManagement.Dto;
+using RuleManagement.Rules;
 
 public class RuleFactory(
     IBatteryMonitor batteryMonitor,

@@ -1,5 +1,4 @@
-namespace RuleManagement.Rules;
-
+namespace RuleManagement.Dto;
 public class ProcessRuleDto : RuleDto, IRuleDto
 {
     public string FilePath

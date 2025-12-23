@@ -2,6 +2,7 @@ namespace RuleManagement.Rules;
 
 using System;
 using PowerManagement;
+using RuleManagement.Dto;
 
 public class PowerLineRule : Rule<PowerLineRuleDto>,
     IRule<PowerLineRuleDto>

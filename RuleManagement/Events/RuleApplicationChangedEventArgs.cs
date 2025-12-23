@@ -1,4 +1,4 @@
-namespace RuleManagement;
+namespace RuleManagement.Events;
 
 using System;
 using RuleManagement.Rules;

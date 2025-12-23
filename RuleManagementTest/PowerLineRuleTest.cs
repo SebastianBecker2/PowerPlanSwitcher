@@ -3,6 +3,7 @@ namespace RuleManagementTest;
 using System.Reflection;
 using FakeItEasy;
 using PowerManagement;
+using RuleManagement.Dto;
 using RuleManagement.Rules;
 
 [TestClass]

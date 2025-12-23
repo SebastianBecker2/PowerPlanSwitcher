@@ -3,7 +3,7 @@ namespace PowerPlanSwitcher;
 using Microsoft.WindowsAPICodePack.Dialogs;
 using PowerManagement;
 using RuleManagement;
-using RuleManagement.Rules;
+using RuleManagement.Dto;
 
 public partial class RuleDlg : Form
 {

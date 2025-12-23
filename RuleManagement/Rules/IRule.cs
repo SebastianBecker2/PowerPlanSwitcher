@@ -1,6 +1,8 @@
 namespace RuleManagement.Rules;
 
 using System;
+using RuleManagement.Dto;
+using RuleManagement.Events;
 
 public interface IRule
 {

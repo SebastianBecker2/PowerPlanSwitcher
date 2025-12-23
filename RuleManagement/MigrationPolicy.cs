@@ -1,4 +1,4 @@
-namespace RuleManagement.Rules;
+namespace RuleManagement;
 
 public record MigrationPolicy(
     // Attention: MigratedPowerRulesToRules says if the migration

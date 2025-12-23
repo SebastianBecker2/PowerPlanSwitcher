@@ -1,4 +1,6 @@
-namespace RuleManagement.Rules;
+using RuleManagement.Rules;
+
+namespace RuleManagement.Events;
 
 public class TriggerChangedEventArgs(IRule rule) : EventArgs
 {

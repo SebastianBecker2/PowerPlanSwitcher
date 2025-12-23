@@ -8,7 +8,6 @@ using PowerManagement;
 using ProcessManagement;
 using Properties;
 using RuleManagement;
-using RuleManagement.Rules;
 using Serilog;
 using Serilog.Core;
 using Serilog.Formatting.Json;
