@@ -1,0 +1,100 @@
+namespace SystemManagement;
+
+using System.Runtime.InteropServices;
+using Vanara.PInvoke;
+
+public class IdleMonitor : IDisposable, IIdleMonitor
+{
+#pragma warning disable CA1716 // Identifiers should not match keywords
+    public static class Static
+#pragma warning restore CA1716 // Identifiers should not match keywords
+    {
+        public static TimeSpan GetIdleTime()
+        {
+            var info = new User32.LASTINPUTINFO
+            {
+                cbSize = (uint)Marshal.SizeOf<User32.LASTINPUTINFO>()
+            };
+
+            if (!User32.GetLastInputInfo(ref info))
+            {
+                return TimeSpan.Zero;
+            }
+
+            var idleTicks = (uint)Environment.TickCount - info.dwTime;
+            return TimeSpan.FromMilliseconds(idleTicks);
+        }
+    }
+
+    public event EventHandler<IdleTimeChangedEventArgs>? IdleTimeChanged;
+    protected virtual void OnIdleTimeChanged(IdleTimeChangedEventArgs e) =>
+        IdleTimeChanged?.Invoke(this, e);
+    protected virtual void OnIdleTimeChanged(TimeSpan idleTime) =>
+        OnIdleTimeChanged(new IdleTimeChangedEventArgs(idleTime));
+
+    private TimeSpan PollingInterval { get; } = TimeSpan.FromSeconds(1);
+    private readonly Timer pollingTimer;
+    private volatile bool monitoring;
+    private bool disposedValue;
+
+    public IdleMonitor() =>
+        pollingTimer = new Timer(
+            HandlePollingTimerTick,
+            null,
+            Timeout.InfiniteTimeSpan,
+            Timeout.InfiniteTimeSpan);
+
+    public void StartMonitoring()
+    {
+        if (monitoring)
+        {
+            return;
+        }
+        monitoring = true;
+
+        _ = pollingTimer.Change(TimeSpan.Zero, PollingInterval);
+    }
+
+    public void StopMonitoring()
+    {
+        _ = pollingTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+        monitoring = false;
+    }
+
+    private void HandlePollingTimerTick(object? _)
+    {
+        try
+        {
+            var idleTime = Static.GetIdleTime();
+            OnIdleTimeChanged(idleTime);
+        }
+        finally
+        {
+            if (monitoring)
+            {
+                _ = pollingTimer.Change(
+                    PollingInterval,
+                    Timeout.InfiniteTimeSpan);
+            }
+        }
+    }
+
+    protected virtual void Dispose(bool disposing)
+    {
+        if (!disposedValue)
+        {
+            if (disposing)
+            {
+                pollingTimer.Dispose();
+            }
+
+            disposedValue = true;
+        }
+    }
+
+    public void Dispose()
+    {
+        Dispose(disposing: true);
+        GC.SuppressFinalize(this);
+    }
+}
