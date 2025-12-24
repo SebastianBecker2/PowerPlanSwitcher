@@ -12,6 +12,7 @@ using Serilog;
 using Serilog.Core;
 using Serilog.Formatting.Json;
 using SevenZip;
+using SystemManagement;
 
 internal static class Program
 {
@@ -239,7 +240,6 @@ internal static class Program
         }
 
         UpdateLogLevelSwitch(Settings.Default.ExtendedLogging);
-#pragma warning disable CA1305 // Specify IFormatProvider
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.ControlledBy(LogLevelSwitch)
             .WriteTo.File(
@@ -250,7 +250,6 @@ internal static class Program
                 retainedFileTimeLimit: TimeSpan.FromDays(7),
                 restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose)
             .CreateLogger();
-#pragma warning restore CA1305 // Specify IFormatProvider
 
         Log.Information("Application started.");
 
@@ -273,6 +272,9 @@ internal static class Program
             .SingleInstance();
         _ = builder.RegisterType<ProcessMonitor>()
             .As<IProcessMonitor>()
+            .SingleInstance();
+        _ = builder.RegisterType<IdleMonitor>()
+            .As<IIdleMonitor>()
             .SingleInstance();
         _ = builder.RegisterType<PowerManager>()
             .As<IPowerManager>()

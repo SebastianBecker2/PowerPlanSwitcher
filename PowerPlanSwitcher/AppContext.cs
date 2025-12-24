@@ -7,6 +7,7 @@ using ProcessManagement;
 using RuleManagement;
 using RuleManagement.Events;
 using Serilog;
+using SystemManagement;
 
 internal class AppContext : ApplicationContext
 {
@@ -18,7 +19,8 @@ internal class AppContext : ApplicationContext
         TrayIcon trayIcon,
         IPowerManager powerManager,
         RuleManager ruleManager,
-        IProcessMonitor processMonitor)
+        IProcessMonitor processMonitor,
+        IIdleMonitor idleMonitor)
     {
         TrayIcon = trayIcon;
         PowerManager = powerManager;
@@ -58,6 +60,7 @@ internal class AppContext : ApplicationContext
             Default_SettingChanging;
 
         processMonitor.StartMonitoring();
+        idleMonitor.StartMonitoring();
     }
 
     private void Default_SettingChanging(

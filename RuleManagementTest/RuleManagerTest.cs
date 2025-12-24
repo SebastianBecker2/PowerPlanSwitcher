@@ -8,12 +8,14 @@ using RuleManagement;
 using RuleManagement.Dto;
 using RuleManagement.Events;
 using RuleManagement.Rules;
+using SystemManagement;
 
 [TestClass]
 public sealed class RuleManagerTest
 {
     private IBatteryMonitor batteryMonitor = null!;
     private IProcessMonitor processMonitor = null!;
+    private IdleMonitor idleMonitor = null!;
     private RuleFactory ruleFactory = null!;
 
     [TestInitialize]
@@ -21,8 +23,12 @@ public sealed class RuleManagerTest
     {
         batteryMonitor = A.Fake<IBatteryMonitor>();
         processMonitor = A.Fake<IProcessMonitor>();
+        idleMonitor = A.Fake<IdleMonitor>();
 
-        ruleFactory = new RuleFactory(batteryMonitor, processMonitor);
+        ruleFactory = new RuleFactory(
+            batteryMonitor,
+            processMonitor,
+            idleMonitor);
     }
 
     [TestMethod]

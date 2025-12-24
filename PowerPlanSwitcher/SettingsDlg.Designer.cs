@@ -77,7 +77,6 @@ namespace PowerPlanSwitcher
             BtnOpenLogFolder = new Button();
             BtnExportLog = new Button();
             TipHints = new ToolTip(components);
-            DgcRuleIndex = new DataGridViewTextBoxColumn();
             DgcRuleDescription = new DataGridViewTextBoxColumn();
             DgcRuleSchemeIcon = new DataGridViewImageColumn();
             DgcRuleSchemeName = new DataGridViewTextBoxColumn();
@@ -187,7 +186,7 @@ namespace PowerPlanSwitcher
             DgvRules.AllowUserToResizeColumns = false;
             DgvRules.AllowUserToResizeRows = false;
             DgvRules.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            DgvRules.Columns.AddRange(new DataGridViewColumn[] { DgcRuleIndex, DgcRuleDescription, DgcRuleSchemeIcon, DgcRuleSchemeName, DgcTriggerCount });
+            DgvRules.Columns.AddRange(new DataGridViewColumn[] { DgcRuleDescription, DgcRuleSchemeIcon, DgcRuleSchemeName, DgcTriggerCount });
             tableLayoutPanel1.SetColumnSpan(DgvRules, 5);
             DgvRules.Dock = DockStyle.Fill;
             DgvRules.Location = new Point(3, 3);
@@ -699,14 +698,6 @@ namespace PowerPlanSwitcher
             TipHints.UseAnimation = false;
             TipHints.UseFading = false;
             // 
-            // DgcRuleIndex
-            // 
-            DgcRuleIndex.Frozen = true;
-            DgcRuleIndex.HeaderText = "ID";
-            DgcRuleIndex.Name = "DgcRuleIndex";
-            DgcRuleIndex.ReadOnly = true;
-            DgcRuleIndex.Width = 30;
-            // 
             // DgcRuleDescription
             // 
             DgcRuleDescription.AutoSizeMode = DataGridViewAutoSizeColumnMode.Fill;
@@ -824,7 +815,6 @@ namespace PowerPlanSwitcher
         private Button BtnExportLog;
         private PictureBox PibLoggingInfo;
         private ToolTip TipHints;
-        private DataGridViewTextBoxColumn DgcRuleIndex;
         private DataGridViewTextBoxColumn DgcRuleDescription;
         private DataGridViewImageColumn DgcRuleSchemeIcon;
         private DataGridViewTextBoxColumn DgcRuleSchemeName;

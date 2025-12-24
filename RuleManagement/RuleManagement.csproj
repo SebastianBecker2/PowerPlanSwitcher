@@ -13,6 +13,7 @@
   <ItemGroup>
     <ProjectReference Include="..\PowerManagement\PowerManagement.csproj" />
     <ProjectReference Include="..\ProcessManagement\ProcessManagement.csproj" />
+    <ProjectReference Include="..\SystemManagement\SystemManagement.csproj" />
   </ItemGroup>
 
 </Project>

@@ -31,10 +31,12 @@ public partial class SettingsDlg : Form
     public IEnumerable<IRuleDto> RuleDto => [.. Rules.Select(r => r.Dto)];
     private IEnumerable<RuleWrapper> Rules { get; init; }
 
+    private RuleManager RuleManager { get; init; }
     private Func<HotkeySelectionDlg> HotkeySelectionDlgFactory { get; init; }
 
     public SettingsDlg(RuleManager ruleManager, Func<HotkeySelectionDlg> hotkeySelectionDlgFactory)
     {
+        RuleManager = ruleManager;
         HotkeySelectionDlgFactory = hotkeySelectionDlgFactory;
 
         Rules = ruleManager.GetRules().Select(r => new RuleWrapper(r));
@@ -272,6 +274,10 @@ public partial class SettingsDlg : Form
         }
         PowerSchemeSettings.SaveSettings();
 
+        RuleManager.SetRules(DgvRules.Rows
+            .Cast<DataGridViewRow>()
+            .Select(r => (r.Tag as RuleWrapper)!.Dto));
+
         static string GetSelectedString(ComboBox cmb)
         {
             if (cmb.SelectedIndex == -1)
@@ -314,7 +320,6 @@ public partial class SettingsDlg : Form
         var row = new DataGridViewRow { Tag = rule, };
         var setting = PowerSchemeSettings.GetSetting(dto.SchemeGuid);
         row.Cells.AddRange(
-            new DataGridViewTextBoxCell(),
             new DataGridViewTextBoxCell
             {
                 Value = dto.GetDescription(),
@@ -398,8 +403,9 @@ public partial class SettingsDlg : Form
         }
 
         var row = DgvRules.SelectedRows[0];
+        var index = Math.Max(row.Index - 1, 0);
         DgvRules.Rows.Remove(row);
-        DgvRules.Rows.Insert(row.Index - 1, row);
+        DgvRules.Rows.Insert(index, row);
         row.Selected = true;
     }
 
@@ -411,8 +417,9 @@ public partial class SettingsDlg : Form
         }
 
         var row = DgvRules.SelectedRows[0];
+        var index = Math.Min(row.Index + 1, DgvRules.RowCount - 1);
         DgvRules.Rows.Remove(row);
-        DgvRules.Rows.Insert(row.Index + 1, row);
+        DgvRules.Rows.Insert(index, row);
         row.Selected = true;
     }
 

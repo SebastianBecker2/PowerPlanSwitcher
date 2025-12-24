@@ -5,9 +5,9 @@ using Vanara.PInvoke;
 
 public class IdleMonitor : IDisposable, IIdleMonitor
 {
-#pragma warning disable CA1716 // Identifiers should not match keywords
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "<Pending>")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
     public static class Static
-#pragma warning restore CA1716 // Identifiers should not match keywords
     {
         public static TimeSpan GetIdleTime()
         {
