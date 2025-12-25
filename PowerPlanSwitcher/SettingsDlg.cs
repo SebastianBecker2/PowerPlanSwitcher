@@ -76,24 +76,6 @@ public partial class SettingsDlg : Form
 
         UpdatePowerRules();
 
-        ChbActivateInitialPowerScheme.Checked =
-            Settings.Default.ActivateInitialPowerScheme;
-        CmbInitialPowerScheme.Items.AddRange([.. powerSchemes
-            .Select(scheme => scheme.name)
-            .Cast<object>()]);
-        if (Settings.Default.InitialPowerSchemeGuid == Guid.Empty)
-        {
-            CmbInitialPowerScheme.SelectedIndex = 0;
-        }
-        else
-        {
-            CmbInitialPowerScheme.SelectedIndex = powerSchemes.FindIndex(
-                scheme => scheme.guid
-                    == Settings.Default.InitialPowerSchemeGuid);
-        }
-        CmbInitialPowerScheme.Enabled =
-            ChbActivateInitialPowerScheme.Checked;
-
         var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
             Settings.Default.CyclePowerSchemeHotkey);
         LblCycleHotkey.Text = cycleHotkey?.ToString() ?? "[ ---------- ]";
@@ -278,23 +260,6 @@ public partial class SettingsDlg : Form
             .Cast<DataGridViewRow>()
             .Select(r => (r.Tag as RuleWrapper)!.Dto));
 
-        static string GetSelectedString(ComboBox cmb)
-        {
-            if (cmb.SelectedIndex == -1)
-            {
-                return string.Empty;
-            }
-            return cmb.Items[cmb.SelectedIndex]?.ToString() ?? string.Empty;
-        }
-
-        Guid GetPowerSchemeGuid(string name) =>
-            powerSchemes.FirstOrDefault(scheme => scheme.name == name).guid;
-
-        Settings.Default.ActivateInitialPowerScheme =
-            ChbActivateInitialPowerScheme.Checked;
-        Settings.Default.InitialPowerSchemeGuid =
-            GetPowerSchemeGuid(GetSelectedString(CmbInitialPowerScheme));
-
         Settings.Default.CyclePowerSchemeHotkey =
             JsonConvert.SerializeObject(LblCycleHotkey.Tag);
         Settings.Default.CycleOnlyVisible = RdbCycleVisible.Checked;
@@ -422,12 +387,6 @@ public partial class SettingsDlg : Form
         DgvRules.Rows.Insert(index, row);
         row.Selected = true;
     }
-
-    private void HandleChbActivateInitialPowerSchemeCheckedChanged(
-        object sender,
-        EventArgs e) =>
-        CmbInitialPowerScheme.Enabled =
-            ChbActivateInitialPowerScheme.Checked;
 
     private void BtnRemoveIcon_Click(object sender, EventArgs e)
     {

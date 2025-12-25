@@ -12,6 +12,14 @@ public partial class RuleDlg : Form
             .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
             .Cast<(Guid schemeGuid, string name)>()];
 
+    private static readonly List<(string name, Type type)> RuleTypes =
+        [
+            ("Process Rule", typeof(ProcessRuleDto)),
+            ("Power Line Rule", typeof(PowerLineRuleDto)),
+            ("Idle Rule", typeof(IdleRuleDto)),
+            ("Startup Rule", typeof(StartupRuleDto))
+        ];
+
     private static string GetSelectedString(ComboBox cmb) =>
         cmb.Items[cmb.SelectedIndex]?.ToString() ?? string.Empty;
 
@@ -28,20 +36,26 @@ public partial class RuleDlg : Form
 
         if (RuleDto is ProcessRuleDto processRuleDto)
         {
-            RdbProcessRule.Checked = true;
+            CmbRuleType.SelectedIndex = 0;
             PrcProcessRule.Dto = processRuleDto;
         }
-
-        if (RuleDto is PowerLineRuleDto powerLineRuleDto)
+        else if (RuleDto is PowerLineRuleDto powerLineRuleDto)
         {
-            RdbPowerLineRule.Checked = true;
+            CmbRuleType.SelectedIndex = 1;
             PlcPowerLineRule.Dto = powerLineRuleDto;
         }
-
-        if (RuleDto is IdleRuleDto idleRuleDto)
+        else if (RuleDto is IdleRuleDto idleRuleDto)
         {
-            RdbIdleRule.Checked = true;
+            CmbRuleType.SelectedIndex = 2;
             IrcIdleRule.Dto = idleRuleDto;
+        }
+        else if (RuleDto is StartupRuleDto)
+        {
+            CmbRuleType.SelectedIndex = 3;
+        }
+        else
+        {
+            CmbRuleType.SelectedIndex = 0;
         }
 
         if (RuleDto is not null && RuleDto.SchemeGuid != Guid.Empty)
@@ -59,7 +73,8 @@ public partial class RuleDlg : Form
 
     private void BtnOk_Click(object sender, EventArgs e)
     {
-        if (RdbProcessRule.Checked)
+        var ruleType = RuleTypes[CmbRuleType.SelectedIndex].type;
+        if (ruleType == typeof(ProcessRuleDto))
         {
             RuleDto = PrcProcessRule.Dto;
             RuleDto.SchemeGuid =
@@ -67,7 +82,7 @@ public partial class RuleDlg : Form
             DialogResult = DialogResult.OK;
             return;
         }
-        else if (RdbPowerLineRule.Checked)
+        else if (ruleType == typeof(PowerLineRuleDto))
         {
             RuleDto = PlcPowerLineRule.Dto;
             RuleDto.SchemeGuid =
@@ -75,11 +90,21 @@ public partial class RuleDlg : Form
             DialogResult = DialogResult.OK;
             return;
         }
-        else if (RdbIdleRule.Checked)
+        else if (ruleType == typeof(IdleRuleDto))
         {
             RuleDto = IrcIdleRule.Dto;
             RuleDto.SchemeGuid =
                 GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme));
+            DialogResult = DialogResult.OK;
+            return;
+        }
+        else if (ruleType == typeof(StartupRuleDto))
+        {
+            RuleDto = new StartupRuleDto
+            {
+                SchemeGuid =
+                    GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme))
+            };
             DialogResult = DialogResult.OK;
             return;
         }
@@ -91,12 +116,31 @@ public partial class RuleDlg : Form
             MessageBoxIcon.Error);
     }
 
-    private void RdbProcessRule_CheckedChanged(object sender, EventArgs e) =>
-        PrcProcessRule.Visible = ((RadioButton)sender).Checked;
-
-    private void RdbPowerLineRule_CheckedChanged(object sender, EventArgs e) =>
-        PlcPowerLineRule.Visible = ((RadioButton)sender).Checked;
-
-    private void RdbIdleRule_CheckedChanged(object sender, EventArgs e) =>
-        IrcIdleRule.Visible = ((RadioButton)sender).Checked;
+    private void CmbRuleType_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        if (CmbRuleType.SelectedIndex == 0)
+        {
+            PrcProcessRule.Visible = true;
+            PlcPowerLineRule.Visible = false;
+            IrcIdleRule.Visible = false;
+        }
+        else if (CmbRuleType.SelectedIndex == 1)
+        {
+            PrcProcessRule.Visible = false;
+            PlcPowerLineRule.Visible = true;
+            IrcIdleRule.Visible = false;
+        }
+        else if (CmbRuleType.SelectedIndex == 2)
+        {
+            PrcProcessRule.Visible = false;
+            PlcPowerLineRule.Visible = false;
+            IrcIdleRule.Visible = true;
+        }
+        else
+        {
+            PrcProcessRule.Visible = false;
+            PlcPowerLineRule.Visible = false;
+            IrcIdleRule.Visible = false;
+        }
+    }
 }

@@ -311,19 +311,6 @@ internal static class Program
 
         var container = builder.Build();
 
-        if (Settings.Default.ActivateInitialPowerScheme &&
-            Settings.Default.InitialPowerSchemeGuid != Guid.Empty)
-        {
-            Log.Information(
-                "Activating power scheme: {PowerSchemeName} " +
-                "{PowerSchemeGuid} Reason: Initial Power Scheme",
-                PowerManager.Static.GetPowerSchemeName(
-                    Settings.Default.InitialPowerSchemeGuid) ?? "<No Name>",
-                Settings.Default.InitialPowerSchemeGuid);
-            PowerManager.Static.SetActivePowerScheme(
-                Settings.Default.InitialPowerSchemeGuid);
-        }
-
         var ruleManager = container.Resolve<RuleManager>();
         ruleManager.RulesUpdated += (_, e) =>
         {

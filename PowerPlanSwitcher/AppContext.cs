@@ -61,6 +61,7 @@ internal class AppContext : ApplicationContext
 
         processMonitor.StartMonitoring();
         idleMonitor.StartMonitoring();
+        ruleManager.StartMonitoring();
     }
 
     private void Default_SettingChanging(

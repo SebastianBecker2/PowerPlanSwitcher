@@ -54,6 +54,10 @@ public class RuleManager
         Subscribe(rules);
     }
 
+    public void StartMonitoring() => Subscribe(rules);
+
+    public void StopMonitoring() => Unsubscribe(rules);
+
     private void Rule_TriggerChanged(object? sender, TriggerChangedEventArgs e)
     {
         if (sender is not IRule rule)
@@ -108,6 +112,15 @@ public class RuleManager
         {
             rule.TriggerChanged += Rule_TriggerChanged;
         }
+
+        var firstTriggeredRule = rules.FirstOrDefault(r => r.TriggerCount > 0);
+        if (firstTriggeredRule is null)
+        {
+            return;
+        }
+        Rule_TriggerChanged(
+            firstTriggeredRule,
+            new TriggerChangedEventArgs(firstTriggeredRule));
     }
 
     private void Unsubscribe(IEnumerable<IRule> rules)
