@@ -18,10 +18,10 @@ public class IdleRule :
         idleMonitor.IdleTimeChanged += IdleMonitor_IdleTimeChanged;
 
     private void IdleMonitor_IdleTimeChanged(
-        object? sender,
+        object? _,
         IdleTimeChangedEventArgs e)
     {
-        if (CheckRule(e.IdleTime))
+        if (e.IdleTime >= IdleTimeThreshold)
         {
             TriggerCount = Math.Min(TriggerCount + 1, 1);
         }
@@ -30,7 +30,4 @@ public class IdleRule :
             TriggerCount = Math.Max(TriggerCount - 1, 0);
         }
     }
-
-    private bool CheckRule(TimeSpan idleTime) =>
-        idleTime >= IdleTimeThreshold;
 }

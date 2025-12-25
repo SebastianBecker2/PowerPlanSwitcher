@@ -20,7 +20,8 @@ internal class AppContext : ApplicationContext
         IPowerManager powerManager,
         RuleManager ruleManager,
         IProcessMonitor processMonitor,
-        IIdleMonitor idleMonitor)
+        IIdleMonitor idleMonitor,
+        IWindowMessageMonitor windowMessageMonitor)
     {
         TrayIcon = trayIcon;
         PowerManager = powerManager;
@@ -61,6 +62,7 @@ internal class AppContext : ApplicationContext
 
         processMonitor.StartMonitoring();
         idleMonitor.StartMonitoring();
+        windowMessageMonitor.StartMonitoring();
         ruleManager.StartMonitoring();
     }
 

@@ -276,6 +276,16 @@ internal static class Program
         _ = builder.RegisterType<IdleMonitor>()
             .As<IIdleMonitor>()
             .SingleInstance();
+        _ = builder.RegisterType<WindowMessageMonitor>()
+            .As<IWindowMessageMonitor>()
+            .WithParameter(
+                "messages",
+                new[]
+                {
+                    WindowMessage.QueryEndSession,
+                    WindowMessage.EndSession,
+                })
+            .SingleInstance();
         _ = builder.RegisterType<PowerManager>()
             .As<IPowerManager>()
             .SingleInstance();

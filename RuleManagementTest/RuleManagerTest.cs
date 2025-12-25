@@ -15,6 +15,7 @@ public sealed class RuleManagerTest
 {
     private IBatteryMonitor batteryMonitor = null!;
     private IProcessMonitor processMonitor = null!;
+    private IWindowMessageMonitor windowMessageMonitor = null!;
     private IdleMonitor idleMonitor = null!;
     private RuleFactory ruleFactory = null!;
 
@@ -23,12 +24,14 @@ public sealed class RuleManagerTest
     {
         batteryMonitor = A.Fake<IBatteryMonitor>();
         processMonitor = A.Fake<IProcessMonitor>();
+        windowMessageMonitor = A.Fake<IWindowMessageMonitor>();
         idleMonitor = A.Fake<IdleMonitor>();
 
         ruleFactory = new RuleFactory(
             batteryMonitor,
             processMonitor,
-            idleMonitor);
+            idleMonitor,
+            windowMessageMonitor);
     }
 
     [TestMethod]

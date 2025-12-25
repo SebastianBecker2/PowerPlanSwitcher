@@ -170,7 +170,7 @@ namespace PowerPlanSwitcher
             CmbRuleType.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             CmbRuleType.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbRuleType.FormattingEnabled = true;
-            CmbRuleType.Items.AddRange(new object[] { "Process Rule", "Power Line Rule", "Idle Rule", "Startup Rule" });
+            CmbRuleType.Items.AddRange(new object[] { "Process Rule", "Power Line Rule", "Idle Rule", "Startup Rule", "Shutdown Rule" });
             CmbRuleType.Location = new Point(104, 3);
             CmbRuleType.Name = "CmbRuleType";
             CmbRuleType.Size = new Size(538, 23);

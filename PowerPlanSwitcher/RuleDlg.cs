@@ -17,7 +17,8 @@ public partial class RuleDlg : Form
             ("Process Rule", typeof(ProcessRuleDto)),
             ("Power Line Rule", typeof(PowerLineRuleDto)),
             ("Idle Rule", typeof(IdleRuleDto)),
-            ("Startup Rule", typeof(StartupRuleDto))
+            ("Startup Rule", typeof(StartupRuleDto)),
+            ("Shutdown Rule", typeof(ShutdownRuleDto)),
         ];
 
     private static string GetSelectedString(ComboBox cmb) =>
@@ -52,6 +53,10 @@ public partial class RuleDlg : Form
         else if (RuleDto is StartupRuleDto)
         {
             CmbRuleType.SelectedIndex = 3;
+        }
+        else if (RuleDto is ShutdownRuleDto)
+        {
+            CmbRuleType.SelectedIndex = 4;
         }
         else
         {
@@ -101,6 +106,16 @@ public partial class RuleDlg : Form
         else if (ruleType == typeof(StartupRuleDto))
         {
             RuleDto = new StartupRuleDto
+            {
+                SchemeGuid =
+                    GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme))
+            };
+            DialogResult = DialogResult.OK;
+            return;
+        }
+        else if (ruleType == typeof(ShutdownRuleDto))
+        {
+            RuleDto = new ShutdownRuleDto
             {
                 SchemeGuid =
                     GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme))
