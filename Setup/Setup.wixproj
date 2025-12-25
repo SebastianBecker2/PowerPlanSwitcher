@@ -18,6 +18,7 @@
     <Content Include="Config.wxi" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\PowerManagement\PowerManagement.csproj" />
     <ProjectReference Include="..\PowerPlanSwitcher\PowerPlanSwitcher.csproj">
       <Name>PowerPlanSwitcher</Name>
       <Project>{e7fb44a5-1f4e-49f7-a497-efcf67aa7b61}</Project>
@@ -26,6 +27,9 @@
       <RefProjectOutputGroups>Binaries;Content;Satellites</RefProjectOutputGroups>
       <RefTargetDir>INSTALLFOLDER</RefTargetDir>
     </ProjectReference>
+    <ProjectReference Include="..\ProcessManagement\ProcessManagement.csproj" />
+    <ProjectReference Include="..\RuleManagement\RuleManagement.csproj" />
+    <ProjectReference Include="..\SystemManagement\SystemManagement.csproj" />
   </ItemGroup>
   <ItemGroup>
     <PackageReference Include="WixToolset.Util.wixext" Version="6.0.1" />
