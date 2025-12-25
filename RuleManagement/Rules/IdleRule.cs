@@ -23,7 +23,7 @@ public class IdleRule :
     {
         if (CheckRule(e.IdleTime))
         {
-            TriggerCount++;
+            TriggerCount = Math.Min(TriggerCount + 1, 1);
         }
         else
         {
