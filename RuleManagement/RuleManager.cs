@@ -8,6 +8,19 @@ using RuleManagement.Dto;
 using RuleManagement.Events;
 using RuleManagement.Rules;
 
+
+
+
+
+
+// We need to convert the custom option to activate a power scheme on startup
+// to a StartupRule.
+// And we need to check StartMonitoring to make sure it works properly.
+
+
+
+
+
 public class RuleManager
 {
     private class RuleContainerProbe

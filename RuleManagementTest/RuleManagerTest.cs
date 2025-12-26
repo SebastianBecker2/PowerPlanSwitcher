@@ -35,6 +35,111 @@ public sealed class RuleManagerTest
     }
 
     [TestMethod]
+    public void SettingRules_WithStartupRule_AppliesStartupRuleImmediately()
+    {
+        var manager = new RuleManager(ruleFactory);
+
+        var startup = new StartupRule(new StartupRuleDto { SchemeGuid = Guid.NewGuid() });
+
+        IRule? applied = null;
+        manager.RuleApplicationChanged += (_, e) => applied = e.Rule;
+
+        manager.SetRules([startup]);
+
+        Assert.AreEqual(startup, applied);
+        Assert.AreEqual(startup, manager.AppliedRule);
+    }
+
+    [TestMethod]
+    public void IdleRule_Activation_AppliesRule()
+    {
+        var idleMonitor = A.Fake<IIdleMonitor>();
+        var manager = new RuleManager(ruleFactory);
+
+        var dto = new IdleRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            IdleTimeThreshold = TimeSpan.FromSeconds(10)
+        };
+
+        var idleRule = new IdleRule(idleMonitor, dto);
+
+        manager.SetRules([idleRule]);
+
+        IRule? applied = null;
+        manager.RuleApplicationChanged += (_, e) => applied = e.Rule;
+
+        idleMonitor.IdleTimeChanged += Raise.With(new IdleTimeChangedEventArgs(TimeSpan.FromSeconds(20)));
+
+        Assert.AreEqual(idleRule, applied);
+        Assert.AreEqual(idleRule, manager.AppliedRule);
+    }
+
+    [TestMethod]
+    public void FirstTriggeredRuleByOrder_IsApplied_RegardlessOfType()
+    {
+        var idleMonitor = A.Fake<IIdleMonitor>();
+        var windowMonitor = A.Fake<IWindowMessageMonitor>();
+
+        var idleRule = new IdleRule(idleMonitor, new IdleRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            IdleTimeThreshold = TimeSpan.FromSeconds(10)
+        });
+
+        var shutdownRule = new ShutdownRule(windowMonitor, new ShutdownRuleDto
+        {
+            SchemeGuid = Guid.NewGuid()
+        });
+
+        // Order: shutdown first, then idle
+        var manager = new RuleManager(ruleFactory);
+        manager.SetRules([shutdownRule, idleRule]);
+
+        List<IRule?> applied = [];
+        manager.RuleApplicationChanged += (_, e) => applied.Add(e.Rule);
+
+        // Trigger both, but in "reverse" temporal order
+        idleMonitor.IdleTimeChanged += Raise.With(new IdleTimeChangedEventArgs(TimeSpan.FromSeconds(20)));
+        windowMonitor.WindowMessageReceived += Raise.With(
+            new WindowMessageEventArgs(WindowMessage.QueryEndSession, 0, 0));
+
+        Assert.AreEqual(shutdownRule, manager.AppliedRule, "First by order should win, even if triggered later.");
+        Assert.IsTrue(applied.Contains(shutdownRule));
+    }
+
+    [TestMethod]
+    public void StartupRule_AtTop_AlwaysWinsOverLaterTriggeredRules()
+    {
+        var startup = new StartupRule(new StartupRuleDto { SchemeGuid = Guid.NewGuid() });
+
+        var process = new ProcessRule(
+            processMonitor,
+            new ProcessRuleDto
+            {
+                Pattern = "test.exe",
+                Type = ComparisonType.Exact,
+                SchemeGuid = Guid.NewGuid()
+            });
+
+        var manager = new RuleManager(ruleFactory);
+        manager.SetRules([startup, process]);
+
+        List<IRule?> applied = [];
+        manager.RuleApplicationChanged += (_, e) => applied.Add(e.Rule);
+
+        manager.StartMonitoring();
+
+        // Trigger process rule
+        var proc = A.Fake<IProcess>();
+        _ = A.CallTo(() => proc.ExecutablePath).Returns("test.exe");
+        processMonitor.ProcessCreated += Raise.With(new ProcessEventArgs(proc));
+
+        Assert.AreEqual(startup, manager.AppliedRule, "StartupRule should win because it is first in the list.");
+        Assert.IsTrue(applied.Contains(startup));
+    }
+
+    [TestMethod]
     public void RuleDtoVersion1_IsLoadedProperly()
     {
         var migrationPolicy = new MigrationPolicy(
@@ -45,20 +150,33 @@ public sealed class RuleManagerTest
 
         var version1Json = /*lang=json,strict*/ @"
         {
-            ""SchemaVersion"": 1,
-            ""Rules"": [
-                {
-                    ""$type"": ""RuleManagement.Dto.PowerLineRuleDto, RuleManagement"",
-                    ""PowerLineStatus"": 0,
-                    ""SchemeGuid"": ""a1841308-3541-4fab-bc81-f71556f20b4a""
-                },
-                {
-                    ""$type"": ""RuleManagement.Dto.ProcessRuleDto, RuleManagement"",
-                    ""FilePath"": ""testpath"",
-                    ""Type"": 0,
-                    ""SchemeGuid"": ""381b4222-f694-41f0-9685-ff5bb260df2e""
-                }
-            ]
+          ""SchemaVersion"": 1,
+          ""Rules"": [
+            {
+              ""$type"": ""RuleManagement.Dto.PowerLineRuleDto, RuleManagement"",
+              ""PowerLineStatus"": 0,
+              ""SchemeGuid"": ""aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa""
+            },
+            {
+              ""$type"": ""RuleManagement.Dto.ProcessRuleDto, RuleManagement"",
+              ""FilePath"": ""testpath"",
+              ""Type"": 0,
+              ""SchemeGuid"": ""bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb""
+            },
+            {
+              ""$type"": ""RuleManagement.Dto.StartupRuleDto, RuleManagement"",
+              ""SchemeGuid"": ""cccccccc-cccc-cccc-cccc-cccccccccccc""
+            },
+            {
+              ""$type"": ""RuleManagement.Dto.ShutdownRuleDto, RuleManagement"",
+              ""SchemeGuid"": ""dddddddd-dddd-dddd-dddd-dddddddddddd""
+            },
+            {
+              ""$type"": ""RuleManagement.Dto.IdleRuleDto, RuleManagement"",
+              ""IdleTimeThreshold"": ""00:00:10"",
+              ""SchemeGuid"": ""eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee""
+            }
+          ]
         }";
 
         var manager = new RuleManager(
@@ -68,17 +186,30 @@ public sealed class RuleManagerTest
             batteryMonitor);
         var rules = manager.GetRules().ToList();
 
-        Assert.AreEqual(2, rules.Count);
+        Assert.AreEqual(5, rules.Count);
         AssertRule(rules[0], new PowerLineRuleDto
         {
             PowerLineStatus = PowerLineStatus.Offline,
-            SchemeGuid = Guid.Parse("a1841308-3541-4fab-bc81-f71556f20b4a"),
+            SchemeGuid = CreateGuid('a'),
         });
         AssertRule(rules[1], new ProcessRuleDto
         {
             Pattern = "testpath",
             Type = ComparisonType.StartsWith,
-            SchemeGuid = Guid.Parse("381b4222-f694-41f0-9685-ff5bb260df2e"),
+            SchemeGuid = CreateGuid('b'),
+        });
+        AssertRule(rules[2], new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('c'),
+        });
+        AssertRule(rules[3], new ShutdownRuleDto
+        {
+            SchemeGuid = CreateGuid('d'),
+        });
+        AssertRule(rules[4], new IdleRuleDto
+        {
+            SchemeGuid = CreateGuid('e'),
+            IdleTimeThreshold = TimeSpan.FromSeconds(10),
         });
     }
 
@@ -152,12 +283,12 @@ public sealed class RuleManagerTest
         [
           {
             ""$type"": ""PowerPlanSwitcher.RuleManagement.Rules.PowerLineRule, PowerPlanSwitcher"",
-            ""SchemeGuid"": ""a1841308-3541-4fab-bc81-f71556f20b4a"",
+            ""SchemeGuid"": ""aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"",
             ""PowerLineStatus"": 1
           },
           {
             ""$type"": ""PowerPlanSwitcher.RuleManagement.Rules.ProcessRule, PowerPlanSwitcher"",
-            ""SchemeGuid"": ""8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"",
+            ""SchemeGuid"": ""bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"",
             ""FilePath"": ""asdf"",
             ""Type"": 0
           }
@@ -174,13 +305,13 @@ public sealed class RuleManagerTest
         AssertRule(rules[0], new PowerLineRuleDto
         {
             PowerLineStatus = PowerLineStatus.Online,
-            SchemeGuid = Guid.Parse("a1841308-3541-4fab-bc81-f71556f20b4a"),
+            SchemeGuid = CreateGuid('a'),
         });
         AssertRule(rules[1], new ProcessRuleDto
         {
             Pattern = "asdf",
             Type = ComparisonType.StartsWith,
-            SchemeGuid = Guid.Parse("8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"),
+            SchemeGuid = CreateGuid('b'),
         });
     }
 
@@ -196,21 +327,34 @@ public sealed class RuleManagerTest
 
         var originalJson = /*lang=json,strict*/ @"
         {
-            ""$type"": ""RuleManagement.RuleManager+RuleContainer, RuleManagement"",
-            ""Rules"": [
-                {
-                    ""$type"": ""RuleManagement.Dto.ProcessRuleDto, RuleManagement"",
-                    ""FilePath"": ""testpath"",
-                    ""Type"": 0,
-                    ""SchemeGuid"": ""381b4222-f694-41f0-9685-ff5bb260df2e""
-                },
-                {
-                    ""$type"": ""RuleManagement.Dto.PowerLineRuleDto, RuleManagement"",
-                    ""PowerLineStatus"": 1,
-                    ""SchemeGuid"": ""11111111-1111-1111-1111-111111111111""
-                }
-            ],
-            ""SchemaVersion"": 1
+          ""$type"": ""RuleManagement.RuleManager+RuleContainer, RuleManagement"",
+          ""Rules"": [
+            {
+              ""$type"": ""RuleManagement.Dto.ProcessRuleDto, RuleManagement"",
+              ""FilePath"": ""testpath"",
+              ""Type"": 0,
+              ""SchemeGuid"": ""11111111-1111-1111-1111-111111111111""
+            },
+            {
+              ""$type"": ""RuleManagement.Dto.PowerLineRuleDto, RuleManagement"",
+              ""PowerLineStatus"": 1,
+              ""SchemeGuid"": ""22222222-2222-2222-2222-222222222222""
+            },
+            {
+              ""$type"": ""RuleManagement.Dto.StartupRuleDto, RuleManagement"",
+              ""SchemeGuid"": ""33333333-3333-3333-3333-333333333333""
+            },
+            {
+              ""$type"": ""RuleManagement.Dto.ShutdownRuleDto, RuleManagement"",
+              ""SchemeGuid"": ""44444444-4444-4444-4444-444444444444""
+            },
+            {
+              ""$type"": ""RuleManagement.Dto.IdleRuleDto, RuleManagement"",
+              ""IdleTimeThreshold"": ""00:00:10"",
+              ""SchemeGuid"": ""55555555-5555-5555-5555-555555555555""
+            }
+          ],
+          ""SchemaVersion"": 1
         }";
 
         var manager = new RuleManager(
@@ -650,6 +794,25 @@ public sealed class RuleManagerTest
         Assert.AreEqual(dto.SchemeGuid, ((ProcessRule)rule).SchemeGuid);
         Assert.AreEqual(dto.Pattern, ((ProcessRule)rule).Pattern);
         Assert.AreEqual(dto.Type, ((ProcessRule)rule).Type);
+    }
+
+    private static void AssertRule(IRule rule, StartupRuleDto dto)
+    {
+        Assert.IsInstanceOfType(rule, typeof(StartupRule));
+        Assert.AreEqual(dto.SchemeGuid, ((StartupRule)rule).SchemeGuid);
+    }
+
+    private static void AssertRule(IRule rule, ShutdownRuleDto dto)
+    {
+        Assert.IsInstanceOfType(rule, typeof(ShutdownRule));
+        Assert.AreEqual(dto.SchemeGuid, ((ShutdownRule)rule).SchemeGuid);
+    }
+
+    private static void AssertRule(IRule rule, IdleRuleDto dto)
+    {
+        Assert.IsInstanceOfType(rule, typeof(IdleRule));
+        Assert.AreEqual(dto.SchemeGuid, ((IdleRule)rule).SchemeGuid);
+        Assert.AreEqual(dto.IdleTimeThreshold, ((IdleRule)rule).IdleTimeThreshold);
     }
 
     private static Guid CreateGuid(char c)

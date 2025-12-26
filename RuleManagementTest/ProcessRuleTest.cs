@@ -17,6 +17,17 @@ public sealed class ProcessRuleTest
     public void Setup() => processMonitor = A.Fake<IProcessMonitor>();
 
     [TestMethod]
+    public void InitialTriggerCount_IsZero()
+    {
+        var monitor = A.Fake<IProcessMonitor>();
+        var dto = new ProcessRuleDto { SchemeGuid = Guid.NewGuid() };
+
+        var rule = new ProcessRule(monitor, dto);
+
+        Assert.AreEqual(0, rule.TriggerCount);
+    }
+
+    [TestMethod]
     public void ProcessCreated_PathMatchesExact_IncrementsTriggerCount()
     {
         // Arrange

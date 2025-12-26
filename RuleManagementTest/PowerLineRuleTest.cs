@@ -15,6 +15,17 @@ public sealed class PowerLineRuleTest
     public void Setup() => batteryMonitor = A.Fake<IBatteryMonitor>();
 
     [TestMethod]
+    public void InitialTriggerCount_IsZero()
+    {
+        var monitor = A.Fake<IBatteryMonitor>();
+        var dto = new PowerLineRuleDto { SchemeGuid = Guid.NewGuid() };
+
+        var rule = new PowerLineRule(monitor, dto);
+
+        Assert.AreEqual(0, rule.TriggerCount);
+    }
+
+    [TestMethod]
     public void BatteryMonitorEvent_StatusMatches_IncrementsTriggerCount()
     {
         // Arrange
