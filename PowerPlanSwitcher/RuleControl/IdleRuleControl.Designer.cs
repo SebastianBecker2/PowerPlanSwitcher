@@ -31,7 +31,7 @@ partial class IdleRuleControl
         tableLayoutPanel1 = new TableLayoutPanel();
         label1 = new Label();
         NudIdleTimeThreshold = new NumericUpDown();
-        label2 = new Label();
+        CmbUnit = new ComboBox();
         tableLayoutPanel1.SuspendLayout();
         ((System.ComponentModel.ISupportInitialize)NudIdleTimeThreshold).BeginInit();
         SuspendLayout();
@@ -44,7 +44,7 @@ partial class IdleRuleControl
         tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Absolute, 20F));
         tableLayoutPanel1.Controls.Add(label1, 0, 0);
         tableLayoutPanel1.Controls.Add(NudIdleTimeThreshold, 1, 0);
-        tableLayoutPanel1.Controls.Add(label2, 2, 0);
+        tableLayoutPanel1.Controls.Add(CmbUnit, 2, 0);
         tableLayoutPanel1.Dock = DockStyle.Fill;
         tableLayoutPanel1.Location = new Point(0, 0);
         tableLayoutPanel1.Name = "tableLayoutPanel1";
@@ -64,24 +64,25 @@ partial class IdleRuleControl
         label1.Text = "Idle Time Threshold:";
         label1.TextAlign = ContentAlignment.MiddleRight;
         // 
-        // NudDuration
+        // NudIdleTimeThreshold
         // 
         NudIdleTimeThreshold.Anchor = AnchorStyles.Left | AnchorStyles.Right;
         NudIdleTimeThreshold.Location = new Point(124, 52);
-        NudIdleTimeThreshold.Name = "NudDuration";
+        NudIdleTimeThreshold.Maximum = new decimal(new int[] { 9999999, 0, 0, 0 });
+        NudIdleTimeThreshold.Name = "NudIdleTimeThreshold";
         NudIdleTimeThreshold.Size = new Size(120, 23);
         NudIdleTimeThreshold.TabIndex = 1;
         // 
-        // label2
+        // CmbUnit
         // 
-        label2.AutoSize = true;
-        label2.Dock = DockStyle.Fill;
-        label2.Location = new Point(250, 0);
-        label2.Name = "label2";
-        label2.Size = new Size(236, 127);
-        label2.TabIndex = 2;
-        label2.Text = "Seconds";
-        label2.TextAlign = ContentAlignment.MiddleLeft;
+        CmbUnit.Anchor = AnchorStyles.Left;
+        CmbUnit.DropDownStyle = ComboBoxStyle.DropDownList;
+        CmbUnit.FormattingEnabled = true;
+        CmbUnit.Items.AddRange(new object[] { "Seconds", "Minutes", "Hours" });
+        CmbUnit.Location = new Point(250, 52);
+        CmbUnit.Name = "CmbUnit";
+        CmbUnit.Size = new Size(121, 23);
+        CmbUnit.TabIndex = 2;
         // 
         // IdleRuleControl
         // 
@@ -101,5 +102,5 @@ partial class IdleRuleControl
     private TableLayoutPanel tableLayoutPanel1;
     private Label label1;
     private NumericUpDown NudIdleTimeThreshold;
-    private Label label2;
+    private ComboBox CmbUnit;
 }
