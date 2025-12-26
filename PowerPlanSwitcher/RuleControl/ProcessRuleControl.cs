@@ -14,14 +14,14 @@ public partial class ProcessRuleControl : UserControl
         get
         {
             dto.Type = ComparisonTypes[CmbComparisonType.SelectedIndex];
-            dto.FilePath = TxtPath.Text;
+            dto.Pattern = TxtPath.Text.ToLowerInvariant();
             return dto;
         }
 
         set
         {
             dto = value;
-            TxtPath.Text = dto.FilePath;
+            TxtPath.Text = dto.Pattern;
             CmbComparisonType.SelectedIndex = ComparisonTypes.IndexOf(dto.Type);
         }
     }
@@ -76,5 +76,41 @@ public partial class ProcessRuleControl : UserControl
         }
 
         TxtPath.Text = dlg.FileName;
+    }
+
+    private void PibComparisonInfo_Click(object sender, EventArgs e) =>
+        TipHints.Show(
+            TipHints.GetToolTip(PibComparisonInfo),
+            PibComparisonInfo,
+            0,
+            PibComparisonInfo.Height,
+            3000);
+
+    private void CmbComparisonType_SelectedIndexChanged(object sender, EventArgs e)
+    {
+        var comparisonType = ComparisonTypes[CmbComparisonType.SelectedIndex];
+
+        var text = comparisonType switch
+        {
+            ComparisonType.Exact =>
+                $"The processes execution path has to match the pattern completely." +
+                $"{Environment.NewLine}Ignoring case.",
+            ComparisonType.StartsWith =>
+                $"The processes execution path has to start with the provided pattern." +
+                $"{Environment.NewLine}Ignoring case.",
+            ComparisonType.EndsWith =>
+                $"The processes execution path has to end with the provided pattern." +
+                $"{Environment.NewLine}Ignoring case.",
+            ComparisonType.Wildcard =>
+                $"The process’s execution path must match the provided wildcard pattern, using glob‑style matching." +
+                $"{Environment.NewLine}Supports * (match within one folder), ? (single character), and ** (match across any number of folders)." +
+                $"{Environment.NewLine}C:\\Program Files\\*.exe → matches any exe files directly in C:\\Program Files\\" +
+                $"{Environment.NewLine}C:\\Program Files\\**\\*.exe → matches any exe files in any subfolder of C:\\Program Files\\" +
+                $"{Environment.NewLine}C:\\Program Files\\My?pp.exe → matches MyApp.exe and MySpp.exe in C:\\Program Files\\" +
+                $"{Environment.NewLine}Ignoring case.",
+            _ => string.Empty,
+        };
+
+        TipHints.SetToolTip(PibComparisonInfo, text);
     }
 }

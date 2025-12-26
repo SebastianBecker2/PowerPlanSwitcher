@@ -1,20 +1,19 @@
 namespace RuleManagement.Dto;
+using Newtonsoft.Json;
+
 public class ProcessRuleDto : RuleDto, IRuleDto
 {
-    public string FilePath
-    {
-        get => filePath;
-        set => filePath = value.ToLowerInvariant();
-    }
+    [JsonProperty("FilePath")]
+    public string Pattern { get; set; } = "";
     public ComparisonType Type { get; set; }
 
-    private string filePath = string.Empty;
     private static readonly List<(ComparisonType type, string text)>
         ComparisonTypeText =
         [
             (ComparisonType.Exact, "Match exact Path"),
             (ComparisonType.StartsWith, "Path starts with"),
             (ComparisonType.EndsWith, "Path ends with"),
+            (ComparisonType.Wildcard, "Wildcard match"),
         ];
     private static readonly Dictionary<string, ComparisonType> TextToTypeMap =
         ComparisonTypeText.ToDictionary(
@@ -23,7 +22,7 @@ public class ProcessRuleDto : RuleDto, IRuleDto
             StringComparer.Ordinal);
 
     public override string GetDescription() =>
-        $"Process -> {ComparisonTypeToText(Type)} -> {FilePath}";
+        $"Process -> {ComparisonTypeToText(Type)} -> {Pattern}";
 
     public static string ComparisonTypeToText(ComparisonType ruleType)
     {

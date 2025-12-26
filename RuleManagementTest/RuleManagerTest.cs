@@ -76,7 +76,7 @@ public sealed class RuleManagerTest
         });
         AssertRule(rules[1], new ProcessRuleDto
         {
-            FilePath = "testpath",
+            Pattern = "testpath",
             Type = ComparisonType.StartsWith,
             SchemeGuid = Guid.Parse("381b4222-f694-41f0-9685-ff5bb260df2e"),
         });
@@ -117,13 +117,13 @@ public sealed class RuleManagerTest
         Assert.AreEqual(4, rules.Count, "Migration adds 2 PowerLineRules to the initial 2 ProcessRules");
         AssertRule(rules[0], new ProcessRuleDto
         {
-            FilePath = "testpath",
+            Pattern = "testpath",
             Type = ComparisonType.EndsWith,
             SchemeGuid = CreateGuid('3'),
         });
         AssertRule(rules[1], new ProcessRuleDto
         {
-            FilePath = "anotherpathtest",
+            Pattern = "anotherpathtest",
             Type = ComparisonType.Exact,
             SchemeGuid = CreateGuid('4'),
         });
@@ -178,7 +178,7 @@ public sealed class RuleManagerTest
         });
         AssertRule(rules[1], new ProcessRuleDto
         {
-            FilePath = "asdf",
+            Pattern = "asdf",
             Type = ComparisonType.StartsWith,
             SchemeGuid = Guid.Parse("8c5e7fda-e8bf-4a96-9a85-a6e23a8c635c"),
         });
@@ -255,14 +255,14 @@ public sealed class RuleManagerTest
             new ProcessRule(
                 processMonitor,
                 new ProcessRuleDto {
-                    FilePath = "testPath",
+                    Pattern = "testPath",
                     Type = ComparisonType.StartsWith,
                     SchemeGuid = CreateGuid('3')
                 }),
             new ProcessRule(
                 processMonitor,
                 new ProcessRuleDto {
-                    FilePath = "anotherTestPath",
+                    Pattern = "anotherTestPath",
                     Type = ComparisonType.Exact,
                     SchemeGuid = CreateGuid('4')
                 }),
@@ -606,14 +606,14 @@ public sealed class RuleManagerTest
             new ProcessRule(
                 processMonitor,
                 new ProcessRuleDto {
-                    FilePath = "testPath",
+                    Pattern = "testPath",
                     Type = ComparisonType.StartsWith,
                     SchemeGuid = CreateGuid('3')
                 }),
             new ProcessRule(
                 processMonitor,
                 new ProcessRuleDto {
-                    FilePath = "anotherTestPath",
+                    Pattern = "anotherTestPath",
                     Type = ComparisonType.Exact,
                     SchemeGuid = CreateGuid('4')
                 }),
@@ -648,7 +648,7 @@ public sealed class RuleManagerTest
     {
         Assert.IsInstanceOfType(rule, typeof(ProcessRule));
         Assert.AreEqual(dto.SchemeGuid, ((ProcessRule)rule).SchemeGuid);
-        Assert.AreEqual(dto.FilePath, ((ProcessRule)rule).FilePath);
+        Assert.AreEqual(dto.Pattern, ((ProcessRule)rule).Pattern);
         Assert.AreEqual(dto.Type, ((ProcessRule)rule).Type);
     }
 

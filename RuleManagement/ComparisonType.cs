@@ -5,4 +5,5 @@ public enum ComparisonType
     StartsWith,
     Exact,
     EndsWith,
+    Wildcard,
 }

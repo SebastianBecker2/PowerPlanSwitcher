@@ -1,6 +1,7 @@
 namespace RuleManagement.Rules;
 
 using System.ComponentModel;
+using DotNet.Globbing;
 using ProcessManagement;
 using RuleManagement.Dto;
 
@@ -8,8 +9,10 @@ public class ProcessRule
     : Rule<ProcessRuleDto>,
     IRule<ProcessRuleDto>
 {
+    private readonly Glob? glob;
+
     public Guid SchemeGuid => Dto.SchemeGuid;
-    public string FilePath => Dto.FilePath;
+    public string Pattern => Dto.Pattern;
     public ComparisonType Type => Dto.Type;
 
     public ProcessRule(
@@ -17,6 +20,16 @@ public class ProcessRule
         ProcessRuleDto processRuleDto)
         : base(processRuleDto)
     {
+        if (processRuleDto.Type == ComparisonType.Wildcard)
+        {
+            glob = Glob.Parse(
+                processRuleDto.Pattern,
+                new GlobOptions
+                {
+                    Evaluation = { CaseInsensitive = false }
+                });
+        }
+
         processMonitor.ProcessCreated += ProcessMonitor_ProcessCreated;
         processMonitor.ProcessTerminated += ProcessMonitor_ProcessTerminated;
     }
@@ -49,13 +62,14 @@ public class ProcessRule
 
             return Type switch
             {
-                ComparisonType.Exact => path == FilePath,
+                ComparisonType.Exact => path == Pattern,
                 ComparisonType.StartsWith => path.StartsWith(
-                    FilePath,
+                    Pattern,
                     StringComparison.InvariantCulture),
                 ComparisonType.EndsWith => path.EndsWith(
-                    FilePath,
+                    Pattern,
                     StringComparison.InvariantCulture),
+                ComparisonType.Wildcard => glob?.IsMatch(path) ?? false,
                 _ => throw new InvalidOperationException(
                     $"Unable to apply rule type {Type}"),
             };

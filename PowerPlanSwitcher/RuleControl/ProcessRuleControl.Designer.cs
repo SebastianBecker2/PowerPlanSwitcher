@@ -28,7 +28,9 @@ partial class ProcessRuleControl
     /// </summary>
     private void InitializeComponent()
     {
+        components = new System.ComponentModel.Container();
         tableLayoutPanel1 = new TableLayoutPanel();
+        PibComparisonInfo = new PictureBox();
         BtnSelectFile = new Button();
         BtnSelectFolder = new Button();
         BtnSelectFromProcess = new Button();
@@ -36,16 +38,20 @@ partial class ProcessRuleControl
         label2 = new Label();
         TxtPath = new TextBox();
         CmbComparisonType = new ComboBox();
+        TipHints = new ToolTip(components);
         tableLayoutPanel1.SuspendLayout();
+        ((System.ComponentModel.ISupportInitialize)PibComparisonInfo).BeginInit();
         SuspendLayout();
         // 
         // tableLayoutPanel1
         // 
-        tableLayoutPanel1.ColumnCount = 4;
+        tableLayoutPanel1.ColumnCount = 5;
         tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
         tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
         tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
+        tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
         tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
+        tableLayoutPanel1.Controls.Add(PibComparisonInfo, 4, 0);
         tableLayoutPanel1.Controls.Add(BtnSelectFile, 1, 2);
         tableLayoutPanel1.Controls.Add(BtnSelectFolder, 2, 2);
         tableLayoutPanel1.Controls.Add(BtnSelectFromProcess, 3, 2);
@@ -62,6 +68,19 @@ partial class ProcessRuleControl
         tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
         tableLayoutPanel1.Size = new Size(642, 107);
         tableLayoutPanel1.TabIndex = 0;
+        // 
+        // PibComparisonInfo
+        // 
+        PibComparisonInfo.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+        PibComparisonInfo.Image = Properties.Resources.info_rhombus;
+        PibComparisonInfo.Location = new Point(610, 0);
+        PibComparisonInfo.Margin = new Padding(0);
+        PibComparisonInfo.Name = "PibComparisonInfo";
+        PibComparisonInfo.Size = new Size(32, 35);
+        PibComparisonInfo.SizeMode = PictureBoxSizeMode.AutoSize;
+        PibComparisonInfo.TabIndex = 4;
+        PibComparisonInfo.TabStop = false;
+        PibComparisonInfo.Click += PibComparisonInfo_Click;
         // 
         // BtnSelectFile
         // 
@@ -112,7 +131,7 @@ partial class ProcessRuleControl
         label2.Name = "label2";
         label2.Size = new Size(75, 35);
         label2.TabIndex = 0;
-        label2.Text = "Path/File:";
+        label2.Text = "Pattern:";
         label2.TextAlign = ContentAlignment.MiddleRight;
         // 
         // TxtPath
@@ -121,7 +140,7 @@ partial class ProcessRuleControl
         tableLayoutPanel1.SetColumnSpan(TxtPath, 3);
         TxtPath.Location = new Point(84, 41);
         TxtPath.Name = "TxtPath";
-        TxtPath.Size = new Size(555, 23);
+        TxtPath.Size = new Size(523, 23);
         TxtPath.TabIndex = 2;
         // 
         // CmbComparisonType
@@ -132,8 +151,15 @@ partial class ProcessRuleControl
         CmbComparisonType.FormattingEnabled = true;
         CmbComparisonType.Location = new Point(84, 6);
         CmbComparisonType.Name = "CmbComparisonType";
-        CmbComparisonType.Size = new Size(555, 23);
+        CmbComparisonType.Size = new Size(523, 23);
         CmbComparisonType.TabIndex = 3;
+        CmbComparisonType.SelectedIndexChanged += CmbComparisonType_SelectedIndexChanged;
+        // 
+        // TipHints
+        // 
+        TipHints.ShowAlways = true;
+        TipHints.UseAnimation = false;
+        TipHints.UseFading = false;
         // 
         // ProcessRuleControl
         // 
@@ -144,6 +170,7 @@ partial class ProcessRuleControl
         Size = new Size(642, 107);
         tableLayoutPanel1.ResumeLayout(false);
         tableLayoutPanel1.PerformLayout();
+        ((System.ComponentModel.ISupportInitialize)PibComparisonInfo).EndInit();
         ResumeLayout(false);
     }
 
@@ -157,4 +184,6 @@ partial class ProcessRuleControl
     private Button BtnSelectFromProcess;
     private TextBox TxtPath;
     private ComboBox CmbComparisonType;
+    private PictureBox PibComparisonInfo;
+    private ToolTip TipHints;
 }

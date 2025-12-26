@@ -129,7 +129,7 @@ namespace PowerPlanSwitcher
             // 
             PrcProcessRule.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             tableLayoutPanel1.SetColumnSpan(PrcProcessRule, 2);
-            processRuleDto1.FilePath = "";
+            processRuleDto1.Pattern = "";
             processRuleDto1.SchemeGuid = new Guid("00000000-0000-0000-0000-000000000000");
             processRuleDto1.Type = RuleManagement.ComparisonType.StartsWith;
             PrcProcessRule.Dto = processRuleDto1;
