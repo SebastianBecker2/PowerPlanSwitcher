@@ -133,29 +133,69 @@ public partial class RuleDlg : Form
 
     private void CmbRuleType_SelectedIndexChanged(object sender, EventArgs e)
     {
-        if (CmbRuleType.SelectedIndex == 0)
+        var ruleType = RuleTypes[CmbRuleType.SelectedIndex].type;
+        if (ruleType == typeof(ProcessRuleDto))
         {
+            TipHints.SetToolTip(
+                PibRuleInfo,
+                "A process rule switches power plans based on the presence of a specified process running on the system.");
             PrcProcessRule.Visible = true;
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = false;
         }
-        else if (CmbRuleType.SelectedIndex == 1)
+        else if (ruleType == typeof(PowerLineRuleDto))
         {
+            TipHints.SetToolTip(
+                PibRuleInfo,
+                "A power line rule switches power plans based on the current power line status (plugged in or on battery).");
             PrcProcessRule.Visible = false;
             PlcPowerLineRule.Visible = true;
             IrcIdleRule.Visible = false;
         }
-        else if (CmbRuleType.SelectedIndex == 2)
+        else if (ruleType == typeof(IdleRuleDto))
         {
+            TipHints.SetToolTip(
+                PibRuleInfo,
+                "An idle rule switches power plans based on the duration without user input.");
             PrcProcessRule.Visible = false;
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = true;
         }
+        else if (ruleType == typeof(StartupRuleDto))
+        {
+            TipHints.SetToolTip(
+                PibRuleInfo,
+                $"A startup rule switches power plans when the system starts up." +
+                $"{Environment.NewLine}This rule is always triggered and should be the last rule in the list.");
+            PrcProcessRule.Visible = false;
+            PlcPowerLineRule.Visible = false;
+            IrcIdleRule.Visible = false;
+        }
+        else if (ruleType == typeof(ShutdownRuleDto))
+        {
+            TipHints.SetToolTip(
+                PibRuleInfo,
+                "A shutdown rule switches power plans when the system is shutting down.");
+            PrcProcessRule.Visible = false;
+            PlcPowerLineRule.Visible = false;
+            IrcIdleRule.Visible = false;
+        }
         else
         {
+            TipHints.SetToolTip(
+                PibRuleInfo,
+                "Select a Rule Type!");
             PrcProcessRule.Visible = false;
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = false;
         }
     }
+
+    private void PibRuleInfo_Click(object sender, EventArgs e) =>
+        TipHints.Show(
+            TipHints.GetToolTip(PibRuleInfo),
+            PibRuleInfo,
+            0,
+            PibRuleInfo.Height,
+            3000);
 }

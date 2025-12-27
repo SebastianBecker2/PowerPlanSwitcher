@@ -28,6 +28,7 @@ namespace PowerPlanSwitcher
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             var processRuleDto1 = new RuleManagement.Dto.ProcessRuleDto();
             var powerLineRuleDto1 = new RuleManagement.Dto.PowerLineRuleDto();
             var idleRuleDto1 = new RuleManagement.Dto.IdleRuleDto();
@@ -35,6 +36,7 @@ namespace PowerPlanSwitcher
             BtnCancel = new Button();
             BtnOk = new Button();
             tableLayoutPanel1 = new TableLayoutPanel();
+            PibRuleInfo = new PictureBox();
             LblPowerScheme = new Label();
             LblRuleType = new Label();
             CmbPowerScheme = new ComboBox();
@@ -42,7 +44,9 @@ namespace PowerPlanSwitcher
             PlcPowerLineRule = new PowerPlanSwitcher.RuleControl.PowerLineRuleControl();
             IrcIdleRule = new PowerPlanSwitcher.RuleControl.IdleRuleControl();
             CmbRuleType = new ComboBox();
+            TipHints = new ToolTip(components);
             tableLayoutPanel1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)PibRuleInfo).BeginInit();
             SuspendLayout();
             // 
             // BtnCancel
@@ -70,9 +74,11 @@ namespace PowerPlanSwitcher
             // tableLayoutPanel1
             // 
             tableLayoutPanel1.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            tableLayoutPanel1.ColumnCount = 2;
+            tableLayoutPanel1.ColumnCount = 3;
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
             tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel1.ColumnStyles.Add(new ColumnStyle());
+            tableLayoutPanel1.Controls.Add(PibRuleInfo, 2, 0);
             tableLayoutPanel1.Controls.Add(LblPowerScheme, 0, 4);
             tableLayoutPanel1.Controls.Add(LblRuleType, 0, 0);
             tableLayoutPanel1.Controls.Add(CmbPowerScheme, 1, 4);
@@ -88,16 +94,27 @@ namespace PowerPlanSwitcher
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
             tableLayoutPanel1.Size = new Size(645, 263);
             tableLayoutPanel1.TabIndex = 8;
+            // 
+            // PibRuleInfo
+            // 
+            PibRuleInfo.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            PibRuleInfo.Image = Properties.Resources.info_rhombus;
+            PibRuleInfo.Location = new Point(613, 0);
+            PibRuleInfo.Margin = new Padding(0);
+            PibRuleInfo.Name = "PibRuleInfo";
+            PibRuleInfo.Size = new Size(32, 32);
+            PibRuleInfo.SizeMode = PictureBoxSizeMode.AutoSize;
+            PibRuleInfo.TabIndex = 17;
+            PibRuleInfo.TabStop = false;
+            PibRuleInfo.Click += PibRuleInfo_Click;
             // 
             // LblPowerScheme
             // 
             LblPowerScheme.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             LblPowerScheme.AutoSize = true;
-            LblPowerScheme.Location = new Point(3, 215);
+            LblPowerScheme.Location = new Point(3, 200);
             LblPowerScheme.Name = "LblPowerScheme";
             LblPowerScheme.Size = new Size(95, 15);
             LblPowerScheme.TabIndex = 11;
@@ -110,7 +127,7 @@ namespace PowerPlanSwitcher
             LblRuleType.Dock = DockStyle.Fill;
             LblRuleType.Location = new Point(3, 0);
             LblRuleType.Name = "LblRuleType";
-            LblRuleType.Size = new Size(95, 29);
+            LblRuleType.Size = new Size(95, 32);
             LblRuleType.TabIndex = 9;
             LblRuleType.Text = "Select Rule Type:";
             LblRuleType.TextAlign = ContentAlignment.MiddleRight;
@@ -118,9 +135,10 @@ namespace PowerPlanSwitcher
             // CmbPowerScheme
             // 
             CmbPowerScheme.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            tableLayoutPanel1.SetColumnSpan(CmbPowerScheme, 2);
             CmbPowerScheme.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbPowerScheme.FormattingEnabled = true;
-            CmbPowerScheme.Location = new Point(104, 218);
+            CmbPowerScheme.Location = new Point(104, 203);
             CmbPowerScheme.Name = "CmbPowerScheme";
             CmbPowerScheme.Size = new Size(538, 23);
             CmbPowerScheme.TabIndex = 5;
@@ -128,14 +146,15 @@ namespace PowerPlanSwitcher
             // PrcProcessRule
             // 
             PrcProcessRule.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tableLayoutPanel1.SetColumnSpan(PrcProcessRule, 2);
+            tableLayoutPanel1.SetColumnSpan(PrcProcessRule, 3);
             processRuleDto1.Pattern = "";
             processRuleDto1.SchemeGuid = new Guid("00000000-0000-0000-0000-000000000000");
             processRuleDto1.Type = RuleManagement.ComparisonType.StartsWith;
             PrcProcessRule.Dto = processRuleDto1;
-            PrcProcessRule.Location = new Point(3, 32);
+            PrcProcessRule.Location = new Point(0, 32);
+            PrcProcessRule.Margin = new Padding(0);
             PrcProcessRule.Name = "PrcProcessRule";
-            PrcProcessRule.Size = new Size(639, 93);
+            PrcProcessRule.Size = new Size(645, 93);
             PrcProcessRule.TabIndex = 13;
             PrcProcessRule.Visible = false;
             // 
@@ -146,22 +165,24 @@ namespace PowerPlanSwitcher
             powerLineRuleDto1.PowerLineStatus = PowerManagement.PowerLineStatus.Offline;
             powerLineRuleDto1.SchemeGuid = new Guid("00000000-0000-0000-0000-000000000000");
             PlcPowerLineRule.Dto = powerLineRuleDto1;
-            PlcPowerLineRule.Location = new Point(3, 131);
+            PlcPowerLineRule.Location = new Point(0, 125);
+            PlcPowerLineRule.Margin = new Padding(0);
             PlcPowerLineRule.Name = "PlcPowerLineRule";
-            PlcPowerLineRule.Size = new Size(639, 38);
+            PlcPowerLineRule.Size = new Size(645, 38);
             PlcPowerLineRule.TabIndex = 14;
             PlcPowerLineRule.Visible = false;
             // 
             // IrcIdleRule
             // 
             IrcIdleRule.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
-            tableLayoutPanel1.SetColumnSpan(IrcIdleRule, 2);
+            tableLayoutPanel1.SetColumnSpan(IrcIdleRule, 3);
             idleRuleDto1.IdleTimeThreshold = TimeSpan.Parse("00:00:00");
             idleRuleDto1.SchemeGuid = new Guid("00000000-0000-0000-0000-000000000000");
             IrcIdleRule.Dto = idleRuleDto1;
-            IrcIdleRule.Location = new Point(3, 175);
+            IrcIdleRule.Location = new Point(0, 163);
+            IrcIdleRule.Margin = new Padding(0);
             IrcIdleRule.Name = "IrcIdleRule";
-            IrcIdleRule.Size = new Size(639, 37);
+            IrcIdleRule.Size = new Size(645, 37);
             IrcIdleRule.TabIndex = 15;
             IrcIdleRule.Visible = false;
             // 
@@ -173,9 +194,15 @@ namespace PowerPlanSwitcher
             CmbRuleType.Items.AddRange(new object[] { "Process Rule", "Power Line Rule", "Idle Rule", "Startup Rule", "Shutdown Rule" });
             CmbRuleType.Location = new Point(104, 3);
             CmbRuleType.Name = "CmbRuleType";
-            CmbRuleType.Size = new Size(538, 23);
+            CmbRuleType.Size = new Size(506, 23);
             CmbRuleType.TabIndex = 16;
             CmbRuleType.SelectedIndexChanged += CmbRuleType_SelectedIndexChanged;
+            // 
+            // TipHints
+            // 
+            TipHints.ShowAlways = true;
+            TipHints.UseAnimation = false;
+            TipHints.UseFading = false;
             // 
             // RuleDlg
             // 
@@ -192,6 +219,7 @@ namespace PowerPlanSwitcher
             Text = "PowerPlanSwitcher - Rule";
             tableLayoutPanel1.ResumeLayout(false);
             tableLayoutPanel1.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)PibRuleInfo).EndInit();
             ResumeLayout(false);
         }
 
@@ -207,5 +235,7 @@ namespace PowerPlanSwitcher
         private RuleControl.PowerLineRuleControl PlcPowerLineRule;
         private RuleControl.IdleRuleControl IrcIdleRule;
         private ComboBox CmbRuleType;
+        private PictureBox PibRuleInfo;
+        private ToolTip TipHints;
     }
 }
