@@ -8,19 +8,6 @@ using RuleManagement.Dto;
 using RuleManagement.Events;
 using RuleManagement.Rules;
 
-
-
-
-
-
-// We need to convert the custom option to activate a power scheme on startup
-// to a StartupRule.
-// And we need to check StartMonitoring to make sure it works properly.
-
-
-
-
-
 public class RuleManager
 {
     private class RuleContainerProbe
@@ -62,6 +49,10 @@ public class RuleManager
             ruleJson,
             migrationPolicy,
             batteryMonitor);
+
+        ruleJson = MigrateStartupRule(
+            ruleJson,
+            migrationPolicy);
 
         rules = LoadRules(ruleJson, ruleFactory);
         Subscribe(rules);
@@ -214,6 +205,82 @@ public class RuleManager
             {
                 TypeNameHandling = TypeNameHandling.Objects
             });
+    }
+
+    private static string MigrateStartupRule(
+        string ruleJson,
+        MigrationPolicy migrationPolicy)
+    {
+        if (migrationPolicy.MigratedStartupRule)
+        {
+            return ruleJson;
+        }
+
+        var version = DetectSchemaVersion(ruleJson);
+        if (version == 0)
+        {
+            var dtos = JsonConvert.DeserializeObject<List<IRuleDto>>(
+                ruleJson,
+                new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Objects,
+                    SerializationBinder = new RuleTypeBinder()
+                })
+                ?? [];
+
+            if (migrationPolicy.ActivateInitialPowerScheme)
+            {
+                dtos.Add(new StartupRuleDto()
+                {
+                    SchemeGuid = migrationPolicy.InitialPowerSchemeGuid,
+                });
+            }
+
+            RuleContainer ruleContainer = new()
+            {
+                SchemaVersion = 1,
+                Rules = dtos,
+            };
+
+            return JsonConvert.SerializeObject(ruleContainer,
+                new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Objects
+                });
+        }
+        else if (version == 1)
+        {
+            var container = JsonConvert.DeserializeObject<RuleContainer>(ruleJson,
+                 new JsonSerializerSettings
+                 {
+                     TypeNameHandling = TypeNameHandling.Objects
+                 })
+             ?? new RuleContainer();
+
+            if (migrationPolicy.ActivateInitialPowerScheme)
+            {
+                container.Rules.Add(new StartupRuleDto()
+                {
+                    SchemeGuid = migrationPolicy.InitialPowerSchemeGuid,
+                });
+            }
+
+            RuleContainer ruleContainer = new()
+            {
+                SchemaVersion = 1,
+                Rules = container.Rules,
+            };
+
+            return JsonConvert.SerializeObject(ruleContainer,
+                new JsonSerializerSettings
+                {
+                    TypeNameHandling = TypeNameHandling.Objects
+                });
+        }
+        else
+        {
+            return ruleJson;
+        }
     }
 
     private static int DetectSchemaVersion(string json)

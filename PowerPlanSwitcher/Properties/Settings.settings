@@ -11,6 +11,12 @@
     <Setting Name="PowerRules" Type="System.String" Scope="User">
       <Value Profile="(Default)" />
     </Setting>
+    <Setting Name="ActivateInitialPowerScheme" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="InitialPowerSchemeGuid" Type="System.Guid" Scope="User">
+      <Value Profile="(Default)">00000000-0000-0000-0000-000000000000</Value>
+    </Setting>
     <Setting Name="ColorTheme" Type="System.String" Scope="User">
       <Value Profile="(Default)">Use System Setting</Value>
     </Setting>
@@ -45,6 +51,9 @@
       <Value Profile="(Default)" />
     </Setting>
     <Setting Name="ExtendedLogging" Type="System.Boolean" Scope="User">
+      <Value Profile="(Default)">False</Value>
+    </Setting>
+    <Setting Name="MigratedStartupRule" Type="System.Boolean" Scope="User">
       <Value Profile="(Default)">False</Value>
     </Setting>
   </Settings>

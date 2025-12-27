@@ -61,6 +61,30 @@ namespace PowerPlanSwitcher.Properties {
         
         [global::System.Configuration.UserScopedSettingAttribute()]
         [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool ActivateInitialPowerScheme {
+            get {
+                return ((bool)(this["ActivateInitialPowerScheme"]));
+            }
+            set {
+                this["ActivateInitialPowerScheme"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("00000000-0000-0000-0000-000000000000")]
+        public global::System.Guid InitialPowerSchemeGuid {
+            get {
+                return ((global::System.Guid)(this["InitialPowerSchemeGuid"]));
+            }
+            set {
+                this["InitialPowerSchemeGuid"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
         [global::System.Configuration.DefaultSettingValueAttribute("Use System Setting")]
         public string ColorTheme {
             get {
@@ -200,6 +224,18 @@ namespace PowerPlanSwitcher.Properties {
             }
             set {
                 this["ExtendedLogging"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("False")]
+        public bool MigratedStartupRule {
+            get {
+                return ((bool)(this["MigratedStartupRule"]));
+            }
+            set {
+                this["MigratedStartupRule"] = value;
             }
         }
     }

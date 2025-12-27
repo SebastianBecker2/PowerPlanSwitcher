@@ -6,4 +6,7 @@ public record MigrationPolicy(
     // anymore. While False means the migration has to be done.
     bool MigratedPowerRulesToRules,
     Guid AcPowerSchemeGuid,
-    Guid BatterPowerSchemeGuid);
+    Guid BatterPowerSchemeGuid,
+    bool MigratedStartupRule,
+    bool ActivateInitialPowerScheme,
+    Guid InitialPowerSchemeGuid);

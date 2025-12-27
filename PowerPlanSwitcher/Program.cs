@@ -305,9 +305,18 @@ internal static class Program
             var migrationPolicy = new MigrationPolicy(
                 MigratedPowerRulesToRules: Settings.Default.MigratedPowerRulesToRules,
                 AcPowerSchemeGuid: Settings.Default.AcPowerSchemeGuid,
-                BatterPowerSchemeGuid: Settings.Default.BatterPowerSchemeGuid);
+                BatterPowerSchemeGuid: Settings.Default.BatterPowerSchemeGuid,
+                MigratedStartupRule: Settings.Default.MigratedStartupRule,
+                ActivateInitialPowerScheme: Settings.Default.ActivateInitialPowerScheme,
+                InitialPowerSchemeGuid: Settings.Default.InitialPowerSchemeGuid);
 
-            return new RuleManager(factory, ruleJson, migrationPolicy, battery);
+            var ruleManager = new RuleManager(factory, ruleJson, migrationPolicy, battery);
+
+            Settings.Default.MigratedPowerRulesToRules = true;
+            Settings.Default.MigratedStartupRule = true;
+            Settings.Default.Save();
+
+            return ruleManager;
         })
         .AsSelf()
         .SingleInstance();

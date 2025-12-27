@@ -145,8 +145,10 @@ public sealed class RuleManagerTest
         var migrationPolicy = new MigrationPolicy(
             MigratedPowerRulesToRules: true,
             AcPowerSchemeGuid: CreateGuid('1'),
-            BatterPowerSchemeGuid: CreateGuid('2')
-        );
+            BatterPowerSchemeGuid: CreateGuid('2'),
+            MigratedStartupRule: true,
+            ActivateInitialPowerScheme: false,
+            InitialPowerSchemeGuid: CreateGuid('3'));
 
         var version1Json = /*lang=json,strict*/ @"
         {
@@ -219,10 +221,12 @@ public sealed class RuleManagerTest
         _ = A.CallTo(() => batteryMonitor.HasSystemBattery).Returns(true);
 
         var migrationPolicy = new MigrationPolicy(
-            MigratedPowerRulesToRules: false,
-            AcPowerSchemeGuid: CreateGuid('1'),
-            BatterPowerSchemeGuid: CreateGuid('2')
-        );
+           MigratedPowerRulesToRules: false,
+           AcPowerSchemeGuid: CreateGuid('1'),
+           BatterPowerSchemeGuid: CreateGuid('2'),
+           MigratedStartupRule: false,
+           ActivateInitialPowerScheme: true,
+           InitialPowerSchemeGuid: CreateGuid('5'));
 
         var legacyJson = /*lang=json,strict*/ @"
         [
@@ -245,7 +249,7 @@ public sealed class RuleManagerTest
             batteryMonitor);
         var rules = manager.GetRules().ToList();
 
-        Assert.AreEqual(4, rules.Count, "Migration adds 2 PowerLineRules to the initial 2 ProcessRules");
+        Assert.AreEqual(5, rules.Count, "Migration adds 2 PowerLineRules and one StartupRule to the initial 2 ProcessRules");
         AssertRule(rules[0], new ProcessRuleDto
         {
             Pattern = "testpath",
@@ -268,16 +272,73 @@ public sealed class RuleManagerTest
             PowerLineStatus = PowerLineStatus.Offline,
             SchemeGuid = CreateGuid('2'),
         });
+        AssertRule(rules[4], new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('5'),
+        });
+    }
+
+    [TestMethod]
+    public void RuleDtoVersion0_IsMigratedProperly()
+    {
+        var migrationPolicy = new MigrationPolicy(
+           MigratedPowerRulesToRules: true,
+           AcPowerSchemeGuid: CreateGuid('1'),
+           BatterPowerSchemeGuid: CreateGuid('2'),
+           MigratedStartupRule: false,
+           ActivateInitialPowerScheme: true,
+           InitialPowerSchemeGuid: CreateGuid('3'));
+
+        var legacyJson = /*lang=json,strict*/ @"
+        [
+          {
+            ""$type"": ""PowerPlanSwitcher.RuleManagement.Rules.PowerLineRule, PowerPlanSwitcher"",
+            ""SchemeGuid"": ""aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"",
+            ""PowerLineStatus"": 1
+          },
+          {
+            ""$type"": ""PowerPlanSwitcher.RuleManagement.Rules.ProcessRule, PowerPlanSwitcher"",
+            ""SchemeGuid"": ""bbbbbbbb-bbbb-bbbb-bbbb-bbbbbbbbbbbb"",
+            ""FilePath"": ""asdf"",
+            ""Type"": 0
+          }
+        ]";
+
+        var manager = new RuleManager(
+            ruleFactory,
+            legacyJson,
+            migrationPolicy,
+            batteryMonitor);
+        var rules = manager.GetRules().ToList();
+
+        Assert.AreEqual(3, rules.Count);
+        AssertRule(rules[0], new PowerLineRuleDto
+        {
+            PowerLineStatus = PowerLineStatus.Online,
+            SchemeGuid = CreateGuid('a'),
+        });
+        AssertRule(rules[1], new ProcessRuleDto
+        {
+            Pattern = "asdf",
+            Type = ComparisonType.StartsWith,
+            SchemeGuid = CreateGuid('b'),
+        });
+        AssertRule(rules[2], new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('3'),
+        });
     }
 
     [TestMethod]
     public void RuleDtoVersion0_IsLoadedProperly()
     {
         var migrationPolicy = new MigrationPolicy(
-            MigratedPowerRulesToRules: true,
-            AcPowerSchemeGuid: CreateGuid('1'),
-            BatterPowerSchemeGuid: CreateGuid('2')
-        );
+           MigratedPowerRulesToRules: true,
+           AcPowerSchemeGuid: CreateGuid('1'),
+           BatterPowerSchemeGuid: CreateGuid('2'),
+           MigratedStartupRule: true,
+           ActivateInitialPowerScheme: false,
+           InitialPowerSchemeGuid: CreateGuid('3'));
 
         var legacyJson = /*lang=json,strict*/ @"
         [
@@ -320,10 +381,12 @@ public sealed class RuleManagerTest
     {
         // Arrange
         var migrationPolicy = new MigrationPolicy(
-            MigratedPowerRulesToRules: true,
-            AcPowerSchemeGuid: CreateGuid('1'),
-            BatterPowerSchemeGuid: CreateGuid('2')
-        );
+          MigratedPowerRulesToRules: true,
+          AcPowerSchemeGuid: CreateGuid('1'),
+          BatterPowerSchemeGuid: CreateGuid('2'),
+          MigratedStartupRule: true,
+          ActivateInitialPowerScheme: false,
+          InitialPowerSchemeGuid: CreateGuid('3'));
 
         var originalJson = /*lang=json,strict*/ @"
         {
@@ -417,8 +480,10 @@ public sealed class RuleManagerTest
         var migrationPolicy = new MigrationPolicy(
             MigratedPowerRulesToRules: true,
             AcPowerSchemeGuid: CreateGuid('5'),
-            BatterPowerSchemeGuid: CreateGuid('6')
-        );
+            BatterPowerSchemeGuid: CreateGuid('6'),
+            MigratedStartupRule: true,
+            ActivateInitialPowerScheme: false,
+            InitialPowerSchemeGuid: CreateGuid('7'));
 
         // Act
         manager.SetRules(rules);
@@ -616,8 +681,11 @@ public sealed class RuleManagerTest
 
         var migrationPolicy = new MigrationPolicy(
             MigratedPowerRulesToRules: true,
-            AcPowerSchemeGuid: Guid.Empty,
-            BatterPowerSchemeGuid: Guid.Empty);
+            AcPowerSchemeGuid: CreateGuid('5'),
+            BatterPowerSchemeGuid: CreateGuid('6'),
+            MigratedStartupRule: true,
+            ActivateInitialPowerScheme: false,
+            InitialPowerSchemeGuid: CreateGuid('7'));
 
         // Act & Assert
         _ = Assert.ThrowsException<NotSupportedException>(() =>
@@ -768,8 +836,10 @@ public sealed class RuleManagerTest
         var migrationPolicy = new MigrationPolicy(
             MigratedPowerRulesToRules: true,
             AcPowerSchemeGuid: CreateGuid('5'),
-            BatterPowerSchemeGuid: CreateGuid('6')
-        );
+            BatterPowerSchemeGuid: CreateGuid('6'),
+            MigratedStartupRule: true,
+            ActivateInitialPowerScheme: false,
+            InitialPowerSchemeGuid: CreateGuid('7'));
 
         // Act
         manager.SetRules(rules);
