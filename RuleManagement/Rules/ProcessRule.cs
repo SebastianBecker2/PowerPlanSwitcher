@@ -7,7 +7,8 @@ using RuleManagement.Dto;
 
 public class ProcessRule
     : Rule<ProcessRuleDto>,
-    IRule<ProcessRuleDto>
+    IRule<ProcessRuleDto>,
+    IDisposable
 {
     private readonly Glob? glob;
 
@@ -15,11 +16,15 @@ public class ProcessRule
     public string Pattern => Dto.Pattern;
     public ComparisonType Type => Dto.Type;
 
+    private readonly IProcessMonitor processMonitor;
+
     public ProcessRule(
         IProcessMonitor processMonitor,
         ProcessRuleDto processRuleDto)
         : base(processRuleDto)
     {
+        this.processMonitor = processMonitor;
+
         if (processRuleDto.Type == ComparisonType.Wildcard)
         {
             glob = Glob.Parse(
@@ -82,5 +87,13 @@ public class ProcessRule
         {
             return false;
         }
+    }
+
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "Suppression of CA1816 is necessary")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "ProcessRule does not have a finalizer")]
+    public void Dispose()
+    {
+        processMonitor.ProcessCreated -= ProcessMonitor_ProcessCreated;
+        processMonitor.ProcessTerminated -= ProcessMonitor_ProcessTerminated;
     }
 }

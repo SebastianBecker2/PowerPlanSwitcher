@@ -141,6 +141,10 @@ public class RuleManager
     public void SetRules(IEnumerable<IRule> newRules)
     {
         Unsubscribe(rules);
+        foreach (var rule in rules)
+        {
+            (rule as IDisposable)?.Dispose();
+        }
         rules = [.. newRules];
         Subscribe(rules);
 
