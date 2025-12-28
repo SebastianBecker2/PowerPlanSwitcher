@@ -1,5 +1,6 @@
 namespace ProcessManagement;
 
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using Serilog;
 using static Vanara.PInvoke.Kernel32;
@@ -7,7 +8,7 @@ using static Vanara.PInvoke.Kernel32;
 public class ProcessMonitor : IDisposable, IProcessMonitor
 {
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "<Pending>")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
+    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "Ignoring CA1716 since it's necessary")]
     public static class Static
     {
         private static IEnumerable<PROCESSENTRY32> EnumerateProcesses()
@@ -86,6 +87,13 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
     {
         try
         {
+            if (ProcessCreated is null && ProcessTerminated is null)
+            {
+                return;
+            }
+
+            Debug.Print("ProcessMonitor: Updating process list...");
+
             var currentProcesses = GetUsersProcesses().ToList();
 
             var addedProcesses = currentProcesses

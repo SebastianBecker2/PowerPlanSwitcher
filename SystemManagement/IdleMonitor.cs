@@ -65,6 +65,11 @@ public class IdleMonitor : IDisposable, IIdleMonitor
     {
         try
         {
+            if (IdleTimeChanged is null)
+            {
+                return;
+            }
+
             var idleTime = Static.GetIdleTime();
             OnIdleTimeChanged(idleTime);
         }
