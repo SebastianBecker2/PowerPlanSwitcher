@@ -57,6 +57,9 @@ internal class AppContext : ApplicationContext
         ruleManager.RuleApplicationChanged +=
             RuleManager_RuleApplicationChanged;
 
+        ruleManager.RuleApplicationChanged += (s, e) =>
+            trayIcon.UpdateTooltip(e.Rule);
+
         Settings.Default.SettingChanging +=
             Default_SettingChanging;
 

@@ -2,6 +2,7 @@ namespace PowerPlanSwitcher;
 
 using PowerManagement;
 using Properties;
+using RuleManagement.Rules;
 
 internal class TrayIcon : IDisposable
 {
@@ -24,6 +25,7 @@ internal class TrayIcon : IDisposable
         notifyIcon.MouseClick += NotifyIcon_MouseClick;
 
         UpdateIcon();
+        UpdateTooltip(null);
     }
 
     private void NotifyIcon_MouseClick(object? sender, MouseEventArgs e)
@@ -56,6 +58,26 @@ internal class TrayIcon : IDisposable
             return;
         }
         notifyIcon.Icon = IconFromImage(setting.Icon);
+    }
+
+    public void UpdateTooltip(IRule? rule)
+    {
+        var schemeName =
+            PowerManager.Static.GetPowerSchemeName(
+                rule?.Dto?.SchemeGuid
+                ?? PowerManager.Static.GetActivePowerSchemeGuid())
+            ?? "<No Name>";
+
+        if (rule is null)
+        {
+            notifyIcon.Text = $"PowerPlanSwitcher" +
+                $"\nRule: No rule active" +
+                $"\nPowerPlan: {schemeName}";
+            return;
+        }
+        notifyIcon.Text = $"PowerPlanSwitcher" +
+            $"\nRule: {rule.Dto.GetDescription()}" +
+            $"\nPowerPlan: {schemeName}";
     }
 
     private static Icon IconFromImage(Image img)
