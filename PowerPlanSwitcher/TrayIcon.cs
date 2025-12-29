@@ -68,16 +68,21 @@ internal class TrayIcon : IDisposable
                 ?? PowerManager.Static.GetActivePowerSchemeGuid())
             ?? "<No Name>";
 
-        if (rule is null)
+        var tooltipText = $"PowerPlanSwitcher" +
+            $"\nPowerPlan: {schemeName}" +
+            $"\nRule: {rule?.Dto?.GetDescription() ?? "No rule active"}";
+        notifyIcon.Text = TrimTooltip(tooltipText);
+
+        static string TrimTooltip(string text)
         {
-            notifyIcon.Text = $"PowerPlanSwitcher" +
-                $"\nRule: No rule active" +
-                $"\nPowerPlan: {schemeName}";
-            return;
+            const int max = 127;
+            if (text.Length <= max)
+            {
+                return text;
+            }
+
+            return text[..(max - 3)] + "...";
         }
-        notifyIcon.Text = $"PowerPlanSwitcher" +
-            $"\nRule: {rule.Dto.GetDescription()}" +
-            $"\nPowerPlan: {schemeName}";
     }
 
     private static Icon IconFromImage(Image img)
