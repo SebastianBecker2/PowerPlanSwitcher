@@ -2,6 +2,7 @@ namespace SystemManagement;
 
 using System;
 using System.Collections.Generic;
+using Serilog;
 using Vanara.PInvoke;
 
 public sealed class WindowMessageMonitor(
@@ -22,8 +23,9 @@ public sealed class WindowMessageMonitor(
         {
             return;
         }
-
         monitoring = true;
+
+        Log.Information("Window message monitoring started");
 
         wndClass = new WindowClass(this);
         _ = wndClass.CreateMessageWindow();
@@ -35,8 +37,9 @@ public sealed class WindowMessageMonitor(
         {
             return;
         }
-
         monitoring = false;
+
+        Log.Information("Window message monitoring stopped");
 
         wndClass?.Destroy();
         wndClass = null;
@@ -58,6 +61,8 @@ public sealed class WindowMessageMonitor(
         var msgEnum = (WindowMessage)msg;
         if (messages.Contains(msgEnum))
         {
+            Log.Information("Window message received: {Message}", msgEnum);
+
             WindowMessageReceived?.Invoke(
                 this,
                 new WindowMessageEventArgs(msgEnum, wParam, lParam)

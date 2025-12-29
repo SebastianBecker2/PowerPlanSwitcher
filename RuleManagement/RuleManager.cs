@@ -7,6 +7,7 @@ using PowerManagement;
 using RuleManagement.Dto;
 using RuleManagement.Events;
 using RuleManagement.Rules;
+using Serilog;
 
 public class RuleManager
 {
@@ -49,7 +50,6 @@ public class RuleManager
             ruleJson,
             migrationPolicy,
             batteryMonitor);
-
         ruleJson = MigrateStartupRule(
             ruleJson,
             migrationPolicy);
@@ -58,9 +58,19 @@ public class RuleManager
         Subscribe(rules);
     }
 
-    public void StartMonitoring() => Subscribe(rules);
+    public void StartMonitoring()
+    {
+        Log.Information("Rule monitoring started");
 
-    public void StopMonitoring() => Unsubscribe(rules);
+        Subscribe(rules);
+    }
+
+    public void StopMonitoring()
+    {
+        Unsubscribe(rules);
+
+        Log.Information("Rule monitoring stopped");
+    }
 
     private void Rule_TriggerChanged(object? sender, TriggerChangedEventArgs e)
     {
@@ -173,19 +183,23 @@ public class RuleManager
             return ruleJson;
         }
 
+        Log.Information("Started migration of PowerRules to Rules");
+
         var rules = JsonConvert.DeserializeObject<List<ProcessRuleDto>>(
             ruleJson)?.Cast<IRuleDto>()?.ToList() ?? [];
+
+        Log.Information("Recognized {PowerRuleCount} PowerRules to migrate", rules.Count);
 
         if (batteryMonitor.HasSystemBattery)
         {
             if (migrationPolicy.AcPowerSchemeGuid != Guid.Empty)
             {
-
                 rules.Add(new PowerLineRuleDto()
                 {
                     PowerLineStatus = PowerLineStatus.Online,
                     SchemeGuid = migrationPolicy.AcPowerSchemeGuid,
                 });
+                Log.Information("Migration added PowerLineRule for PowerLineStatus Online");
             }
 
             if (migrationPolicy.BatterPowerSchemeGuid != Guid.Empty)
@@ -195,8 +209,11 @@ public class RuleManager
                     PowerLineStatus = PowerLineStatus.Offline,
                     SchemeGuid = migrationPolicy.BatterPowerSchemeGuid,
                 });
+                Log.Information("Migration added PowerLineRule for PowerLineStatus Offline");
             }
         }
+
+        Log.Information("Finished migration of PowerRules to Rules with {RuleCount}", rules.Count);
 
         RuleContainer ruleContainer = new()
         {
@@ -220,7 +237,11 @@ public class RuleManager
             return ruleJson;
         }
 
+        Log.Information("Started migration of StartupRule");
+
         var version = DetectSchemaVersion(ruleJson);
+        Log.Information("Detected schema version {SchemaVersion}", version);
+
         if (version == 0)
         {
             var dtos = JsonConvert.DeserializeObject<List<IRuleDto>>(
@@ -232,12 +253,15 @@ public class RuleManager
                 })
                 ?? [];
 
+            Log.Information("Recognized {DtoCount} IRuleDto to migrate", dtos.Count);
+
             if (migrationPolicy.ActivateInitialPowerScheme)
             {
                 dtos.Add(new StartupRuleDto()
                 {
                     SchemeGuid = migrationPolicy.InitialPowerSchemeGuid,
                 });
+                Log.Information("Migration added StartupRuleDto");
             }
 
             RuleContainer ruleContainer = new()
@@ -245,6 +269,8 @@ public class RuleManager
                 SchemaVersion = 1,
                 Rules = dtos,
             };
+
+            Log.Information("Finished migration of StartupRule with {RuleCount}", dtos.Count);
 
             return JsonConvert.SerializeObject(ruleContainer,
                 new JsonSerializerSettings
@@ -254,12 +280,15 @@ public class RuleManager
         }
         else if (version == 1)
         {
-            var container = JsonConvert.DeserializeObject<RuleContainer>(ruleJson,
+            var container = JsonConvert.DeserializeObject<RuleContainer>(
+                ruleJson,
                  new JsonSerializerSettings
                  {
                      TypeNameHandling = TypeNameHandling.Objects
                  })
-             ?? new RuleContainer();
+                ?? new RuleContainer();
+
+            Log.Information("Recognized {DtoCount} IRuleDto to migrate", container.Rules.Count);
 
             if (migrationPolicy.ActivateInitialPowerScheme)
             {
@@ -267,6 +296,7 @@ public class RuleManager
                 {
                     SchemeGuid = migrationPolicy.InitialPowerSchemeGuid,
                 });
+                Log.Information("Migration added StartupRuleDto");
             }
 
             RuleContainer ruleContainer = new()
@@ -274,6 +304,8 @@ public class RuleManager
                 SchemaVersion = 1,
                 Rules = container.Rules,
             };
+
+            Log.Information("Finished migration of StartupRule with {RuleCount}", ruleContainer.Rules.Count);
 
             return JsonConvert.SerializeObject(ruleContainer,
                 new JsonSerializerSettings
@@ -283,6 +315,7 @@ public class RuleManager
         }
         else
         {
+            Log.Information("Unkonwn schema version {SchemaVersion}. Skipped migration.", version);
             return ruleJson;
         }
     }
@@ -304,7 +337,10 @@ public class RuleManager
 
     private static List<IRule> LoadRules(string json, RuleFactory ruleFactory)
     {
+        Log.Information("Started loading of rules");
+
         var version = DetectSchemaVersion(json);
+        Log.Information("Detected schema version {SchemaVersion}", version);
 
         if (version == 0)
         {
@@ -317,6 +353,8 @@ public class RuleManager
                     SerializationBinder = new RuleTypeBinder()
                 })
                 ?? [];
+
+            Log.Information("Loaded {DtoCount} IRuleDto", dtos.Count);
 
             return [.. dtos.Select(ruleFactory.Create)];
         }
@@ -331,15 +369,17 @@ public class RuleManager
 
             if (container is null)
             {
+                Log.Information("Unable to deserialize json");
                 return [];
             }
 
+            Log.Information("Loaded {DtoCount} IRuleDto", container.Rules.Count);
             return [.. container.Rules.Select(ruleFactory.Create)];
         }
         else
         {
-            throw new NotSupportedException(
-                $"Unsupported schema version {version}");
+            Log.Information("Unkonwn schema version {SchemaVersion}. Unable to load rules", version);
+            return [];
         }
     }
 }

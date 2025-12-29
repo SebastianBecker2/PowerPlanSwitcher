@@ -72,6 +72,8 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
         }
         monitoring = true;
 
+        Log.Information("Process monitoring started");
+
         _ = updateTimer.Change(TimeSpan.Zero, Timeout.InfiniteTimeSpan);
     }
 
@@ -81,6 +83,8 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
             Timeout.InfiniteTimeSpan,
             Timeout.InfiniteTimeSpan);
         monitoring = false;
+
+        Log.Information("Process monitoring stopped");
     }
 
     private void HandleUpdateTimerTick(object? _)
@@ -91,8 +95,6 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
             {
                 return;
             }
-
-            Debug.Print("ProcessMonitor: Updating process list...");
 
             var currentProcesses = GetUsersProcesses().ToList();
 

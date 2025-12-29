@@ -1,5 +1,6 @@
 namespace PowerManagement;
 
+using Serilog;
 using Vanara.Extensions;
 using Vanara.PInvoke;
 using static Vanara.PInvoke.User32;
@@ -79,7 +80,7 @@ public class BatteryMonitor : IBatteryMonitor, IDisposable
             var data = lParam.ToStructure<POWERBROADCAST_SETTING>();
             if (data.PowerSetting == PowrProf.GUID_ACDC_POWER_SOURCE)
             {
-                var source = BitConverter.ToInt32(data.Data, 0);
+                Log.Information("Power line status changed: {Status}", PowerLineStatus);
                 OnPowerLineStatusChanged(PowerLineStatus);
             }
         }

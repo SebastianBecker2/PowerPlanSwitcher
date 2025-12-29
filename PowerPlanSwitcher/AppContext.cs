@@ -86,10 +86,15 @@ internal class AppContext : ApplicationContext
     {
         if (e.Rule is null)
         {
+            var baselineSchemeName =
+                PowerManagement.PowerManager.Static.GetPowerSchemeName(
+                    BaselineSchemeGuid)
+                ?? "<No Name>";
+
             Log.Information(
                 "Activating power scheme: {PowerSchemeName} " +
-                "{PowerSchemeGuid} Reason: {Reason}",
-                "<No Name>",
+                "'{PowerSchemeGuid}' Reason: {Reason}",
+                "baselineSchemeName",
                 BaselineSchemeGuid,
                 "Restore baseline");
             PowerManager.SetActivePowerScheme(BaselineSchemeGuid);
@@ -111,10 +116,11 @@ internal class AppContext : ApplicationContext
 
         Log.Information(
             "Activating power scheme: {PowerSchemeName} " +
-            "{PowerSchemeGuid} Reason: {Reason}",
+            "'{PowerSchemeGuid}' Reason: {Reason} Rule: {RuleDescription}",
             schemeName,
             schemeGuid,
-            reason);
+            reason,
+            e.Rule.Dto.GetDescription());
         PowerManager.SetActivePowerScheme(schemeGuid);
 
         if (PopUpWindowLocationHelper.ShouldShowToast(reason))

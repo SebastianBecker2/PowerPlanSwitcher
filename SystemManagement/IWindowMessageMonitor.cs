@@ -1,11 +1,11 @@
-﻿namespace SystemManagement;
+namespace SystemManagement;
 
 using System;
 
 public interface IWindowMessageMonitor
 {
-    event EventHandler<WindowMessageEventArgs>? WindowMessageReceived;
+    public event EventHandler<WindowMessageEventArgs>? WindowMessageReceived;
 
-    void StartMonitoring();
-    void StopMonitoring();
+    public void StartMonitoring();
+    public void StopMonitoring();
 }

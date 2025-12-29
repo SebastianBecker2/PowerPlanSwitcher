@@ -1,6 +1,7 @@
 namespace SystemManagement;
 
 using System.Runtime.InteropServices;
+using Serilog;
 using Vanara.PInvoke;
 
 public class IdleMonitor : IDisposable, IIdleMonitor
@@ -52,6 +53,8 @@ public class IdleMonitor : IDisposable, IIdleMonitor
         }
         monitoring = true;
 
+        Log.Information("Idle time monitoring started");
+
         _ = pollingTimer.Change(TimeSpan.Zero, PollingInterval);
     }
 
@@ -59,6 +62,8 @@ public class IdleMonitor : IDisposable, IIdleMonitor
     {
         _ = pollingTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
         monitoring = false;
+
+        Log.Information("Idle time monitoring stopped");
     }
 
     private void HandlePollingTimerTick(object? _)
