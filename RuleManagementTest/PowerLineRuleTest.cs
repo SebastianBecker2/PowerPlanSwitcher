@@ -18,9 +18,14 @@ public sealed class PowerLineRuleTest
     public void InitialTriggerCount_IsZero()
     {
         var monitor = A.Fake<IBatteryMonitor>();
-        var dto = new PowerLineRuleDto { SchemeGuid = Guid.NewGuid() };
+        var dto = new PowerLineRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            PowerLineStatus = PowerLineStatus.Online
+        };
 
         var rule = new PowerLineRule(monitor, dto);
+        rule.StartRuling();
 
         Assert.AreEqual(0, rule.TriggerCount);
     }
@@ -29,8 +34,13 @@ public sealed class PowerLineRuleTest
     public void BatteryMonitorEvent_StatusMatches_IncrementsTriggerCount()
     {
         // Arrange
-        var dto = new PowerLineRuleDto { SchemeGuid = Guid.NewGuid(), PowerLineStatus = PowerLineStatus.Online };
+        var dto = new PowerLineRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            PowerLineStatus = PowerLineStatus.Online
+        };
         var rule = new PowerLineRule(batteryMonitor, dto);
+        rule.StartRuling();
 
         // Act
         batteryMonitor.PowerLineStatusChanged += Raise.With(new PowerLineStatusChangedEventArgs(PowerLineStatus.Online));
@@ -43,8 +53,13 @@ public sealed class PowerLineRuleTest
     public void BatteryMonitorEvent_StatusDoesNotMatch_DecrementsTriggerCount()
     {
         // Arrange
-        var dto = new PowerLineRuleDto { SchemeGuid = Guid.NewGuid(), PowerLineStatus = PowerLineStatus.Online };
+        var dto = new PowerLineRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            PowerLineStatus = PowerLineStatus.Online
+        };
         var rule = new PowerLineRule(batteryMonitor, dto);
+        rule.StartRuling();
 
         // First increment
         batteryMonitor.PowerLineStatusChanged += Raise.With(new PowerLineStatusChangedEventArgs(PowerLineStatus.Online));
@@ -61,8 +76,13 @@ public sealed class PowerLineRuleTest
     public void BatteryMonitorEvent_StatusDoesNotMatch_TriggerCountNeverNegative()
     {
         // Arrange
-        var dto = new PowerLineRuleDto { SchemeGuid = Guid.NewGuid(), PowerLineStatus = PowerLineStatus.Online };
+        var dto = new PowerLineRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            PowerLineStatus = PowerLineStatus.Online
+        };
         var rule = new PowerLineRule(batteryMonitor, dto);
+        rule.StartRuling();
 
         // Act: send non-matching status multiple times
         batteryMonitor.PowerLineStatusChanged += Raise.With(new PowerLineStatusChangedEventArgs(PowerLineStatus.Offline));
@@ -76,7 +96,11 @@ public sealed class PowerLineRuleTest
     public void GetDescription_ReturnsExpectedText()
     {
         // Arrange
-        var dto = new PowerLineRuleDto { SchemeGuid = Guid.NewGuid(), PowerLineStatus = PowerLineStatus.Offline };
+        var dto = new PowerLineRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            PowerLineStatus = PowerLineStatus.Offline
+        };
 
         // Act
         var description = dto.GetDescription();

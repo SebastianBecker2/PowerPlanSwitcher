@@ -10,6 +10,9 @@ public interface IRule
     public IRuleDto Dto { get; }
 
     public event EventHandler<TriggerChangedEventArgs>? TriggerChanged;
+
+    public void StartRuling();
+    public void StopRuling();
 }
 
 public interface IRule<TDto> : IRule where TDto : IRuleDto

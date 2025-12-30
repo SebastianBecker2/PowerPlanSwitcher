@@ -125,6 +125,7 @@ public class RuleManager
         foreach (var rule in rules)
         {
             rule.TriggerChanged += Rule_TriggerChanged;
+            rule.StartRuling();
         }
 
         var firstTriggeredRule = rules.FirstOrDefault(r => r.TriggerCount > 0);
@@ -142,6 +143,7 @@ public class RuleManager
         foreach (var rule in rules)
         {
             rule.TriggerChanged -= Rule_TriggerChanged;
+            rule.StopRuling();
         }
     }
 

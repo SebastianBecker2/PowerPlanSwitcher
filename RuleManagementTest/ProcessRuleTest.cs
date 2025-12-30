@@ -20,9 +20,13 @@ public sealed class ProcessRuleTest
     public void InitialTriggerCount_IsZero()
     {
         var monitor = A.Fake<IProcessMonitor>();
-        var dto = new ProcessRuleDto { SchemeGuid = Guid.NewGuid() };
+        var dto = new ProcessRuleDto
+        {
+            SchemeGuid = Guid.NewGuid()
+        };
 
         var rule = new ProcessRule(monitor, dto);
+        rule.StartRuling();
 
         Assert.AreEqual(0, rule.TriggerCount);
     }
@@ -31,8 +35,14 @@ public sealed class ProcessRuleTest
     public void ProcessCreated_PathMatchesExact_IncrementsTriggerCount()
     {
         // Arrange
-        var dto = new ProcessRuleDto { Pattern = "test.exe", Type = ComparisonType.Exact, SchemeGuid = Guid.NewGuid() };
+        var dto = new ProcessRuleDto
+        {
+            Pattern = "test.exe",
+            Type = ComparisonType.Exact,
+            SchemeGuid = Guid.NewGuid()
+        };
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath).Returns("test.exe");
@@ -47,8 +57,14 @@ public sealed class ProcessRuleTest
     [TestMethod]
     public void ProcessCreated_PathDoesNotMatch_DoesNotIncrementTriggerCount()
     {
-        var dto = new ProcessRuleDto { Pattern = "test.exe", Type = ComparisonType.Exact, SchemeGuid = Guid.NewGuid() };
+        var dto = new ProcessRuleDto
+        {
+            Pattern = "test.exe",
+            Type = ComparisonType.Exact,
+            SchemeGuid = Guid.NewGuid()
+        };
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath).Returns("other.exe");
@@ -61,8 +77,14 @@ public sealed class ProcessRuleTest
     [TestMethod]
     public void ProcessTerminated_PathMatches_DecrementsTriggerCount()
     {
-        var dto = new ProcessRuleDto { Pattern = "test.exe", Type = ComparisonType.Exact, SchemeGuid = Guid.NewGuid() };
+        var dto = new ProcessRuleDto
+        {
+            Pattern = "test.exe",
+            Type = ComparisonType.Exact,
+            SchemeGuid = Guid.NewGuid()
+        };
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath).Returns("test.exe");
@@ -81,8 +103,14 @@ public sealed class ProcessRuleTest
     [TestMethod]
     public void ProcessTerminated_PathMatches_TriggerCountNeverNegative()
     {
-        var dto = new ProcessRuleDto { Pattern = "test.exe", Type = ComparisonType.Exact, SchemeGuid = Guid.NewGuid() };
+        var dto = new ProcessRuleDto
+        {
+            Pattern = "test.exe",
+            Type = ComparisonType.Exact,
+            SchemeGuid = Guid.NewGuid()
+        };
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath).Returns("test.exe");
@@ -103,8 +131,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.Wildcard,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath).Returns("C:\\Games\\MyGame.exe");
@@ -123,8 +151,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.Wildcard,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath).Returns("C:\\Other\\App.exe");
@@ -143,8 +171,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.Wildcard,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath).Returns("C:\\Games\\MyGame.exe");
@@ -165,8 +193,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.Wildcard,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath).Returns("test.exe");
@@ -185,8 +213,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.Wildcard,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath)
@@ -206,8 +234,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.Wildcard,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath)
@@ -227,8 +255,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.Wildcard,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath)
@@ -248,8 +276,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.Wildcard,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath)
@@ -269,8 +297,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.Wildcard,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath)
@@ -290,8 +318,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.Wildcard,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath).Returns(@"C:\Games\MyGame.exe");
@@ -310,8 +338,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.Wildcard,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath)
@@ -331,8 +359,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.Wildcard,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath).Returns("");
@@ -351,8 +379,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.Wildcard,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath).Returns("   ");
@@ -371,8 +399,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.Wildcard,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var p1 = A.Fake<IProcess>();
         var p2 = A.Fake<IProcess>();
@@ -399,8 +427,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.Wildcard,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath).Returns(@"C:\Games\Game.exe");
@@ -419,8 +447,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.StartsWith,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath).Returns(@"C:\Games");
@@ -439,8 +467,8 @@ public sealed class ProcessRuleTest
             Type = ComparisonType.EndsWith,
             SchemeGuid = Guid.NewGuid()
         };
-
         var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
 
         var process = A.Fake<IProcess>();
         _ = A.CallTo(() => process.ExecutablePath).Returns(@"Game.exe");
@@ -453,7 +481,12 @@ public sealed class ProcessRuleTest
     [TestMethod]
     public void GetDescription_ReturnsExpectedText()
     {
-        var dto = new ProcessRuleDto { Pattern = "test.exe", Type = ComparisonType.StartsWith, SchemeGuid = Guid.NewGuid() };
+        var dto = new ProcessRuleDto
+        {
+            Pattern = "test.exe",
+            Type = ComparisonType.StartsWith,
+            SchemeGuid = Guid.NewGuid()
+        };
 
         var description = dto.GetDescription();
 

@@ -66,6 +66,8 @@ public class IdleMonitor : IDisposable, IIdleMonitor
         Log.Information("Idle time monitoring stopped");
     }
 
+    public TimeSpan GetIdleTime() => Static.GetIdleTime();
+
     private void HandlePollingTimerTick(object? _)
     {
         try

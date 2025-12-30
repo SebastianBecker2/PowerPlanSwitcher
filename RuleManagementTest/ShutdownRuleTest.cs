@@ -8,13 +8,20 @@ using SystemManagement;
 [TestClass]
 public sealed class ShutdownRuleTest
 {
+    private IWindowMessageMonitor monitor = null!;
+
+    [TestInitialize]
+    public void Setup() => monitor = A.Fake<IWindowMessageMonitor>();
+
     [TestMethod]
     public void InitialTriggerCount_IsZero()
     {
-        var monitor = A.Fake<IWindowMessageMonitor>();
-        var dto = new ShutdownRuleDto { SchemeGuid = Guid.NewGuid() };
-
+        var dto = new ShutdownRuleDto
+        {
+            SchemeGuid = Guid.NewGuid()
+        };
         var rule = new ShutdownRule(monitor, dto);
+        rule.StartRuling();
 
         Assert.AreEqual(0, rule.TriggerCount);
     }
@@ -22,9 +29,12 @@ public sealed class ShutdownRuleTest
     [TestMethod]
     public void QueryEndSession_SetsTriggerCountToOne()
     {
-        var monitor = A.Fake<IWindowMessageMonitor>();
-        var dto = new ShutdownRuleDto { SchemeGuid = Guid.NewGuid() };
+        var dto = new ShutdownRuleDto
+        {
+            SchemeGuid = Guid.NewGuid()
+        };
         var rule = new ShutdownRule(monitor, dto);
+        rule.StartRuling();
 
         var args = new WindowMessageEventArgs(WindowMessage.QueryEndSession, 0, 0);
 
@@ -36,9 +46,12 @@ public sealed class ShutdownRuleTest
     [TestMethod]
     public void EndSessionWithZero_SetsTriggerCountToZero()
     {
-        var monitor = A.Fake<IWindowMessageMonitor>();
-        var dto = new ShutdownRuleDto { SchemeGuid = Guid.NewGuid() };
+        var dto = new ShutdownRuleDto
+        {
+            SchemeGuid = Guid.NewGuid()
+        };
         var rule = new ShutdownRule(monitor, dto);
+        rule.StartRuling();
 
         // First simulate a shutdown request
         monitor.WindowMessageReceived += Raise.With(
@@ -56,9 +69,12 @@ public sealed class ShutdownRuleTest
     [TestMethod]
     public void EndSessionWithNonZero_DoesNotResetTriggerCount()
     {
-        var monitor = A.Fake<IWindowMessageMonitor>();
-        var dto = new ShutdownRuleDto { SchemeGuid = Guid.NewGuid() };
+        var dto = new ShutdownRuleDto
+        {
+            SchemeGuid = Guid.NewGuid()
+        };
         var rule = new ShutdownRule(monitor, dto);
+        rule.StartRuling();
 
         // Trigger shutdown
         monitor.WindowMessageReceived += Raise.With(
@@ -76,9 +92,12 @@ public sealed class ShutdownRuleTest
     [TestMethod]
     public void IgnoresOtherMessages()
     {
-        var monitor = A.Fake<IWindowMessageMonitor>();
-        var dto = new ShutdownRuleDto { SchemeGuid = Guid.NewGuid() };
+        var dto = new ShutdownRuleDto
+        {
+            SchemeGuid = Guid.NewGuid()
+        };
         var rule = new ShutdownRule(monitor, dto);
+        rule.StartRuling();
 
         monitor.WindowMessageReceived += Raise.With(
             new WindowMessageEventArgs(WindowMessage.Close, 0, 0));
@@ -90,10 +109,12 @@ public sealed class ShutdownRuleTest
     public void ExposesSchemeGuidFromDto()
     {
         var guid = Guid.NewGuid();
-        var monitor = A.Fake<IWindowMessageMonitor>();
-        var dto = new ShutdownRuleDto { SchemeGuid = guid };
-
+        var dto = new ShutdownRuleDto
+        {
+            SchemeGuid = guid
+        };
         var rule = new ShutdownRule(monitor, dto);
+        rule.StartRuling();
 
         Assert.AreEqual(guid, rule.SchemeGuid);
     }
@@ -101,17 +122,22 @@ public sealed class ShutdownRuleTest
     [TestMethod]
     public void GetDescription_ReturnsExpectedText()
     {
-        var dto = new ShutdownRuleDto { SchemeGuid = Guid.NewGuid() };
+        var dto = new ShutdownRuleDto
+        {
+            SchemeGuid = Guid.NewGuid()
+        };
         Assert.AreEqual("Shutdown Rule", dto.GetDescription());
     }
 
     [TestMethod]
     public void SubscribesToWindowMessageMonitor()
     {
-        var monitor = A.Fake<IWindowMessageMonitor>();
-        var dto = new ShutdownRuleDto { SchemeGuid = Guid.NewGuid() };
-
-        _ = new ShutdownRule(monitor, dto);
+        var dto = new ShutdownRuleDto
+        {
+            SchemeGuid = Guid.NewGuid()
+        };
+        var rule = new ShutdownRule(monitor, dto);
+        rule.StartRuling();
 
         _ = A.CallTo(monitor)
             .Where(call => call.Method.Name == "add_WindowMessageReceived")

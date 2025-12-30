@@ -4,25 +4,22 @@ using System;
 using RuleManagement.Dto;
 using SystemManagement;
 
-public class ShutdownRule :
-    Rule<ShutdownRuleDto>,
+public class ShutdownRule(
+    IWindowMessageMonitor windowMessageMonitor,
+    ShutdownRuleDto shutdownRuleDto) :
+    Rule<ShutdownRuleDto>(shutdownRuleDto),
     IRule<ShutdownRuleDto>,
     IDisposable
 {
     public Guid SchemeGuid => Dto.SchemeGuid;
 
-    private readonly IWindowMessageMonitor windowMessageMonitor;
-
-    public ShutdownRule(
-        IWindowMessageMonitor windowMessageMonitor,
-        ShutdownRuleDto shutdownRuleDto)
-        : base(shutdownRuleDto)
-    {
-        this.windowMessageMonitor = windowMessageMonitor;
-
+    public override void StartRuling() =>
         windowMessageMonitor.WindowMessageReceived +=
             WindowMessageMonitor_WindowMessageReceived;
-    }
+
+    public override void StopRuling() =>
+        windowMessageMonitor.WindowMessageReceived -=
+            WindowMessageMonitor_WindowMessageReceived;
 
     private void WindowMessageMonitor_WindowMessageReceived(
         object? sender,
@@ -42,7 +39,5 @@ public class ShutdownRule :
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "Suppression of CA1816 is necessary")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "ShutdownRule does not have a finalizer")]
-    public void Dispose() =>
-        windowMessageMonitor.WindowMessageReceived -=
-            WindowMessageMonitor_WindowMessageReceived;
+    public void Dispose() => StopRuling();
 }

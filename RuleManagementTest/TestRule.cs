@@ -33,5 +33,8 @@ internal class TestRule(TestRuleDto dto) : IRule<TestRuleDto>
 
     public event EventHandler<TriggerChangedEventArgs>? TriggerChanged;
 
+    public void StartRuling() { }
+    public void StopRuling() { }
+
     public static string GetDescription() => "";
 }

@@ -1,5 +1,6 @@
 namespace RuleManagementTest;
 
+using System.Data;
 using FakeItEasy;
 using RuleManagement.Dto;
 using RuleManagement.Rules;
@@ -15,6 +16,7 @@ public sealed class IdleRuleTest
         var dto = new IdleRuleDto { SchemeGuid = Guid.NewGuid(), IdleTimeThreshold = TimeSpan.FromSeconds(10) };
 
         var rule = new IdleRule(monitor, dto);
+        rule.StartRuling();
 
         Assert.AreEqual(0, rule.TriggerCount);
     }
@@ -26,6 +28,7 @@ public sealed class IdleRuleTest
         var dto = new IdleRuleDto { SchemeGuid = Guid.NewGuid(), IdleTimeThreshold = TimeSpan.FromSeconds(10) };
 
         var rule = new IdleRule(monitor, dto);
+        rule.StartRuling();
 
         monitor.IdleTimeChanged += Raise.With(new IdleTimeChangedEventArgs(TimeSpan.FromSeconds(5)));
 
@@ -39,6 +42,7 @@ public sealed class IdleRuleTest
         var dto = new IdleRuleDto { SchemeGuid = Guid.NewGuid(), IdleTimeThreshold = TimeSpan.FromSeconds(10) };
 
         var rule = new IdleRule(monitor, dto);
+        rule.StartRuling();
 
         monitor.IdleTimeChanged += Raise.With(new IdleTimeChangedEventArgs(TimeSpan.FromSeconds(10)));
 
@@ -52,6 +56,7 @@ public sealed class IdleRuleTest
         var dto = new IdleRuleDto { SchemeGuid = Guid.NewGuid(), IdleTimeThreshold = TimeSpan.FromSeconds(10) };
 
         var rule = new IdleRule(monitor, dto);
+        rule.StartRuling();
 
         monitor.IdleTimeChanged += Raise.With(new IdleTimeChangedEventArgs(TimeSpan.FromSeconds(20)));
         monitor.IdleTimeChanged += Raise.With(new IdleTimeChangedEventArgs(TimeSpan.FromSeconds(30)));
@@ -66,6 +71,7 @@ public sealed class IdleRuleTest
         var dto = new IdleRuleDto { SchemeGuid = Guid.NewGuid(), IdleTimeThreshold = TimeSpan.FromSeconds(10) };
 
         var rule = new IdleRule(monitor, dto);
+        rule.StartRuling();
 
         // Activate
         monitor.IdleTimeChanged += Raise.With(new IdleTimeChangedEventArgs(TimeSpan.FromSeconds(15)));
@@ -83,6 +89,7 @@ public sealed class IdleRuleTest
         var dto = new IdleRuleDto { SchemeGuid = Guid.NewGuid(), IdleTimeThreshold = TimeSpan.FromSeconds(10) };
 
         var rule = new IdleRule(monitor, dto);
+        rule.StartRuling();
 
         monitor.IdleTimeChanged += Raise.With(new IdleTimeChangedEventArgs(TimeSpan.Zero));
 
@@ -97,6 +104,7 @@ public sealed class IdleRuleTest
         var dto = new IdleRuleDto { SchemeGuid = guid, IdleTimeThreshold = TimeSpan.FromSeconds(10) };
 
         var rule = new IdleRule(monitor, dto);
+        rule.StartRuling();
 
         Assert.AreEqual(guid, rule.SchemeGuid);
     }
@@ -107,7 +115,8 @@ public sealed class IdleRuleTest
         var monitor = A.Fake<IIdleMonitor>();
         var dto = new IdleRuleDto { SchemeGuid = Guid.NewGuid(), IdleTimeThreshold = TimeSpan.FromSeconds(10) };
 
-        _ = new IdleRule(monitor, dto);
+        var rule = new IdleRule(monitor, dto);
+        rule.StartRuling();
 
         _ = A.CallTo(monitor)
             .Where(call => call.Method.Name == "add_IdleTimeChanged")
@@ -117,7 +126,11 @@ public sealed class IdleRuleTest
     [TestMethod]
     public void GetDescription_ReturnsExpectedText()
     {
-        var dto = new IdleRuleDto { SchemeGuid = Guid.NewGuid(), IdleTimeThreshold = TimeSpan.FromSeconds(10) };
+        var dto = new IdleRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            IdleTimeThreshold = TimeSpan.FromSeconds(10)
+        };
 
         Assert.AreEqual("Idle Time -> 00:00:10", dto.GetDescription());
     }

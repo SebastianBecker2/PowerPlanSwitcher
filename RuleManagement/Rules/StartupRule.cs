@@ -12,4 +12,14 @@ public class StartupRule :
     public StartupRule(StartupRuleDto startupRuleDto)
         : base(startupRuleDto) =>
         TriggerCount = 1;
+
+    public override void StartRuling()
+    {
+        // No additional action needed; TriggerCount is always 1;
+    }
+
+    public override void StopRuling()
+    {
+        // No additional action needed; TriggerCount is always 1;
+    }
 }

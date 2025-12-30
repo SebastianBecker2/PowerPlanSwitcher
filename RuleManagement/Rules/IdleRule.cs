@@ -4,25 +4,32 @@ using System;
 using RuleManagement.Dto;
 using SystemManagement;
 
-public class IdleRule :
-    Rule<IdleRuleDto>,
+public class IdleRule(
+    IIdleMonitor idleMonitor,
+    IdleRuleDto idleRuleDto) :
+    Rule<IdleRuleDto>(idleRuleDto),
     IRule<IdleRuleDto>,
     IDisposable
 {
     public Guid SchemeGuid => Dto.SchemeGuid;
     public TimeSpan IdleTimeThreshold => Dto.IdleTimeThreshold;
 
-    private readonly IIdleMonitor idleMonitor;
-
-    public IdleRule(
-        IIdleMonitor idleMonitor,
-        IdleRuleDto idleRuleDto)
-        : base(idleRuleDto)
+    public override void StartRuling()
     {
-        this.idleMonitor = idleMonitor;
-
         idleMonitor.IdleTimeChanged += IdleMonitor_IdleTimeChanged;
+
+        if (idleMonitor.GetIdleTime() >= IdleTimeThreshold)
+        {
+            TriggerCount = 1;
+        }
+        else
+        {
+            TriggerCount = 0;
+        }
     }
+
+    public override void StopRuling() =>
+        idleMonitor.IdleTimeChanged -= IdleMonitor_IdleTimeChanged;
 
     private void IdleMonitor_IdleTimeChanged(
         object? _,
@@ -30,17 +37,16 @@ public class IdleRule :
     {
         if (e.IdleTime >= IdleTimeThreshold)
         {
-            TriggerCount = Math.Min(TriggerCount + 1, 1);
+            TriggerCount = 1;
         }
         else
         {
-            TriggerCount = Math.Max(TriggerCount - 1, 0);
+            TriggerCount = 0;
         }
     }
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "IdleRule does not have a finalizer")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "Suppression of CA1816 is necessary")]
-    public void Dispose() =>
-        idleMonitor.IdleTimeChanged -= IdleMonitor_IdleTimeChanged;
+    public void Dispose() => StopRuling();
 
 }

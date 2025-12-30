@@ -34,9 +34,27 @@ public class ProcessRule
                     Evaluation = { CaseInsensitive = false }
                 });
         }
+    }
 
+    public override void StartRuling()
+    {
         processMonitor.ProcessCreated += ProcessMonitor_ProcessCreated;
         processMonitor.ProcessTerminated += ProcessMonitor_ProcessTerminated;
+
+        TriggerCount = 0;
+        foreach (var process in processMonitor.GetUsersProcesses())
+        {
+            if (CheckRule(process))
+            {
+                TriggerCount++;
+            }
+        }
+    }
+
+    public override void StopRuling()
+    {
+        processMonitor.ProcessCreated -= ProcessMonitor_ProcessCreated;
+        processMonitor.ProcessTerminated -= ProcessMonitor_ProcessTerminated;
     }
 
     private void ProcessMonitor_ProcessCreated(object? sender, ProcessEventArgs e)
@@ -91,9 +109,5 @@ public class ProcessRule
 
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "Suppression of CA1816 is necessary")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "ProcessRule does not have a finalizer")]
-    public void Dispose()
-    {
-        processMonitor.ProcessCreated -= ProcessMonitor_ProcessCreated;
-        processMonitor.ProcessTerminated -= ProcessMonitor_ProcessTerminated;
-    }
+    public void Dispose() => StopRuling();
 }
