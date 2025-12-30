@@ -14,17 +14,22 @@ public class IdleRule(
     public Guid SchemeGuid => Dto.SchemeGuid;
     public TimeSpan IdleTimeThreshold => Dto.IdleTimeThreshold;
 
+    private readonly object syncRoot = new();
+
     public override void StartRuling()
     {
         idleMonitor.IdleTimeChanged += IdleMonitor_IdleTimeChanged;
 
-        if (idleMonitor.GetIdleTime() >= IdleTimeThreshold)
+        lock (syncRoot)
         {
-            TriggerCount = 1;
-        }
-        else
-        {
-            TriggerCount = 0;
+            if (idleMonitor.GetIdleTime() >= IdleTimeThreshold)
+            {
+                TriggerCount = 1;
+            }
+            else
+            {
+                TriggerCount = 0;
+            }
         }
     }
 
@@ -35,13 +40,16 @@ public class IdleRule(
         object? _,
         IdleTimeChangedEventArgs e)
     {
-        if (e.IdleTime >= IdleTimeThreshold)
+        lock (syncRoot)
         {
-            TriggerCount = 1;
-        }
-        else
-        {
-            TriggerCount = 0;
+            if (e.IdleTime >= IdleTimeThreshold)
+            {
+                TriggerCount = 1;
+            }
+            else
+            {
+                TriggerCount = 0;
+            }
         }
     }
 

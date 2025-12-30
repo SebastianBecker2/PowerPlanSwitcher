@@ -14,17 +14,22 @@ public class PowerLineRule(
     public Guid SchemeGuid => Dto.SchemeGuid;
     public PowerLineStatus PowerLineStatus => Dto.PowerLineStatus;
 
+    private readonly object syncRoot = new();
+
     public override void StartRuling()
     {
         batteryMonitor.PowerLineStatusChanged += BatteryMonitor_PowerLineStatusChanged;
 
-        if (CheckRule(batteryMonitor.PowerLineStatus))
+        lock (syncRoot)
         {
-            TriggerCount = 1;
-        }
-        else
-        {
-            TriggerCount = 0;
+            if (CheckRule(batteryMonitor.PowerLineStatus))
+            {
+                TriggerCount = 1;
+            }
+            else
+            {
+                TriggerCount = 0;
+            }
         }
     }
 
@@ -35,13 +40,16 @@ public class PowerLineRule(
         object? sender,
         PowerLineStatusChangedEventArgs e)
     {
-        if (CheckRule(e.PowerLineStatus))
+        lock (syncRoot)
         {
-            TriggerCount++;
-        }
-        else
-        {
-            TriggerCount = Math.Max(TriggerCount - 1, 0);
+            if (CheckRule(e.PowerLineStatus))
+            {
+                TriggerCount++;
+            }
+            else
+            {
+                TriggerCount = Math.Max(TriggerCount - 1, 0);
+            }
         }
     }
 

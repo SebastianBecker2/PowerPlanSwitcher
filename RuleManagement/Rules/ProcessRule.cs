@@ -17,7 +17,8 @@ public class ProcessRule
     public ComparisonType Type => Dto.Type;
 
     private readonly IProcessMonitor processMonitor;
-    private  readonly HashSet<IProcess> matchedProcesses = [];
+    private readonly HashSet<IProcess> matchedProcesses = [];
+    private readonly object syncRoot = new();
 
     public ProcessRule(
         IProcessMonitor processMonitor,
@@ -42,16 +43,19 @@ public class ProcessRule
         processMonitor.ProcessCreated += ProcessMonitor_ProcessCreated;
         processMonitor.ProcessTerminated += ProcessMonitor_ProcessTerminated;
 
-        TriggerCount = 0;
-        foreach (var process in processMonitor.GetUsersProcesses())
+        lock (syncRoot)
         {
-            if (CheckRule(process))
+            TriggerCount = 0;
+            foreach (var process in processMonitor.GetUsersProcesses())
             {
-                if (!matchedProcesses.Add(process))
+                if (CheckRule(process))
                 {
-                    continue;
+                    if (!matchedProcesses.Add(process))
+                    {
+                        continue;
+                    }
+                    TriggerCount++;
                 }
-                TriggerCount++;
             }
         }
     }
@@ -64,22 +68,28 @@ public class ProcessRule
 
     private void ProcessMonitor_ProcessCreated(object? sender, ProcessEventArgs e)
     {
-        if (CheckRule(e.Process))
+        lock (syncRoot)
         {
-            if (!matchedProcesses.Add(e.Process))
+            if (CheckRule(e.Process))
             {
-                return;
+                if (!matchedProcesses.Add(e.Process))
+                {
+                    return;
+                }
+                TriggerCount++;
             }
-            TriggerCount++;
         }
     }
 
     private void ProcessMonitor_ProcessTerminated(object? sender, ProcessEventArgs e)
     {
-        if (CheckRule(e.Process))
+        lock (syncRoot)
         {
-            _ = matchedProcesses.Remove(e.Process);
-            TriggerCount = Math.Max(TriggerCount - 1, 0);
+            if (CheckRule(e.Process))
+            {
+                _ = matchedProcesses.Remove(e.Process);
+                TriggerCount = Math.Max(TriggerCount - 1, 0);
+            }
         }
     }
 
