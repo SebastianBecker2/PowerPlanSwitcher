@@ -670,13 +670,38 @@ public sealed class RuleManagerTest
     }
 
     [TestMethod]
-    public void UnsupportedSchemaVersion_ThrowsException()
+    public void UnsupportedSchemaVersion_SkipsLoadingRules()
     {
-        // Arrange: JSON with schema version 99 (unsupported)
+        // Arrange
         var invalidJson = /*lang=json,strict*/ @"
         {
             ""SchemaVersion"": 99,
-            ""Rules"": []
+            ""Rules"": [
+            {
+              ""$type"": ""RuleManagement.Dto.ProcessRuleDto, RuleManagement"",
+              ""FilePath"": ""testpath"",
+              ""Type"": 0,
+              ""SchemeGuid"": ""11111111-1111-1111-1111-111111111111""
+            },
+            {
+              ""$type"": ""RuleManagement.Dto.PowerLineRuleDto, RuleManagement"",
+              ""PowerLineStatus"": 1,
+              ""SchemeGuid"": ""22222222-2222-2222-2222-222222222222""
+            },
+            {
+              ""$type"": ""RuleManagement.Dto.StartupRuleDto, RuleManagement"",
+              ""SchemeGuid"": ""33333333-3333-3333-3333-333333333333""
+            },
+            {
+              ""$type"": ""RuleManagement.Dto.ShutdownRuleDto, RuleManagement"",
+              ""SchemeGuid"": ""44444444-4444-4444-4444-444444444444""
+            },
+            {
+              ""$type"": ""RuleManagement.Dto.IdleRuleDto, RuleManagement"",
+              ""IdleTimeThreshold"": ""00:00:10"",
+              ""SchemeGuid"": ""55555555-5555-5555-5555-555555555555""
+            }
+          ]
         }";
 
         var migrationPolicy = new MigrationPolicy(
@@ -687,9 +712,12 @@ public sealed class RuleManagerTest
             ActivateInitialPowerScheme: false,
             InitialPowerSchemeGuid: CreateGuid('7'));
 
-        // Act & Assert
-        _ = Assert.ThrowsException<NotSupportedException>(() =>
-            new RuleManager(ruleFactory, invalidJson, migrationPolicy, batteryMonitor));
+        // Act
+        var manager = new RuleManager(ruleFactory, invalidJson, migrationPolicy, batteryMonitor);
+
+        // Assert
+        Assert.AreEqual(0, manager.GetRules().Count());
+        Assert.IsNull(manager.AppliedRule);
     }
 
     [TestMethod]
