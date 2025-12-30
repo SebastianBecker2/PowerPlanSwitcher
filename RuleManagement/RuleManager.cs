@@ -55,7 +55,6 @@ public class RuleManager
             migrationPolicy);
 
         rules = LoadRules(ruleJson, ruleFactory);
-        Subscribe(rules);
     }
 
     public void StartMonitoring()

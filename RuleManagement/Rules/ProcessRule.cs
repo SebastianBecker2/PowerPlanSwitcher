@@ -17,6 +17,7 @@ public class ProcessRule
     public ComparisonType Type => Dto.Type;
 
     private readonly IProcessMonitor processMonitor;
+    private  readonly HashSet<IProcess> matchedProcesses = [];
 
     public ProcessRule(
         IProcessMonitor processMonitor,
@@ -46,6 +47,10 @@ public class ProcessRule
         {
             if (CheckRule(process))
             {
+                if (!matchedProcesses.Add(process))
+                {
+                    continue;
+                }
                 TriggerCount++;
             }
         }
@@ -61,6 +66,10 @@ public class ProcessRule
     {
         if (CheckRule(e.Process))
         {
+            if (!matchedProcesses.Add(e.Process))
+            {
+                return;
+            }
             TriggerCount++;
         }
     }
@@ -69,6 +78,7 @@ public class ProcessRule
     {
         if (CheckRule(e.Process))
         {
+            _ = matchedProcesses.Remove(e.Process);
             TriggerCount = Math.Max(TriggerCount - 1, 0);
         }
     }
