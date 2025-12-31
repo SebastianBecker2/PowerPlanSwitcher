@@ -15,4 +15,4 @@ test_script:
 - dotnet test RuleManagementTest/RuleManagementTest.csproj --configuration Release --no-build
 
 after_build:
-- dotnet pack PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release --include-symbols --output artifacts --no-build
+- dotnet pack PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release --include-symbols --output artifacts
