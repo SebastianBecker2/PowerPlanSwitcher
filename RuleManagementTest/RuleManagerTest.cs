@@ -105,7 +105,7 @@ public sealed class RuleManagerTest
             new WindowMessageEventArgs(WindowMessage.QueryEndSession, 0, 0));
 
         Assert.AreEqual(shutdownRule, manager.AppliedRule, "First by order should win, even if triggered later.");
-        Assert.IsTrue(applied.Contains(shutdownRule));
+        Assert.Contains(shutdownRule, applied);
     }
 
     [TestMethod]
@@ -136,7 +136,7 @@ public sealed class RuleManagerTest
         processMonitor.ProcessCreated += Raise.With(new ProcessEventArgs(proc));
 
         Assert.AreEqual(startup, manager.AppliedRule, "StartupRule should win because it is first in the list.");
-        Assert.IsTrue(applied.Contains(startup));
+        Assert.Contains(startup, applied);
     }
 
     [TestMethod]
@@ -188,7 +188,7 @@ public sealed class RuleManagerTest
             batteryMonitor);
         var rules = manager.GetRules().ToList();
 
-        Assert.AreEqual(5, rules.Count);
+        Assert.HasCount(5, rules);
         AssertRule(rules[0], new PowerLineRuleDto
         {
             PowerLineStatus = PowerLineStatus.Offline,
@@ -249,7 +249,7 @@ public sealed class RuleManagerTest
             batteryMonitor);
         var rules = manager.GetRules().ToList();
 
-        Assert.AreEqual(5, rules.Count, "Migration adds 2 PowerLineRules and one StartupRule to the initial 2 ProcessRules");
+        Assert.HasCount(5, rules, "Migration adds 2 PowerLineRules and one StartupRule to the initial 2 ProcessRules");
         AssertRule(rules[0], new ProcessRuleDto
         {
             Pattern = "testpath",
@@ -311,7 +311,7 @@ public sealed class RuleManagerTest
             batteryMonitor);
         var rules = manager.GetRules().ToList();
 
-        Assert.AreEqual(3, rules.Count);
+        Assert.HasCount(3, rules);
         AssertRule(rules[0], new PowerLineRuleDto
         {
             PowerLineStatus = PowerLineStatus.Online,
@@ -362,7 +362,7 @@ public sealed class RuleManagerTest
             batteryMonitor);
         var rules = manager.GetRules().ToList();
 
-        Assert.AreEqual(2, rules.Count);
+        Assert.HasCount(2, rules);
         AssertRule(rules[0], new PowerLineRuleDto
         {
             PowerLineStatus = PowerLineStatus.Online,
@@ -622,7 +622,7 @@ public sealed class RuleManagerTest
         rules[0].TriggerCount = 0; // untrigger rule[0], should fall back to rule[1]
 
         // Assert
-        Assert.AreEqual(3, appliedRules.Count);
+        Assert.HasCount(3, appliedRules);
         Assert.AreEqual(rules[1], appliedRules[0], "First applied rule should be rules[1]");
         Assert.AreEqual(rules[0], appliedRules[1], "Second applied rule should be rules[0]");
         Assert.AreEqual(rules[1], appliedRules[2], "Third applied rule should fall back to rules[1]");
@@ -737,7 +737,7 @@ public sealed class RuleManagerTest
         rules[0].TriggerCount = 0; // untrigger it, no other rules active
 
         // Assert
-        Assert.AreEqual(2, appliedRules.Count, "Event should fire twice: once for applying, once for clearing");
+        Assert.HasCount(2, appliedRules, "Event should fire twice: once for applying, once for clearing");
         Assert.AreEqual(rules[0], appliedRules[0], "First event should apply the rule");
         Assert.IsNull(appliedRules[1], "Second event should clear the applied rule (null)");
         Assert.IsNull(manager.AppliedRule, "Final AppliedRule should be null");
@@ -763,7 +763,7 @@ public sealed class RuleManagerTest
         rules[1].TriggerCount = 1; // trigger only the lower-priority rule
 
         // Assert
-        Assert.AreEqual(1, appliedRules.Count, "Event should fire once");
+        Assert.HasCount(1, appliedRules, "Event should fire once");
         Assert.AreEqual(rules[1], appliedRules[0], "Applied rule should be the lower-priority rule");
         Assert.AreEqual(rules[1], manager.AppliedRule, "Manager.AppliedRule should be updated to the lower-priority rule");
     }
@@ -874,7 +874,7 @@ public sealed class RuleManagerTest
         manager.SetRules(rules.Select(r => r.Dto));
 
         // Assert
-        Assert.AreEqual(2, serializedFromEvent.Count);
+        Assert.HasCount(2, serializedFromEvent);
         Assert.IsFalse(string.IsNullOrEmpty(serializedFromEvent[0]));
         Assert.AreEqual(serializedFromEvent[0], serializedFromEvent[1]);
     }
