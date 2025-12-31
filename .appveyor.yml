@@ -6,8 +6,3 @@ install:
 - ps: nuget restore
 before_build:
 - ps: nuget restore
-build:
-  publish_nuget: true
-  publish_nuget_symbols: true
-  include_nuget_references: true
-  verbosity: minimal
