@@ -21,7 +21,9 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
 - [SkiaSharp](https://github.com/mono/SkiaSharp)
 - [SevenZipSharp](https://github.com/squid-box/SevenZipSharp)
 - [WiX Toolset 6](https://wixtoolset.org/)
-- [HotkeyManager](https://github.com/SebastianBecker2/HotkeyManager)</Description>
+- [HotkeyManager](https://github.com/SebastianBecker2/HotkeyManager)
+- [DotNet.Glob](https://github.com/dazinator/DotNet.Glob)
+- [AutoFac](https://autofac.org/)</Description>
     <Authors>Sebastian Becker</Authors>
     <AssemblyVersion></AssemblyVersion>
     <FileVersion></FileVersion>
@@ -79,6 +81,9 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Update="Resources\7z_license.txt">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Update="Resources\fatcow-hosting-icons-3.9.2.zip">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
