@@ -435,7 +435,7 @@ public partial class SettingsDlg : Form
 
         foreach (var r in DgvRules.Rows
             .Cast<DataGridViewRow>()
-            .Where(r => (r.Tag as IRule)!.Dto.SchemeGuid == guid))
+            .Where(r => (r.Tag as RuleWrapper)!.Dto.SchemeGuid == guid))
         {
             r.Cells["DgcRuleSchemeIcon"].Value = image;
         }
