@@ -4,7 +4,7 @@
 
 Configure visibility, icon and global hotkey for your Windows power plans in the settings dialog.
 
-![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/5553a7c0-ca54-41cc-bff8-b3b0b76a58ae)
+<img width="707" height="351" alt="image" src="https://github.com/user-attachments/assets/d9510ed8-3186-4eeb-a2c6-68a5074b9763" />
 
 Switch your power plan easily and quickly by clicking the tray-icon.
 
@@ -12,15 +12,29 @@ Switch your power plan easily and quickly by clicking the tray-icon.
 
 Or let PowerPlanSwitcher automatically switch between power plans depending on what you do.
 
-![image](https://github.com/user-attachments/assets/e8360cd0-7346-40e6-8642-3fc747e70574)
+<img width="707" height="351" alt="image" src="https://github.com/user-attachments/assets/e9c79954-4eae-42ef-b619-defe1ca68603" />
 
-Create Process Rules that activate when a certain process is started.
+Create rules that switch Windows power plans based on:
 
-![image](https://github.com/user-attachments/assets/3a8380ce-86a9-4333-a91e-b0c5927e3f5f)
+- ProcessRule: Processes being created or terminated
 
-Or Energy Rules that activate when plugging or unplugging your laptop.
+<img width="671" height="241" alt="image" src="https://github.com/user-attachments/assets/04d67658-fa1d-4d1d-8fd5-f6d180db1308" />
 
-![image](https://github.com/user-attachments/assets/4ca069f4-a5a7-41e9-aac6-87340585937c)
+- PowerLineRule: Plugging or unplugging your laptop from power
+
+<img width="671" height="186" alt="image" src="https://github.com/user-attachments/assets/b4966c3f-d179-4c8f-bef0-b64f4a39f7e2" />
+
+- IdleRule: No user input happening for a configurable amount of time
+
+<img width="671" height="186" alt="image" src="https://github.com/user-attachments/assets/f153bddc-2caf-4503-9661-106e8ab05df8" />
+
+- StartupRule: PowerPlanSwitcher being started
+
+<img width="671" height="153" alt="image" src="https://github.com/user-attachments/assets/479e1770-6074-4b43-addd-c7fa49eb63b5" />
+
+- ShutdownRule: Windows initiating a shutdown
+
+<img width="671" height="153" alt="image" src="https://github.com/user-attachments/assets/a08f3430-6901-42ea-ba80-62ffef428bb9" />
 
 Furher settings allow you to:
 - Configure a global hotkey to cycle through your power plans.
@@ -42,3 +56,5 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
 - [SevenZipSharp](https://github.com/squid-box/SevenZipSharp)
 - [WiX Toolset 6](https://wixtoolset.org/)
 - [HotkeyManager](https://github.com/SebastianBecker2/HotkeyManager)
+- [DotNet.Glob](https://github.com/dazinator/DotNet.Glob)
+- [AutoFac](https://autofac.org/)
