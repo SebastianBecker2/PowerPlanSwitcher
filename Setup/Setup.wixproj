@@ -32,8 +32,8 @@
     <ProjectReference Include="..\SystemManagement\SystemManagement.csproj" />
   </ItemGroup>
   <ItemGroup>
-    <PackageReference Include="WixToolset.Util.wixext" Version="6.0.1" />
-    <PackageReference Include="WixToolset.UI.wixext" Version="6.0.1" />
+    <PackageReference Include="WixToolset.Util.wixext" Version="6.0.2" />
+    <PackageReference Include="WixToolset.UI.wixext" Version="6.0.2" />
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="dotnet publish &quot;$(ProjectDir)..\PowerPlanSwitcher&quot; -c $(ConfigurationName) --runtime win-x64 --framework net8.0-windows --no-self-contained /p:PublishReadyToRun=false /p:PublishSingleFile=true" />

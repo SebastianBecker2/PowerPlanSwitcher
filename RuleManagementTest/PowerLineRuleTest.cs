@@ -118,7 +118,7 @@ public sealed class PowerLineRuleTest
         Assert.IsNotNull(method);
 
         // Act & Assert
-        _ = Assert.ThrowsException<TargetInvocationException>(() =>
+        _ = Assert.Throws<TargetInvocationException>(() =>
             method.Invoke(null, ["Not a valid status"]));
     }
 
