@@ -4,11 +4,11 @@
 
 Configure visibility, icon and global hotkey for your Windows power plans in the settings dialog.
 
-<img width="707" height="351" alt="image" src="https://github.com/user-attachments/assets/d9510ed8-3186-4eeb-a2c6-68a5074b9763" />
+<img width="707" height="353" alt="image" src="https://github.com/user-attachments/assets/33c0498f-782a-468c-9fd5-cecdb458a9a7" />
 
 Switch your power plan easily and quickly by clicking the tray-icon.
 
-![image](https://github.com/SebastianBecker2/PowerPlanSwitcher/assets/35063968/11c841d8-c375-473e-965d-94838261f41b)
+<img width="383" height="229" alt="image" src="https://github.com/user-attachments/assets/393e5673-2456-4cfd-98d5-8e77233deebd" />
 
 Or let PowerPlanSwitcher automatically switch between power plans depending on what you do.
 
