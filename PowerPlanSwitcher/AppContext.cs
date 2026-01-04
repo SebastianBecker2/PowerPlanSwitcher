@@ -97,7 +97,7 @@ internal class AppContext : ApplicationContext
             Log.Information(
                 "Activating power scheme: {PowerSchemeName} " +
                 "'{PowerSchemeGuid}' Reason: {Reason}",
-                "baselineSchemeName",
+                baselineSchemeName,
                 BaselineSchemeGuid,
                 "Restore baseline");
             PowerManager.SetActivePowerScheme(BaselineSchemeGuid);
