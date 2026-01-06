@@ -17,6 +17,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "RuleManagementTest", "RuleM
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SystemManagement", "SystemManagement\SystemManagement.csproj", "{7DEB2FE0-C777-43F8-A318-3D31DC483474}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "WindowMessageTimer", "WindowMessageTimer\WindowMessageTimer.csproj", "{5247B541-3CFB-2B31-ADA0-63BCA4269C9D}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -77,6 +79,14 @@ Global
 		{7DEB2FE0-C777-43F8-A318-3D31DC483474}.Release|Any CPU.Build.0 = Release|Any CPU
 		{7DEB2FE0-C777-43F8-A318-3D31DC483474}.Release|x64.ActiveCfg = Release|Any CPU
 		{7DEB2FE0-C777-43F8-A318-3D31DC483474}.Release|x64.Build.0 = Release|Any CPU
+		{5247B541-3CFB-2B31-ADA0-63BCA4269C9D}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{5247B541-3CFB-2B31-ADA0-63BCA4269C9D}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{5247B541-3CFB-2B31-ADA0-63BCA4269C9D}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{5247B541-3CFB-2B31-ADA0-63BCA4269C9D}.Debug|x64.Build.0 = Debug|Any CPU
+		{5247B541-3CFB-2B31-ADA0-63BCA4269C9D}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{5247B541-3CFB-2B31-ADA0-63BCA4269C9D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{5247B541-3CFB-2B31-ADA0-63BCA4269C9D}.Release|x64.ActiveCfg = Release|Any CPU
+		{5247B541-3CFB-2B31-ADA0-63BCA4269C9D}.Release|x64.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

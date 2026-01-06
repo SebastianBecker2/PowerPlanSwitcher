@@ -34,16 +34,15 @@ public class IdleMonitor : IDisposable, IIdleMonitor
         OnIdleTimeChanged(new IdleTimeChangedEventArgs(idleTime));
 
     private TimeSpan PollingInterval { get; } = TimeSpan.FromSeconds(1);
-    private readonly Timer pollingTimer;
+    private readonly WindowMessageTimer.Timer pollingTimer;
     private volatile bool monitoring;
     private bool disposedValue;
 
-    public IdleMonitor() =>
-        pollingTimer = new Timer(
-            HandlePollingTimerTick,
-            null,
-            Timeout.InfiniteTimeSpan,
-            Timeout.InfiniteTimeSpan);
+    public IdleMonitor()
+    {
+        pollingTimer = new(PollingInterval);
+        pollingTimer.Tick += Timer_Tick;
+    }
 
     public void StartMonitoring()
     {
@@ -53,14 +52,14 @@ public class IdleMonitor : IDisposable, IIdleMonitor
         }
         monitoring = true;
 
-        Log.Information("Idle time monitoring started");
+        pollingTimer.Start();
 
-        _ = pollingTimer.Change(TimeSpan.Zero, PollingInterval);
+        Log.Information("Idle time monitoring started");
     }
 
     public void StopMonitoring()
     {
-        _ = pollingTimer.Change(Timeout.InfiniteTimeSpan, Timeout.InfiniteTimeSpan);
+        pollingTimer.Stop();
         monitoring = false;
 
         Log.Information("Idle time monitoring stopped");
@@ -68,27 +67,15 @@ public class IdleMonitor : IDisposable, IIdleMonitor
 
     public TimeSpan GetIdleTime() => Static.GetIdleTime();
 
-    private void HandlePollingTimerTick(object? _)
+    private void Timer_Tick()
     {
-        try
+        if (IdleTimeChanged is null)
         {
-            if (IdleTimeChanged is null)
-            {
-                return;
-            }
+            return;
+        }
 
-            var idleTime = Static.GetIdleTime();
-            OnIdleTimeChanged(idleTime);
-        }
-        finally
-        {
-            if (monitoring)
-            {
-                _ = pollingTimer.Change(
-                    PollingInterval,
-                    Timeout.InfiniteTimeSpan);
-            }
-        }
+        var idleTime = Static.GetIdleTime();
+        OnIdleTimeChanged(idleTime);
     }
 
     protected virtual void Dispose(bool disposing)

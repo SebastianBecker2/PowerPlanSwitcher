@@ -50,93 +50,68 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
     protected virtual void OnProcessTerminated(IProcess process) =>
         OnProcessTerminated(new ProcessEventArgs(process));
 
-    private readonly TimeSpan updateTimerInterval = TimeSpan.FromMilliseconds(2000);
+    private readonly TimeSpan updateTimerInterval = TimeSpan.FromSeconds(2);
+    private readonly WindowMessageTimer.Timer timer;
     private IEnumerable<IProcess> previousProcesses = [];
-    private readonly Timer updateTimer;
-    private volatile bool monitoring;
     private bool disposedValue;
 
-    public ProcessMonitor() =>
-        updateTimer = new Timer(
-            HandleUpdateTimerTick,
-            null,
-            Timeout.InfiniteTimeSpan,
-            Timeout.InfiniteTimeSpan);
-
-    public void StartMonitoring()
+    public ProcessMonitor()
     {
-        if (monitoring)
+        timer = new(updateTimerInterval);
+        timer.Tick += Timer_Tick;
+    }
+
+    private void Timer_Tick()
+    {
+        if (ProcessCreated is null && ProcessTerminated is null)
         {
             return;
         }
-        monitoring = true;
 
+        var currentProcesses = GetUsersProcesses().ToList();
+
+        var addedProcesses = currentProcesses
+            .Except(previousProcesses)
+            .ToList();
+        var removedProcesses = previousProcesses
+            .Except(currentProcesses)
+            .ToList();
+
+        foreach (var addedProcess in addedProcesses)
+        {
+            Log.Information(
+                "Process created: {ProcessId} " +
+                "{ProcessName} {ExecutablePath}",
+                addedProcess.ProcessId,
+                addedProcess.ProcessName,
+                addedProcess.ExecutablePath);
+            OnProcessCreated(addedProcess);
+        }
+
+        foreach (var removedProcess in removedProcesses)
+        {
+            Log.Information(
+                "Process terminated: {ProcessId} " +
+                "{ProcessName} {ExecutablePath}",
+                removedProcess.ProcessId,
+                removedProcess.ProcessName,
+                removedProcess.ExecutablePath);
+            OnProcessTerminated(removedProcess);
+        }
+
+        previousProcesses = currentProcesses;
+    }
+
+    public void StartMonitoring()
+    {
+        timer.Start();
         Log.Information("Process monitoring started");
-
-        _ = updateTimer.Change(TimeSpan.Zero, Timeout.InfiniteTimeSpan);
     }
 
     public void StopMonitoring()
     {
-        _ = updateTimer.Change(
-            Timeout.InfiniteTimeSpan,
-            Timeout.InfiniteTimeSpan);
-        monitoring = false;
-
+        timer.Stop();
         Log.Information("Process monitoring stopped");
-    }
-
-    private void HandleUpdateTimerTick(object? _)
-    {
-        try
-        {
-            if (ProcessCreated is null && ProcessTerminated is null)
-            {
-                return;
-            }
-
-            var currentProcesses = GetUsersProcesses().ToList();
-
-            var addedProcesses = currentProcesses
-                .Except(previousProcesses)
-                .ToList();
-            var removedProcesses = previousProcesses
-                .Except(currentProcesses)
-                .ToList();
-
-            foreach (var addedProcess in addedProcesses)
-            {
-                Log.Information(
-                    "Process created: {ProcessId} " +
-                    "{ProcessName} {ExecutablePath}",
-                    addedProcess.ProcessId,
-                    addedProcess.ProcessName,
-                    addedProcess.ExecutablePath);
-                OnProcessCreated(addedProcess);
-            }
-
-            foreach (var removedProcess in removedProcesses)
-            {
-                Log.Information(
-                    "Process terminated: {ProcessId} " +
-                    "{ProcessName} {ExecutablePath}",
-                    removedProcess.ProcessId,
-                    removedProcess.ProcessName,
-                    removedProcess.ExecutablePath);
-                OnProcessTerminated(removedProcess);
-            }
-
-            previousProcesses = currentProcesses;
-        }
-        finally
-        {
-            if (monitoring)
-            {
-                _ = updateTimer.Change(
-                    updateTimerInterval,
-                    Timeout.InfiniteTimeSpan);
-            }
-        }
     }
 
     public IEnumerable<IProcess> GetUsersProcesses() =>
@@ -151,7 +126,8 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
 
         if (disposing)
         {
-            updateTimer.Dispose();
+            StopMonitoring();
+            timer.Dispose();
         }
         disposedValue = true;
     }

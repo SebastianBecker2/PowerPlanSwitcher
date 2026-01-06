@@ -7,12 +7,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="Serilog" Version="4.3.0" />
-    <PackageReference Include="Vanara.PInvoke.Kernel32" Version="4.2.1" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\WindowMessageTimer\WindowMessageTimer.csproj" />
+    <PackageReference Include="Vanara.PInvoke.User32" Version="4.2.1" />
   </ItemGroup>
 
 </Project>
