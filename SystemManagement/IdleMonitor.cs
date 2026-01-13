@@ -33,14 +33,13 @@ public class IdleMonitor : IDisposable, IIdleMonitor
     protected virtual void OnIdleTimeChanged(TimeSpan idleTime) =>
         OnIdleTimeChanged(new IdleTimeChangedEventArgs(idleTime));
 
-    private TimeSpan PollingInterval { get; } = TimeSpan.FromSeconds(1);
     private readonly WindowMessageTimer.Timer pollingTimer;
     private volatile bool monitoring;
     private bool disposedValue;
 
-    public IdleMonitor()
+    public IdleMonitor(TimeSpan pollingInterval)
     {
-        pollingTimer = new(PollingInterval);
+        pollingTimer = new(pollingInterval);
         pollingTimer.Tick += Timer_Tick;
     }
 

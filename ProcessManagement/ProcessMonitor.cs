@@ -50,14 +50,13 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
     protected virtual void OnProcessTerminated(IProcess process) =>
         OnProcessTerminated(new ProcessEventArgs(process));
 
-    private readonly TimeSpan updateTimerInterval = TimeSpan.FromSeconds(2);
     private readonly WindowMessageTimer.Timer timer;
     private IEnumerable<IProcess> previousProcesses = [];
     private bool disposedValue;
 
-    public ProcessMonitor()
+    public ProcessMonitor(TimeSpan updateInterval)
     {
-        timer = new(updateTimerInterval);
+        timer = new(updateInterval);
         timer.Tick += Timer_Tick;
     }
 

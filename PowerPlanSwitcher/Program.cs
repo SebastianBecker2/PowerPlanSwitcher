@@ -272,9 +272,15 @@ internal static class Program
             .SingleInstance();
         _ = builder.RegisterType<ProcessMonitor>()
             .As<IProcessMonitor>()
+            .WithParameter(
+                "updateInterval",
+                TimeSpan.FromMilliseconds(Settings.Default.ProcessMonitorIntervalInMilliseconds))
             .SingleInstance();
         _ = builder.RegisterType<IdleMonitor>()
             .As<IIdleMonitor>()
+            .WithParameter(
+                "pollingInterval",
+                TimeSpan.FromMilliseconds(Settings.Default.IdleMonitorIntervalInMilliseconds))
             .SingleInstance();
         _ = builder.RegisterType<WindowMessageMonitor>()
             .As<IWindowMessageMonitor>()

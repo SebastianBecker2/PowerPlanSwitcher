@@ -238,5 +238,29 @@ namespace PowerPlanSwitcher.Properties {
                 this["MigratedStartupRule"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("1000")]
+        public int IdleMonitorIntervalInMilliseconds {
+            get {
+                return ((int)(this["IdleMonitorIntervalInMilliseconds"]));
+            }
+            set {
+                this["IdleMonitorIntervalInMilliseconds"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("2000")]
+        public int ProcessMonitorIntervalInMilliseconds {
+            get {
+                return ((int)(this["ProcessMonitorIntervalInMilliseconds"]));
+            }
+            set {
+                this["ProcessMonitorIntervalInMilliseconds"] = value;
+            }
+        }
     }
 }
