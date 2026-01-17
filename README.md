@@ -26,7 +26,7 @@ Create rules that switch Windows power plans based on:
 
 - IdleRule: No user input happening for a configurable amount of time
 
-<img width="671" height="186" alt="image" src="https://github.com/user-attachments/assets/f153bddc-2caf-4503-9661-106e8ab05df8" />
+<img width="671" height="249" alt="image" src="https://github.com/user-attachments/assets/326a2f9e-d63b-414c-824f-201489c86a67" />
 
 - StartupRule: PowerPlanSwitcher being started
 
