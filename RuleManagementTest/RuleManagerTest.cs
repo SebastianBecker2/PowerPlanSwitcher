@@ -16,8 +16,10 @@ public sealed class RuleManagerTest
     private IBatteryMonitor batteryMonitor = null!;
     private IProcessMonitor processMonitor = null!;
     private IWindowMessageMonitor windowMessageMonitor = null!;
-    private IdleMonitor idleMonitor = null!;
+    private IIdleMonitor idleMonitor = null!;
     private RuleFactory ruleFactory = null!;
+    private IPowerManager powerManager = null!;
+    private ISystemManager systemManager = null!;
 
     [TestInitialize]
     public void Setup()
@@ -25,13 +27,17 @@ public sealed class RuleManagerTest
         batteryMonitor = A.Fake<IBatteryMonitor>();
         processMonitor = A.Fake<IProcessMonitor>();
         windowMessageMonitor = A.Fake<IWindowMessageMonitor>();
-        idleMonitor = A.Fake<IdleMonitor>();
+        idleMonitor = A.Fake<IIdleMonitor>();
+        powerManager = A.Fake<IPowerManager>();
+        systemManager = A.Fake<ISystemManager>();
 
         ruleFactory = new RuleFactory(
             batteryMonitor,
             processMonitor,
             idleMonitor,
-            windowMessageMonitor);
+            windowMessageMonitor,
+            powerManager,
+            systemManager);
     }
 
     [TestMethod]
@@ -53,7 +59,6 @@ public sealed class RuleManagerTest
     [TestMethod]
     public void IdleRule_Activation_AppliesRule()
     {
-        var idleMonitor = A.Fake<IIdleMonitor>();
         var manager = new RuleManager(ruleFactory);
 
         var dto = new IdleRuleDto
@@ -62,14 +67,16 @@ public sealed class RuleManagerTest
             IdleTimeThreshold = TimeSpan.FromSeconds(10)
         };
 
-        var idleRule = new IdleRule(idleMonitor, dto);
+        var idleRule = new IdleRule(idleMonitor, powerManager, systemManager, dto);
+        idleRule.StartRuling();
 
         manager.SetRules([idleRule]);
 
         IRule? applied = null;
         manager.RuleApplicationChanged += (_, e) => applied = e.Rule;
 
-        idleMonitor.IdleTimeChanged += Raise.With(new IdleTimeChangedEventArgs(TimeSpan.FromSeconds(20)));
+        idleMonitor.IdleTimeChanged += Raise.With(
+            new IdleTimeChangedEventArgs(TimeSpan.FromSeconds(20)));
 
         Assert.AreEqual(idleRule, applied);
         Assert.AreEqual(idleRule, manager.AppliedRule);
@@ -78,14 +85,17 @@ public sealed class RuleManagerTest
     [TestMethod]
     public void FirstTriggeredRuleByOrder_IsApplied_RegardlessOfType()
     {
-        var idleMonitor = A.Fake<IIdleMonitor>();
         var windowMonitor = A.Fake<IWindowMessageMonitor>();
 
-        var idleRule = new IdleRule(idleMonitor, new IdleRuleDto
-        {
-            SchemeGuid = Guid.NewGuid(),
-            IdleTimeThreshold = TimeSpan.FromSeconds(10)
-        });
+        var idleRule = new IdleRule(
+            idleMonitor,
+            powerManager,
+            systemManager,
+            new IdleRuleDto
+            {
+                SchemeGuid = Guid.NewGuid(),
+                IdleTimeThreshold = TimeSpan.FromSeconds(10)
+            });
 
         var shutdownRule = new ShutdownRule(windowMonitor, new ShutdownRuleDto
         {
@@ -414,6 +424,8 @@ public sealed class RuleManagerTest
             {
               ""$type"": ""RuleManagement.Dto.IdleRuleDto, RuleManagement"",
               ""IdleTimeThreshold"": ""00:00:10"",
+              ""CheckExecutionState"": false,
+              ""CheckFullscreenApps"": false,
               ""SchemeGuid"": ""55555555-5555-5555-5555-555555555555""
             }
           ],

@@ -1,6 +1,8 @@
 namespace PowerManagement;
 
+using System.Diagnostics;
 using Vanara.Extensions;
+using Vanara.InteropServices;
 using Vanara.PInvoke;
 using static Vanara.PInvoke.PowrProf;
 
@@ -51,6 +53,34 @@ public class PowerManager : IDisposable, IPowerManager
                     $"Unable to set the active power scheme to {schemeGuid}");
             }
         }
+
+        public static bool IsExecutionStateBlockingIdle()
+        {
+            // Execution state is a 4-byte uint
+            const int size = sizeof(uint);
+
+            using var buffer = new SafeHGlobalHandle(size);
+
+            var status = CallNtPowerInformation(
+                POWER_INFORMATION_LEVEL.SystemExecutionState,
+                IntPtr.Zero,
+                0,
+                buffer.DangerousGetHandle(),
+                size);
+
+            if (status != NTStatus.STATUS_SUCCESS)
+            {
+                return false;
+            }
+
+            var raw = buffer.ToStructure<uint>();
+
+            var systemRequired = (raw & 0x00000001) != 0;
+            var displayRequired = (raw & 0x00000002) != 0;
+            var awayMode = (raw & 0x00000040) != 0;
+
+            return systemRequired || displayRequired || awayMode;
+        }
     }
 
     private bool disposedValue;
@@ -87,6 +117,9 @@ public class PowerManager : IDisposable, IPowerManager
 
     public void SetActivePowerScheme(Guid schemeGuid) =>
         Static.SetActivePowerScheme(schemeGuid);
+
+    public bool IsExecutionStateBlockingIdle() =>
+        Static.IsExecutionStateBlockingIdle();
 
     public PowerManager()
     {

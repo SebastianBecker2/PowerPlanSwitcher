@@ -1,11 +1,14 @@
 namespace RuleManagement.Rules;
 
 using System;
+using PowerManagement;
 using RuleManagement.Dto;
 using SystemManagement;
 
 public class IdleRule(
     IIdleMonitor idleMonitor,
+    IPowerManager powerManager,
+    ISystemManager systemManager,
     IdleRuleDto idleRuleDto) :
     Rule<IdleRuleDto>(idleRuleDto),
     IRule<IdleRuleDto>,
@@ -13,6 +16,8 @@ public class IdleRule(
 {
     public Guid SchemeGuid => Dto.SchemeGuid;
     public TimeSpan IdleTimeThreshold => Dto.IdleTimeThreshold;
+    public bool CheckExecutionState => Dto.CheckExecutionState;
+    public bool CheckFullscreenApps => Dto.CheckFullscreenApps;
 
     private readonly object syncRoot = new();
 
@@ -22,7 +27,7 @@ public class IdleRule(
 
         lock (syncRoot)
         {
-            if (idleMonitor.GetIdleTime() >= IdleTimeThreshold)
+            if (CheckRule(idleMonitor.GetIdleTime()))
             {
                 TriggerCount = 1;
             }
@@ -40,16 +45,36 @@ public class IdleRule(
         object? _,
         IdleTimeChangedEventArgs e)
     {
+        if (CheckRule(e.IdleTime))
+        {
+            TriggerCount = 1;
+        }
+        else
+        {
+            TriggerCount = 0;
+        }
+    }
+
+    public bool CheckRule(TimeSpan idleTime)
+    {
         lock (syncRoot)
         {
-            if (e.IdleTime >= IdleTimeThreshold)
+            if (idleTime < IdleTimeThreshold)
             {
-                TriggerCount = 1;
+                return false;
             }
-            else
+
+            if (CheckExecutionState && powerManager.IsExecutionStateBlockingIdle())
             {
-                TriggerCount = 0;
+                return false;
             }
+
+            if (CheckFullscreenApps && systemManager.IsFullscreenAppActive())
+            {
+                return false;
+            }
+
+            return true;
         }
     }
 

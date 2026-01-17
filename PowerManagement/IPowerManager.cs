@@ -12,4 +12,5 @@ public interface IPowerManager
     public string? GetPowerSchemeName(Guid schemeGuid);
     public IEnumerable<(Guid guid, string? name)> GetPowerSchemes();
     public void SetActivePowerScheme(Guid schemeGuid);
+    public bool IsExecutionStateBlockingIdle();
 }

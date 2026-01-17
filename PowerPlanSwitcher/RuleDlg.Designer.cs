@@ -114,9 +114,9 @@ namespace PowerPlanSwitcher
             // 
             LblPowerScheme.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             LblPowerScheme.AutoSize = true;
-            LblPowerScheme.Location = new Point(3, 200);
+            LblPowerScheme.Location = new Point(3, 267);
             LblPowerScheme.Name = "LblPowerScheme";
-            LblPowerScheme.Size = new Size(95, 15);
+            LblPowerScheme.Size = new Size(95, 1);
             LblPowerScheme.TabIndex = 11;
             LblPowerScheme.Text = "Power Plan:";
             LblPowerScheme.TextAlign = ContentAlignment.MiddleRight;
@@ -138,7 +138,7 @@ namespace PowerPlanSwitcher
             tableLayoutPanel1.SetColumnSpan(CmbPowerScheme, 2);
             CmbPowerScheme.DropDownStyle = ComboBoxStyle.DropDownList;
             CmbPowerScheme.FormattingEnabled = true;
-            CmbPowerScheme.Location = new Point(104, 203);
+            CmbPowerScheme.Location = new Point(104, 270);
             CmbPowerScheme.Name = "CmbPowerScheme";
             CmbPowerScheme.Size = new Size(538, 23);
             CmbPowerScheme.TabIndex = 5;
@@ -176,13 +176,15 @@ namespace PowerPlanSwitcher
             // 
             IrcIdleRule.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             tableLayoutPanel1.SetColumnSpan(IrcIdleRule, 3);
+            idleRuleDto1.CheckExecutionState = true;
+            idleRuleDto1.CheckFullscreenApps = true;
             idleRuleDto1.IdleTimeThreshold = TimeSpan.Parse("00:00:00");
             idleRuleDto1.SchemeGuid = new Guid("00000000-0000-0000-0000-000000000000");
             IrcIdleRule.Dto = idleRuleDto1;
             IrcIdleRule.Location = new Point(0, 163);
             IrcIdleRule.Margin = new Padding(0);
             IrcIdleRule.Name = "IrcIdleRule";
-            IrcIdleRule.Size = new Size(645, 37);
+            IrcIdleRule.Size = new Size(645, 104);
             IrcIdleRule.TabIndex = 15;
             IrcIdleRule.Visible = false;
             // 

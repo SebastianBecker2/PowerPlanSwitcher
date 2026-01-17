@@ -292,6 +292,9 @@ internal static class Program
                     WindowMessage.EndSession,
                 })
             .SingleInstance();
+        _ = builder.RegisterType<SystemManager>()
+            .As<ISystemManager>()
+            .SingleInstance();
         _ = builder.RegisterType<PowerManager>()
             .As<IPowerManager>()
             .SingleInstance();
