@@ -186,7 +186,14 @@ public sealed class RuleManagerTest
             {
               ""$type"": ""RuleManagement.Dto.IdleRuleDto, RuleManagement"",
               ""IdleTimeThreshold"": ""00:00:10"",
+              ""CheckExecutionState"": false,
+              ""CheckFullscreenApps"": true,
               ""SchemeGuid"": ""eeeeeeee-eeee-eeee-eeee-eeeeeeeeeeee""
+            },
+            {
+              ""$type"": ""RuleManagement.Dto.IdleRuleDto, RuleManagement"",
+              ""IdleTimeThreshold"": ""00:00:20"",
+              ""SchemeGuid"": ""ffffffff-ffff-ffff-ffff-ffffffffffff""
             }
           ]
         }";
@@ -198,7 +205,7 @@ public sealed class RuleManagerTest
             batteryMonitor);
         var rules = manager.GetRules().ToList();
 
-        Assert.HasCount(5, rules);
+        Assert.HasCount(6, rules);
         AssertRule(rules[0], new PowerLineRuleDto
         {
             PowerLineStatus = PowerLineStatus.Offline,
@@ -221,7 +228,16 @@ public sealed class RuleManagerTest
         AssertRule(rules[4], new IdleRuleDto
         {
             SchemeGuid = CreateGuid('e'),
+            CheckExecutionState = false,
+            CheckFullscreenApps = true,
             IdleTimeThreshold = TimeSpan.FromSeconds(10),
+        });
+        AssertRule(rules[5], new IdleRuleDto
+        {
+            SchemeGuid = CreateGuid('f'),
+            CheckExecutionState = false,
+            CheckFullscreenApps = false,
+            IdleTimeThreshold = TimeSpan.FromSeconds(20),
         });
     }
 
