@@ -12,7 +12,11 @@ Switch your power plan easily and quickly by clicking the tray-icon.
 
 Or let PowerPlanSwitcher automatically switch between power plans depending on what you do.
 
-<img width="707" height="351" alt="image" src="https://github.com/user-attachments/assets/e9c79954-4eae-42ef-b619-defe1ca68603" />
+## Using rules to automatically switch power plans
+
+Create a list of rules that determine which power plan should be active. Rules will be triggered by various events but only the first rule in the list with a trigger of 1 or higher, determines the power plan.
+
+<img width="707" height="353" alt="image" src="https://github.com/user-attachments/assets/f432d005-7de7-4b2b-bdb0-502b5bb9c41a" />
 
 Create rules that switch Windows power plans based on:
 
