@@ -25,18 +25,12 @@ public class ProcessRule
             }
 
             return x.ProcessId == y.ProcessId
-                && x.ProcessName == y.ProcessName
-                && x.ExecutablePath == y.ExecutablePath
-                && x.MainWindowTitle == y.MainWindowTitle
                 && x.StartTime == y.StartTime;
         }
 
         public int GetHashCode(IProcess obj) =>
             HashCode.Combine(
                 obj.ProcessId,
-                obj.ProcessName,
-                obj.ExecutablePath,
-                obj.MainWindowTitle,
                 obj.StartTime);
     }
 

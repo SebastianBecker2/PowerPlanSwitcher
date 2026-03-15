@@ -456,6 +456,10 @@ public sealed class ProcessRuleTest
 
         _ = A.CallTo(() => p1.ExecutablePath).Returns("a.exe");
         _ = A.CallTo(() => p2.ExecutablePath).Returns("b.exe");
+        _ = A.CallTo(() => p1.ProcessId).Returns(1);
+        _ = A.CallTo(() => p2.ProcessId).Returns(2);
+        _ = A.CallTo(() => p1.StartTime).Returns(new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+        _ = A.CallTo(() => p2.StartTime).Returns(new DateTime(2025, 1, 1, 0, 0, 1, DateTimeKind.Utc));
 
         processMonitor.ProcessCreated += Raise.With(new ProcessEventArgs(p1));
         processMonitor.ProcessCreated += Raise.With(new ProcessEventArgs(p2));

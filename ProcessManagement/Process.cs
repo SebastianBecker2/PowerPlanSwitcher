@@ -29,19 +29,13 @@ public class Process : IProcess
                 return null;
             }
 
-            var mainWindowTitle = TryGetMainWindowTitle(processEntry.th32ProcessID);
-            if (mainWindowTitle is null)
-            {
-                return null;
-            }
-
             var p = new Process
             {
                 ProcessId = processId,
                 ProcessName = processEntry.szExeFile,
                 StartTime = startTime.Value,
                 ExecutablePath = executablePath.ToLowerInvariant(),
-                MainWindowTitle = mainWindowTitle,
+                MainWindowTitle = string.Empty,
             };
 
             return p;
@@ -83,17 +77,11 @@ public class Process : IProcess
     public bool Equals(IProcess? other) =>
         other is not null
         && ProcessId == other.ProcessId
-        && ProcessName == other.ProcessName
-        && ExecutablePath == other.ExecutablePath
-        && MainWindowTitle == other.MainWindowTitle
         && StartTime == other.StartTime;
 
     public override int GetHashCode() =>
         HashCode.Combine(
             ProcessId,
-            ProcessName,
-            ExecutablePath,
-            MainWindowTitle,
             StartTime);
 
     public int ProcessId { get; private set; }
