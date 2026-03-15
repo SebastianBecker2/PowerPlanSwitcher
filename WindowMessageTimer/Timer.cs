@@ -2,6 +2,7 @@ namespace WindowMessageTimer;
 
 using System;
 using System.Collections.Concurrent;
+using System.Diagnostics;
 using System.Runtime.InteropServices;
 using System.Threading;
 using Vanara.PInvoke;
@@ -183,8 +184,9 @@ public sealed class Timer(TimeSpan interval) : IDisposable
                     {
                         timer.Tick?.Invoke();
                     }
-                    catch
+                    catch (Exception ex)
                     {
+                        Trace.TraceWarning($"WindowMessageTimer tick callback failed: {ex}");
                     }
                     finally
                     {

@@ -2,6 +2,7 @@ namespace ProcessManagement;
 
 using System;
 using System.Text;
+using Serilog;
 using static Vanara.PInvoke.Kernel32;
 
 public class Process : IProcess
@@ -45,8 +46,9 @@ public class Process : IProcess
 
             return p;
         }
-        catch
+        catch (Exception ex)
         {
+            Log.Debug(ex, "Failed to create process snapshot entry from PROCESSENTRY32.");
             return null;
         }
     }
@@ -68,8 +70,9 @@ public class Process : IProcess
 
             return p;
         }
-        catch
+        catch (Exception ex)
         {
+            Log.Debug(ex, "Failed to create process snapshot entry from System.Diagnostics.Process.");
             return null;
         }
     }
@@ -130,8 +133,9 @@ public class Process : IProcess
         {
             return DateTime.FromFileTimeUtc((long)fileTime);
         }
-        catch
+        catch (Exception ex)
         {
+            Log.Debug(ex, "Failed to convert process creation time from FILETIME.");
             return null;
         }
     }
@@ -166,8 +170,9 @@ public class Process : IProcess
             // Accessing MainWindowTitle does NOT throw for protected processes
             return proc.MainWindowTitle;
         }
-        catch
+        catch (Exception ex)
         {
+            Log.Debug(ex, "Failed to read main window title for process {ProcessId}", pid);
             return null;
         }
     }
