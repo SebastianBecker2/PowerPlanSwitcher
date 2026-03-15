@@ -60,6 +60,8 @@ public partial class IconSelectionDlg : Form
     private readonly Dictionary<string, int> imageIndices = [];
     private readonly Dictionary<string, int> filteredIndexByKey = [];
     private readonly System.Windows.Forms.Timer refreshTimer = new();
+    private readonly HashSet<int> redrawBatch = [];
+    private readonly List<int> redrawBatchSorted = [];
 
     private readonly ImageCache imageCache;
     private List<string> filteredMapping;
@@ -389,28 +391,31 @@ public partial class IconSelectionDlg : Form
             return;
         }
 
-        var pending = new HashSet<int>();
-        while (pending.Count < 512 && redrawQueue.TryDequeue(out var index))
+        redrawBatch.Clear();
+        while (redrawBatch.Count < 512 && redrawQueue.TryDequeue(out var index))
         {
             if (index >= 0 && index < LvwIcons.VirtualListSize)
             {
-                _ = pending.Add(index);
+                _ = redrawBatch.Add(index);
             }
         }
 
-        if (pending.Count == 0)
+        if (redrawBatch.Count == 0)
         {
             hasPendingRefresh = !redrawQueue.IsEmpty;
             return;
         }
 
-        var sorted = pending.OrderBy(i => i).ToArray();
-        var rangeStart = sorted[0];
-        var previous = sorted[0];
+        redrawBatchSorted.Clear();
+        redrawBatchSorted.AddRange(redrawBatch);
+        redrawBatchSorted.Sort();
 
-        for (var i = 1; i < sorted.Length; i++)
+        var rangeStart = redrawBatchSorted[0];
+        var previous = redrawBatchSorted[0];
+
+        for (var i = 1; i < redrawBatchSorted.Count; i++)
         {
-            var current = sorted[i];
+            var current = redrawBatchSorted[i];
             if (current == previous + 1)
             {
                 previous = current;
