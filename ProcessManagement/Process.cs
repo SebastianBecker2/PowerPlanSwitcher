@@ -6,10 +6,6 @@ using static Vanara.PInvoke.Kernel32;
 
 public class Process : IProcess
 {
-    private readonly record struct ProcessKey(int Pid, DateTime StartTime);
-    private static readonly Dictionary<ProcessKey, Process> Cache = [];
-    private static readonly object CacheLock = new();
-
     private static readonly Process OwnProcess =
         CreateFromProcess(System.Diagnostics.Process.GetCurrentProcess())
         ?? throw new InvalidOperationException(
@@ -24,15 +20,6 @@ public class Process : IProcess
             if (startTime is null)
             {
                 return null;
-            }
-
-            var key = new ProcessKey(processId, startTime.Value);
-            lock (CacheLock)
-            {
-                if (Cache.TryGetValue(key, out var cachedProcess))
-                {
-                    return cachedProcess;
-                }
             }
 
             var executablePath = TryGetExecutablePath(processEntry.th32ProcessID);
@@ -56,10 +43,6 @@ public class Process : IProcess
                 MainWindowTitle = mainWindowTitle,
             };
 
-            lock (CacheLock)
-            {
-                Cache[key] = p;
-            }
             return p;
         }
         catch
@@ -73,15 +56,6 @@ public class Process : IProcess
     {
         try
         {
-            var key = new ProcessKey(process.Id, process.StartTime);
-            lock (CacheLock)
-            {
-                if (Cache.TryGetValue(key, out var cachedProcess))
-                {
-                    return cachedProcess;
-                }
-            }
-
             var p = new Process
             {
                 ProcessId = process.Id,
@@ -92,10 +66,6 @@ public class Process : IProcess
                 MainWindowTitle = process.MainWindowTitle ?? "",
             };
 
-            lock (CacheLock)
-            {
-                Cache[key] = p;
-            }
             return p;
         }
         catch
