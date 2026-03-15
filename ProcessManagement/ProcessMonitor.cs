@@ -6,6 +6,8 @@ using static Vanara.PInvoke.Kernel32;
 
 public class ProcessMonitor : IDisposable, IProcessMonitor
 {
+    private readonly record struct ProcessIdentity(int ProcessId, DateTime StartTime);
+
     [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "<Pending>")]
     [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "Ignoring CA1716 since it's necessary")]
     public static class Static
@@ -51,7 +53,7 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
         OnProcessTerminated(new ProcessEventArgs(process));
 
     private readonly WindowMessageTimer.Timer timer;
-    private IEnumerable<IProcess> previousProcesses = [];
+    private Dictionary<ProcessIdentity, IProcess> previousProcesses = [];
     private bool disposedValue;
 
     public ProcessMonitor(TimeSpan updateInterval)
@@ -67,17 +69,15 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
             return;
         }
 
-        var currentProcesses = GetUsersProcesses().ToList();
+        var currentProcesses = CreateProcessMap(GetUsersProcesses());
 
-        var addedProcesses = currentProcesses
-            .Except(previousProcesses)
-            .ToList();
-        var removedProcesses = previousProcesses
-            .Except(currentProcesses)
-            .ToList();
-
-        foreach (var addedProcess in addedProcesses)
+        foreach (var (identity, addedProcess) in currentProcesses)
         {
+            if (previousProcesses.ContainsKey(identity))
+            {
+                continue;
+            }
+
             Log.Information(
                 "Process created: {ProcessId} " +
                 "{ProcessName} {ExecutablePath}",
@@ -87,8 +87,13 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
             OnProcessCreated(addedProcess);
         }
 
-        foreach (var removedProcess in removedProcesses)
+        foreach (var (identity, removedProcess) in previousProcesses)
         {
+            if (currentProcesses.ContainsKey(identity))
+            {
+                continue;
+            }
+
             Log.Information(
                 "Process terminated: {ProcessId} " +
                 "{ProcessName} {ExecutablePath}",
@@ -103,7 +108,7 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
 
     public void StartMonitoring()
     {
-        previousProcesses = GetUsersProcesses().ToList();
+        previousProcesses = CreateProcessMap(GetUsersProcesses());
         timer.Start();
         Log.Information("Process monitoring started");
     }
@@ -116,6 +121,21 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
 
     public IEnumerable<IProcess> GetUsersProcesses() =>
         Static.GetUsersProcesses();
+
+    private static ProcessIdentity GetProcessIdentity(IProcess process) =>
+        new(process.ProcessId, process.StartTime);
+
+    private static Dictionary<ProcessIdentity, IProcess> CreateProcessMap(
+        IEnumerable<IProcess> processes)
+    {
+        var map = new Dictionary<ProcessIdentity, IProcess>();
+        foreach (var process in processes)
+        {
+            map[GetProcessIdentity(process)] = process;
+        }
+
+        return map;
+    }
 
     protected virtual void Dispose(bool disposing)
     {
