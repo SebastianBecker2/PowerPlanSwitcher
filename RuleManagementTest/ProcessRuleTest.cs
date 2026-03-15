@@ -123,6 +123,35 @@ public sealed class ProcessRuleTest
     }
 
     [TestMethod]
+    public void ProcessTerminated_UntrackedMatchingProcess_DoesNotDecrementTrackedCount()
+    {
+        var dto = new ProcessRuleDto
+        {
+            Pattern = "test.exe",
+            Type = ComparisonType.Exact,
+            SchemeGuid = Guid.NewGuid()
+        };
+        var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
+
+        var trackedProcess = A.Fake<IProcess>();
+        _ = A.CallTo(() => trackedProcess.ExecutablePath).Returns("test.exe");
+        _ = A.CallTo(() => trackedProcess.ProcessId).Returns(1);
+        _ = A.CallTo(() => trackedProcess.StartTime).Returns(new DateTime(2025, 1, 1, 0, 0, 0, DateTimeKind.Utc));
+
+        var untrackedProcess = A.Fake<IProcess>();
+        _ = A.CallTo(() => untrackedProcess.ExecutablePath).Returns("test.exe");
+        _ = A.CallTo(() => untrackedProcess.ProcessId).Returns(2);
+        _ = A.CallTo(() => untrackedProcess.StartTime).Returns(new DateTime(2025, 1, 1, 0, 0, 1, DateTimeKind.Utc));
+
+        processMonitor.ProcessCreated += Raise.With(new ProcessEventArgs(trackedProcess));
+        Assert.AreEqual(1, rule.TriggerCount);
+
+        processMonitor.ProcessTerminated += Raise.With(new ProcessEventArgs(untrackedProcess));
+
+        Assert.AreEqual(1, rule.TriggerCount, "TriggerCount should only decrement for tracked matching processes");
+    }
+
     public void ProcessCreated_WildcardMatch_IncrementsTriggerCount()
     {
         var dto = new ProcessRuleDto
@@ -416,6 +445,34 @@ public sealed class ProcessRuleTest
         processMonitor.ProcessTerminated += Raise.With(new ProcessEventArgs(p1));
 
         Assert.AreEqual(1, rule.TriggerCount);
+    }
+
+    [TestMethod]
+    public void StartRuling_AfterStop_ClearsPreviouslyMatchedProcesses()
+    {
+        var dto = new ProcessRuleDto
+        {
+            Pattern = "test.exe",
+            Type = ComparisonType.Exact,
+            SchemeGuid = Guid.NewGuid()
+        };
+
+        var process = A.Fake<IProcess>();
+        _ = A.CallTo(() => process.ExecutablePath).Returns("test.exe");
+
+        var currentProcesses = new List<IProcess> { process };
+        _ = A.CallTo(() => processMonitor.GetUsersProcesses())
+            .ReturnsLazily(() => currentProcesses);
+
+        var rule = new ProcessRule(processMonitor, dto);
+
+        rule.StartRuling();
+        Assert.AreEqual(1, rule.TriggerCount);
+
+        rule.StopRuling();
+        rule.StartRuling();
+
+        Assert.AreEqual(1, rule.TriggerCount, "Restarting the rule should recount currently running matching processes");
     }
 
     [TestMethod]

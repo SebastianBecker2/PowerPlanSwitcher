@@ -103,6 +103,7 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
 
     public void StartMonitoring()
     {
+        previousProcesses = GetUsersProcesses().ToList();
         timer.Start();
         Log.Information("Process monitoring started");
     }

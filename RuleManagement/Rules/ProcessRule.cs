@@ -10,6 +10,36 @@ public class ProcessRule
     IRule<ProcessRuleDto>,
     IDisposable
 {
+    private sealed class ProcessIdentityComparer : IEqualityComparer<IProcess>
+    {
+        public bool Equals(IProcess? x, IProcess? y)
+        {
+            if (ReferenceEquals(x, y))
+            {
+                return true;
+            }
+
+            if (x is null || y is null)
+            {
+                return false;
+            }
+
+            return x.ProcessId == y.ProcessId
+                && x.ProcessName == y.ProcessName
+                && x.ExecutablePath == y.ExecutablePath
+                && x.MainWindowTitle == y.MainWindowTitle
+                && x.StartTime == y.StartTime;
+        }
+
+        public int GetHashCode(IProcess obj) =>
+            HashCode.Combine(
+                obj.ProcessId,
+                obj.ProcessName,
+                obj.ExecutablePath,
+                obj.MainWindowTitle,
+                obj.StartTime);
+    }
+
     private readonly Glob? glob;
 
     public Guid SchemeGuid => Dto.SchemeGuid;
@@ -17,7 +47,7 @@ public class ProcessRule
     public ComparisonType Type => Dto.Type;
 
     private readonly IProcessMonitor processMonitor;
-    private readonly HashSet<IProcess> matchedProcesses = [];
+    private readonly HashSet<IProcess> matchedProcesses = new(new ProcessIdentityComparer());
     private readonly object syncRoot = new();
 
     public ProcessRule(
@@ -45,6 +75,7 @@ public class ProcessRule
 
         lock (syncRoot)
         {
+            matchedProcesses.Clear();
             TriggerCount = 0;
             foreach (var process in processMonitor.GetUsersProcesses())
             {
@@ -87,7 +118,11 @@ public class ProcessRule
         {
             if (CheckRule(e.Process))
             {
-                _ = matchedProcesses.Remove(e.Process);
+                if (!matchedProcesses.Remove(e.Process))
+                {
+                    return;
+                }
+
                 TriggerCount = Math.Max(TriggerCount - 1, 0);
             }
         }
