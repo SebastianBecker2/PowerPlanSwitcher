@@ -24,6 +24,7 @@ public class RuleManager
     private readonly RuleFactory ruleFactory;
 
     private List<IRule> rules = [];
+    private readonly Dictionary<IRule, int> ruleIndices = [];
 
     public IRule? AppliedRule { get; private set; }
 
@@ -55,6 +56,7 @@ public class RuleManager
             migrationPolicy);
 
         rules = LoadRules(ruleJson, ruleFactory);
+        RebuildRuleIndices();
     }
 
     public void StartMonitoring()
@@ -78,24 +80,31 @@ public class RuleManager
             throw new InvalidCastException("Sender was not an IRule.");
         }
 
-        var index = rules.IndexOf(rule);
+        if (!ruleIndices.TryGetValue(rule, out var index))
+        {
+            index = rules.IndexOf(rule);
+            if (index == -1)
+            {
+                throw new InvalidOperationException("Rule was not found in manager state.");
+            }
+            ruleIndices[rule] = index;
+        }
+
+        var (firstTriggeredRuleIndex, firstTriggeredRule) = FindFirstTriggeredRule();
 
         // If rule is not triggered, apply the next triggered rule
         // or no rule (nextRule == null) if no other rule is triggered
         if (rule.TriggerCount == 0)
         {
-            var nextRule = rules.FirstOrDefault(r => r.TriggerCount > 0);
             // Next triggered rule is already applied
-            if (nextRule == AppliedRule)
+            if (firstTriggeredRule == AppliedRule)
             {
                 return;
             }
-            AppliedRule = nextRule;
-            RuleApplicationChanged?.Invoke(this, new RuleApplicationChangedEventArgs(nextRule));
+            AppliedRule = firstTriggeredRule;
+            RuleApplicationChanged?.Invoke(this, new RuleApplicationChangedEventArgs(firstTriggeredRule));
             return;
         }
-
-        var firstTriggeredRuleIndex = rules.FindIndex(r => r.TriggerCount > 0);
 
         // The rule is the highest with a TriggerCount > 1
         // so if the TriggerCount is exactly 1, we still need to apply it
@@ -157,6 +166,7 @@ public class RuleManager
             (rule as IDisposable)?.Dispose();
         }
         rules = [.. newRules];
+        RebuildRuleIndices();
         Subscribe(rules);
 
         var ruleContainer = new RuleContainer
@@ -172,6 +182,28 @@ public class RuleManager
             });
 
         RulesUpdated?.Invoke(this, new RulesUpdatedEventArgs(json));
+    }
+
+    private void RebuildRuleIndices()
+    {
+        ruleIndices.Clear();
+        for (var i = 0; i < rules.Count; i++)
+        {
+            ruleIndices[rules[i]] = i;
+        }
+    }
+
+    private (int firstTriggeredRuleIndex, IRule? firstTriggeredRule) FindFirstTriggeredRule()
+    {
+        for (var i = 0; i < rules.Count; i++)
+        {
+            if (rules[i].TriggerCount > 0)
+            {
+                return (i, rules[i]);
+            }
+        }
+
+        return (-1, null);
     }
 
     private static string MigratePowerRulesToRules(
