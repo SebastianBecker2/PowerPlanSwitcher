@@ -41,6 +41,8 @@ internal static class Program
         new LoggingLevelSwitch(Serilog.Events.LogEventLevel.Fatal);
 
     private static Hotkey? CycleHotkey { get; set; }
+    private static Dictionary<(Keys key, ModifierKeys modifier), (Guid guid, string? name)>
+        DirectPowerSchemeHotkeys { get; } = [];
 
     public static void UpdateLogLevelSwitch(bool useExtendedLogging) =>
         LogLevelSwitch.MinimumLevel = useExtendedLogging
@@ -136,6 +138,8 @@ internal static class Program
 
     public static void RegisterHotkeys(HotkeyManager hotkeyManager)
     {
+        DirectPowerSchemeHotkeys.Clear();
+
         CycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
             Settings.Default.CyclePowerSchemeHotkey);
         if (CycleHotkey is not null)
@@ -146,10 +150,20 @@ internal static class Program
         }
 
         foreach (var hotkey in PowerManager.Static.GetPowerSchemes()
-            .Select(ps => PowerSchemeSettings.GetSetting(ps.guid)?.Hotkey)
-            .Where(h => h is not null))
+            .Select(ps =>
+            {
+                var hotkey = PowerSchemeSettings.GetSetting(ps.guid)?.Hotkey;
+                return (ps.guid, ps.name, hotkey);
+            })
+            .Where(x => x.hotkey is not null))
         {
-            _ = hotkeyManager.AddHotkey(hotkey!.Key, hotkey!.Modifier);
+            _ = hotkeyManager.AddHotkey(hotkey.hotkey!.Key, hotkey.hotkey.Modifier);
+
+            var key = (hotkey.hotkey.Key, hotkey.hotkey.Modifier);
+            if (!DirectPowerSchemeHotkeys.ContainsKey(key))
+            {
+                DirectPowerSchemeHotkeys[key] = (hotkey.guid, hotkey.name);
+            }
         }
     }
 
@@ -251,18 +265,9 @@ internal static class Program
     private static void HandlePowerSchemeHotkeyPressed(
         HotkeyPressedEventArgs e)
     {
-        var (guid, name) = PowerManager.Static.GetPowerSchemes()
-            .FirstOrDefault(ps =>
-            {
-                var setting = PowerSchemeSettings.GetSetting(ps.guid);
-                if (setting is null || setting.Hotkey is null)
-                {
-                    return false;
-                }
-                return AreHotkeyEqual(e, setting.Hotkey);
-            });
-
-        if (guid == Guid.Empty)
+        if (!DirectPowerSchemeHotkeys.TryGetValue(
+            (e.PressedKey, e.ModifierKeys),
+            out var target))
         {
             return;
         }
@@ -270,10 +275,10 @@ internal static class Program
         Log.Information(
             "Activating power scheme: {PowerSchemeName} " +
             "{PowerSchemeGuid} Reason: Direct Hotkey",
-            name,
-            guid);
-        PowerManager.Static.SetActivePowerScheme(guid);
-        ToastDlg.ShowToastNotification(guid, "Power Plan hotkey pressed");
+            target.name,
+            target.guid);
+        PowerManager.Static.SetActivePowerScheme(target.guid);
+        ToastDlg.ShowToastNotification(target.guid, "Power Plan hotkey pressed");
     }
 
     /// <summary>
