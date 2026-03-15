@@ -42,14 +42,9 @@ public class PowerLineRule(
     {
         lock (syncRoot)
         {
-            if (CheckRule(e.PowerLineStatus))
-            {
-                TriggerCount++;
-            }
-            else
-            {
-                TriggerCount = Math.Max(TriggerCount - 1, 0);
-            }
+            TriggerCount = CheckRule(e.PowerLineStatus)
+                ? 1
+                : 0;
         }
     }
 

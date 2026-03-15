@@ -50,6 +50,25 @@ public sealed class PowerLineRuleTest
     }
 
     [TestMethod]
+    public void BatteryMonitorEvent_RepeatedMatchingStatus_DoesNotIncreaseAboveOne()
+    {
+        var dto = new PowerLineRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            PowerLineStatus = PowerLineStatus.Online
+        };
+        var rule = new PowerLineRule(batteryMonitor, dto);
+        rule.StartRuling();
+
+        batteryMonitor.PowerLineStatusChanged += Raise.With(
+            new PowerLineStatusChangedEventArgs(PowerLineStatus.Online));
+        batteryMonitor.PowerLineStatusChanged += Raise.With(
+            new PowerLineStatusChangedEventArgs(PowerLineStatus.Online));
+
+        Assert.AreEqual(1, rule.TriggerCount, "TriggerCount should represent active state and stay at one");
+    }
+
+    [TestMethod]
     public void BatteryMonitorEvent_StatusDoesNotMatch_DecrementsTriggerCount()
     {
         // Arrange
