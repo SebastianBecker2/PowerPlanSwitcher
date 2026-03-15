@@ -70,6 +70,7 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
         }
 
         var currentProcesses = CreateProcessMap(GetUsersProcesses());
+        var logProcessEvents = Log.IsEnabled(Serilog.Events.LogEventLevel.Information);
 
         foreach (var (identity, addedProcess) in currentProcesses)
         {
@@ -78,12 +79,15 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
                 continue;
             }
 
-            Log.Information(
-                "Process created: {ProcessId} " +
-                "{ProcessName} {ExecutablePath}",
-                addedProcess.ProcessId,
-                addedProcess.ProcessName,
-                addedProcess.ExecutablePath);
+            if (logProcessEvents)
+            {
+                Log.Information(
+                    "Process created: {ProcessId} " +
+                    "{ProcessName} {ExecutablePath}",
+                    addedProcess.ProcessId,
+                    addedProcess.ProcessName,
+                    addedProcess.ExecutablePath);
+            }
             OnProcessCreated(addedProcess);
         }
 
@@ -94,12 +98,15 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
                 continue;
             }
 
-            Log.Information(
-                "Process terminated: {ProcessId} " +
-                "{ProcessName} {ExecutablePath}",
-                removedProcess.ProcessId,
-                removedProcess.ProcessName,
-                removedProcess.ExecutablePath);
+            if (logProcessEvents)
+            {
+                Log.Information(
+                    "Process terminated: {ProcessId} " +
+                    "{ProcessName} {ExecutablePath}",
+                    removedProcess.ProcessId,
+                    removedProcess.ProcessName,
+                    removedProcess.ExecutablePath);
+            }
             OnProcessTerminated(removedProcess);
         }
 

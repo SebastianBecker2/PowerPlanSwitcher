@@ -61,7 +61,10 @@ public sealed class WindowMessageMonitor(
         var msgEnum = (WindowMessage)msg;
         if (messages.Contains(msgEnum))
         {
-            Log.Information("Window message received: {Message}", msgEnum);
+            if (Log.IsEnabled(Serilog.Events.LogEventLevel.Information))
+            {
+                Log.Information("Window message received: {Message}", msgEnum);
+            }
 
             WindowMessageReceived?.Invoke(
                 this,
