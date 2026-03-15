@@ -40,6 +40,8 @@ internal static class Program
     private static LoggingLevelSwitch LogLevelSwitch { get; } =
         new LoggingLevelSwitch(Serilog.Events.LogEventLevel.Fatal);
 
+    private static Hotkey? CycleHotkey { get; set; }
+
     public static void UpdateLogLevelSwitch(bool useExtendedLogging) =>
         LogLevelSwitch.MinimumLevel = useExtendedLogging
             ? Serilog.Events.LogEventLevel.Verbose
@@ -134,13 +136,13 @@ internal static class Program
 
     public static void RegisterHotkeys(HotkeyManager hotkeyManager)
     {
-        var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
+        CycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
             Settings.Default.CyclePowerSchemeHotkey);
-        if (cycleHotkey is not null)
+        if (CycleHotkey is not null)
         {
             _ = hotkeyManager.AddHotkey(
-                cycleHotkey.Key,
-                cycleHotkey.Modifier);
+                CycleHotkey.Key,
+                CycleHotkey.Modifier);
         }
 
         foreach (var hotkey in PowerManager.Static.GetPowerSchemes()
@@ -183,10 +185,10 @@ internal static class Program
         object? sender,
         HotkeyPressedEventArgs e)
     {
-        var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
+        CycleHotkey ??= JsonConvert.DeserializeObject<Hotkey>(
             Settings.Default.CyclePowerSchemeHotkey);
 
-        if (cycleHotkey is not null && AreHotkeyEqual(e, cycleHotkey))
+        if (CycleHotkey is not null && AreHotkeyEqual(e, CycleHotkey))
         {
             HandleCycleHotkeyPressed();
             return;
