@@ -1,7 +1,6 @@
 namespace PowerPlanSwitcher;
 
 using System.Data;
-using System.Drawing.Drawing2D;
 using Autofac;
 using Newtonsoft.Json;
 using PowerManagement;
@@ -148,53 +147,6 @@ public partial class SettingsDlg : Form
         return row;
     }
 
-    private static Size Rescale(
-        Size originalSize,
-        Size containerSize)
-    {
-        var width = originalSize.Width;
-        var height = originalSize.Height;
-
-        if (width > height)
-        {
-            height = (int)(height / ((double)width / containerSize.Width));
-            return containerSize with { Height = height };
-        }
-
-        width = (int)(width / ((double)height / containerSize.Height));
-        return containerSize with { Width = width };
-    }
-
-    private static Bitmap ResizeImage(Image original,
-        Size size,
-        InterpolationMode interpolationMode = InterpolationMode.HighQualityBicubic,
-        SmoothingMode smoothingMode = SmoothingMode.HighQuality,
-        PixelOffsetMode pixelOffsetMode = PixelOffsetMode.HighQuality) =>
-        ResizeImage(
-            original,
-            size.Width,
-            size.Height,
-            interpolationMode,
-            smoothingMode,
-            pixelOffsetMode);
-
-    private static Bitmap ResizeImage(
-        Image original,
-        int width,
-        int height,
-        InterpolationMode interpolationMode = InterpolationMode.HighQualityBicubic,
-        SmoothingMode smoothingMode = SmoothingMode.HighQuality,
-        PixelOffsetMode pixelOffsetMode = PixelOffsetMode.HighQuality)
-    {
-        var result = new Bitmap(width, height);
-        using var graphics = Graphics.FromImage(result);
-        graphics.SmoothingMode = smoothingMode;
-        graphics.InterpolationMode = interpolationMode;
-        graphics.PixelOffsetMode = pixelOffsetMode;
-        graphics.DrawImage(original, 0, 0, width, height);
-        return result;
-    }
-
     private void TacSettingsCategories_SelectedIndexChanged(
         object? sender,
         EventArgs e)
@@ -250,7 +202,9 @@ public partial class SettingsDlg : Form
                 new PowerSchemeSettings.Setting
                 {
                     Visible = (bool)row.Cells["DgcVisible"].Value,
-                    Icon = row.Cells["DgcIcon"].Value as Image,
+                    Icon = row.Cells["DgcIcon"].Value is not Image image
+                        ? null
+                        : IconUtilities.NormalizeForPowerSchemeIcon(image),
                     Hotkey = row.Cells["DgcHotkey"].Tag as Hotkey,
                 });
         }
@@ -421,13 +375,7 @@ public partial class SettingsDlg : Form
             return;
         }
 
-        var image = dlg.SelectedIcon;
-        if (image.Size.Height > 32 || image.Size.Width > 32)
-        {
-            image = ResizeImage(
-                image,
-                Rescale(image.Size, new Size(32, 32)));
-        }
+        var image = IconUtilities.NormalizeForPowerSchemeIcon(dlg.SelectedIcon);
 
         var row = DgvPowerSchemes.SelectedRows[0];
         row.Cells["DgcIcon"].Value = image;

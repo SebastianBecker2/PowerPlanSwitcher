@@ -52,7 +52,6 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
 - [WindowsAPICodePack](https://github.com/contre/Windows-API-Code-Pack-1.1)
 - [Vanara](https://github.com/dahall/Vanara)
 - [Serilog](https://serilog.net/)
-- [SkiaSharp](https://github.com/mono/SkiaSharp)
 - [SevenZipSharp](https://github.com/squid-box/SevenZipSharp)
 - [WiX Toolset 6](https://wixtoolset.org/)
 - [HotkeyManager](https://github.com/SebastianBecker2/HotkeyManager)

@@ -4,6 +4,7 @@ using System;
 using System.Drawing;
 using System.Windows.Forms;
 using PowerPlanSwitcher.Properties;
+using Serilog;
 using SevenZip;
 
 public partial class IconSelectionDlg : Form
@@ -98,7 +99,7 @@ public partial class IconSelectionDlg : Form
                 extractor.ExtractFile(key, ms);
                 ms.Position = 0;
                 using var original = Image.FromStream(ms, false, false);
-                var bitmap = new Bitmap(original, new Size(32, 32));
+                var bitmap = IconUtilities.NormalizeForPowerSchemeIcon(original);
                 imageCache.CacheImage(key, bitmap);
                 Invoke(() =>
                 {
@@ -131,7 +132,8 @@ public partial class IconSelectionDlg : Form
             return;
         }
 
-        SelectedIcon = imageCache.GetImage(index);
+        var filename = filteredMapping[index];
+        SelectedIcon = imageCache.GetImage(filename);
         if (SelectedIcon is null)
         {
             return;
@@ -177,7 +179,26 @@ public partial class IconSelectionDlg : Form
             return;
         }
 
-        SelectedIcon = Image.FromFile(dlg.FileName);
+        if (!IconUtilities.TryLoadDetachedImageFromFile(
+            dlg.FileName,
+            out var loadedImage,
+            out var error))
+        {
+            Log.Warning(
+                error,
+                "Failed to load user-selected icon file {FilePath}",
+                dlg.FileName);
+            _ = MessageBox.Show(
+                "The selected file could not be loaded as an icon image. " +
+                "Please choose a valid PNG, JPG, BMP, TIFF, or GIF image.",
+                "Invalid image file",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return;
+        }
+
+        SelectedIcon = loadedImage;
+
         DialogResult = DialogResult.OK;
     }
 

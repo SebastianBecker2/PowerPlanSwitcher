@@ -14,6 +14,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\PowerPlanSwitcher\PowerPlanSwitcher.csproj" />
     <ProjectReference Include="..\RuleManagement\RuleManagement.csproj" />
   </ItemGroup>
 

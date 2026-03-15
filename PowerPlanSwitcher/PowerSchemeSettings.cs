@@ -5,7 +5,7 @@ using System.Collections.Generic;
 using System.Drawing.Imaging;
 using Newtonsoft.Json;
 using Properties;
-using SkiaSharp;
+using Serilog;
 
 internal static class PowerSchemeSettings
 {
@@ -26,20 +26,19 @@ internal static class PowerSchemeSettings
             try
             {
                 var imageBytes = Convert.FromBase64String(base64);
-
-                using var skData = SKData.CreateCopy(imageBytes);
-                using var skImage = SKImage.FromEncodedData(skData)
-                    ?? throw new InvalidOperationException(
-                        "Failed to decode image data.");
-
-                using var encoded = skImage.Encode(
-                    SKEncodedImageFormat.Png,
-                    100);
-                using var pngStream = new MemoryStream(encoded.ToArray());
-                return Image.FromStream(pngStream);
+                using var imageStream = new MemoryStream(imageBytes);
+                using var sourceImage = Image.FromStream(
+                    imageStream,
+                    useEmbeddedColorManagement: true,
+                    validateImageData: true);
+                return IconUtilities.NormalizeForPowerSchemeIcon(sourceImage);
             }
-            catch (FormatException)
+            catch (Exception ex)
             {
+                Log.Warning(
+                    ex,
+                    "Failed to decode power scheme icon from settings. Payload length: {PayloadLength}",
+                    base64.Length);
                 return null;
             }
         }
@@ -59,14 +58,9 @@ internal static class PowerSchemeSettings
             // Important right now to recognize changes in settings.
 
             using var ms = new MemoryStream();
-            image.Save(ms, ImageFormat.Png);
-            _ = ms.Seek(0, SeekOrigin.Begin);
-
-            using var skData = SKData.Create(ms);
-            using var skImage = SKImage.FromEncodedData(skData);
-
-            using var encoded = skImage.Encode(SKEncodedImageFormat.Png, 100);
-            writer.WriteValue(Convert.ToBase64String(encoded.ToArray()));
+            using var normalizedImage = IconUtilities.NormalizeForPowerSchemeIcon(image);
+            normalizedImage.Save(ms, ImageFormat.Png);
+            writer.WriteValue(Convert.ToBase64String(ms.ToArray()));
         }
 
         public override bool CanConvert(Type objectType) =>
@@ -143,9 +137,19 @@ internal static class PowerSchemeSettings
                 return;
             }
 
-            settings = JsonConvert.DeserializeObject<Dictionary<Guid, Setting>>(
-                    Settings.Default.PowerSchemeSettings) ??
-                [];
+            try
+            {
+                settings = JsonConvert.DeserializeObject<Dictionary<Guid, Setting>>(
+                        Settings.Default.PowerSchemeSettings) ??
+                    [];
+            }
+            catch (Exception ex)
+            {
+                Log.Warning(
+                    ex,
+                    "Failed to load power scheme settings JSON. Falling back to defaults.");
+                settings = [];
+            }
         }
     }
 }
