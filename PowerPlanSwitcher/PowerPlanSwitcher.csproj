@@ -6,7 +6,7 @@
     <UseWindowsForms>true</UseWindowsForms>
     <ApplicationHighDpiMode>PerMonitorV2</ApplicationHighDpiMode>
     <ImplicitUsings>enable</ImplicitUsings>
-    <VersionPrefix>1.2.7</VersionPrefix>
+    <VersionPrefix>1.2.8</VersionPrefix>
     <VersionSuffix></VersionSuffix>
     <ApplicationIcon>Resources\power_surge.ico</ApplicationIcon>
     <Description>Tray-Icon tool to show the currently selected windows power plan, switch it manually and automatically.
