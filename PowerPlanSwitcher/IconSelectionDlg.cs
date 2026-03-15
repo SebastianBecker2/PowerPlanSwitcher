@@ -59,6 +59,7 @@ public partial class IconSelectionDlg : Form
     private readonly object queuedKeysLock = new();
     private readonly Dictionary<string, int> imageIndices = [];
     private readonly Dictionary<string, int> filteredIndexByKey = [];
+    private readonly Dictionary<string, string> displayNameByKey = [];
     private readonly System.Windows.Forms.Timer refreshTimer = new();
     private readonly HashSet<int> redrawBatch = [];
     private readonly List<int> redrawBatchSorted = [];
@@ -95,6 +96,10 @@ public partial class IconSelectionDlg : Form
             .Where(f => !f.IsDirectory && f.FileName.StartsWith(ArchiveFolder, StringComparison.OrdinalIgnoreCase))
             .ToList();
         imageCache = new ImageCache(files.Select(f => f.FileName));
+        foreach (var key in imageCache.Keys)
+        {
+            displayNameByKey[key] = Path.GetFileNameWithoutExtension(key);
+        }
         filteredMapping = [.. imageCache.Keys];
 
         RebuildIconList();
@@ -139,10 +144,18 @@ public partial class IconSelectionDlg : Form
 
     private void TxtFilter_TextChanged(object sender, EventArgs e)
     {
+        var filterText = TxtFilter.Text;
+        if (string.IsNullOrWhiteSpace(filterText))
+        {
+            filteredMapping = [.. imageCache.Keys];
+            RebuildIconList();
+            return;
+        }
+
         filteredMapping = [.. imageCache.Keys
             .Where(filename =>
-                filename.Contains(TxtFilter.Text, StringComparison.OrdinalIgnoreCase)
-                || GetDisplayName(filename).Contains(TxtFilter.Text, StringComparison.OrdinalIgnoreCase))];
+                filename.Contains(filterText, StringComparison.OrdinalIgnoreCase)
+                || displayNameByKey[filename].Contains(filterText, StringComparison.OrdinalIgnoreCase))];
         RebuildIconList();
     }
 
@@ -219,9 +232,6 @@ public partial class IconSelectionDlg : Form
         }
     }
 
-    private static string GetDisplayName(string archivePath) =>
-        Path.GetFileNameWithoutExtension(archivePath);
-
     private void LvwIcons_ItemActivate(object? sender, EventArgs e)
     {
         BtnOk_Click(sender ?? this, e);
@@ -242,12 +252,12 @@ public partial class IconSelectionDlg : Form
         if (image is null)
         {
             QueueIconLoad(key);
-            e.Item = new ListViewItem(GetDisplayName(key), loadingImageIndex);
+            e.Item = new ListViewItem(displayNameByKey[key], loadingImageIndex);
             return;
         }
 
         var imageIndex = GetOrAddImageIndex(key, image);
-        e.Item = new ListViewItem(GetDisplayName(key), imageIndex);
+        e.Item = new ListViewItem(displayNameByKey[key], imageIndex);
     }
 
     private void LvwIcons_CacheVirtualItems(
