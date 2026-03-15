@@ -31,7 +31,7 @@ internal sealed partial class AboutBox : Form
                     return titleAttribute.Title;
                 }
             }
-            return Path.GetFileNameWithoutExtension(Assembly.GetExecutingAssembly().Location);
+            return Assembly.GetExecutingAssembly().GetName().Name;
         }
     }
 
