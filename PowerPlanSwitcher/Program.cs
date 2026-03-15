@@ -1,6 +1,7 @@
 namespace PowerPlanSwitcher;
 
 using System.Diagnostics;
+using System.Drawing;
 using Autofac;
 using Hotkeys;
 using Newtonsoft.Json;
@@ -150,6 +151,28 @@ internal static class Program
         }
     }
 
+    private static void LogDpiEnvironment()
+    {
+        try
+        {
+            using var graphics = Graphics.FromHwnd(IntPtr.Zero);
+            var scaleX = graphics.DpiX / 96f;
+            var scaleY = graphics.DpiY / 96f;
+            Log.Information(
+                "DPI environment initialized. HighDpiMode: {HighDpiMode}, " +
+                "DpiX: {DpiX}, DpiY: {DpiY}, ScaleX: {ScaleX}, ScaleY: {ScaleY}",
+                Application.HighDpiMode,
+                graphics.DpiX,
+                graphics.DpiY,
+                scaleX,
+                scaleY);
+        }
+        catch (Exception ex)
+        {
+            Log.Warning(ex, "Failed to capture DPI environment information.");
+        }
+    }
+
     private static bool AreHotkeyEqual(
         HotkeyPressedEventArgs left,
         Hotkey right) =>
@@ -261,6 +284,7 @@ internal static class Program
         // To customize application configuration such as set high DPI settings or default font,
         // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
+        LogDpiEnvironment();
 
         var builder = new ContainerBuilder();
         _ = builder.RegisterInstance(Log.Logger)
