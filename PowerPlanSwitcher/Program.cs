@@ -202,10 +202,19 @@ internal static class Program
                 || (PowerSchemeSettings.GetSetting(ps)?.Visible ?? false))
             .ToList();
 
-        var active = PowerManager.Static.GetActivePowerSchemeGuid();
+        if (schemes.Count == 0)
+        {
+            Log.Warning("Cycle hotkey ignored because no eligible power schemes were found.");
+            return;
+        }
 
-        var index = active == Guid.Empty ? 0 : schemes.IndexOf(active);
-        index = (index + 1) % schemes.Count;
+        var active = PowerManager.Static.GetActivePowerSchemeGuid();
+        var index = GetNextCycleSchemeIndex(schemes, active);
+        if (index < 0)
+        {
+            Log.Warning("Cycle hotkey ignored because no next scheme index could be selected.");
+            return;
+        }
 
         Log.Information(
             "Activating power scheme: {PowerSchemeName} " +
@@ -219,6 +228,22 @@ internal static class Program
                 schemes[index],
                 "Cycle hotkey pressed");
         }
+    }
+
+    private static int GetNextCycleSchemeIndex(
+        List<Guid> schemes,
+        Guid activeSchemeGuid)
+    {
+        if (schemes.Count == 0)
+        {
+            return -1;
+        }
+
+        var index = activeSchemeGuid == Guid.Empty
+            ? 0
+            : schemes.IndexOf(activeSchemeGuid);
+
+        return (index + 1) % schemes.Count;
     }
 
     private static void HandlePowerSchemeHotkeyPressed(
