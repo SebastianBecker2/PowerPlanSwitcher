@@ -2,6 +2,7 @@ namespace RuleManagementTest;
 
 using System.Reflection;
 using FakeItEasy;
+using Newtonsoft.Json;
 using PowerManagement;
 using ProcessManagement;
 using RuleManagement;
@@ -238,6 +239,48 @@ public sealed class RuleManagerTest
             CheckExecutionState = false,
             CheckFullscreenApps = false,
             IdleTimeThreshold = TimeSpan.FromSeconds(20),
+        });
+    }
+
+    [TestMethod]
+    public void RuleDtoVersion1_WithMigrationFlagsSet_DoesNotApplyMigrations()
+    {
+        _ = A.CallTo(() => batteryMonitor.HasSystemBattery).Returns(true);
+
+        var migrationPolicy = new MigrationPolicy(
+            MigratedPowerRulesToRules: true,
+            AcPowerSchemeGuid: CreateGuid('1'),
+            BatterPowerSchemeGuid: CreateGuid('2'),
+            MigratedStartupRule: true,
+            ActivateInitialPowerScheme: true,
+            InitialPowerSchemeGuid: CreateGuid('3'));
+
+        var version1Json = /*lang=json,strict*/ @"
+        {
+          ""SchemaVersion"": 1,
+          ""Rules"": [
+            {
+              ""$type"": ""RuleManagement.Dto.ProcessRuleDto, RuleManagement"",
+              ""FilePath"": ""testpath"",
+              ""Type"": 2,
+              ""SchemeGuid"": ""aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa""
+            }
+          ]
+        }";
+
+        var manager = new RuleManager(
+            ruleFactory,
+            version1Json,
+            migrationPolicy,
+            batteryMonitor);
+        var rules = manager.GetRules().ToList();
+
+        Assert.HasCount(1, rules, "No migration should run when migration flags are already set");
+        AssertRule(rules[0], new ProcessRuleDto
+        {
+            Pattern = "testpath",
+            Type = ComparisonType.EndsWith,
+            SchemeGuid = CreateGuid('a'),
         });
     }
 
@@ -747,6 +790,71 @@ public sealed class RuleManagerTest
         Assert.AreEqual(0, manager.GetRules().Count());
         Assert.IsNull(manager.AppliedRule);
     }
+
+        [TestMethod]
+        public void UnsupportedSchemaVersion_DuringStartupMigration_SkipsMigrationAndLoadingRules()
+        {
+                // Arrange
+                var invalidJson = /*lang=json,strict*/ @"
+                {
+                        ""SchemaVersion"": 99,
+                        ""Rules"": [
+                        {
+                            ""$type"": ""RuleManagement.Dto.ProcessRuleDto, RuleManagement"",
+                            ""FilePath"": ""testpath"",
+                            ""Type"": 0,
+                            ""SchemeGuid"": ""11111111-1111-1111-1111-111111111111""
+                        }
+                    ]
+                }";
+
+                var migrationPolicy = new MigrationPolicy(
+                        MigratedPowerRulesToRules: true,
+                        AcPowerSchemeGuid: CreateGuid('5'),
+                        BatterPowerSchemeGuid: CreateGuid('6'),
+                        MigratedStartupRule: false,
+                        ActivateInitialPowerScheme: true,
+                        InitialPowerSchemeGuid: CreateGuid('7'));
+
+                // Act
+                var manager = new RuleManager(ruleFactory, invalidJson, migrationPolicy, batteryMonitor);
+
+                // Assert
+                Assert.AreEqual(0, manager.GetRules().Count(), "Unknown schema should skip startup migration and loading");
+                Assert.IsNull(manager.AppliedRule);
+        }
+
+        [TestMethod]
+        public void UnsupportedSchemaVersion_DuringPowerRulesMigration_ThrowsSerializationException()
+        {
+                // Arrange
+                var invalidJson = /*lang=json,strict*/ @"
+                {
+                        ""SchemaVersion"": 99,
+                        ""Rules"": [
+                        {
+                            ""$type"": ""RuleManagement.Dto.ProcessRuleDto, RuleManagement"",
+                            ""FilePath"": ""testpath"",
+                            ""Type"": 0,
+                            ""SchemeGuid"": ""11111111-1111-1111-1111-111111111111""
+                        }
+                    ]
+                }";
+
+                var migrationPolicy = new MigrationPolicy(
+                        MigratedPowerRulesToRules: false,
+                        AcPowerSchemeGuid: CreateGuid('5'),
+                        BatterPowerSchemeGuid: CreateGuid('6'),
+                        MigratedStartupRule: true,
+                        ActivateInitialPowerScheme: false,
+                        InitialPowerSchemeGuid: CreateGuid('7'));
+
+                _ = A.CallTo(() => batteryMonitor.HasSystemBattery).Returns(true);
+
+                // Act + Assert
+                Assert.ThrowsExactly<JsonSerializationException>(() =>
+                    _ = new RuleManager(ruleFactory, invalidJson, migrationPolicy, batteryMonitor));
+        }
 
     [TestMethod]
     public void UntriggeringLastAppliedRule_RaisesEventWithNull()

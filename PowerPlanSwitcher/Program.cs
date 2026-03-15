@@ -345,9 +345,31 @@ internal static class Program
 
             var ruleManager = new RuleManager(factory, ruleJson, migrationPolicy, battery);
 
+            Log.Information(
+                "Persisting migration flags. Previous values: MigratedPowerRulesToRules={MigratedPowerRulesToRules}, MigratedStartupRule={MigratedStartupRule}",
+                Settings.Default.MigratedPowerRulesToRules,
+                Settings.Default.MigratedStartupRule);
+
             Settings.Default.MigratedPowerRulesToRules = true;
             Settings.Default.MigratedStartupRule = true;
-            Settings.Default.Save();
+
+            try
+            {
+                Settings.Default.Save();
+                Log.Information(
+                    "Migration flags persisted successfully. Current values: MigratedPowerRulesToRules={MigratedPowerRulesToRules}, MigratedStartupRule={MigratedStartupRule}",
+                    Settings.Default.MigratedPowerRulesToRules,
+                    Settings.Default.MigratedStartupRule);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(
+                    ex,
+                    "Failed to persist migration flags. Current values: MigratedPowerRulesToRules={MigratedPowerRulesToRules}, MigratedStartupRule={MigratedStartupRule}",
+                    Settings.Default.MigratedPowerRulesToRules,
+                    Settings.Default.MigratedStartupRule);
+                throw;
+            }
 
             return ruleManager;
         })
