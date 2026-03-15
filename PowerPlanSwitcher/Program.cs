@@ -382,16 +382,31 @@ internal static class Program
                 Settings.Default.MigratedPowerRulesToRules,
                 Settings.Default.MigratedStartupRule);
 
-            Settings.Default.MigratedPowerRulesToRules = true;
-            Settings.Default.MigratedStartupRule = true;
+            var migrationFlagsChanged =
+                !Settings.Default.MigratedPowerRulesToRules
+                || !Settings.Default.MigratedStartupRule;
+
+            if (migrationFlagsChanged)
+            {
+                Settings.Default.MigratedPowerRulesToRules = true;
+                Settings.Default.MigratedStartupRule = true;
+            }
 
             try
             {
-                Settings.Default.Save();
-                Log.Information(
-                    "Migration flags persisted successfully. Current values: MigratedPowerRulesToRules={MigratedPowerRulesToRules}, MigratedStartupRule={MigratedStartupRule}",
-                    Settings.Default.MigratedPowerRulesToRules,
-                    Settings.Default.MigratedStartupRule);
+                if (migrationFlagsChanged)
+                {
+                    Settings.Default.Save();
+                    Log.Information(
+                        "Migration flags persisted successfully. Current values: MigratedPowerRulesToRules={MigratedPowerRulesToRules}, MigratedStartupRule={MigratedStartupRule}",
+                        Settings.Default.MigratedPowerRulesToRules,
+                        Settings.Default.MigratedStartupRule);
+                }
+                else
+                {
+                    Log.Information(
+                        "Migration flags already up to date. Skipped persisting settings.");
+                }
             }
             catch (Exception ex)
             {
