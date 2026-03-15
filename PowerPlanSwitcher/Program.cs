@@ -363,7 +363,7 @@ internal static class Program
             var migrationPolicy = new MigrationPolicy(
                 MigratedPowerRulesToRules: Settings.Default.MigratedPowerRulesToRules,
                 AcPowerSchemeGuid: Settings.Default.AcPowerSchemeGuid,
-                BatterPowerSchemeGuid: Settings.Default.BatterPowerSchemeGuid,
+                BatteryPowerSchemeGuid: Settings.Default.BatterPowerSchemeGuid,
                 MigratedStartupRule: Settings.Default.MigratedStartupRule,
                 ActivateInitialPowerScheme: Settings.Default.ActivateInitialPowerScheme,
                 InitialPowerSchemeGuid: Settings.Default.InitialPowerSchemeGuid);

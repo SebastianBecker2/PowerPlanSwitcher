@@ -221,12 +221,12 @@ public class RuleManager
                     Log.Warning("Skipped adding online PowerLineRule because AC scheme guid is empty");
                 }
 
-                if (migrationPolicy.BatterPowerSchemeGuid != Guid.Empty)
+                if (migrationPolicy.BatteryPowerSchemeGuid != Guid.Empty)
                 {
                     rules.Add(new PowerLineRuleDto()
                     {
                         PowerLineStatus = PowerLineStatus.Offline,
-                        SchemeGuid = migrationPolicy.BatterPowerSchemeGuid,
+                        SchemeGuid = migrationPolicy.BatteryPowerSchemeGuid,
                     });
                     Log.Information("Migration added PowerLineRule for PowerLineStatus Offline");
                 }
@@ -488,7 +488,7 @@ public class RuleManager
         }
         else
         {
-            Log.Information("Unkonwn schema version {SchemaVersion}. Unable to load rules", version);
+            Log.Information("Unknown schema version {SchemaVersion}. Unable to load rules", version);
             return [];
         }
     }

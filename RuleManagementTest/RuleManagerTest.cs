@@ -156,7 +156,7 @@ public sealed class RuleManagerTest
         var migrationPolicy = new MigrationPolicy(
             MigratedPowerRulesToRules: true,
             AcPowerSchemeGuid: CreateGuid('1'),
-            BatterPowerSchemeGuid: CreateGuid('2'),
+            BatteryPowerSchemeGuid: CreateGuid('2'),
             MigratedStartupRule: true,
             ActivateInitialPowerScheme: false,
             InitialPowerSchemeGuid: CreateGuid('3'));
@@ -250,7 +250,7 @@ public sealed class RuleManagerTest
         var migrationPolicy = new MigrationPolicy(
             MigratedPowerRulesToRules: true,
             AcPowerSchemeGuid: CreateGuid('1'),
-            BatterPowerSchemeGuid: CreateGuid('2'),
+            BatteryPowerSchemeGuid: CreateGuid('2'),
             MigratedStartupRule: true,
             ActivateInitialPowerScheme: true,
             InitialPowerSchemeGuid: CreateGuid('3'));
@@ -292,7 +292,7 @@ public sealed class RuleManagerTest
         var migrationPolicy = new MigrationPolicy(
            MigratedPowerRulesToRules: false,
            AcPowerSchemeGuid: CreateGuid('1'),
-           BatterPowerSchemeGuid: CreateGuid('2'),
+           BatteryPowerSchemeGuid: CreateGuid('2'),
            MigratedStartupRule: false,
            ActivateInitialPowerScheme: true,
            InitialPowerSchemeGuid: CreateGuid('5'));
@@ -353,7 +353,7 @@ public sealed class RuleManagerTest
         var migrationPolicy = new MigrationPolicy(
            MigratedPowerRulesToRules: true,
            AcPowerSchemeGuid: CreateGuid('1'),
-           BatterPowerSchemeGuid: CreateGuid('2'),
+           BatteryPowerSchemeGuid: CreateGuid('2'),
            MigratedStartupRule: false,
            ActivateInitialPowerScheme: true,
            InitialPowerSchemeGuid: CreateGuid('3'));
@@ -404,7 +404,7 @@ public sealed class RuleManagerTest
         var migrationPolicy = new MigrationPolicy(
            MigratedPowerRulesToRules: true,
            AcPowerSchemeGuid: CreateGuid('1'),
-           BatterPowerSchemeGuid: CreateGuid('2'),
+           BatteryPowerSchemeGuid: CreateGuid('2'),
            MigratedStartupRule: true,
            ActivateInitialPowerScheme: false,
            InitialPowerSchemeGuid: CreateGuid('3'));
@@ -452,7 +452,7 @@ public sealed class RuleManagerTest
         var migrationPolicy = new MigrationPolicy(
           MigratedPowerRulesToRules: true,
           AcPowerSchemeGuid: CreateGuid('1'),
-          BatterPowerSchemeGuid: CreateGuid('2'),
+          BatteryPowerSchemeGuid: CreateGuid('2'),
           MigratedStartupRule: true,
           ActivateInitialPowerScheme: false,
           InitialPowerSchemeGuid: CreateGuid('3'));
@@ -551,7 +551,7 @@ public sealed class RuleManagerTest
         var migrationPolicy = new MigrationPolicy(
             MigratedPowerRulesToRules: true,
             AcPowerSchemeGuid: CreateGuid('5'),
-            BatterPowerSchemeGuid: CreateGuid('6'),
+            BatteryPowerSchemeGuid: CreateGuid('6'),
             MigratedStartupRule: true,
             ActivateInitialPowerScheme: false,
             InitialPowerSchemeGuid: CreateGuid('7'));
@@ -778,7 +778,7 @@ public sealed class RuleManagerTest
         var migrationPolicy = new MigrationPolicy(
             MigratedPowerRulesToRules: true,
             AcPowerSchemeGuid: CreateGuid('5'),
-            BatterPowerSchemeGuid: CreateGuid('6'),
+            BatteryPowerSchemeGuid: CreateGuid('6'),
             MigratedStartupRule: true,
             ActivateInitialPowerScheme: false,
             InitialPowerSchemeGuid: CreateGuid('7'));
@@ -811,7 +811,7 @@ public sealed class RuleManagerTest
                 var migrationPolicy = new MigrationPolicy(
                         MigratedPowerRulesToRules: true,
                         AcPowerSchemeGuid: CreateGuid('5'),
-                        BatterPowerSchemeGuid: CreateGuid('6'),
+                        BatteryPowerSchemeGuid: CreateGuid('6'),
                         MigratedStartupRule: false,
                         ActivateInitialPowerScheme: true,
                         InitialPowerSchemeGuid: CreateGuid('7'));
@@ -844,7 +844,7 @@ public sealed class RuleManagerTest
                 var migrationPolicy = new MigrationPolicy(
                         MigratedPowerRulesToRules: false,
                         AcPowerSchemeGuid: CreateGuid('5'),
-                        BatterPowerSchemeGuid: CreateGuid('6'),
+                        BatteryPowerSchemeGuid: CreateGuid('6'),
                         MigratedStartupRule: true,
                         ActivateInitialPowerScheme: false,
                         InitialPowerSchemeGuid: CreateGuid('7'));
@@ -1000,7 +1000,7 @@ public sealed class RuleManagerTest
         var migrationPolicy = new MigrationPolicy(
             MigratedPowerRulesToRules: true,
             AcPowerSchemeGuid: CreateGuid('5'),
-            BatterPowerSchemeGuid: CreateGuid('6'),
+            BatteryPowerSchemeGuid: CreateGuid('6'),
             MigratedStartupRule: true,
             ActivateInitialPowerScheme: false,
             InitialPowerSchemeGuid: CreateGuid('7'));
