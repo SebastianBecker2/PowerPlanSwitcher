@@ -28,14 +28,15 @@ namespace PowerPlanSwitcher
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             var resources = new System.ComponentModel.ComponentResourceManager(typeof(IconSelectionDlg));
             BtnCancel = new Button();
             BtnOk = new Button();
             TxtFilter = new TextBox();
             label1 = new Label();
             BtnSelectFile = new Button();
-            DgvIcons = new DataGridView();
-            ((System.ComponentModel.ISupportInitialize)DgvIcons).BeginInit();
+            LvwIcons = new ListView();
+            ImgIcons = new ImageList(components);
             SuspendLayout();
             // 
             // BtnCancel
@@ -89,26 +90,28 @@ namespace PowerPlanSwitcher
             BtnSelectFile.UseVisualStyleBackColor = true;
             BtnSelectFile.Click += BtnSelectFile_Click;
             // 
-            // DgvIcons
+            // LvwIcons
             // 
-            DgvIcons.AllowUserToAddRows = false;
-            DgvIcons.AllowUserToDeleteRows = false;
-            DgvIcons.AllowUserToResizeColumns = false;
-            DgvIcons.AllowUserToResizeRows = false;
-            DgvIcons.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            DgvIcons.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            DgvIcons.EditMode = DataGridViewEditMode.EditProgrammatically;
-            DgvIcons.Location = new Point(12, 41);
-            DgvIcons.MultiSelect = false;
-            DgvIcons.Name = "DgvIcons";
-            DgvIcons.RowHeadersVisible = false;
-            DgvIcons.RowTemplate.Height = 64;
-            DgvIcons.SelectionMode = DataGridViewSelectionMode.CellSelect;
-            DgvIcons.Size = new Size(702, 355);
-            DgvIcons.TabIndex = 11;
-            DgvIcons.VirtualMode = true;
-            DgvIcons.CellDoubleClick += DgvIcons_CellDoubleClick;
-            DgvIcons.CellValueNeeded += DgvIcons_CellValueNeeded;
+            LvwIcons.Anchor = AnchorStyles.Top | AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
+            LvwIcons.HideSelection = false;
+            LvwIcons.LargeImageList = ImgIcons;
+            LvwIcons.Location = new Point(12, 41);
+            LvwIcons.MultiSelect = false;
+            LvwIcons.Name = "LvwIcons";
+            LvwIcons.Size = new Size(702, 355);
+            LvwIcons.TabIndex = 11;
+            LvwIcons.UseCompatibleStateImageBehavior = false;
+            LvwIcons.VirtualMode = true;
+            LvwIcons.View = View.LargeIcon;
+            LvwIcons.CacheVirtualItems += LvwIcons_CacheVirtualItems;
+            LvwIcons.ItemActivate += LvwIcons_ItemActivate;
+            LvwIcons.RetrieveVirtualItem += LvwIcons_RetrieveVirtualItem;
+            // 
+            // ImgIcons
+            // 
+            ImgIcons.ColorDepth = ColorDepth.Depth32Bit;
+            ImgIcons.ImageSize = new Size(32, 32);
+            ImgIcons.TransparentColor = Color.Transparent;
             // 
             // IconSelectionDlg
             // 
@@ -117,7 +120,7 @@ namespace PowerPlanSwitcher
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = BtnCancel;
             ClientSize = new Size(726, 437);
-            Controls.Add(DgvIcons);
+            Controls.Add(LvwIcons);
             Controls.Add(BtnSelectFile);
             Controls.Add(label1);
             Controls.Add(TxtFilter);
@@ -126,7 +129,6 @@ namespace PowerPlanSwitcher
             Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "IconSelectionDlg";
             Text = "PowerPlanSwitcher - Icon selection";
-            ((System.ComponentModel.ISupportInitialize)DgvIcons).EndInit();
             ResumeLayout(false);
             PerformLayout();
         }
@@ -137,6 +139,7 @@ namespace PowerPlanSwitcher
         private TextBox TxtFilter;
         private Label label1;
         private Button BtnSelectFile;
-        private DataGridView DgvIcons;
+        private ListView LvwIcons;
+        private ImageList ImgIcons;
     }
 }
