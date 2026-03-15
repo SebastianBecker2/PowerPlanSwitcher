@@ -8,6 +8,7 @@ using Properties;
 using RuleManagement;
 using RuleManagement.Dto;
 using RuleManagement.Rules;
+using System.Drawing;
 
 public partial class SettingsDlg : Form
 {
@@ -53,6 +54,12 @@ public partial class SettingsDlg : Form
             $"(process ID, executable path and start/stop times) " +
             $"{Environment.NewLine}which may be considered sensitive data.";
         TipHints.SetToolTip(PibLoggingInfo, text);
+
+        TipHints.SetToolTip(
+            PibRulesOrderInfo,
+            "Rules are evaluated from top to bottom.\n" +
+            "The first currently triggered rule is applied.\n" +
+            "Move Rule up/down to change priority.");
     }
 
     protected override void OnFormClosing(FormClosingEventArgs e)
@@ -241,6 +248,10 @@ public partial class SettingsDlg : Form
         row.Cells.AddRange(
             new DataGridViewTextBoxCell
             {
+                Value = 0,
+            },
+            new DataGridViewTextBoxCell
+            {
                 Value = dto.GetDescription(),
             },
             new DataGridViewImageCell
@@ -263,8 +274,19 @@ public partial class SettingsDlg : Form
         return row;
     }
 
-    private void UpdatePowerRules() =>
+    private void UpdatePowerRules()
+    {
         DgvRules.Rows.AddRange([.. Rules.Select(RuleWrapperToRow)]);
+        UpdateRulePriorities();
+    }
+
+    private void UpdateRulePriorities()
+    {
+        for (var index = 0; index < DgvRules.Rows.Count; index++)
+        {
+            DgvRules.Rows[index].Cells["DgcRulePriority"].Value = index + 1;
+        }
+    }
 
     private void HandleBtnAddPowerRuleClick(object sender, EventArgs e)
     {
@@ -275,6 +297,7 @@ public partial class SettingsDlg : Form
         }
 
         _ = DgvRules.Rows.Add(RuleDtoToRow(dlg.RuleDto));
+        UpdateRulePriorities();
     }
 
     private void HandleBtnEditPowerRuleClick(object sender, EventArgs e)
@@ -301,6 +324,7 @@ public partial class SettingsDlg : Form
         DgvRules.Rows.RemoveAt(index);
         DgvRules.Rows.Insert(index, RuleDtoToRow(dlg.RuleDto));
         DgvRules.Rows[index].Selected = true;
+        UpdateRulePriorities();
     }
 
     private void HandleBtnDeletePowerRuleClick(object sender, EventArgs e)
@@ -312,6 +336,7 @@ public partial class SettingsDlg : Form
 
         var index = DgvRules.SelectedRows[0].Index;
         DgvRules.Rows.RemoveAt(index);
+        UpdateRulePriorities();
     }
 
     private void HandleBtnAscentPowerRuleClick(object sender, EventArgs e)
@@ -326,6 +351,7 @@ public partial class SettingsDlg : Form
         DgvRules.Rows.Remove(row);
         DgvRules.Rows.Insert(index, row);
         row.Selected = true;
+        UpdateRulePriorities();
     }
 
     private void HandleBtnDescentPowerRuleClick(object sender, EventArgs e)
@@ -340,6 +366,7 @@ public partial class SettingsDlg : Form
         DgvRules.Rows.Remove(row);
         DgvRules.Rows.Insert(index, row);
         row.Selected = true;
+        UpdateRulePriorities();
     }
 
     private void BtnRemoveIcon_Click(object sender, EventArgs e)
@@ -528,6 +555,14 @@ public partial class SettingsDlg : Form
             PibLoggingInfo,
             0,
             PibLoggingInfo.Height,
+            3000);
+
+    private void PibRulesOrderInfo_Click(object sender, EventArgs e) =>
+        TipHints.Show(
+            TipHints.GetToolTip(PibRulesOrderInfo),
+            PibRulesOrderInfo,
+            0,
+            PibRulesOrderInfo.Height,
             3000);
 
     private void BtnOpenLogFolder_Click(object sender, EventArgs e) =>
