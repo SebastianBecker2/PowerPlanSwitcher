@@ -34,7 +34,7 @@ public class Process : IProcess
                 ProcessId = processId,
                 ProcessName = processEntry.szExeFile,
                 StartTime = startTime.Value,
-                ExecutablePath = executablePath.ToLowerInvariant(),
+                ExecutablePath = executablePath,
                 MainWindowTitle = string.Empty,
             };
 
@@ -58,7 +58,7 @@ public class Process : IProcess
                 ProcessName = process.ProcessName,
                 StartTime = process.StartTime,
                 ExecutablePath =
-                        process.MainModule!.FileName.ToLowerInvariant(),
+                    process.MainModule!.FileName,
                 MainWindowTitle = process.MainWindowTitle ?? "",
             };
 
@@ -147,22 +147,6 @@ public class Process : IProcess
         }
 
         return null;
-    }
-
-    private static string? TryGetMainWindowTitle(uint pid)
-    {
-        try
-        {
-            var proc = System.Diagnostics.Process.GetProcessById((int)pid);
-
-            // Accessing MainWindowTitle does NOT throw for protected processes
-            return proc.MainWindowTitle;
-        }
-        catch (Exception ex)
-        {
-            Log.Debug(ex, "Failed to read main window title for process {ProcessId}", pid);
-            return null;
-        }
     }
 
 }
