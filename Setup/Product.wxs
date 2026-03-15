@@ -40,7 +40,7 @@
     <!-- Icon definition -->
     <Fragment>
         <Icon Id="ProductIcon.ico"
-              SourceFile="$(var.SolutionDir)PowerPlanSwitcher\Resources\power_surge.ico" />
+              SourceFile="$(var.PowerPlanSwitcher.ProjectDir)Resources\power_surge.ico" />
     </Fragment>
 
     <!-- File actions -->
@@ -87,8 +87,11 @@
                       Return="ignore"
                       BinaryRef="Wix4UtilCA_X86" />
 
-        <Property Id="QtExecCmdLine"
-                  Value="&quot;[WindowsFolder]\System32\taskkill.exe&quot; /IM PowerPlanSwitcher.exe" />
+        <CustomAction Id="SetCloseCmdLine"
+                  Property="WixQuietExecCmdLine"
+                  Value="&quot;[WindowsFolder]System32\taskkill.exe&quot; /IM PowerPlanSwitcher.exe"
+                  Execute="immediate"
+                  Return="check" />
         <CustomAction Id="CloseProduct"
                       DllEntry="WixQuietExec"
                       Execute="immediate"
@@ -110,6 +113,8 @@
         <InstallExecuteSequence>
             <Custom Action="LaunchProduct"
                     After="InstallFinalize" />
+            <Custom Action="SetCloseCmdLine"
+                Before="CloseProduct" />
             <Custom Action="CloseProduct"
                     Before="LaunchConditions" />
             <Custom Action="UpdateCmdToKill"

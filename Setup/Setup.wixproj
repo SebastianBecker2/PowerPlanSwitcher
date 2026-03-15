@@ -1,6 +1,7 @@
 <Project Sdk="WixToolset.Sdk/6.0.1">
   <PropertyGroup>
     <OutputName>PowerPlanSwitcher</OutputName>
+    <InstallerPlatform>x64</InstallerPlatform>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|x86' ">
     <DefineConstants>Debug</DefineConstants>
