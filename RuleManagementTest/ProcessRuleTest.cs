@@ -55,6 +55,26 @@ public sealed class ProcessRuleTest
     }
 
     [TestMethod]
+    public void ProcessCreated_PathMatchesExact_IgnoringCase_IncrementsTriggerCount()
+    {
+        var dto = new ProcessRuleDto
+        {
+            Pattern = @"C:\Program Files\App\MyTool.exe",
+            Type = ComparisonType.Exact,
+            SchemeGuid = Guid.NewGuid()
+        };
+        var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
+
+        var process = A.Fake<IProcess>();
+        _ = A.CallTo(() => process.ExecutablePath).Returns(@"c:\program files\app\mytool.EXE");
+
+        processMonitor.ProcessCreated += Raise.With(new ProcessEventArgs(process));
+
+        Assert.AreEqual(1, rule.TriggerCount);
+    }
+
+    [TestMethod]
     public void ProcessCreated_PathDoesNotMatch_DoesNotIncrementTriggerCount()
     {
         var dto = new ProcessRuleDto
@@ -516,6 +536,26 @@ public sealed class ProcessRuleTest
     }
 
     [TestMethod]
+    public void StartsWith_MixedCasePattern_MatchesIgnoringCase()
+    {
+        var dto = new ProcessRuleDto
+        {
+            Pattern = @"C:\Program Files\MyApp",
+            Type = ComparisonType.StartsWith,
+            SchemeGuid = Guid.NewGuid()
+        };
+        var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
+
+        var process = A.Fake<IProcess>();
+        _ = A.CallTo(() => process.ExecutablePath).Returns(@"c:\program files\myapp\bin\tool.exe");
+
+        processMonitor.ProcessCreated += Raise.With(new ProcessEventArgs(process));
+
+        Assert.AreEqual(1, rule.TriggerCount);
+    }
+
+    [TestMethod]
     public void EndsWith_PatternLongerThanPath_DoesNotMatch()
     {
         var dto = new ProcessRuleDto
@@ -533,6 +573,26 @@ public sealed class ProcessRuleTest
         processMonitor.ProcessCreated += Raise.With(new ProcessEventArgs(process));
 
         Assert.AreEqual(0, rule.TriggerCount);
+    }
+
+    [TestMethod]
+    public void EndsWith_MixedCasePattern_MatchesIgnoringCase()
+    {
+        var dto = new ProcessRuleDto
+        {
+            Pattern = @"\MYTOOL.EXE",
+            Type = ComparisonType.EndsWith,
+            SchemeGuid = Guid.NewGuid()
+        };
+        var rule = new ProcessRule(processMonitor, dto);
+        rule.StartRuling();
+
+        var process = A.Fake<IProcess>();
+        _ = A.CallTo(() => process.ExecutablePath).Returns(@"c:\program files\app\mytool.exe");
+
+        processMonitor.ProcessCreated += Raise.With(new ProcessEventArgs(process));
+
+        Assert.AreEqual(1, rule.TriggerCount);
     }
 
     [TestMethod]

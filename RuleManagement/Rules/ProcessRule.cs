@@ -140,13 +140,16 @@ public class ProcessRule
 
             return Type switch
             {
-                ComparisonType.Exact => path == Pattern,
+                ComparisonType.Exact => string.Equals(
+                    path,
+                    Pattern,
+                    StringComparison.OrdinalIgnoreCase),
                 ComparisonType.StartsWith => path.StartsWith(
                     Pattern,
-                    StringComparison.InvariantCulture),
+                    StringComparison.OrdinalIgnoreCase),
                 ComparisonType.EndsWith => path.EndsWith(
                     Pattern,
-                    StringComparison.InvariantCulture),
+                    StringComparison.OrdinalIgnoreCase),
                 ComparisonType.Wildcard => glob?.IsMatch(path) ?? false,
                 _ => throw new InvalidOperationException(
                     $"Unable to apply rule type {Type}"),
