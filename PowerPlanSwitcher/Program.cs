@@ -263,7 +263,8 @@ internal static class Program
 
         if (schemes.Count == 0)
         {
-            Log.Warning("Cycle hotkey ignored because no eligible power schemes were found.");
+            Log.ForContext("EventType", "PowerScheme.CycleIgnored")
+                .Warning("Cycle hotkey ignored because no eligible power schemes were found.");
             return;
         }
 
@@ -271,15 +272,17 @@ internal static class Program
         var index = GetNextCycleSchemeIndex(schemes, active);
         if (index < 0)
         {
-            Log.Warning("Cycle hotkey ignored because no next scheme index could be selected.");
+            Log.ForContext("EventType", "PowerScheme.CycleIgnored")
+                .Warning("Cycle hotkey ignored because no next scheme index could be selected.");
             return;
         }
 
-        Log.Information(
-            "Activating power scheme: {PowerSchemeName} " +
-            "{PowerSchemeGuid} Reason: Cycle Hotkey",
-            PowerManager.Static.GetPowerSchemeName(schemes[index]) ?? "<No Name>",
-            schemes[index]);
+        Log.ForContext("EventType", "PowerScheme.ActivationRequested")
+            .Information(
+                "Activating power scheme: {PowerSchemeName} " +
+                "{PowerSchemeGuid} Reason: Cycle Hotkey",
+                PowerManager.Static.GetPowerSchemeName(schemes[index]) ?? "<No Name>",
+                schemes[index]);
         PowerManager.Static.SetActivePowerScheme(schemes[index]);
         if (PopUpWindowLocationHelper.ShouldShowToast("hotkey"))
         {
@@ -315,11 +318,12 @@ internal static class Program
             return;
         }
 
-        Log.Information(
-            "Activating power scheme: {PowerSchemeName} " +
-            "{PowerSchemeGuid} Reason: Direct Hotkey",
-            target.name,
-            target.guid);
+        Log.ForContext("EventType", "PowerScheme.ActivationRequested")
+            .Information(
+                "Activating power scheme: {PowerSchemeName} " +
+                "{PowerSchemeGuid} Reason: Direct Hotkey",
+                target.name,
+                target.guid);
         PowerManager.Static.SetActivePowerScheme(target.guid);
         ToastDlg.ShowToastNotification(target.guid, "Power Plan hotkey pressed");
     }

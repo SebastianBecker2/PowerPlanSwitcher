@@ -52,7 +52,8 @@ internal class ContextMenu : ContextMenuStrip
 
             button.Click += (_, _) =>
             {
-                Log.Information(
+                Log.ForContext("EventType", "PowerScheme.ActivationRequested")
+                    .Information(
                     "Activating power scheme: {PowerSchemeName} " +
                     "{PowerSchemeGuid} Reason: User selection",
                     name,

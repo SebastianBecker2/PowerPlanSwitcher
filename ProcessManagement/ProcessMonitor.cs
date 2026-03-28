@@ -150,13 +150,15 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
     {
         previousProcesses = CreateProcessMap(GetUsersProcesses());
         timer.Start();
-        Log.Information("Process monitoring started");
+        Log.ForContext("EventType", "Process.MonitoringStarted")
+            .Information("Process monitoring started");
     }
 
     public void StopMonitoring()
     {
         timer.Stop();
-        Log.Information("Process monitoring stopped");
+        Log.ForContext("EventType", "Process.MonitoringStopped")
+            .Information("Process monitoring stopped");
     }
 
     public IEnumerable<IProcess> GetUsersProcesses() =>
