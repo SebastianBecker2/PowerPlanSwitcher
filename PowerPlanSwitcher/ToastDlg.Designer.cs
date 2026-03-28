@@ -61,13 +61,14 @@ namespace PowerPlanSwitcher
             tableLayoutPanel1.Controls.Add(PibAppIcon, 1, 0);
             tableLayoutPanel1.Controls.Add(tableLayoutPanel2, 0, 1);
             tableLayoutPanel1.Controls.Add(LblReason, 0, 2);
+            tableLayoutPanel1.GrowStyle = TableLayoutPanelGrowStyle.FixedSize;
             tableLayoutPanel1.Dock = DockStyle.Fill;
             tableLayoutPanel1.Location = new Point(0, 0);
             tableLayoutPanel1.Name = "tableLayoutPanel1";
             tableLayoutPanel1.RowCount = 3;
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.RowStyles.Add(new RowStyle());
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 23F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle());
             tableLayoutPanel1.Size = new Size(292, 92);
             tableLayoutPanel1.TabIndex = 1;
             tableLayoutPanel1.Click += Any_Click;
@@ -155,13 +156,13 @@ namespace PowerPlanSwitcher
             // 
             AutoScaleDimensions = new SizeF(7F, 17F);
             AutoScaleMode = AutoScaleMode.Font;
+            AutoSize = true;
+            AutoSizeMode = AutoSizeMode.GrowAndShrink;
             ClientSize = new Size(292, 92);
             ControlBox = false;
             Controls.Add(tableLayoutPanel1);
             FormBorderStyle = FormBorderStyle.None;
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MaximumSize = new Size(292, 92);
-            MinimumSize = new Size(292, 92);
             Name = "ToastDlg";
             ShowIcon = false;
             ShowInTaskbar = false;

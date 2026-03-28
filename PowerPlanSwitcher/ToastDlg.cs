@@ -8,6 +8,7 @@ using static Vanara.PInvoke.User32;
 public partial class ToastDlg : Form
 {
     private static readonly int DisplayDuration = 2000;
+    private static readonly Size ToastMinimumClientSize = new(292, 92);
 
     private static SynchronizationContext? syncContext;
     private static ToastDlg? toastDlg;
@@ -37,7 +38,6 @@ public partial class ToastDlg : Form
     {
         DisplayTimer.Interval = DisplayDuration;
 
-
         Padding = new Padding(1);
         BackColor = TlpPowerSchemesBackColor;
         tableLayoutPanel1.BackColor = ButtonBackgroundColor;
@@ -53,14 +53,18 @@ public partial class ToastDlg : Form
         LblReason.ForeColor = ForegroundColor;
         LblReason.BackColor = ButtonBackgroundColor;
 
-        Location = PopUpWindowLocationHelper.GetPositionOnTaskbar(
-            Size,
-            LblReason.Text);
+        UpdateToastLayout();
 
         DisplayTimer.Stop();
         DisplayTimer.Start();
 
         base.OnLoad(e);
+    }
+
+    protected override void OnDpiChangedAfterParent(EventArgs e)
+    {
+        base.OnDpiChangedAfterParent(e);
+        UpdateToastLayout();
     }
 
     protected override CreateParams CreateParams
@@ -117,10 +121,40 @@ public partial class ToastDlg : Form
                 PowerManager.Static.GetPowerSchemeName(activeSchemeGuid);
             toastDlg.LblReason.Text = activationReason;
 
+            toastDlg.UpdateToastLayout();
+
             toastDlg.DisplayTimer.Stop();
             toastDlg.DisplayTimer.Start();
 
             toastDlg.Show();
         }, null);
+    }
+
+    private void UpdateToastLayout()
+    {
+        SuspendLayout();
+        tableLayoutPanel1.SuspendLayout();
+        tableLayoutPanel2.SuspendLayout();
+
+        var minimumClientSize = new Size(
+            LogicalToDeviceUnits(ToastMinimumClientSize.Width),
+            LogicalToDeviceUnits(ToastMinimumClientSize.Height));
+
+        MinimumSize = minimumClientSize;
+        MaximumSize = Size.Empty;
+
+        PerformLayout();
+
+        ClientSize = new Size(
+            Math.Max(ClientSize.Width, minimumClientSize.Width),
+            Math.Max(ClientSize.Height, minimumClientSize.Height));
+
+        Location = PopUpWindowLocationHelper.GetPositionOnTaskbar(
+            Size,
+            LblReason.Text);
+
+        tableLayoutPanel2.ResumeLayout(true);
+        tableLayoutPanel1.ResumeLayout(true);
+        ResumeLayout(true);
     }
 }
