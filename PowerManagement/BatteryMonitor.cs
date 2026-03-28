@@ -34,6 +34,8 @@ public class BatteryMonitor : IBatteryMonitor, IDisposable
             };
     }
 
+    private readonly User32.WindowProc wndProcDelegate;
+    private readonly string windowClassName;
     private readonly HWND hwnd;
     private readonly SafeHPOWERSETTINGNOTIFY hNotifyPowerSource;
     private bool disposedValue;
@@ -50,6 +52,8 @@ public class BatteryMonitor : IBatteryMonitor, IDisposable
 
     public BatteryMonitor()
     {
+        wndProcDelegate = WndProc;
+        windowClassName = $"PowerMonitorWnd_{Guid.NewGuid():N}";
         hwnd = CreateMessageWindow();
 
         // Register for AC/DC power source notifications
@@ -63,8 +67,8 @@ public class BatteryMonitor : IBatteryMonitor, IDisposable
     {
         var wndClass = new WNDCLASS
         {
-            lpszClassName = "PowerMonitorWnd",
-            lpfnWndProc = WndProc
+            lpszClassName = windowClassName,
+            lpfnWndProc = wndProcDelegate
         };
         RegisterClass(wndClass);
 
@@ -74,14 +78,21 @@ public class BatteryMonitor : IBatteryMonitor, IDisposable
 
     private IntPtr WndProc(HWND hwnd, uint msg, IntPtr wParam, IntPtr lParam)
     {
-        if (msg == (uint)WindowMessage.WM_POWERBROADCAST &&
-            wParam.ToInt32() == (int)PowerBroadcastType.PBT_POWERSETTINGCHANGE)
+        if (msg == (uint)WindowMessage.WM_POWERBROADCAST
+            && wParam.ToInt32() == (int)PowerBroadcastType.PBT_POWERSETTINGCHANGE)
         {
-            var data = lParam.ToStructure<POWERBROADCAST_SETTING>();
-            if (data.PowerSetting == PowrProf.GUID_ACDC_POWER_SOURCE)
+            try
             {
-                Log.Information("Power line status changed: {Status}", PowerLineStatus);
-                OnPowerLineStatusChanged(PowerLineStatus);
+                var data = lParam.ToStructure<POWERBROADCAST_SETTING>();
+                if (data.PowerSetting == PowrProf.GUID_ACDC_POWER_SOURCE)
+                {
+                    Log.Information("Power line status changed: {Status}", PowerLineStatus);
+                    OnPowerLineStatusChanged(PowerLineStatus);
+                }
+            }
+            catch (Exception ex)
+            {
+                Log.Error(ex, "Failed to process WM_POWERBROADCAST power setting change.");
             }
         }
         return DefWindowProc(hwnd, msg, wParam, lParam);
