@@ -306,7 +306,9 @@ internal static class Program
                 restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose)
             .CreateLogger();
 
-        Log.Information("Application started.");
+        Log.Information(
+            "Application started. Version: {Version}",
+            AboutBox.AssemblyVersion ?? "Unknown");
 
         SevenZipBase.SetLibraryPath(ZipLibraryPath);
 
