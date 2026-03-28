@@ -26,6 +26,8 @@ public partial class SettingsDlg : Form
             .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
             .Cast<(Guid schemeGuid, string name)>()];
 
+    private readonly DpiImageScaler dpiImageScaler;
+
     private Size SettingsDlgOriginalSize { get; set; } = Size.Empty;
 
     public IEnumerable<IRuleDto> RuleDto => [.. Rules.Select(r => r.Dto)];
@@ -42,6 +44,18 @@ public partial class SettingsDlg : Form
         Rules = ruleManager.GetRules().Select(r => new RuleWrapper(r));
 
         InitializeComponent();
+        dpiImageScaler = new DpiImageScaler(this);
+        dpiImageScaler.OverrideSource(BtnAddPowerRule, Resources.add);
+        dpiImageScaler.OverrideSource(BtnEditPowerRule, Resources.pencil);
+        dpiImageScaler.OverrideSource(BtnAscentPowerRule, Resources.arrow_up);
+        dpiImageScaler.OverrideSource(BtnDescentPowerRule, Resources.arrow_down);
+        dpiImageScaler.OverrideSource(BtnDeletePowerRule, Resources.delete);
+        dpiImageScaler.OverrideSource(BtnSetIcon, Resources.picture);
+        dpiImageScaler.OverrideSource(BtnRemoveIcon, Resources.delete);
+        dpiImageScaler.OverrideSource(BtnSetHotkey, Resources.keyboard);
+        dpiImageScaler.OverrideSource(BtnRemoveHotkey, Resources.keyboard_delete);
+        dpiImageScaler.OverrideSource(BtnSetCycleHotkey, Resources.keyboard);
+        dpiImageScaler.OverrideSource(BtnRemoveCycleHotkey, Resources.keyboard_delete);
         TacSettingsCategories.SelectedIndexChanged +=
             TacSettingsCategories_SelectedIndexChanged;
         Size = Settings.Default.SettingsDlgSize;

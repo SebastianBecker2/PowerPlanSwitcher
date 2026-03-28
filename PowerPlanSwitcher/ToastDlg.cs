@@ -12,6 +12,8 @@ public partial class ToastDlg : Form
     private static SynchronizationContext? syncContext;
     private static ToastDlg? toastDlg;
 
+    private readonly DpiImageScaler dpiImageScaler;
+
     private static Color ButtonBackgroundColor =>
         ColorThemeHelper.GetActiveColorTheme() == ColorTheme.Light
         ? Color.WhiteSmoke
@@ -25,7 +27,11 @@ public partial class ToastDlg : Form
         ? Color.Silver
         : Color.DimGray;
 
-    public ToastDlg() => InitializeComponent();
+    public ToastDlg()
+    {
+        InitializeComponent();
+        dpiImageScaler = new DpiImageScaler(this);
+    }
 
     protected override void OnLoad(EventArgs e)
     {
@@ -104,6 +110,9 @@ public partial class ToastDlg : Form
 
             toastDlg.PibPowerSchemeIcon.Image =
                 PowerSchemeSettings.GetSetting(activeSchemeGuid)?.Icon;
+            toastDlg.dpiImageScaler.OverrideSource(
+                toastDlg.PibPowerSchemeIcon,
+                toastDlg.PibPowerSchemeIcon.Image);
             toastDlg.LblPowerSchemeName.Text =
                 PowerManager.Static.GetPowerSchemeName(activeSchemeGuid);
             toastDlg.LblReason.Text = activationReason;

@@ -5,6 +5,8 @@ using RuleManagement.Dto;
 
 public partial class RuleDlg : Form
 {
+    private readonly DpiImageScaler dpiImageScaler;
+
     public IRuleDto? RuleDto { get; set; }
 
     private static readonly List<(Guid guid, string name)> PowerSchemes =
@@ -27,7 +29,11 @@ public partial class RuleDlg : Form
     private static Guid GetPowerSchemeGuid(string name) =>
             PowerSchemes.First(scheme => scheme.name == name).guid;
 
-    public RuleDlg() => InitializeComponent();
+    public RuleDlg()
+    {
+        InitializeComponent();
+        dpiImageScaler = new DpiImageScaler(this);
+    }
 
     protected override void OnLoad(EventArgs e)
     {
