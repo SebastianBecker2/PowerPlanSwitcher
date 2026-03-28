@@ -1,0 +1,52 @@
+name: Build and Test Installer
+
+on:
+  push:
+    branches:
+    - main
+    tags:
+    - "v*"
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  build-test-package:
+    runs-on: windows-latest
+
+    steps:
+    - name: Checkout
+      uses: actions/checkout@v4
+
+    - name: Setup .NET
+      uses: actions/setup-dotnet@v4
+      with:
+        dotnet-version: 8.0.x
+
+    - name: Restore
+      run: dotnet restore PowerPlanSwitcher.sln
+
+    - name: Build solution
+      run: dotnet build PowerPlanSwitcher.sln --configuration Release --no-restore
+
+    - name: Run all tests
+      run: dotnet test PowerPlanSwitcher.sln --configuration Release --no-build --logger "trx;LogFileName=tests.trx" --results-directory TestResults
+
+    - name: Publish app binaries
+      run: dotnet publish PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release --runtime win-x64 --self-contained false
+
+    - name: Build MSI installer
+      run: dotnet build Setup/Setup.wixproj --configuration Release
+
+    - name: Upload installer artifact
+      uses: actions/upload-artifact@v4
+      with:
+        name: PowerPlanSwitcherInstaller
+        path: Setup/bin/Release/PowerPlanSwitcher.msi
+        if-no-files-found: error
+
+    - name: Upload test results
+      uses: actions/upload-artifact@v4
+      with:
+        name: TestResults
+        path: TestResults/*.trx
+        if-no-files-found: warn
