@@ -30,8 +30,13 @@ public partial class PowerSchemeSelectorDlg : Form
     private const int ButtonWidth = 360;
 
     private bool shownTriggered;
+    private readonly DpiImageScaler dpiImageScaler;
 
-    public PowerSchemeSelectorDlg() => InitializeComponent();
+    public PowerSchemeSelectorDlg()
+    {
+        InitializeComponent();
+        dpiImageScaler = new DpiImageScaler(this);
+    }
 
     private Button CreateButton(
         Guid guid,
@@ -104,12 +109,22 @@ public partial class PowerSchemeSelectorDlg : Form
                     activeSchemeGuid == guid));
         }
 
-        Height = TlpPowerSchemes.Controls.Count * ButtonHeight;
-        Width = ButtonWidth;
-
-        Location = GetPositionOnTaskbar(Size);
+        UpdateLayout();
 
         base.OnLoad(e);
+    }
+
+    protected override void OnDpiChangedAfterParent(EventArgs e)
+    {
+        base.OnDpiChangedAfterParent(e);
+        UpdateLayout();
+    }
+
+    private void UpdateLayout()
+    {
+        Height = LogicalToDeviceUnits(TlpPowerSchemes.Controls.Count * ButtonHeight);
+        Width = LogicalToDeviceUnits(ButtonWidth);
+        Location = GetPositionOnTaskbar(Size);
     }
 
     protected override void OnShown(EventArgs e)
