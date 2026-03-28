@@ -306,7 +306,7 @@ internal static class Program
                 "{PowerSchemeGuid} Reason: Cycle Hotkey",
                 PowerManager.Static.GetPowerSchemeName(schemes[index]) ?? "<No Name>",
                 schemes[index]);
-        PowerManager.Static.SetActivePowerScheme(schemes[index]);
+        _ = PowerManager.Static.SetActivePowerSchemeAsync(schemes[index]);
         if (PopUpWindowLocationHelper.ShouldShowToast("hotkey"))
         {
             ToastDlg.ShowToastNotification(
@@ -347,7 +347,7 @@ internal static class Program
                 "{PowerSchemeGuid} Reason: Direct Hotkey",
                 target.name,
                 target.guid);
-        PowerManager.Static.SetActivePowerScheme(target.guid);
+        _ = PowerManager.Static.SetActivePowerSchemeAsync(target.guid);
         ToastDlg.ShowToastNotification(target.guid, "Power Plan hotkey pressed");
     }
 

@@ -69,7 +69,7 @@ public partial class PowerSchemeSelectorDlg : Form
                 "{PowerSchemeGuid} Reason: User selection",
                 name,
                 guid);
-            PowerManager.Static.SetActivePowerScheme((Guid)button.Tag);
+            _ = PowerManager.Static.SetActivePowerSchemeAsync((Guid)button.Tag);
             Close();
         };
 

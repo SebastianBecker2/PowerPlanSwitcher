@@ -103,7 +103,7 @@ internal class AppContext : ApplicationContext
                 baselineSchemeName,
                 BaselineSchemeGuid,
                 "Restore baseline");
-            PowerManager.SetActivePowerScheme(BaselineSchemeGuid);
+            _ = PowerManager.SetActivePowerSchemeAsync(BaselineSchemeGuid);
             return;
         }
 
@@ -128,7 +128,7 @@ internal class AppContext : ApplicationContext
             schemeGuid,
             reason,
             e.Rule.Dto.GetDescription());
-        PowerManager.SetActivePowerScheme(schemeGuid);
+        _ = PowerManager.SetActivePowerSchemeAsync(schemeGuid);
 
         if (PopUpWindowLocationHelper.ShouldShowToast(reason))
         {

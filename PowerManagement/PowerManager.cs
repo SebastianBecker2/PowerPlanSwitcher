@@ -54,6 +54,11 @@ public class PowerManager : IDisposable, IPowerManager
             }
         }
 
+        public static async Task SetActivePowerSchemeAsync(Guid schemeGuid)
+        {
+            await Task.Run(() => SetActivePowerScheme(schemeGuid));
+        }
+
         public static bool IsExecutionStateBlockingIdle()
         {
             // Execution state is a 4-byte uint
@@ -117,6 +122,9 @@ public class PowerManager : IDisposable, IPowerManager
 
     public void SetActivePowerScheme(Guid schemeGuid) =>
         Static.SetActivePowerScheme(schemeGuid);
+
+    public async Task SetActivePowerSchemeAsync(Guid schemeGuid) =>
+        await Static.SetActivePowerSchemeAsync(schemeGuid);
 
     public bool IsExecutionStateBlockingIdle() =>
         Static.IsExecutionStateBlockingIdle();

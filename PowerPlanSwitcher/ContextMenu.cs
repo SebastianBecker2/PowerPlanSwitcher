@@ -58,7 +58,7 @@ internal class ContextMenu : ContextMenuStrip
                     "{PowerSchemeGuid} Reason: User selection",
                     name,
                     guid);
-                PowerManager.Static.SetActivePowerScheme(guid);
+                _ = PowerManager.Static.SetActivePowerSchemeAsync(guid);
             };
 
             _ = Items.Add(button);
