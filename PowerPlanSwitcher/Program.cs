@@ -381,9 +381,8 @@ internal static class Program
 
         Log.ForContext("EventType", "App.Started")
             .Information(
-                "Application started. Version={Version} FileVersion={FileVersion} RunId={RunId} ProcessId={ProcessId} Machine={MachineName} OS={OSVersion} ExtendedLogging={ExtendedLogging} PreviousRunUnclean={PreviousRunUnclean}",
-                AboutBox.AssemblyVersion ?? "Unknown",
-                Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown",
+                "Application started. Version={Version} RunId={RunId} ProcessId={ProcessId} Machine={MachineName} OS={OSVersion} ExtendedLogging={ExtendedLogging} PreviousRunUnclean={PreviousRunUnclean}",
+                AboutBox.AssemblyInformationalVersion ?? "Unknown",
                 RunId,
                 Environment.ProcessId,
                 Environment.MachineName,

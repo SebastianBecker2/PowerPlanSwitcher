@@ -10,7 +10,7 @@ internal sealed partial class AboutBox : Form
         InitializeComponent();
         Text = $"About {AssemblyTitle ?? ""}";
         labelProductName.Text = AssemblyProduct;
-        labelVersion.Text = $"Version {AssemblyVersion ?? ""}";
+        labelVersion.Text = $"Version {AssemblyInformationalVersion ?? ""}";
         labelCopyright.Text = AssemblyCopyright;
         labelCompanyName.Text = AssemblyCompany;
         textBoxDescription.Text = AssemblyDescription;
@@ -36,6 +36,19 @@ internal sealed partial class AboutBox : Form
     }
 
     public static string? AssemblyVersion => Assembly.GetExecutingAssembly().GetName().Version?.ToString();
+
+    public static string? AssemblyInformationalVersion
+    {
+        get
+        {
+            var attribute = Assembly.GetExecutingAssembly().GetCustomAttribute<AssemblyInformationalVersionAttribute>();
+            if (attribute != null)
+            {
+                return attribute.InformationalVersion;
+            }
+            return AssemblyVersion; // Fallback to numeric version if informational version not available
+        }
+    }
 
     public static string AssemblyDescription
     {
