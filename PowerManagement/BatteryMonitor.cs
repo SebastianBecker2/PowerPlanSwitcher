@@ -81,13 +81,33 @@ public class BatteryMonitor : IBatteryMonitor, IDisposable
         if (msg == (uint)WindowMessage.WM_POWERBROADCAST
             && wParam.ToInt32() == (int)PowerBroadcastType.PBT_POWERSETTINGCHANGE)
         {
+            Log.Verbose(
+                "Power setting change message received: WParam={WParam} LParam={LParam}",
+                wParam.ToInt64(),
+                lParam.ToInt64());
+
             try
             {
                 var data = lParam.ToStructure<POWERBROADCAST_SETTING>();
+                Log.Verbose(
+                    "Power setting payload parsed: PowerSetting={PowerSetting} DataLength={DataLength}",
+                    data.PowerSetting,
+                    data.DataLength);
+
                 if (data.PowerSetting == PowrProf.GUID_ACDC_POWER_SOURCE)
                 {
-                    Log.Information("Power line status changed: {Status}", PowerLineStatus);
-                    OnPowerLineStatusChanged(PowerLineStatus);
+                    var status = PowerLineStatus;
+                    Log.Information("Power line status changed: {Status}", status);
+                    OnPowerLineStatusChanged(status);
+                    Log.Verbose(
+                        "Power line status change event dispatched: {Status}",
+                        status);
+                }
+                else
+                {
+                    Log.Verbose(
+                        "Ignored power setting change for setting {PowerSetting}",
+                        data.PowerSetting);
                 }
             }
             catch (Exception ex)
