@@ -41,6 +41,7 @@ internal static class Program
         Path.Combine("Resources", "7z.dll");
     private static readonly Guid RunId = Guid.NewGuid();
     private static bool previousRunUnclean;
+    private static bool runMarkerInitialized;
 
     private static LoggingLevelSwitch LogLevelSwitch { get; } =
         new LoggingLevelSwitch(Serilog.Events.LogEventLevel.Information);
@@ -73,22 +74,44 @@ internal static class Program
 
     private static void InitializeRunMarker()
     {
-        if (!Directory.Exists(LogPath))
+        try
         {
-            _ = Directory.CreateDirectory(LogPath);
-        }
+            if (!Directory.Exists(LogPath))
+            {
+                _ = Directory.CreateDirectory(LogPath);
+            }
 
-        previousRunUnclean = File.Exists(RunMarkerPath);
-        File.WriteAllText(
-            RunMarkerPath,
-            $"RunId={RunId:N};StartedUtc={DateTimeOffset.UtcNow:O}");
+            previousRunUnclean = File.Exists(RunMarkerPath);
+            File.WriteAllText(
+                RunMarkerPath,
+                $"RunId={RunId:N};StartedUtc={DateTimeOffset.UtcNow:O}");
+            runMarkerInitialized = true;
+        }
+        catch
+        {
+            // Keep startup resilient even if marker file operations fail.
+            previousRunUnclean = false;
+            runMarkerInitialized = false;
+        }
     }
 
     private static void ClearRunMarker()
     {
-        if (File.Exists(RunMarkerPath))
+        if (!runMarkerInitialized)
         {
-            File.Delete(RunMarkerPath);
+            return;
+        }
+
+        try
+        {
+            if (File.Exists(RunMarkerPath))
+            {
+                File.Delete(RunMarkerPath);
+            }
+        }
+        catch
+        {
+            // Best effort cleanup.
         }
     }
 
