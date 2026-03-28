@@ -2,6 +2,7 @@ namespace PowerPlanSwitcher;
 
 using System.Diagnostics;
 using System.Drawing;
+using System.Reflection;
 using Autofac;
 using Hotkeys;
 using Newtonsoft.Json;
@@ -34,20 +35,62 @@ internal static class Program
         Path.Combine(LocalAppDataPath, AssemblyTitle);
     private static readonly string LogFilePath =
         Path.Combine(LogPath, LogFileName);
+    private static readonly string RunMarkerPath =
+        Path.Combine(LogPath, ".run-in-progress");
     private static readonly string ZipLibraryPath =
         Path.Combine("Resources", "7z.dll");
+    private static readonly Guid RunId = Guid.NewGuid();
+    private static bool previousRunUnclean;
 
     private static LoggingLevelSwitch LogLevelSwitch { get; } =
-        new LoggingLevelSwitch(Serilog.Events.LogEventLevel.Fatal);
+        new LoggingLevelSwitch(Serilog.Events.LogEventLevel.Information);
 
     private static Hotkey? CycleHotkey { get; set; }
     private static Dictionary<(Keys key, ModifierKeys modifier), (Guid guid, string? name)>
         DirectPowerSchemeHotkeys { get; } = [];
 
-    public static void UpdateLogLevelSwitch(bool useExtendedLogging) =>
-        LogLevelSwitch.MinimumLevel = useExtendedLogging
+    public static void UpdateLogLevelSwitch(bool useExtendedLogging)
+    {
+        var previousLevel = LogLevelSwitch.MinimumLevel;
+        var nextLevel = useExtendedLogging
             ? Serilog.Events.LogEventLevel.Verbose
-            : Serilog.Events.LogEventLevel.Fatal;
+            : Serilog.Events.LogEventLevel.Information;
+
+        if (previousLevel == nextLevel)
+        {
+            return;
+        }
+
+        LogLevelSwitch.MinimumLevel = nextLevel;
+
+        Log.ForContext("EventType", "Logging.LevelChanged")
+            .Information(
+                "Logging level changed: {PreviousLevel} -> {CurrentLevel} ExtendedLogging={ExtendedLogging}",
+                previousLevel,
+                nextLevel,
+                useExtendedLogging);
+    }
+
+    private static void InitializeRunMarker()
+    {
+        if (!Directory.Exists(LogPath))
+        {
+            _ = Directory.CreateDirectory(LogPath);
+        }
+
+        previousRunUnclean = File.Exists(RunMarkerPath);
+        File.WriteAllText(
+            RunMarkerPath,
+            $"RunId={RunId:N};StartedUtc={DateTimeOffset.UtcNow:O}");
+    }
+
+    private static void ClearRunMarker()
+    {
+        if (File.Exists(RunMarkerPath))
+        {
+            File.Delete(RunMarkerPath);
+        }
+    }
 
     public static void OpenLogPath()
     {
@@ -287,6 +330,8 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
+        InitializeRunMarker();
+
         if (Settings.Default.UpgradeRequired)
         {
             Settings.Default.Upgrade();
@@ -297,6 +342,7 @@ internal static class Program
         UpdateLogLevelSwitch(Settings.Default.ExtendedLogging);
         Log.Logger = new LoggerConfiguration()
             .MinimumLevel.ControlledBy(LogLevelSwitch)
+            .Enrich.WithProperty("RunId", RunId)
             .WriteTo.File(
                 path: LogFilePath,
                 formatter: new JsonFormatter(),
@@ -306,9 +352,32 @@ internal static class Program
                 restrictedToMinimumLevel: Serilog.Events.LogEventLevel.Verbose)
             .CreateLogger();
 
-        Log.Information(
-            "Application started. Version: {Version}",
-            AboutBox.AssemblyVersion ?? "Unknown");
+        Log.ForContext("EventType", "App.Started")
+            .Information(
+                "Application started. Version={Version} FileVersion={FileVersion} RunId={RunId} ProcessId={ProcessId} Machine={MachineName} OS={OSVersion} ExtendedLogging={ExtendedLogging} PreviousRunUnclean={PreviousRunUnclean}",
+                AboutBox.AssemblyVersion ?? "Unknown",
+                Assembly.GetExecutingAssembly().GetName().Version?.ToString() ?? "Unknown",
+                RunId,
+                Environment.ProcessId,
+                Environment.MachineName,
+                Environment.OSVersion.VersionString,
+                Settings.Default.ExtendedLogging,
+                previousRunUnclean);
+
+        AppDomain.CurrentDomain.ProcessExit += (_, _) =>
+        {
+            try
+            {
+                Log.ForContext("EventType", "App.Stopped")
+                    .Information("Application exited gracefully.");
+                ClearRunMarker();
+                Log.CloseAndFlush();
+            }
+            catch
+            {
+                // Best effort only during process teardown.
+            }
+        };
 
         SevenZipBase.SetLibraryPath(ZipLibraryPath);
 
@@ -456,7 +525,5 @@ internal static class Program
 
             Application.Run(appContext);
         }
-
-        Log.Information("Application exited gracefully.");
     }
 }

@@ -54,6 +54,10 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
 
     private readonly WindowMessageTimer.Timer timer;
     private Dictionary<ProcessIdentity, IProcess> previousProcesses = [];
+    private readonly TimeSpan summaryInterval = TimeSpan.FromSeconds(30);
+    private DateTime lastSummaryTimestampUtc = DateTime.UtcNow;
+    private int createdSinceSummary;
+    private int terminatedSinceSummary;
     private bool disposedValue;
 
     public ProcessMonitor(TimeSpan updateInterval)
@@ -69,8 +73,9 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
             return;
         }
 
+        var tickStart = DateTime.UtcNow;
         var currentProcesses = CreateProcessMap(GetUsersProcesses());
-        var logProcessEvents = Log.IsEnabled(Serilog.Events.LogEventLevel.Information);
+        var logProcessEvents = Log.IsEnabled(Serilog.Events.LogEventLevel.Debug);
 
         foreach (var (identity, addedProcess) in currentProcesses)
         {
@@ -81,13 +86,15 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
 
             if (logProcessEvents)
             {
-                Log.Information(
+                Log.ForContext("EventType", "Process.Created")
+                    .Debug(
                     "Process created: {ProcessId} " +
                     "{ProcessName} {ExecutablePath}",
                     addedProcess.ProcessId,
                     addedProcess.ProcessName,
                     addedProcess.ExecutablePath);
             }
+            createdSinceSummary++;
             OnProcessCreated(addedProcess);
         }
 
@@ -100,17 +107,43 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
 
             if (logProcessEvents)
             {
-                Log.Information(
+                Log.ForContext("EventType", "Process.Terminated")
+                    .Debug(
                     "Process terminated: {ProcessId} " +
                     "{ProcessName} {ExecutablePath}",
                     removedProcess.ProcessId,
                     removedProcess.ProcessName,
                     removedProcess.ExecutablePath);
             }
+            terminatedSinceSummary++;
             OnProcessTerminated(removedProcess);
         }
 
         previousProcesses = currentProcesses;
+
+        var now = DateTime.UtcNow;
+        if (now - lastSummaryTimestampUtc < summaryInterval)
+        {
+            return;
+        }
+
+        var elapsedMs = (now - tickStart).TotalMilliseconds;
+        if (createdSinceSummary > 0
+            || terminatedSinceSummary > 0
+            || Log.IsEnabled(Serilog.Events.LogEventLevel.Debug))
+        {
+            Log.ForContext("EventType", "Process.Summary")
+                .Information(
+                    "Process monitor summary: Created={CreatedCount} Terminated={TerminatedCount} Tracked={TrackedCount} TickDurationMs={TickDurationMs}",
+                    createdSinceSummary,
+                    terminatedSinceSummary,
+                    previousProcesses.Count,
+                    elapsedMs);
+        }
+
+        createdSinceSummary = 0;
+        terminatedSinceSummary = 0;
+        lastSummaryTimestampUtc = now;
     }
 
     public void StartMonitoring()

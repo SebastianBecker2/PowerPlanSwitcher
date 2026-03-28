@@ -34,7 +34,8 @@ internal class AppContext : ApplicationContext
             (s, e) => trayIcon.UpdateIcon(e.ActiveSchemeGuid);
 
         powerManager.ActivePowerSchemeChanged += (s, e) =>
-            Log.Information(
+            Log.ForContext("EventType", "PowerScheme.SystemChanged")
+                .Information(
                 "System activated power scheme: {PowerSchemeName} {PowerSchemeGuid}",
                 powerManager.GetPowerSchemeName(e.ActiveSchemeGuid) ?? "<No Name>",
                 e.ActiveSchemeGuid);
@@ -78,7 +79,8 @@ internal class AppContext : ApplicationContext
             return;
         }
 
-        Log.Information(
+        Log.ForContext("EventType", "Settings.Changed")
+            .Information(
             "Setting changing: {SettingName} Old Value: {OldValue} New Value: {NewValue}",
             e.SettingName, Settings.Default[e.SettingName], e.NewValue);
     }
@@ -94,7 +96,8 @@ internal class AppContext : ApplicationContext
                     BaselineSchemeGuid)
                 ?? "<No Name>";
 
-            Log.Information(
+            Log.ForContext("EventType", "PowerScheme.ActivationRequested")
+                .Information(
                 "Activating power scheme: {PowerSchemeName} " +
                 "'{PowerSchemeGuid}' Reason: {Reason}",
                 baselineSchemeName,
@@ -117,7 +120,8 @@ internal class AppContext : ApplicationContext
 
         var reason = "Rule applied";
 
-        Log.Information(
+        Log.ForContext("EventType", "PowerScheme.ActivationRequested")
+            .Information(
             "Activating power scheme: {PowerSchemeName} " +
             "'{PowerSchemeGuid}' Reason: {Reason} Rule: {RuleDescription}",
             schemeName,

@@ -81,7 +81,11 @@ public class BatteryMonitor : IBatteryMonitor, IDisposable
         if (msg == (uint)WindowMessage.WM_POWERBROADCAST
             && wParam.ToInt32() == (int)PowerBroadcastType.PBT_POWERSETTINGCHANGE)
         {
-            Log.Verbose(
+            var powerEventId = Guid.NewGuid();
+            var powerEventLog = Log
+                .ForContext("PowerEventId", powerEventId)
+                .ForContext("EventType", "Power.Acdc.Received");
+            powerEventLog.Verbose(
                 "Power setting change message received: WParam={WParam} LParam={LParam}",
                 wParam.ToInt64(),
                 lParam.ToInt64());
@@ -89,7 +93,9 @@ public class BatteryMonitor : IBatteryMonitor, IDisposable
             try
             {
                 var data = lParam.ToStructure<POWERBROADCAST_SETTING>();
-                Log.Verbose(
+                Log.ForContext("PowerEventId", powerEventId)
+                    .ForContext("EventType", "Power.Acdc.Parsed")
+                    .Verbose(
                     "Power setting payload parsed: PowerSetting={PowerSetting} DataLength={DataLength}",
                     data.PowerSetting,
                     data.DataLength);
@@ -97,22 +103,30 @@ public class BatteryMonitor : IBatteryMonitor, IDisposable
                 if (data.PowerSetting == PowrProf.GUID_ACDC_POWER_SOURCE)
                 {
                     var status = PowerLineStatus;
-                    Log.Information("Power line status changed: {Status}", status);
+                    Log.ForContext("PowerEventId", powerEventId)
+                        .ForContext("EventType", "Power.Acdc.Changed")
+                        .Information("Power line status changed: {Status}", status);
                     OnPowerLineStatusChanged(status);
-                    Log.Verbose(
+                    Log.ForContext("PowerEventId", powerEventId)
+                        .ForContext("EventType", "Power.Acdc.Dispatched")
+                        .Verbose(
                         "Power line status change event dispatched: {Status}",
                         status);
                 }
                 else
                 {
-                    Log.Verbose(
+                    Log.ForContext("PowerEventId", powerEventId)
+                        .ForContext("EventType", "Power.Acdc.Ignored")
+                        .Verbose(
                         "Ignored power setting change for setting {PowerSetting}",
                         data.PowerSetting);
                 }
             }
             catch (Exception ex)
             {
-                Log.Error(ex, "Failed to process WM_POWERBROADCAST power setting change.");
+                Log.ForContext("PowerEventId", powerEventId)
+                    .ForContext("EventType", "Power.Acdc.Error")
+                    .Error(ex, "Failed to process WM_POWERBROADCAST power setting change.");
             }
         }
         return DefWindowProc(hwnd, msg, wParam, lParam);
