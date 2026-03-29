@@ -11,7 +11,8 @@ internal class TrayIcon : IDisposable
         IconUtilities.CreateNotifyIcon(Resources.power_surge);
 
     private bool disposedValue;
-    private Icon? currentCustomIcon;
+    private readonly Dictionary<Guid, Icon> customIconCache = [];
+    private Guid currentIconSchemeGuid = Guid.Empty;
     private readonly NotifyIcon notifyIcon = new()
     {
         Icon = DefaultIcon,
@@ -22,7 +23,11 @@ internal class TrayIcon : IDisposable
     public TrayIcon(ContextMenu contextMenu)
     {
         notifyIcon.ContextMenuStrip = contextMenu;
-        Settings.Default.PropertyChanged += (_, _) => UpdateIcon();
+        Settings.Default.PropertyChanged += (_, _) =>
+        {
+            InvalidateCustomIconCache();
+            UpdateIcon();
+        };
 
         notifyIcon.MouseClick += NotifyIcon_MouseClick;
 
@@ -53,20 +58,30 @@ internal class TrayIcon : IDisposable
 
     public void UpdateIcon(Guid powerSchemeGuid)
     {
+        if (currentIconSchemeGuid == powerSchemeGuid)
+        {
+            return;
+        }
+
         var setting = PowerSchemeSettings.GetSetting(powerSchemeGuid);
+
         if (setting?.Icon is null)
         {
-            ApplyDefaultIcon();
+            ApplyDefaultIcon(powerSchemeGuid);
             return;
         }
 
         try
         {
-            var customIcon = IconUtilities.CreateNotifyIcon(setting.Icon);
-            var previousCustomIcon = currentCustomIcon;
-            currentCustomIcon = customIcon;
+            var cacheHit = customIconCache.TryGetValue(powerSchemeGuid, out var customIcon);
+            if (!cacheHit)
+            {
+                customIcon = IconUtilities.CreateNotifyIcon(setting.Icon);
+                customIconCache[powerSchemeGuid] = customIcon;
+            }
+
             notifyIcon.Icon = customIcon;
-            previousCustomIcon?.Dispose();
+            currentIconSchemeGuid = powerSchemeGuid;
         }
         catch (Exception ex)
         {
@@ -74,7 +89,7 @@ internal class TrayIcon : IDisposable
                 ex,
                 "Failed to apply custom tray icon for power scheme {PowerSchemeGuid}. Falling back to default icon.",
                 powerSchemeGuid);
-            ApplyDefaultIcon();
+            ApplyDefaultIcon(powerSchemeGuid);
         }
     }
 
@@ -103,11 +118,21 @@ internal class TrayIcon : IDisposable
         }
     }
 
-    private void ApplyDefaultIcon()
+    private void ApplyDefaultIcon(Guid powerSchemeGuid)
     {
-        currentCustomIcon?.Dispose();
-        currentCustomIcon = null;
         notifyIcon.Icon = DefaultIcon;
+        currentIconSchemeGuid = powerSchemeGuid;
+    }
+
+    private void InvalidateCustomIconCache()
+    {
+        foreach (var icon in customIconCache.Values)
+        {
+            icon.Dispose();
+        }
+
+        customIconCache.Clear();
+        currentIconSchemeGuid = Guid.Empty;
     }
 
     protected virtual void Dispose(bool disposing)
@@ -119,8 +144,7 @@ internal class TrayIcon : IDisposable
 
         if (disposing)
         {
-            currentCustomIcon?.Dispose();
-            currentCustomIcon = null;
+            InvalidateCustomIconCache();
             notifyIcon.Dispose();
         }
         disposedValue = true;

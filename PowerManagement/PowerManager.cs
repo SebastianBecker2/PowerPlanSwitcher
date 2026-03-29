@@ -1,6 +1,7 @@
 namespace PowerManagement;
 
 using System.Diagnostics;
+using Serilog;
 using Vanara.Extensions;
 using Vanara.InteropServices;
 using Vanara.PInvoke;
@@ -90,6 +91,8 @@ public class PowerManager : IDisposable, IPowerManager
 
     private bool disposedValue;
     private readonly SafeHPOWERNOTIFY powerSettingsChangedCallbackHandler;
+    private readonly object schemeDispatchLock = new();
+    private Guid? lastDispatchedSchemeGuid;
 
     // This variable must not be a local but instead have a lifetime
     // exceeding the registration of the callback initialized with
@@ -166,11 +169,41 @@ public class PowerManager : IDisposable, IPowerManager
             return Win32Error.NO_ERROR;
         }
 
+        Guid activeSchemeGuid;
         try
         {
-            OnActivePowerSchemeChanged(new Guid(setting.Data));
+            activeSchemeGuid = new Guid(setting.Data);
         }
-        catch (ArgumentException) { }
+        catch (ArgumentException)
+        {
+            return Win32Error.NO_ERROR;
+        }
+
+        lock (schemeDispatchLock)
+        {
+            if (lastDispatchedSchemeGuid == activeSchemeGuid)
+            {
+                return Win32Error.NO_ERROR;
+            }
+
+            lastDispatchedSchemeGuid = activeSchemeGuid;
+        }
+
+        _ = Task.Run(() =>
+        {
+            try
+            {
+                OnActivePowerSchemeChanged(activeSchemeGuid);
+            }
+            catch (Exception ex)
+            {
+                Log.Error(
+                    ex,
+                    "Unhandled exception in active power scheme change dispatch for scheme {PowerSchemeGuid}",
+                    activeSchemeGuid);
+            }
+        });
+
         return Win32Error.NO_ERROR;
     }
 

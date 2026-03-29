@@ -2,53 +2,107 @@ namespace PowerPlanSwitcher;
 
 using Hotkeys;
 using PowerManagement;
+using PowerPlanSwitcher.Properties;
 using Serilog;
 
 internal class ContextMenu : ContextMenuStrip
 {
+    private sealed record PowerSchemeMenuEntry(
+        Guid Guid,
+        string? Name,
+        Image? Icon,
+        bool Visible);
+
     private HotkeyManager HotkeyManager { get; init; }
     private Func<SettingsDlg> SettingsDlgFactory { get; init; }
+    private IPowerManager PowerManager { get; init; }
+    private Guid ActiveSchemeGuid { get; set; }
+    private bool IsMenuDirty { get; set; }
+    private readonly List<(Guid guid, ToolStripMenuItem menuItem, string label)> schemeButtons = [];
 
     public ContextMenu(
         HotkeyManager hotkeyManager,
+        IPowerManager powerManager,
         Func<SettingsDlg> settingsDlgFactory)
     {
         HotkeyManager = hotkeyManager;
+        PowerManager = powerManager;
         SettingsDlgFactory = settingsDlgFactory;
+        ActiveSchemeGuid = powerManager.GetActivePowerSchemeGuid();
+        IsMenuDirty = false;
+
+        powerManager.ActivePowerSchemeChanged += (_, e) =>
+            ActiveSchemeGuid = e.ActiveSchemeGuid;
+        Settings.Default.PropertyChanged += (_, e) =>
+        {
+            if (string.Equals(
+                e.PropertyName,
+                nameof(Settings.Default.PowerSchemeSettings),
+                StringComparison.Ordinal))
+            {
+                IsMenuDirty = true;
+            }
+        };
 
         BuildContextMenu();
 
-        Opening += (s, e) => BuildContextMenu();
+        Opening += (s, e) =>
+        {
+            if (IsMenuDirty)
+            {
+                BuildContextMenu();
+            }
+            else
+            {
+                RefreshPowerSchemeButtons();
+            }
+        };
     }
 
     private void BuildContextMenu()
     {
+        var activeSchemeGuid = ActiveSchemeGuid;
+
         Items.Clear();
-        AddPowerSchemes();
+        schemeButtons.Clear();
+
+        AddPowerSchemes(activeSchemeGuid);
         _ = Items.Add(new ToolStripSeparator());
         AddSettingsButton();
         AddAboutButton();
         _ = Items.Add(new ToolStripSeparator());
         AddCloseButton();
+
+        IsMenuDirty = false;
     }
 
-    private void AddPowerSchemes()
+    private void RefreshPowerSchemeButtons()
     {
-        var activeSchemeGuid = PowerManager.Static.GetActivePowerSchemeGuid();
-        foreach (var (guid, name) in PowerManager.Static.GetPowerSchemes())
+        var activeSchemeGuid = ActiveSchemeGuid;
+        foreach (var (guid, menuItem, label) in schemeButtons)
         {
-            var setting = PowerSchemeSettings.GetSetting(guid);
-            if (setting is not null && !setting.Visible)
+            menuItem.Text = (guid == activeSchemeGuid ? "(Active) " : string.Empty) + label;
+        }
+    }
+
+    private void AddPowerSchemes(Guid activeSchemeGuid)
+    {
+        foreach (var scheme in GetPowerSchemeEntries())
+        {
+            if (!scheme.Visible)
             {
                 continue;
             }
 
             var button = new ToolStripMenuItem
             {
-                Image = setting?.Icon,
-                Text = (activeSchemeGuid == guid ? "(Active) " : string.Empty)
-                    + (name ?? guid.ToString()),
+                Image = scheme.Icon,
+                Text = (activeSchemeGuid == scheme.Guid ? "(Active) " : string.Empty)
+                    + (scheme.Name ?? scheme.Guid.ToString()),
             };
+
+            var label = scheme.Name ?? scheme.Guid.ToString();
+            schemeButtons.Add((scheme.Guid, button, label));
 
             button.Click += (_, _) =>
             {
@@ -56,12 +110,26 @@ internal class ContextMenu : ContextMenuStrip
                     .Information(
                     "Activating power scheme: {PowerSchemeName} " +
                     "{PowerSchemeGuid} Reason: User selection",
-                    name,
-                    guid);
-                _ = PowerManager.Static.SetActivePowerSchemeAsync(guid);
+                    scheme.Name,
+                    scheme.Guid);
+                _ = PowerManager.SetActivePowerSchemeAsync(scheme.Guid);
             };
 
             _ = Items.Add(button);
+        }
+    }
+
+    private IEnumerable<PowerSchemeMenuEntry> GetPowerSchemeEntries()
+    {
+        foreach (var (guid, name) in PowerManager.GetPowerSchemes())
+        {
+            var setting = PowerSchemeSettings.GetSetting(guid);
+
+            yield return new PowerSchemeMenuEntry(
+                guid,
+                name,
+                setting?.Icon,
+                setting?.Visible ?? true);
         }
     }
 

@@ -1,6 +1,7 @@
 namespace PowerPlanSwitcher;
 
 using System.Configuration;
+using System.Threading;
 using PowerManagement;
 using PowerPlanSwitcher.Properties;
 using ProcessManagement;
@@ -13,7 +14,9 @@ internal class AppContext : ApplicationContext
 {
     private IPowerManager PowerManager { get; init; }
     private TrayIcon TrayIcon { get; init; }
+    private SynchronizationContext UiSynchronizationContext { get; }
     private Guid BaselineSchemeGuid { get; set; }
+    private Guid LastHandledSystemSchemeGuid { get; set; }
 
     public AppContext(
         TrayIcon trayIcon,
@@ -25,35 +28,19 @@ internal class AppContext : ApplicationContext
     {
         TrayIcon = trayIcon;
         PowerManager = powerManager;
+        UiSynchronizationContext =
+            SynchronizationContext.Current
+            ?? new WindowsFormsSynchronizationContext();
 
         BaselineSchemeGuid = powerManager.GetActivePowerSchemeGuid();
+        LastHandledSystemSchemeGuid = BaselineSchemeGuid;
 
         ToastDlg.Initialize();
 
-        powerManager.ActivePowerSchemeChanged +=
-            (s, e) => trayIcon.UpdateIcon(e.ActiveSchemeGuid);
-
         powerManager.ActivePowerSchemeChanged += (s, e) =>
-            Log.ForContext("EventType", "PowerScheme.SystemChanged")
-                .Information(
-                "System activated power scheme: {PowerSchemeName} {PowerSchemeGuid}",
-                powerManager.GetPowerSchemeName(e.ActiveSchemeGuid) ?? "<No Name>",
-                e.ActiveSchemeGuid);
-
-        powerManager.ActivePowerSchemeChanged += (s, e) =>
-        {
-            if (ruleManager.AppliedRule is not null)
-            {
-                return;
-            }
-
-            if (e.ActiveSchemeGuid == Guid.Empty)
-            {
-                return;
-            }
-
-            BaselineSchemeGuid = e.ActiveSchemeGuid;
-        };
+            UiSynchronizationContext.Post(
+                _ => HandleSystemPowerSchemeChanged(ruleManager, e.ActiveSchemeGuid),
+                null);
 
         ruleManager.RuleApplicationChanged +=
             RuleManager_RuleApplicationChanged;
@@ -68,6 +55,44 @@ internal class AppContext : ApplicationContext
         idleMonitor.StartMonitoring();
         windowMessageMonitor.StartMonitoring();
         ruleManager.StartMonitoring();
+    }
+
+    private void HandleSystemPowerSchemeChanged(
+        RuleManager ruleManager,
+        Guid activeSchemeGuid)
+    {
+        if (activeSchemeGuid == LastHandledSystemSchemeGuid)
+        {
+            return;
+        }
+
+        try
+        {
+            TrayIcon.UpdateIcon(activeSchemeGuid);
+        }
+        catch (ObjectDisposedException)
+        {
+            return;
+        }
+
+        LastHandledSystemSchemeGuid = activeSchemeGuid;
+
+        Log.ForContext("EventType", "PowerScheme.SystemChanged")
+            .Information(
+            "System activated power scheme: {PowerSchemeGuid}",
+            activeSchemeGuid);
+
+        if (ruleManager.AppliedRule is not null)
+        {
+            return;
+        }
+
+        if (activeSchemeGuid == Guid.Empty)
+        {
+            return;
+        }
+
+        BaselineSchemeGuid = activeSchemeGuid;
     }
 
     private void Default_SettingChanging(
