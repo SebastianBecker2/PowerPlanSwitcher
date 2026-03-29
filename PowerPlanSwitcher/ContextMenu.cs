@@ -7,12 +7,6 @@ using Serilog;
 
 internal class ContextMenu : ContextMenuStrip
 {
-    private sealed record PowerSchemeMenuEntry(
-        Guid Guid,
-        string? Name,
-        Image? Icon,
-        bool Visible);
-
     private HotkeyManager HotkeyManager { get; init; }
     private Func<SettingsDlg> SettingsDlgFactory { get; init; }
     private IPowerManager PowerManager { get; init; }
@@ -87,7 +81,7 @@ internal class ContextMenu : ContextMenuStrip
 
     private void AddPowerSchemes(Guid activeSchemeGuid)
     {
-        foreach (var scheme in GetPowerSchemeEntries())
+        foreach (var scheme in PowerSchemeEntryCache.GetEntries())
         {
             if (!scheme.Visible)
             {
@@ -116,20 +110,6 @@ internal class ContextMenu : ContextMenuStrip
             };
 
             _ = Items.Add(button);
-        }
-    }
-
-    private IEnumerable<PowerSchemeMenuEntry> GetPowerSchemeEntries()
-    {
-        foreach (var (guid, name) in PowerManager.GetPowerSchemes())
-        {
-            var setting = PowerSchemeSettings.GetSetting(guid);
-
-            yield return new PowerSchemeMenuEntry(
-                guid,
-                name,
-                setting?.Icon,
-                setting?.Visible ?? true);
         }
     }
 

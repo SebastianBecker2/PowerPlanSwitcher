@@ -87,10 +87,9 @@ public partial class PowerSchemeSelectorDlg : Form
 
         var activeSchemeGuid = PowerManager.Static.GetActivePowerSchemeGuid();
 
-        foreach (var (guid, name) in PowerManager.Static.GetPowerSchemes())
+        foreach (var entry in PowerSchemeEntryCache.GetEntries())
         {
-            var setting = PowerSchemeSettings.GetSetting(guid);
-            if (setting is not null && !setting.Visible)
+            if (!entry.Visible)
             {
                 continue;
             }
@@ -103,10 +102,10 @@ public partial class PowerSchemeSelectorDlg : Form
 
             TlpPowerSchemes.Controls.Add(
                 CreateButton(
-                    guid,
-                    name,
-                    setting?.Icon,
-                    activeSchemeGuid == guid));
+                    entry.Guid,
+                    entry.Name,
+                    entry.Icon,
+                    activeSchemeGuid == entry.Guid));
         }
 
         UpdateLayout();
