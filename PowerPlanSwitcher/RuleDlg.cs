@@ -6,6 +6,7 @@ using RuleManagement.Dto;
 public partial class RuleDlg : Form
 {
     private readonly DpiImageScaler dpiImageScaler;
+    private readonly PowerPlanSwitcher.RuleControl.StartupRuleControl srcStartupRule = new();
 
     public IRuleDto? RuleDto { get; set; }
 
@@ -33,6 +34,8 @@ public partial class RuleDlg : Form
     {
         InitializeComponent();
         dpiImageScaler = new DpiImageScaler(this);
+        tableLayoutPanel1.Controls.Add(srcStartupRule, 0, 3);
+        tableLayoutPanel1.SetColumnSpan(srcStartupRule, 3);
     }
 
     protected override void OnLoad(EventArgs e)
@@ -56,9 +59,10 @@ public partial class RuleDlg : Form
             CmbRuleType.SelectedIndex = 2;
             IrcIdleRule.Dto = idleRuleDto;
         }
-        else if (RuleDto is StartupRuleDto)
+        else if (RuleDto is StartupRuleDto startupRuleDto)
         {
             CmbRuleType.SelectedIndex = 3;
+            srcStartupRule.Dto = startupRuleDto;
         }
         else if (RuleDto is ShutdownRuleDto)
         {
@@ -111,11 +115,9 @@ public partial class RuleDlg : Form
         }
         else if (ruleType == typeof(StartupRuleDto))
         {
-            RuleDto = new StartupRuleDto
-            {
-                SchemeGuid =
-                    GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme))
-            };
+            RuleDto = srcStartupRule.Dto;
+            RuleDto.SchemeGuid =
+                GetPowerSchemeGuid(GetSelectedString(CmbPowerScheme));
             DialogResult = DialogResult.OK;
             return;
         }
@@ -148,6 +150,7 @@ public partial class RuleDlg : Form
             PrcProcessRule.Visible = true;
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = false;
+            srcStartupRule.Visible = false;
         }
         else if (ruleType == typeof(PowerLineRuleDto))
         {
@@ -157,6 +160,7 @@ public partial class RuleDlg : Form
             PrcProcessRule.Visible = false;
             PlcPowerLineRule.Visible = true;
             IrcIdleRule.Visible = false;
+            srcStartupRule.Visible = false;
         }
         else if (ruleType == typeof(IdleRuleDto))
         {
@@ -166,16 +170,19 @@ public partial class RuleDlg : Form
             PrcProcessRule.Visible = false;
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = true;
+            srcStartupRule.Visible = false;
         }
         else if (ruleType == typeof(StartupRuleDto))
         {
             TipHints.SetToolTip(
                 PibRuleInfo,
                 $"A startup rule switches power plans when the system starts up." +
+                $"{Environment.NewLine}Optionally, you can set a duration after which the power scheme will be deactivated." +
                 $"{Environment.NewLine}This rule is always triggered and should be the last rule in the list.");
             PrcProcessRule.Visible = false;
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = false;
+            srcStartupRule.Visible = true;
         }
         else if (ruleType == typeof(ShutdownRuleDto))
         {
@@ -185,6 +192,7 @@ public partial class RuleDlg : Form
             PrcProcessRule.Visible = false;
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = false;
+            srcStartupRule.Visible = false;
         }
         else
         {
@@ -194,6 +202,7 @@ public partial class RuleDlg : Form
             PrcProcessRule.Visible = false;
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = false;
+            srcStartupRule.Visible = false;
         }
     }
 

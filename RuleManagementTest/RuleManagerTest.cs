@@ -472,10 +472,11 @@ public sealed class RuleManagerTest
               ""PowerLineStatus"": 1,
               ""SchemeGuid"": ""22222222-2222-2222-2222-222222222222""
             },
-            {
-              ""$type"": ""RuleManagement.Dto.StartupRuleDto, RuleManagement"",
-              ""SchemeGuid"": ""33333333-3333-3333-3333-333333333333""
-            },
+                        {
+                            ""$type"": ""RuleManagement.Dto.StartupRuleDto, RuleManagement"",
+                            ""Duration"": null,
+                            ""SchemeGuid"": ""33333333-3333-3333-3333-333333333333""
+                        },
             {
               ""$type"": ""RuleManagement.Dto.ShutdownRuleDto, RuleManagement"",
               ""SchemeGuid"": ""44444444-4444-4444-4444-444444444444""
@@ -759,10 +760,11 @@ public sealed class RuleManagerTest
               ""PowerLineStatus"": 1,
               ""SchemeGuid"": ""22222222-2222-2222-2222-222222222222""
             },
-            {
-              ""$type"": ""RuleManagement.Dto.StartupRuleDto, RuleManagement"",
-              ""SchemeGuid"": ""33333333-3333-3333-3333-333333333333""
-            },
+                        {
+                            ""$type"": ""RuleManagement.Dto.StartupRuleDto, RuleManagement"",
+                            ""Duration"": null,
+                            ""SchemeGuid"": ""33333333-3333-3333-3333-333333333333""
+                        },
             {
               ""$type"": ""RuleManagement.Dto.ShutdownRuleDto, RuleManagement"",
               ""SchemeGuid"": ""44444444-4444-4444-4444-444444444444""
@@ -1015,6 +1017,92 @@ public sealed class RuleManagerTest
         Assert.AreEqual(serializedFromEvent[0], serializedFromEvent[1]);
     }
 
+    [TestMethod]
+    public void StartupRuleWithDuration_SerializesAndDeserializesCorrectly()
+    {
+        // Arrange
+        var migrationPolicy = new MigrationPolicy(
+            MigratedPowerRulesToRules: true,
+            AcPowerSchemeGuid: CreateGuid('1'),
+            BatteryPowerSchemeGuid: CreateGuid('2'),
+            MigratedStartupRule: true,
+            ActivateInitialPowerScheme: false,
+            InitialPowerSchemeGuid: CreateGuid('3'));
+
+        var startup = new StartupRule(new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('a'),
+            Duration = TimeSpan.FromMinutes(5)
+        });
+
+        var manager = new RuleManager(ruleFactory);
+        string? serializedJson = null;
+        manager.RulesUpdated += (s, e) => serializedJson = e.Serialized;
+
+        // Act
+        manager.SetRules([startup]);
+
+        // Assert
+        Assert.IsNotNull(serializedJson, "RulesUpdated event should fire");
+
+        var manager2 = new RuleManager(
+            ruleFactory,
+            serializedJson,
+            migrationPolicy,
+            batteryMonitor);
+        var deserializedRules = manager2.GetRules().ToList();
+
+        Assert.HasCount(1, deserializedRules);
+        var deserializedStartup = deserializedRules[0];
+        AssertRule(deserializedStartup, new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('a'),
+            Duration = TimeSpan.FromMinutes(5)
+        });
+    }
+
+    [TestMethod]
+    public void BackwardCompatibility_StartupRuleWithoutDuration_DeserializesWithNullDuration()
+    {
+        // Arrange
+        var migrationPolicy = new MigrationPolicy(
+            MigratedPowerRulesToRules: true,
+            AcPowerSchemeGuid: CreateGuid('1'),
+            BatteryPowerSchemeGuid: CreateGuid('2'),
+            MigratedStartupRule: true,
+            ActivateInitialPowerScheme: false,
+            InitialPowerSchemeGuid: CreateGuid('3'));
+
+        // Old JSON without Duration property
+        var version1JsonWithoutDuration = /*lang=json,strict*/ @"
+        {
+          ""SchemaVersion"": 1,
+          ""Rules"": [
+            {
+              ""$type"": ""RuleManagement.Dto.StartupRuleDto, RuleManagement"",
+              ""SchemeGuid"": ""aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa""
+            }
+          ]
+        }";
+
+        // Act
+        var manager = new RuleManager(
+            ruleFactory,
+            version1JsonWithoutDuration,
+            migrationPolicy,
+            batteryMonitor);
+        var rules = manager.GetRules().ToList();
+
+        // Assert
+        Assert.HasCount(1, rules);
+        var startupRule = rules[0];
+        AssertRule(startupRule, new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('a'),
+            Duration = null // Should be null for backward compat
+        });
+    }
+
     private static void AssertRule(IRule rule, PowerLineRuleDto dto)
     {
         Assert.IsInstanceOfType(rule, typeof(PowerLineRule));
@@ -1034,6 +1122,7 @@ public sealed class RuleManagerTest
     {
         Assert.IsInstanceOfType(rule, typeof(StartupRule));
         Assert.AreEqual(dto.SchemeGuid, ((StartupRule)rule).SchemeGuid);
+        Assert.AreEqual(dto.Duration, ((StartupRule)rule).Dto.Duration);
     }
 
     private static void AssertRule(IRule rule, ShutdownRuleDto dto)
@@ -1064,3 +1153,4 @@ public sealed class RuleManagerTest
     private static TestRule CreateTestRule(char c) =>
         new(new TestRuleDto { SchemeGuid = CreateGuid(c) });
 }
+

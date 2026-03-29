@@ -32,7 +32,7 @@ Create rules that switch Windows power plans based on:
 
 <img width="671" height="249" alt="image" src="https://github.com/user-attachments/assets/326a2f9e-d63b-414c-824f-201489c86a67" />
 
-- StartupRule: PowerPlanSwitcher being started
+- StartupRule: PowerPlanSwitcher being started. Optionally configure a duration after which the power scheme will be automatically deactivated. For example, you can activate a performance power plan for 5 minutes after startup, then fall back to other rules.
 
 <img width="671" height="153" alt="image" src="https://github.com/user-attachments/assets/479e1770-6074-4b43-addd-c7fa49eb63b5" />
 
