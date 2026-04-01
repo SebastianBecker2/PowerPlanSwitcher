@@ -1,6 +1,8 @@
 namespace RuleManagementTest;
 
+using System.Diagnostics;
 using System.Reflection;
+using System.Threading;
 using FakeItEasy;
 using Newtonsoft.Json;
 using PowerManagement;
@@ -1018,6 +1020,187 @@ public sealed class RuleManagerTest
     }
 
     [TestMethod]
+    public void SetRules_WithEquivalentDtos_KeepsExistingRuleInstances()
+    {
+        var manager = new RuleManager(ruleFactory);
+        var dto = new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('a'),
+            Duration = TimeSpan.FromMinutes(5)
+        };
+
+        manager.SetRules([dto]);
+        var originalRule = manager.GetRules().Single();
+
+        manager.SetRules([
+            new StartupRuleDto
+            {
+                SchemeGuid = CreateGuid('a'),
+                Duration = TimeSpan.FromMinutes(5)
+            }
+        ]);
+
+        var updatedRule = manager.GetRules().Single();
+        Assert.AreSame(originalRule, updatedRule, "Equivalent DTO updates should keep the existing rule instance.");
+    }
+
+    [TestMethod]
+    public void SetRules_WithChangedDto_ReplacesOnlyChangedRule()
+    {
+        var manager = new RuleManager(ruleFactory);
+
+        manager.SetRules([
+            new StartupRuleDto
+            {
+                SchemeGuid = CreateGuid('a'),
+                Duration = TimeSpan.FromMinutes(5)
+            },
+            new ShutdownRuleDto
+            {
+                SchemeGuid = CreateGuid('b')
+            }
+        ]);
+
+        var originalRules = manager.GetRules().ToList();
+
+        manager.SetRules([
+            new StartupRuleDto
+            {
+                SchemeGuid = CreateGuid('a'),
+                Duration = TimeSpan.FromMinutes(10)
+            },
+            new ShutdownRuleDto
+            {
+                SchemeGuid = CreateGuid('b')
+            }
+        ]);
+
+        var updatedRules = manager.GetRules().ToList();
+        Assert.AreNotSame(originalRules[0], updatedRules[0], "Changed DTO should replace the corresponding rule instance.");
+        Assert.AreSame(originalRules[1], updatedRules[1], "Unchanged DTO at same index should keep the existing instance.");
+    }
+
+    [TestMethod]
+    public void SetRules_WithReorderedDtos_ReordersPriorityAndKeepsEquivalentInstances()
+    {
+        var manager = new RuleManager(ruleFactory);
+        var dtoA = new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('a'),
+            Duration = TimeSpan.FromMinutes(5)
+        };
+        var dtoB = new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('b'),
+            Duration = TimeSpan.FromMinutes(5)
+        };
+
+        manager.SetRules([dtoA, dtoB]);
+        var originalRules = manager.GetRules().ToList();
+
+        manager.SetRules([dtoB, dtoA]);
+
+        var updatedRules = manager.GetRules().ToList();
+        Assert.AreSame(originalRules[1], updatedRules[0], "Reordered equivalent DTO should keep the original rule instance now moved to index 0.");
+        Assert.AreSame(originalRules[0], updatedRules[1], "Reordered equivalent DTO should keep the original rule instance now moved to index 1.");
+        Assert.AreEqual(CreateGuid('b'), updatedRules[0].Dto.SchemeGuid, "Reordered first rule should now be rule B.");
+        Assert.AreEqual(CreateGuid('b'), manager.AppliedRule?.Dto.SchemeGuid, "AppliedRule should follow reordered startup priority.");
+    }
+
+    [TestMethod]
+    [Timeout(5000, CooperativeCancellation = true)]
+    public void SetRules_RemovingHigherPriorityRule_DoesNotRetriggerExpiredStartupRule()
+    {
+        var manager = new RuleManager(ruleFactory);
+        var startupDto = new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('a'),
+            Duration = TimeSpan.FromMilliseconds(200)
+        };
+
+        manager.SetRules([
+            new ShutdownRuleDto
+            {
+                SchemeGuid = CreateGuid('b')
+            },
+            startupDto
+        ]);
+
+        var originalRules = manager.GetRules().ToList();
+        var originalStartupRule = originalRules.OfType<StartupRule>().Single();
+
+        WaitUntil(
+            () => originalStartupRule.TriggerCount == 0,
+            TimeSpan.FromSeconds(3),
+            "StartupRule should expire before the shutdown rule is deleted.");
+
+        Assert.IsNull(manager.AppliedRule, "Expired StartupRule should no longer be applied before rules are updated.");
+
+        manager.SetRules([startupDto]);
+
+        var updatedStartupRule = manager.GetRules().OfType<StartupRule>().Single();
+        Assert.AreSame(originalStartupRule, updatedStartupRule, "Deleting a rule above StartupRule should not recreate the unchanged StartupRule.");
+        Assert.AreEqual(0, updatedStartupRule.TriggerCount, "Expired StartupRule should stay untriggered after deleting a different rule.");
+        Assert.IsNull(manager.AppliedRule, "Deleting a different rule should not re-apply an expired StartupRule.");
+    }
+
+    [TestMethod]
+    public void SetRules_WithMixedKeepReplaceAddRemove_UpdatesLifecycleCorrectly()
+    {
+        var manager = new RuleManager(ruleFactory);
+
+        manager.SetRules([
+            new StartupRuleDto
+            {
+                SchemeGuid = CreateGuid('a'),
+                Duration = TimeSpan.FromMinutes(5)
+            },
+            new ShutdownRuleDto
+            {
+                SchemeGuid = CreateGuid('b')
+            },
+            new ProcessRuleDto
+            {
+                Pattern = "old.exe",
+                Type = ComparisonType.Exact,
+                SchemeGuid = CreateGuid('c')
+            }
+        ]);
+
+        var originalRules = manager.GetRules().ToList();
+        var removedProcessRule = (ProcessRule)originalRules[2];
+
+        manager.SetRules([
+            new StartupRuleDto
+            {
+                SchemeGuid = CreateGuid('a'),
+                Duration = TimeSpan.FromMinutes(10)
+            },
+            new ShutdownRuleDto
+            {
+                SchemeGuid = CreateGuid('b')
+            },
+            new PowerLineRuleDto
+            {
+                PowerLineStatus = PowerLineStatus.Online,
+                SchemeGuid = CreateGuid('d')
+            }
+        ]);
+
+        var updatedRules = manager.GetRules().ToList();
+        Assert.HasCount(3, updatedRules);
+        Assert.AreNotSame(originalRules[0], updatedRules[0], "Changed StartupRule should be replaced.");
+        Assert.AreSame(originalRules[1], updatedRules[1], "Unchanged ShutdownRule at same index should be kept.");
+        Assert.IsInstanceOfType(updatedRules[2], typeof(PowerLineRule), "Added rule should be created from new DTO.");
+
+        var matchingProcess = A.Fake<IProcess>();
+        _ = A.CallTo(() => matchingProcess.ExecutablePath).Returns("old.exe");
+        processMonitor.ProcessCreated += Raise.With(new ProcessEventArgs(matchingProcess));
+
+        Assert.AreEqual(0, removedProcessRule.TriggerCount, "Removed ProcessRule should no longer react to monitor events.");
+    }
+
+    [TestMethod]
     public void StartupRuleWithDuration_SerializesAndDeserializesCorrectly()
     {
         // Arrange
@@ -1101,6 +1284,22 @@ public sealed class RuleManagerTest
             SchemeGuid = CreateGuid('a'),
             Duration = null // Should be null for backward compat
         });
+    }
+
+    private static void WaitUntil(Func<bool> condition, TimeSpan timeout, string timeoutMessage)
+    {
+        var stopwatch = Stopwatch.StartNew();
+        while (stopwatch.Elapsed < timeout)
+        {
+            if (condition())
+            {
+                return;
+            }
+
+            Thread.Sleep(25);
+        }
+
+        Assert.Fail(timeoutMessage);
     }
 
     private static void AssertRule(IRule rule, PowerLineRuleDto dto)

@@ -26,6 +26,13 @@ public class RuleManager
     private List<IRule> rules = [];
     private readonly Dictionary<IRule, int> ruleIndices = [];
 
+    private sealed class RuleUpdatePlan
+    {
+        public List<IRule> NextRules { get; } = [];
+        public HashSet<IRule> KeptRules { get; } = [];
+        public List<IRule> CreatedRules { get; } = [];
+    }
+
     public IRule? AppliedRule { get; private set; }
 
     public event EventHandler<RulesUpdatedEventArgs>? RulesUpdated;
@@ -155,8 +162,28 @@ public class RuleManager
         }
     }
 
-    public void SetRules(IEnumerable<IRuleDto> newRuleDtos) =>
-        SetRules(newRuleDtos.Select(ruleFactory.Create));
+    public void SetRules(IEnumerable<IRuleDto> newRuleDtos)
+    {
+        var plan = BuildRuleUpdatePlan([.. newRuleDtos]);
+
+        var rulesToRemove = rules
+            .Where(rule => !plan.KeptRules.Contains(rule))
+            .ToList();
+
+        Unsubscribe(rulesToRemove);
+        foreach (var rule in rulesToRemove)
+        {
+            (rule as IDisposable)?.Dispose();
+        }
+
+        rules = plan.NextRules;
+        RebuildRuleIndices();
+
+        Subscribe(plan.CreatedRules);
+        RefreshAppliedRule();
+
+        EmitRulesUpdated();
+    }
 
     public void SetRules(IEnumerable<IRule> newRules)
     {
@@ -169,6 +196,168 @@ public class RuleManager
         RebuildRuleIndices();
         Subscribe(rules);
 
+        EmitRulesUpdated();
+    }
+
+    private RuleUpdatePlan BuildRuleUpdatePlan(IReadOnlyList<IRuleDto> newRuleDtos)
+    {
+        var plan = new RuleUpdatePlan();
+        var oldRuleIndicesByKey = BuildOldRuleIndicesByKey();
+        var consumedOldIndices = new HashSet<int>();
+
+        for (var newIndex = 0; newIndex < newRuleDtos.Count; newIndex++)
+        {
+            var newDto = newRuleDtos[newIndex];
+            var key = BuildRuleIdentityKey(newDto);
+
+            if (!oldRuleIndicesByKey.TryGetValue(key, out var oldIndices)
+                || oldIndices.Count == 0)
+            {
+                var createdRule = ruleFactory.Create(newDto);
+                plan.NextRules.Add(createdRule);
+                plan.CreatedRules.Add(createdRule);
+                continue;
+            }
+
+            var matchingOldIndex = FindMatchingOldIndex(oldIndices, consumedOldIndices, newDto);
+            if (matchingOldIndex is not null)
+            {
+                _ = consumedOldIndices.Add(matchingOldIndex.Value);
+
+                var matchingRule = rules[matchingOldIndex.Value];
+                plan.NextRules.Add(matchingRule);
+                _ = plan.KeptRules.Add(matchingRule);
+                continue;
+            }
+
+            var replacementOldIndex = FindNextUnconsumedOldIndex(oldIndices, consumedOldIndices);
+            if (replacementOldIndex is null)
+            {
+                var createdRule = ruleFactory.Create(newDto);
+                plan.NextRules.Add(createdRule);
+                plan.CreatedRules.Add(createdRule);
+                continue;
+            }
+
+            _ = consumedOldIndices.Add(replacementOldIndex.Value);
+
+            var replacement = ruleFactory.Create(newDto);
+            plan.NextRules.Add(replacement);
+            plan.CreatedRules.Add(replacement);
+        }
+
+        return plan;
+    }
+
+    private Dictionary<string, List<int>> BuildOldRuleIndicesByKey()
+    {
+        var map = new Dictionary<string, List<int>>(StringComparer.Ordinal);
+
+        for (var i = 0; i < rules.Count; i++)
+        {
+            var key = BuildRuleIdentityKey(rules[i].Dto);
+            if (!map.TryGetValue(key, out var indices))
+            {
+                indices = [];
+                map[key] = indices;
+            }
+
+            indices.Add(i);
+        }
+
+        return map;
+    }
+
+    private int? FindMatchingOldIndex(
+        IEnumerable<int> candidateIndices,
+        HashSet<int> consumedOldIndices,
+        IRuleDto newDto)
+    {
+        foreach (var candidateIndex in candidateIndices)
+        {
+            if (consumedOldIndices.Contains(candidateIndex))
+            {
+                continue;
+            }
+
+            if (DtoSemanticallyEquals(rules[candidateIndex].Dto, newDto))
+            {
+                return candidateIndex;
+            }
+        }
+
+        return null;
+    }
+
+    private static int? FindNextUnconsumedOldIndex(
+        IEnumerable<int> candidateIndices,
+        HashSet<int> consumedOldIndices)
+    {
+        foreach (var candidateIndex in candidateIndices)
+        {
+            if (!consumedOldIndices.Contains(candidateIndex))
+            {
+                return candidateIndex;
+            }
+        }
+
+        return null;
+    }
+
+    private static string BuildRuleIdentityKey(IRuleDto dto) => dto switch
+    {
+        ProcessRuleDto process => $"ProcessRule:{process.Pattern}:{process.Type}",
+        PowerLineRuleDto powerLine => $"PowerLineRule:{powerLine.PowerLineStatus}",
+        IdleRuleDto idle => $"IdleRule:{idle.IdleTimeThreshold}:{idle.CheckExecutionState}:{idle.CheckFullscreenApps}",
+        StartupRuleDto => "StartupRule",
+        ShutdownRuleDto => "ShutdownRule",
+        _ => dto.GetType().FullName ?? dto.GetType().Name,
+    };
+
+    private static bool DtoSemanticallyEquals(IRuleDto left, IRuleDto right)
+    {
+        if (left.GetType() != right.GetType())
+        {
+            return false;
+        }
+
+        if (left.SchemeGuid != right.SchemeGuid)
+        {
+            return false;
+        }
+
+        return (left, right) switch
+        {
+            (ProcessRuleDto l, ProcessRuleDto r) =>
+                string.Equals(l.Pattern, r.Pattern, StringComparison.Ordinal)
+                && l.Type == r.Type,
+            (PowerLineRuleDto l, PowerLineRuleDto r) =>
+                l.PowerLineStatus == r.PowerLineStatus,
+            (IdleRuleDto l, IdleRuleDto r) =>
+                l.IdleTimeThreshold == r.IdleTimeThreshold
+                && l.CheckExecutionState == r.CheckExecutionState
+                && l.CheckFullscreenApps == r.CheckFullscreenApps,
+            (StartupRuleDto l, StartupRuleDto r) =>
+                l.Duration == r.Duration,
+            (ShutdownRuleDto, ShutdownRuleDto) => true,
+            _ => false,
+        };
+    }
+
+    private void RefreshAppliedRule()
+    {
+        var (_, firstTriggeredRule) = FindFirstTriggeredRule();
+        if (ReferenceEquals(firstTriggeredRule, AppliedRule))
+        {
+            return;
+        }
+
+        AppliedRule = firstTriggeredRule;
+        RuleApplicationChanged?.Invoke(this, new RuleApplicationChangedEventArgs(firstTriggeredRule));
+    }
+
+    private void EmitRulesUpdated()
+    {
         var ruleContainer = new RuleContainer
         {
             SchemaVersion = 1,
@@ -395,7 +584,7 @@ public class RuleManager
                     BuildRuleTypeSummary(container.Rules));
 
                 if (migrationPolicy.ActivateInitialPowerScheme)
-                 {
+                {
                     if (migrationPolicy.InitialPowerSchemeGuid == Guid.Empty)
                     {
                         Log.Warning("Migration is adding StartupRuleDto with an empty initial power scheme guid");
