@@ -66,10 +66,10 @@ partial class StartupRuleControl
         // 
         // PibDurationHint
         // 
-        PibDurationHint.Anchor = AnchorStyles.Top | AnchorStyles.Right;
+        PibDurationHint.Anchor = AnchorStyles.Right;
         PibDurationHint.Cursor = Cursors.Help;
         PibDurationHint.Image = Properties.Resources.info_rhombus;
-        PibDurationHint.Location = new Point(457, 3);
+        PibDurationHint.Location = new Point(457, 5);
         PibDurationHint.Margin = new Padding(0);
         PibDurationHint.Name = "PibDurationHint";
         PibDurationHint.Size = new Size(32, 32);
@@ -84,17 +84,18 @@ partial class StartupRuleControl
         label1.Dock = DockStyle.Fill;
         label1.Location = new Point(3, 0);
         label1.Name = "label1";
-        label1.Size = new Size(129, 42);
+        label1.Size = new Size(94, 42);
         label1.TabIndex = 0;
         label1.Text = "Enable Duration:";
         label1.TextAlign = ContentAlignment.MiddleRight;
         // 
         // ChbEnableDuration
         // 
+        ChbEnableDuration.Anchor = AnchorStyles.Left;
         ChbEnableDuration.AutoSize = true;
-        ChbEnableDuration.Location = new Point(138, 10);
+        ChbEnableDuration.Location = new Point(103, 14);
         ChbEnableDuration.Name = "ChbEnableDuration";
-        ChbEnableDuration.Size = new Size(15, 22);
+        ChbEnableDuration.Size = new Size(15, 14);
         ChbEnableDuration.TabIndex = 1;
         ChbEnableDuration.UseVisualStyleBackColor = true;
         ChbEnableDuration.CheckedChanged += ChbEnableDuration_CheckedChanged;
@@ -105,7 +106,7 @@ partial class StartupRuleControl
         label2.Dock = DockStyle.Fill;
         label2.Location = new Point(3, 42);
         label2.Name = "label2";
-        label2.Size = new Size(129, 42);
+        label2.Size = new Size(94, 42);
         label2.TabIndex = 2;
         label2.Text = "Duration:";
         label2.TextAlign = ContentAlignment.MiddleRight;
@@ -113,7 +114,7 @@ partial class StartupRuleControl
         // NudDuration
         // 
         NudDuration.Enabled = false;
-        NudDuration.Location = new Point(138, 51);
+        NudDuration.Location = new Point(103, 45);
         NudDuration.Maximum = new decimal(new int[] { 9999999, 0, 0, 0 });
         NudDuration.Minimum = new decimal(new int[] { 1, 0, 0, 0 });
         NudDuration.Name = "NudDuration";
@@ -123,11 +124,11 @@ partial class StartupRuleControl
         // 
         // CmbUnit
         // 
-        CmbUnit.Enabled = false;
         CmbUnit.DropDownStyle = ComboBoxStyle.DropDownList;
+        CmbUnit.Enabled = false;
         CmbUnit.FormattingEnabled = true;
         CmbUnit.Items.AddRange(new object[] { "Seconds", "Minutes", "Hours" });
-        CmbUnit.Location = new Point(264, 51);
+        CmbUnit.Location = new Point(229, 45);
         CmbUnit.Name = "CmbUnit";
         CmbUnit.Size = new Size(121, 23);
         CmbUnit.TabIndex = 4;

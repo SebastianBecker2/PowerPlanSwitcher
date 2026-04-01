@@ -11,11 +11,6 @@ public partial class StartupRuleControl : UserControl
             return null;
         }
 
-        if (NudDuration.Value == 0)
-        {
-            return null;
-        }
-
         return CmbUnit.SelectedIndex switch
         {
             0 => TimeSpan.FromSeconds((double)NudDuration.Value),
@@ -31,7 +26,7 @@ public partial class StartupRuleControl : UserControl
         {
             ChbEnableDuration.Checked = false;
             CmbUnit.SelectedIndex = 0;
-            NudDuration.Value = 0;
+            NudDuration.Value = NudDuration.Minimum;
             return;
         }
 
@@ -81,8 +76,8 @@ public partial class StartupRuleControl : UserControl
         InitializeComponent();
         CmbUnit.SelectedIndex = 0;
 
-        var durationHint = "Enable this option to automatically deactivate the power scheme after the specified duration." +
-            $"{Environment.NewLine}If disabled, the power scheme remains active indefinitely.";
+        var durationHint = "Enable this option to automatically untrigger this Startup Rule after the specified duration." +
+            $"{Environment.NewLine}If disabled, the Startup Rule remains triggered indefinitely.";
         TipHints.SetToolTip(PibDurationHint, durationHint);
     }
 

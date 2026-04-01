@@ -34,6 +34,7 @@ public partial class RuleDlg : Form
     {
         InitializeComponent();
         dpiImageScaler = new DpiImageScaler(this);
+        srcStartupRule.Dock = DockStyle.Fill;
         tableLayoutPanel1.Controls.Add(srcStartupRule, 0, 3);
         tableLayoutPanel1.SetColumnSpan(srcStartupRule, 3);
     }
