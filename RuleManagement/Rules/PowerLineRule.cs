@@ -4,7 +4,7 @@ using System;
 using PowerManagement;
 using RuleManagement.Dto;
 
-public class PowerLineRule(
+public sealed class PowerLineRule(
     IBatteryMonitor batteryMonitor,
     PowerLineRuleDto powerLineRuleDto)
         : Rule<PowerLineRuleDto>(powerLineRuleDto),
@@ -51,8 +51,6 @@ public class PowerLineRule(
     private bool CheckRule(PowerLineStatus powerLineStatus) =>
         PowerLineStatus == powerLineStatus;
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "Suppression of CA1816 is necessary")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "PowerLineRule does not have a finalizer")]
     public void Dispose() => StopRuling();
 
 }

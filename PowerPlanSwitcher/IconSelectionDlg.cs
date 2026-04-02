@@ -60,13 +60,13 @@ public partial class IconSelectionDlg : Form
     private readonly Dictionary<string, int> imageIndices = [];
     private readonly Dictionary<string, int> filteredIndexByKey = [];
     private readonly Dictionary<string, string> displayNameByKey = [];
-    private readonly System.Windows.Forms.Timer refreshTimer = new();
+    private readonly Timer refreshTimer = new();
     private readonly HashSet<int> redrawBatch = [];
     private readonly List<int> redrawBatchSorted = [];
 
     private readonly ImageCache imageCache;
     private List<string> filteredMapping;
-    private int loadingImageIndex;
+    private readonly int loadingImageIndex;
     private volatile bool isLoaderRunning;
     private volatile bool hasPendingRefresh;
 
@@ -105,10 +105,7 @@ public partial class IconSelectionDlg : Form
         RebuildIconList();
     }
 
-    protected override void OnShown(EventArgs e)
-    {
-        base.OnShown(e);
-    }
+    protected override void OnShown(EventArgs e) => base.OnShown(e);
 
     protected override void OnFormClosed(FormClosedEventArgs e)
     {
@@ -232,10 +229,7 @@ public partial class IconSelectionDlg : Form
         }
     }
 
-    private void LvwIcons_ItemActivate(object? sender, EventArgs e)
-    {
-        BtnOk_Click(sender ?? this, e);
-    }
+    private void LvwIcons_ItemActivate(object? sender, EventArgs e) => BtnOk_Click(sender ?? this, e);
 
     private void LvwIcons_RetrieveVirtualItem(
         object? sender,

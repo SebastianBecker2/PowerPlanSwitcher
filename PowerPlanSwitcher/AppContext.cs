@@ -1,4 +1,4 @@
-namespace PowerPlanSwitcher;
+﻿namespace PowerPlanSwitcher;
 
 using System.Configuration;
 using System.Threading;
@@ -117,7 +117,7 @@ internal class AppContext : ApplicationContext
         if (e.Rule is null)
         {
             var baselineSchemeName =
-                PowerManagement.PowerManager.Static.GetPowerSchemeName(
+                PowerManagement.PowerManager.Api.GetPowerSchemeName(
                     BaselineSchemeGuid)
                 ?? "<No Name>";
 
@@ -139,7 +139,7 @@ internal class AppContext : ApplicationContext
         }
 
         var schemeName =
-            PowerManagement.PowerManager.Static.GetPowerSchemeName(
+            PowerManagement.PowerManager.Api.GetPowerSchemeName(
                 schemeGuid)
             ?? "<No Name>";
 
@@ -170,3 +170,4 @@ internal class AppContext : ApplicationContext
         base.Dispose(disposing);
     }
 }
+

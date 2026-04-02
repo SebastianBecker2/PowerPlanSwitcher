@@ -5,7 +5,7 @@ using PowerManagement;
 using RuleManagement.Dto;
 using SystemManagement;
 
-public class IdleRule(
+public sealed class IdleRule(
     IIdleMonitor idleMonitor,
     IPowerManager powerManager,
     ISystemManager systemManager,
@@ -78,8 +78,6 @@ public class IdleRule(
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "IdleRule does not have a finalizer")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "Suppression of CA1816 is necessary")]
     public void Dispose() => StopRuling();
 
 }

@@ -1,4 +1,4 @@
-namespace PowerPlanSwitcher;
+﻿namespace PowerPlanSwitcher;
 
 using PowerManagement;
 using Properties;
@@ -48,7 +48,7 @@ internal class TrayIcon : IDisposable
 
     public void UpdateIcon()
     {
-        var activeSchemeGuid = PowerManager.Static.GetActivePowerSchemeGuid();
+        var activeSchemeGuid = PowerManager.Api.GetActivePowerSchemeGuid();
         if (activeSchemeGuid == Guid.Empty)
         {
             return;
@@ -96,9 +96,9 @@ internal class TrayIcon : IDisposable
     public void UpdateTooltip(IRule? rule)
     {
         var schemeName =
-            PowerManager.Static.GetPowerSchemeName(
+            PowerManager.Api.GetPowerSchemeName(
                 rule?.Dto?.SchemeGuid
-                ?? PowerManager.Static.GetActivePowerSchemeGuid())
+                ?? PowerManager.Api.GetActivePowerSchemeGuid())
             ?? "<No Name>";
 
         var tooltipText = $"PowerPlanSwitcher" +
@@ -156,3 +156,4 @@ internal class TrayIcon : IDisposable
         GC.SuppressFinalize(this);
     }
 }
+

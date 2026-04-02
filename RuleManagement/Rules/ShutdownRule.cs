@@ -4,7 +4,7 @@ using System;
 using RuleManagement.Dto;
 using SystemManagement;
 
-public class ShutdownRule(
+public sealed class ShutdownRule(
     IWindowMessageMonitor windowMessageMonitor,
     ShutdownRuleDto shutdownRuleDto) :
     Rule<ShutdownRuleDto>(shutdownRuleDto),
@@ -37,7 +37,5 @@ public class ShutdownRule(
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "Suppression of CA1816 is necessary")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "ShutdownRule does not have a finalizer")]
     public void Dispose() => StopRuling();
 }

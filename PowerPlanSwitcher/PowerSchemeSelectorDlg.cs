@@ -1,4 +1,4 @@
-namespace PowerPlanSwitcher;
+﻿namespace PowerPlanSwitcher;
 
 using PowerManagement;
 using Serilog;
@@ -30,12 +30,11 @@ public partial class PowerSchemeSelectorDlg : Form
     private const int ButtonWidth = 360;
 
     private bool shownTriggered;
-    private readonly DpiImageScaler dpiImageScaler;
 
     public PowerSchemeSelectorDlg()
     {
         InitializeComponent();
-        dpiImageScaler = new DpiImageScaler(this);
+        _ = new DpiImageScaler(this);
     }
 
     private Button CreateButton(
@@ -74,7 +73,7 @@ public partial class PowerSchemeSelectorDlg : Form
                 "{PowerSchemeGuid} Reason: User selection",
                 name,
                 guid);
-            _ = PowerManager.Static.SetActivePowerSchemeAsync((Guid)button.Tag);
+            _ = PowerManager.Api.SetActivePowerSchemeAsync((Guid)button.Tag);
             Close();
         };
 
@@ -85,7 +84,7 @@ public partial class PowerSchemeSelectorDlg : Form
     {
         TlpPowerSchemes.BackColor = TlpPowerSchemesBackColor;
 
-        var activeSchemeGuid = PowerManager.Static.GetActivePowerSchemeGuid();
+        var activeSchemeGuid = PowerManager.Api.GetActivePowerSchemeGuid();
 
         foreach (var entry in PowerSchemeEntryCache.GetEntries())
         {
@@ -183,3 +182,4 @@ public partial class PowerSchemeSelectorDlg : Form
         }
     }
 }
+

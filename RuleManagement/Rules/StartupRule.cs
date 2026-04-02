@@ -5,7 +5,7 @@ using RuleManagement.Dto;
 using Serilog;
 using WmTimer = WindowMessageTimer.Timer;
 
-public class StartupRule :
+public sealed class StartupRule :
     Rule<StartupRuleDto>,
     IRule<StartupRuleDto>,
     IDisposable
@@ -16,7 +16,6 @@ public class StartupRule :
     private WmTimer? durationTimer;
     private DateTime? triggerInstantiationTime;
     private bool durationElapsed;
-    private bool disposedValue;
 
     public StartupRule(StartupRuleDto startupRuleDto)
         : base(startupRuleDto) =>
@@ -79,7 +78,7 @@ public class StartupRule :
         if (timerToStop is not null)
         {
             // Stop and dispose outside the timer callback thread to avoid self-join deadlocks.
-            System.Threading.ThreadPool.QueueUserWorkItem(_ => StopAndDisposeTimer(timerToStop));
+            _ = ThreadPool.QueueUserWorkItem(_ => StopAndDisposeTimer(timerToStop));
         }
     }
 
@@ -115,25 +114,5 @@ public class StartupRule :
         timer.Dispose();
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "StartupRule does not have a finalizer")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "Suppression of CA1816 is necessary")]
-    public void Dispose()
-    {
-        Dispose(disposing: true);
-    }
-
-    protected virtual void Dispose(bool disposing)
-    {
-        if (disposedValue)
-        {
-            return;
-        }
-
-        if (disposing)
-        {
-            StopRuling();
-        }
-
-        disposedValue = true;
-    }
+    public void Dispose() => StopRuling();
 }

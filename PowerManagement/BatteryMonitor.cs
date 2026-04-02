@@ -1,17 +1,13 @@
-namespace PowerManagement;
+﻿namespace PowerManagement;
 
 using Serilog;
 using Vanara.Extensions;
 using Vanara.PInvoke;
 using static Vanara.PInvoke.User32;
 
-//using static Vanara.PInvoke.User32;
-
 public class BatteryMonitor : IBatteryMonitor, IDisposable
 {
-#pragma warning disable CA1716 // Identifiers should not match keywords
-    public static class Static
-#pragma warning restore CA1716 // Identifiers should not match keywords
+    public static class Api
     {
         private static Kernel32.SYSTEM_POWER_STATUS GetSystemPowerStatus() =>
             Kernel32.GetSystemPowerStatus(out var status)
@@ -34,7 +30,7 @@ public class BatteryMonitor : IBatteryMonitor, IDisposable
             };
     }
 
-    private readonly User32.WindowProc wndProcDelegate;
+    private readonly WindowProc wndProcDelegate;
     private readonly string windowClassName;
     private readonly HWND hwnd;
     private readonly SafeHPOWERSETTINGNOTIFY hNotifyPowerSource;
@@ -70,7 +66,7 @@ public class BatteryMonitor : IBatteryMonitor, IDisposable
             lpszClassName = windowClassName,
             lpfnWndProc = wndProcDelegate
         };
-        RegisterClass(wndClass);
+        _ = RegisterClass(wndClass);
 
         return CreateWindowEx(0, wndClass.lpszClassName, "",
             0, 0, 0, 0, 0, HWND.HWND_MESSAGE, default, default, IntPtr.Zero);
@@ -133,10 +129,10 @@ public class BatteryMonitor : IBatteryMonitor, IDisposable
     }
 
     public bool HasSystemBattery =>
-        Static.HasSystemBattery;
+        Api.HasSystemBattery;
 
     public PowerLineStatus PowerLineStatus =>
-        Static.PowerLineStatus;
+        Api.PowerLineStatus;
 
     protected virtual void Dispose(bool disposing)
     {
@@ -146,10 +142,10 @@ public class BatteryMonitor : IBatteryMonitor, IDisposable
             {
                 if (hNotifyPowerSource != IntPtr.Zero)
                 {
-                    UnregisterPowerSettingNotification(hNotifyPowerSource);
+                    _ = UnregisterPowerSettingNotification(hNotifyPowerSource);
                 }
 
-                DestroyWindow(hwnd);
+                _ = DestroyWindow(hwnd);
             }
             disposedValue = true;
         }
@@ -161,3 +157,4 @@ public class BatteryMonitor : IBatteryMonitor, IDisposable
         GC.SuppressFinalize(this);
     }
 }
+

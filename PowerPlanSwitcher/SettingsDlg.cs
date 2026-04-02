@@ -1,4 +1,4 @@
-namespace PowerPlanSwitcher;
+﻿namespace PowerPlanSwitcher;
 
 using System.Data;
 using Autofac;
@@ -22,7 +22,7 @@ public partial class SettingsDlg : Form
     }
 
     private readonly List<(Guid guid, string name)> powerSchemes =
-        [.. PowerManager.Static.GetPowerSchemes()
+        [.. PowerManager.Api.GetPowerSchemes()
             .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
             .Cast<(Guid schemeGuid, string name)>()];
 
@@ -276,7 +276,7 @@ public partial class SettingsDlg : Form
             new DataGridViewTextBoxCell
             {
                 Value =
-                    PowerManager.Static.GetPowerSchemeName(
+                    PowerManager.Api.GetPowerSchemeName(
                         dto.SchemeGuid)
                     ?? dto.SchemeGuid.ToString(),
             },
@@ -585,3 +585,4 @@ public partial class SettingsDlg : Form
     private void BtnExportLog_Click(object sender, EventArgs e) =>
         Program.ExportLog();
 }
+

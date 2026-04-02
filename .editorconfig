@@ -15,6 +15,11 @@ root = true
 [RuleManagementTest/*.cs]
 dotnet_diagnostic.CA1707.severity = none
 
+# WindowMessage enum - Windows API constants that cannot be changed
+[SystemManagement/WindowMessage.cs]
+dotnet_diagnostic.CA1720.severity = none
+dotnet_diagnostic.CA1069.severity = none
+
 # All Files
 [*]
 guidelines = 80

@@ -1,4 +1,4 @@
-namespace SystemManagement;
+﻿namespace SystemManagement;
 
 using System.Runtime.InteropServices;
 using Serilog;
@@ -6,9 +6,7 @@ using Vanara.PInvoke;
 
 public class IdleMonitor : IDisposable, IIdleMonitor
 {
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "<Pending>")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "<Pending>")]
-    public static class Static
+    public static class Api
     {
         public static TimeSpan GetIdleTime()
         {
@@ -64,7 +62,7 @@ public class IdleMonitor : IDisposable, IIdleMonitor
         Log.Information("Idle time monitoring stopped");
     }
 
-    public TimeSpan GetIdleTime() => Static.GetIdleTime();
+    public TimeSpan GetIdleTime() => Api.GetIdleTime();
 
     private void Timer_Tick()
     {
@@ -73,7 +71,7 @@ public class IdleMonitor : IDisposable, IIdleMonitor
             return;
         }
 
-        var idleTime = Static.GetIdleTime();
+        var idleTime = Api.GetIdleTime();
         OnIdleTimeChanged(idleTime);
     }
 
@@ -96,3 +94,4 @@ public class IdleMonitor : IDisposable, IIdleMonitor
         GC.SuppressFinalize(this);
     }
 }
+

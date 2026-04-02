@@ -1,8 +1,7 @@
-namespace PowerPlanSwitcher;
+﻿namespace PowerPlanSwitcher;
 
 using System.Diagnostics;
 using System.Drawing;
-using System.Reflection;
 using Autofac;
 using Hotkeys;
 using Newtonsoft.Json;
@@ -47,8 +46,7 @@ internal static class Program
         new LoggingLevelSwitch(Serilog.Events.LogEventLevel.Information);
 
     private static Hotkey? CycleHotkey { get; set; }
-    private static Dictionary<(Keys key, ModifierKeys modifier), (Guid guid, string? name)>
-        DirectPowerSchemeHotkeys { get; } = [];
+    private static Dictionary<(Keys key, ModifierKeys modifier), (Guid guid, string? name)> DirectPowerSchemeHotkeys { get; } = [];
 
     public static void UpdateLogLevelSwitch(bool useExtendedLogging)
     {
@@ -215,7 +213,7 @@ internal static class Program
                 CycleHotkey.Modifier);
         }
 
-        foreach (var hotkey in PowerManager.Static.GetPowerSchemes()
+        foreach (var hotkey in PowerManager.Api.GetPowerSchemes()
             .Select(ps =>
             {
                 var hotkey = PowerSchemeSettings.GetSetting(ps.guid)?.Hotkey;
@@ -279,7 +277,7 @@ internal static class Program
 
     private static void HandleCycleHotkeyPressed()
     {
-        var schemes = PowerManager.Static.GetPowerSchemeGuids()
+        var schemes = PowerManager.Api.GetPowerSchemeGuids()
             .Where(ps => !Settings.Default.CycleOnlyVisible
                 || (PowerSchemeSettings.GetSetting(ps)?.Visible ?? false))
             .ToList();
@@ -291,7 +289,7 @@ internal static class Program
             return;
         }
 
-        var active = PowerManager.Static.GetActivePowerSchemeGuid();
+        var active = PowerManager.Api.GetActivePowerSchemeGuid();
         var index = GetNextCycleSchemeIndex(schemes, active);
         if (index < 0)
         {
@@ -304,9 +302,9 @@ internal static class Program
             .Information(
                 "Activating power scheme: {PowerSchemeName} " +
                 "{PowerSchemeGuid} Reason: Cycle Hotkey",
-                PowerManager.Static.GetPowerSchemeName(schemes[index]) ?? "<No Name>",
+                PowerManager.Api.GetPowerSchemeName(schemes[index]) ?? "<No Name>",
                 schemes[index]);
-        _ = PowerManager.Static.SetActivePowerSchemeAsync(schemes[index]);
+        _ = PowerManager.Api.SetActivePowerSchemeAsync(schemes[index]);
         if (PopUpWindowLocationHelper.ShouldShowToast("hotkey"))
         {
             ToastDlg.ShowToastNotification(
@@ -347,7 +345,7 @@ internal static class Program
                 "{PowerSchemeGuid} Reason: Direct Hotkey",
                 target.name,
                 target.guid);
-        _ = PowerManager.Static.SetActivePowerSchemeAsync(target.guid);
+        _ = PowerManager.Api.SetActivePowerSchemeAsync(target.guid);
         ToastDlg.ShowToastNotification(target.guid, "Power Plan hotkey pressed");
     }
 
@@ -537,19 +535,18 @@ internal static class Program
         };
 
         // Resolve AppContext and run
-        using (var scope = container.BeginLifetimeScope())
-        {
-            var appContext = scope.Resolve<AppContext>();
-            var hotkeyManager = scope.Resolve<HotkeyManager>();
+        using var scope = container.BeginLifetimeScope();
+        var appContext = scope.Resolve<AppContext>();
+        var hotkeyManager = scope.Resolve<HotkeyManager>();
 
-            RegisterHotkeys(hotkeyManager); // still uses static Program.HotkeyManager
+        RegisterHotkeys(hotkeyManager); // still uses static Program.HotkeyManager
 
-            hotkeyManager.HotkeyPressed += HotkeyManager_HotkeyPressed;
+        hotkeyManager.HotkeyPressed += HotkeyManager_HotkeyPressed;
 
-            Microsoft.Win32.SystemEvents.EventsThreadShutdown += (s, e) =>
-                Application.Exit();
+        Microsoft.Win32.SystemEvents.EventsThreadShutdown += (s, e) =>
+            Application.Exit();
 
-            Application.Run(appContext);
-        }
+        Application.Run(appContext);
     }
 }
+

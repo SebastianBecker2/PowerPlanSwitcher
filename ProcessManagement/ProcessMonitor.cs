@@ -1,4 +1,4 @@
-namespace ProcessManagement;
+﻿namespace ProcessManagement;
 
 using System.Runtime.InteropServices;
 using Serilog;
@@ -8,9 +8,7 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
 {
     private readonly record struct ProcessIdentity(int ProcessId, DateTime StartTime);
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Naming", "CA1716:Identifiers should not match keywords", Justification = "<Pending>")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "Ignoring CA1716 since it's necessary")]
-    public static class Static
+    public static class Api
     {
         private static IEnumerable<PROCESSENTRY32> EnumerateProcesses()
         {
@@ -162,7 +160,7 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
     }
 
     public IEnumerable<IProcess> GetUsersProcesses() =>
-        Static.GetUsersProcesses();
+        Api.GetUsersProcesses();
 
     private static ProcessIdentity GetProcessIdentity(IProcess process) =>
         new(process.ProcessId, process.StartTime);
@@ -200,3 +198,4 @@ public class ProcessMonitor : IDisposable, IProcessMonitor
         GC.SuppressFinalize(this);
     }
 }
+

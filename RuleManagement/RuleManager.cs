@@ -341,10 +341,7 @@ public class RuleManager
         SemanticKey = BuildRuleSemanticKey(dto),
     };
 
-    private void RebuildRuleSnapshots()
-    {
-        ruleSnapshots = [.. rules.Select(rule => BuildRuleSnapshot(rule.Dto))];
-    }
+    private void RebuildRuleSnapshots() => ruleSnapshots = [.. rules.Select(rule => BuildRuleSnapshot(rule.Dto))];
 
     private static string BuildRuleSemanticKey(IRuleDto dto)
     {
@@ -359,7 +356,7 @@ public class RuleManager
             IdleRuleDto idle =>
                 $"IdleRule|{schemePart}|{idle.IdleTimeThreshold.Ticks}|{idle.CheckExecutionState}|{idle.CheckFullscreenApps}",
             StartupRuleDto startup =>
-                $"StartupRule|{schemePart}|{(startup.Duration?.Ticks.ToString(CultureInfo.InvariantCulture) ?? "null")}",
+                $"StartupRule|{schemePart}|{startup.Duration?.Ticks.ToString(CultureInfo.InvariantCulture) ?? "null"}",
             ShutdownRuleDto =>
                 $"ShutdownRule|{schemePart}",
             _ =>

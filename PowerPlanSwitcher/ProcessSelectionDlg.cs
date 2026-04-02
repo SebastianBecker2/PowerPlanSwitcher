@@ -1,4 +1,4 @@
-namespace PowerPlanSwitcher;
+﻿namespace PowerPlanSwitcher;
 
 using ProcessManagement;
 
@@ -69,7 +69,7 @@ public partial class ProcessSelectionDlg : Form
         DgvProcesses.Rows.Clear();
 
         foreach (var process in
-            ProcessMonitor.Static.GetUsersProcesses()
+            ProcessMonitor.Api.GetUsersProcesses()
             .OrderByDescending(p => p.StartTime))
         {
             var row = ProcessToRow(process);
@@ -116,3 +116,4 @@ public partial class ProcessSelectionDlg : Form
         object sender,
         DataGridViewCellEventArgs e) => BtnOk.PerformClick();
 }
+

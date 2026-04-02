@@ -795,11 +795,11 @@ public sealed class RuleManagerTest
         Assert.IsNull(manager.AppliedRule);
     }
 
-        [TestMethod]
-        public void UnsupportedSchemaVersion_DuringStartupMigration_SkipsMigrationAndLoadingRules()
-        {
-                // Arrange
-                var invalidJson = /*lang=json,strict*/ @"
+    [TestMethod]
+    public void UnsupportedSchemaVersion_DuringStartupMigration_SkipsMigrationAndLoadingRules()
+    {
+        // Arrange
+        var invalidJson = /*lang=json,strict*/ @"
                 {
                         ""SchemaVersion"": 99,
                         ""Rules"": [
@@ -812,27 +812,27 @@ public sealed class RuleManagerTest
                     ]
                 }";
 
-                var migrationPolicy = new MigrationPolicy(
-                        MigratedPowerRulesToRules: true,
-                        AcPowerSchemeGuid: CreateGuid('5'),
-                        BatteryPowerSchemeGuid: CreateGuid('6'),
-                        MigratedStartupRule: false,
-                        ActivateInitialPowerScheme: true,
-                        InitialPowerSchemeGuid: CreateGuid('7'));
+        var migrationPolicy = new MigrationPolicy(
+                MigratedPowerRulesToRules: true,
+                AcPowerSchemeGuid: CreateGuid('5'),
+                BatteryPowerSchemeGuid: CreateGuid('6'),
+                MigratedStartupRule: false,
+                ActivateInitialPowerScheme: true,
+                InitialPowerSchemeGuid: CreateGuid('7'));
 
-                // Act
-                var manager = new RuleManager(ruleFactory, invalidJson, migrationPolicy, batteryMonitor);
+        // Act
+        var manager = new RuleManager(ruleFactory, invalidJson, migrationPolicy, batteryMonitor);
 
-                // Assert
-                Assert.AreEqual(0, manager.GetRules().Count(), "Unknown schema should skip startup migration and loading");
-                Assert.IsNull(manager.AppliedRule);
-        }
+        // Assert
+        Assert.AreEqual(0, manager.GetRules().Count(), "Unknown schema should skip startup migration and loading");
+        Assert.IsNull(manager.AppliedRule);
+    }
 
-        [TestMethod]
-        public void UnsupportedSchemaVersion_DuringPowerRulesMigration_ThrowsSerializationException()
-        {
-                // Arrange
-                var invalidJson = /*lang=json,strict*/ @"
+    [TestMethod]
+    public void UnsupportedSchemaVersion_DuringPowerRulesMigration_ThrowsSerializationException()
+    {
+        // Arrange
+        var invalidJson = /*lang=json,strict*/ @"
                 {
                         ""SchemaVersion"": 99,
                         ""Rules"": [
@@ -845,20 +845,20 @@ public sealed class RuleManagerTest
                     ]
                 }";
 
-                var migrationPolicy = new MigrationPolicy(
-                        MigratedPowerRulesToRules: false,
-                        AcPowerSchemeGuid: CreateGuid('5'),
-                        BatteryPowerSchemeGuid: CreateGuid('6'),
-                        MigratedStartupRule: true,
-                        ActivateInitialPowerScheme: false,
-                        InitialPowerSchemeGuid: CreateGuid('7'));
+        var migrationPolicy = new MigrationPolicy(
+                MigratedPowerRulesToRules: false,
+                AcPowerSchemeGuid: CreateGuid('5'),
+                BatteryPowerSchemeGuid: CreateGuid('6'),
+                MigratedStartupRule: true,
+                ActivateInitialPowerScheme: false,
+                InitialPowerSchemeGuid: CreateGuid('7'));
 
-                _ = A.CallTo(() => batteryMonitor.HasSystemBattery).Returns(true);
+        _ = A.CallTo(() => batteryMonitor.HasSystemBattery).Returns(true);
 
-                // Act + Assert
-                Assert.ThrowsExactly<JsonSerializationException>(() =>
-                    _ = new RuleManager(ruleFactory, invalidJson, migrationPolicy, batteryMonitor));
-        }
+        // Act + Assert
+        _ = Assert.ThrowsExactly<JsonSerializationException>(() =>
+            _ = new RuleManager(ruleFactory, invalidJson, migrationPolicy, batteryMonitor));
+    }
 
     [TestMethod]
     public void UntriggeringLastAppliedRule_RaisesEventWithNull()

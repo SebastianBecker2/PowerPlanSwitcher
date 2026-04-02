@@ -1,6 +1,5 @@
-namespace PowerManagement;
+﻿namespace PowerManagement;
 
-using System.Diagnostics;
 using Serilog;
 using Vanara.Extensions;
 using Vanara.InteropServices;
@@ -9,9 +8,7 @@ using static Vanara.PInvoke.PowrProf;
 
 public class PowerManager : IDisposable, IPowerManager
 {
-#pragma warning disable CA1716 // Identifiers should not match keywords
-    public static class Static
-#pragma warning restore CA1716 // Identifiers should not match keywords
+    public static class Api
     {
         public static string? GetPowerSchemeName(Guid schemeGuid)
         {
@@ -55,10 +52,7 @@ public class PowerManager : IDisposable, IPowerManager
             }
         }
 
-        public static async Task SetActivePowerSchemeAsync(Guid schemeGuid)
-        {
-            await Task.Run(() => SetActivePowerScheme(schemeGuid));
-        }
+        public static async Task SetActivePowerSchemeAsync(Guid schemeGuid) => await Task.Run(() => SetActivePowerScheme(schemeGuid));
 
         public static bool IsExecutionStateBlockingIdle()
         {
@@ -112,25 +106,25 @@ public class PowerManager : IDisposable, IPowerManager
             new ActivePowerSchemeChangedEventArgs(activeSchemeGuid));
 
     public string? GetPowerSchemeName(Guid schemeGuid) =>
-        Static.GetPowerSchemeName(schemeGuid);
+        Api.GetPowerSchemeName(schemeGuid);
 
     public IEnumerable<Guid> GetPowerSchemeGuids() =>
-        Static.GetPowerSchemeGuids();
+        Api.GetPowerSchemeGuids();
 
     public IEnumerable<(Guid guid, string? name)> GetPowerSchemes() =>
-        Static.GetPowerSchemes();
+        Api.GetPowerSchemes();
 
     public Guid GetActivePowerSchemeGuid() =>
-        Static.GetActivePowerSchemeGuid();
+        Api.GetActivePowerSchemeGuid();
 
     public void SetActivePowerScheme(Guid schemeGuid) =>
-        Static.SetActivePowerScheme(schemeGuid);
+        Api.SetActivePowerScheme(schemeGuid);
 
     public async Task SetActivePowerSchemeAsync(Guid schemeGuid) =>
-        await Static.SetActivePowerSchemeAsync(schemeGuid);
+        await Api.SetActivePowerSchemeAsync(schemeGuid);
 
     public bool IsExecutionStateBlockingIdle() =>
-        Static.IsExecutionStateBlockingIdle();
+        Api.IsExecutionStateBlockingIdle();
 
     public PowerManager()
     {
@@ -232,3 +226,4 @@ public class PowerManager : IDisposable, IPowerManager
         GC.SuppressFinalize(this);
     }
 }
+

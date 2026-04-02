@@ -1,4 +1,4 @@
-namespace PowerPlanSwitcher;
+﻿namespace PowerPlanSwitcher;
 
 using Properties;
 
@@ -13,8 +13,7 @@ internal static class PowerSchemeEntryCache
     private static readonly object CacheLock = new();
     private static IReadOnlyList<Entry>? cachedEntries;
 
-    static PowerSchemeEntryCache()
-    {
+    static PowerSchemeEntryCache() =>
         Settings.Default.PropertyChanged += (_, e) =>
         {
             if (string.Equals(
@@ -25,7 +24,6 @@ internal static class PowerSchemeEntryCache
                 Invalidate();
             }
         };
-    }
 
     public static IReadOnlyList<Entry> GetEntries()
     {
@@ -43,7 +41,7 @@ internal static class PowerSchemeEntryCache
 
             cachedEntries =
             [
-                .. global::PowerManagement.PowerManager.Static.GetPowerSchemes().Select(powerScheme =>
+                .. PowerManagement.PowerManager.Api.GetPowerSchemes().Select(static powerScheme =>
                 {
                     var setting = PowerSchemeSettings.GetSetting(powerScheme.guid);
 
@@ -67,3 +65,4 @@ internal static class PowerSchemeEntryCache
         }
     }
 }
+

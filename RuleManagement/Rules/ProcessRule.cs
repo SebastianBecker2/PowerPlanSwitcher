@@ -5,7 +5,7 @@ using DotNet.Globbing;
 using ProcessManagement;
 using RuleManagement.Dto;
 
-public class ProcessRule
+public sealed class ProcessRule
     : Rule<ProcessRuleDto>,
     IRule<ProcessRuleDto>,
     IDisposable
@@ -159,7 +159,5 @@ public class ProcessRule
         }
     }
 
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("CodeQuality", "IDE0079:Remove unnecessary suppression", Justification = "Suppression of CA1816 is necessary")]
-    [System.Diagnostics.CodeAnalysis.SuppressMessage("Usage", "CA1816:Dispose methods should call SuppressFinalize", Justification = "ProcessRule does not have a finalizer")]
     public void Dispose() => StopRuling();
 }

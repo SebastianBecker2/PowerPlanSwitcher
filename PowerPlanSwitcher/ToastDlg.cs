@@ -1,4 +1,4 @@
-namespace PowerPlanSwitcher;
+﻿namespace PowerPlanSwitcher;
 
 using System;
 using System.Windows.Forms;
@@ -118,7 +118,7 @@ public partial class ToastDlg : Form
                 toastDlg.PibPowerSchemeIcon,
                 toastDlg.PibPowerSchemeIcon.Image);
             toastDlg.LblPowerSchemeName.Text =
-                PowerManager.Static.GetPowerSchemeName(activeSchemeGuid);
+                PowerManager.Api.GetPowerSchemeName(activeSchemeGuid);
             toastDlg.LblReason.Text = activationReason;
 
             toastDlg.UpdateToastLayout();
@@ -158,3 +158,4 @@ public partial class ToastDlg : Form
         ResumeLayout(true);
     }
 }
+

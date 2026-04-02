@@ -13,14 +13,12 @@ public partial class CreatePasswordDlg : Form
          "!@#$%^&*()-_=+[]{}|;:,.<>?")
         .ToCharArray();
 
-    private readonly DpiImageScaler dpiImageScaler;
-
     public string Password => TxtPassword.Text;
 
     public CreatePasswordDlg()
     {
         InitializeComponent();
-        dpiImageScaler = new DpiImageScaler(this);
+        _ = new DpiImageScaler(this);
     }
 
     private void BtnRandomize_Click(object sender, EventArgs e)

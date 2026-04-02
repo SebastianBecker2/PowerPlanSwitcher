@@ -1,17 +1,16 @@
-namespace PowerPlanSwitcher;
+﻿namespace PowerPlanSwitcher;
 
 using PowerManagement;
 using RuleManagement.Dto;
 
 public partial class RuleDlg : Form
 {
-    private readonly DpiImageScaler dpiImageScaler;
-    private readonly PowerPlanSwitcher.RuleControl.StartupRuleControl srcStartupRule = new();
+    private readonly RuleControl.StartupRuleControl srcStartupRule = new();
 
     public IRuleDto? RuleDto { get; set; }
 
     private static readonly List<(Guid guid, string name)> PowerSchemes =
-        [.. PowerManager.Static.GetPowerSchemes()
+        [.. PowerManager.Api.GetPowerSchemes()
             .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
             .Cast<(Guid schemeGuid, string name)>()];
 
@@ -33,7 +32,7 @@ public partial class RuleDlg : Form
     public RuleDlg()
     {
         InitializeComponent();
-        dpiImageScaler = new DpiImageScaler(this);
+        _ = new DpiImageScaler(this);
         srcStartupRule.Dock = DockStyle.Fill;
         tableLayoutPanel1.Controls.Add(srcStartupRule, 0, 3);
         tableLayoutPanel1.SetColumnSpan(srcStartupRule, 3);
@@ -215,3 +214,4 @@ public partial class RuleDlg : Form
             PibRuleInfo.Height,
             3000);
 }
+

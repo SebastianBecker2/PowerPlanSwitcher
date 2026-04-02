@@ -45,7 +45,7 @@ public sealed class StartupRuleTest
         var rule = new StartupRule(dto);
 
         rule.StartRuling();
-        System.Threading.Thread.Sleep(500); // Wait to ensure timer would have fired
+        Thread.Sleep(500); // Wait to ensure timer would have fired
         rule.StopRuling();
 
         Assert.AreEqual(1, rule.TriggerCount, "Rule should remain triggered when no duration is set");
@@ -55,9 +55,9 @@ public sealed class StartupRuleTest
     [Timeout(5000, CooperativeCancellation = true)]
     public void WithDuration_RuleUntriggersAfterElapsed()
     {
-        var dto = new StartupRuleDto 
-        { 
-            SchemeGuid = Guid.NewGuid(), 
+        var dto = new StartupRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
             Duration = TimeSpan.FromMilliseconds(200) // Very short duration for testing
         };
         var rule = new StartupRule(dto);
@@ -78,9 +78,9 @@ public sealed class StartupRuleTest
     [Timeout(5000, CooperativeCancellation = true)]
     public void StopRuling_CancelsDurationTimer()
     {
-        var dto = new StartupRuleDto 
-        { 
-            SchemeGuid = Guid.NewGuid(), 
+        var dto = new StartupRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
             Duration = TimeSpan.FromSeconds(10) // Long duration
         };
         var rule = new StartupRule(dto);
@@ -91,7 +91,7 @@ public sealed class StartupRuleTest
         rule.StopRuling();
 
         // Wait a bit (but less than the 10-second duration)
-        System.Threading.Thread.Sleep(200);
+        Thread.Sleep(200);
 
         // Rule should still be triggered (no auto-untrigger after StopRuling)
         Assert.AreEqual(1, rule.TriggerCount, "Rule should remain triggered after StopRuling without waiting for full duration");
@@ -100,9 +100,9 @@ public sealed class StartupRuleTest
     [TestMethod]
     public void GetDescription_WithDurationSeconds()
     {
-        var dto = new StartupRuleDto 
-        { 
-            SchemeGuid = Guid.NewGuid(), 
+        var dto = new StartupRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
             Duration = TimeSpan.FromSeconds(30)
         };
 
@@ -114,9 +114,9 @@ public sealed class StartupRuleTest
     [TestMethod]
     public void GetDescription_WithDurationMinutes()
     {
-        var dto = new StartupRuleDto 
-        { 
-            SchemeGuid = Guid.NewGuid(), 
+        var dto = new StartupRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
             Duration = TimeSpan.FromMinutes(5)
         };
 
@@ -128,9 +128,9 @@ public sealed class StartupRuleTest
     [TestMethod]
     public void GetDescription_WithDurationHours()
     {
-        var dto = new StartupRuleDto 
-        { 
-            SchemeGuid = Guid.NewGuid(), 
+        var dto = new StartupRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
             Duration = TimeSpan.FromHours(2)
         };
 
@@ -143,9 +143,9 @@ public sealed class StartupRuleTest
     [Timeout(5000, CooperativeCancellation = true)]
     public void Dispose_StopsRule()
     {
-        var dto = new StartupRuleDto 
-        { 
-            SchemeGuid = Guid.NewGuid(), 
+        var dto = new StartupRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
             Duration = TimeSpan.FromSeconds(10)
         };
         var rule = new StartupRule(dto);

@@ -109,6 +109,8 @@ internal sealed class DpiImageScaler : IDisposable
             case PictureBox pictureBox when pictureBox.Image is not null:
                 OverrideSource(pictureBox, pictureBox.Image, pictureBox.Image.Size);
                 break;
+            default:
+                break;
         }
     }
 
@@ -170,7 +172,7 @@ internal sealed class DpiImageScaler : IDisposable
 
         if (root.IsHandleCreated)
         {
-            root.BeginInvoke(new MethodInvoker(ApplyCurrentScale));
+            _ = root.BeginInvoke(new MethodInvoker(ApplyCurrentScale));
             return;
         }
 
@@ -278,6 +280,8 @@ internal sealed class DpiImageScaler : IDisposable
                     break;
                 case PictureBox pictureBox:
                     pictureBox.Image = image;
+                    break;
+                default:
                     break;
             }
 

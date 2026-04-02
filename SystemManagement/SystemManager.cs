@@ -1,13 +1,11 @@
-namespace SystemManagement;
+﻿namespace SystemManagement;
 
 using System.Runtime.InteropServices;
 using Vanara.PInvoke;
 
 public class SystemManager : ISystemManager
 {
-#pragma warning disable CA1716 // Identifiers should not match keywords
-    public static class Static
-#pragma warning restore CA1716 // Identifiers should not match keywords
+    public static class Api
     {
         public static bool IsFullscreenAppActive()
         {
@@ -54,5 +52,6 @@ public class SystemManager : ISystemManager
         }
     }
 
-    public bool IsFullscreenAppActive() => Static.IsFullscreenAppActive();
+    public bool IsFullscreenAppActive() => Api.IsFullscreenAppActive();
 }
+
