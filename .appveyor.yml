@@ -9,18 +9,18 @@ before_build:
 - ps: nuget restore
 
 build_script:
-- dotnet build PowerPlanSwitcher.sln --configuration Release
-- dotnet publish PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release --runtime win-x64 --self-contained false
-- dotnet build Setup/Setup.wixproj --configuration Release
+- dotnet build PowerPlanSwitcher.sln --configuration Release -p:Platform=x64
+- dotnet publish PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release -p:Platform=x64 --runtime win-x64 --self-contained false
+- dotnet build Setup/Setup.wixproj --configuration Release -p:Platform=x64
 
 test_script:
-- dotnet test RuleManagementTest/RuleManagementTest.csproj --configuration Release --no-build
+- dotnet test RuleManagementTest/RuleManagementTest.csproj --configuration Release -p:Platform=x64 --no-build
 
 after_build:
-- dotnet pack PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release --include-symbols --output artifacts
+- dotnet pack PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release -p:Platform=x64 --include-symbols --output artifacts
 
 artifacts:
-- path: Setup/bin/Release/PowerPlanSwitcher.msi
+- path: Setup/bin/x64/Release/PowerPlanSwitcher.msi
   name: PowerPlanSwitcherInstaller
 - path: artifacts/*.nupkg
   name: PowerPlanSwitcherNuGet

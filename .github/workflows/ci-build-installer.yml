@@ -26,22 +26,22 @@ jobs:
       run: dotnet restore PowerPlanSwitcher.sln
 
     - name: Build solution
-      run: dotnet build PowerPlanSwitcher.sln --configuration Release --no-restore
+      run: dotnet build PowerPlanSwitcher.sln --configuration Release -p:Platform=x64 --no-restore
 
     - name: Run all tests
-      run: dotnet test PowerPlanSwitcher.sln --configuration Release --no-build --logger "trx;LogFileName=tests.trx" --results-directory TestResults
+      run: dotnet test PowerPlanSwitcher.sln --configuration Release -p:Platform=x64 --no-build --logger "trx;LogFileName=tests.trx" --results-directory TestResults
 
     - name: Publish app binaries
-      run: dotnet publish PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release --runtime win-x64 --self-contained false
+      run: dotnet publish PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release -p:Platform=x64 --runtime win-x64 --self-contained false
 
     - name: Build MSI installer
-      run: dotnet build Setup/Setup.wixproj --configuration Release
+      run: dotnet build Setup/Setup.wixproj --configuration Release -p:Platform=x64
 
     - name: Upload installer artifact
       uses: actions/upload-artifact@v4
       with:
         name: PowerPlanSwitcherInstaller
-        path: Setup/bin/Release/PowerPlanSwitcher.msi
+        path: Setup/bin/x64/Release/PowerPlanSwitcher.msi
         if-no-files-found: error
 
     - name: Upload test results
@@ -55,7 +55,7 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/v')
       uses: softprops/action-gh-release@v1
       with:
-        files: Setup/bin/Release/PowerPlanSwitcher.msi
+        files: Setup/bin/x64/Release/PowerPlanSwitcher.msi
         prerelease: ${{ contains(github.ref, 'rc') }}
         body: ""
       env:
