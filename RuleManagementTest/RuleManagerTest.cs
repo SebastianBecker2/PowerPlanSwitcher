@@ -1081,6 +1081,36 @@ public sealed class RuleManagerTest
     }
 
     [TestMethod]
+    [Timeout(5000, CooperativeCancellation = true)]
+    public void SetRules_WithInPlaceMutatedStartupDuration_ReplacesRuleAndRespectsDuration()
+    {
+        var manager = new RuleManager(ruleFactory);
+        var startupDto = new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('a'),
+            Duration = null
+        };
+
+        manager.SetRules([startupDto]);
+        var originalStartupRule = manager.GetRules().OfType<StartupRule>().Single();
+        Assert.AreEqual(1, originalStartupRule.TriggerCount, "StartupRule without duration should be triggered indefinitely.");
+
+        startupDto.Duration = TimeSpan.FromMilliseconds(200);
+
+        manager.SetRules([startupDto]);
+
+        var updatedStartupRule = manager.GetRules().OfType<StartupRule>().Single();
+        Assert.AreNotSame(originalStartupRule, updatedStartupRule, "Changing StartupRule duration via in-place DTO mutation must replace the running rule instance.");
+
+        WaitUntil(
+            () => updatedStartupRule.TriggerCount == 0,
+            TimeSpan.FromSeconds(3),
+            "StartupRule with duration should untrigger after the configured interval.");
+
+        Assert.IsNull(manager.AppliedRule, "After duration elapsed, StartupRule should no longer be applied.");
+    }
+
+    [TestMethod]
     public void SetRules_WithReorderedDtos_ReordersPriorityAndKeepsEquivalentInstances()
     {
         var manager = new RuleManager(ruleFactory);

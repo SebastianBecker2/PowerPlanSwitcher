@@ -1,6 +1,7 @@
 namespace RuleManagement;
 
 using System.Collections.Generic;
+using System.Globalization;
 using System.Linq;
 using Newtonsoft.Json;
 using PowerManagement;
@@ -24,11 +25,19 @@ public class RuleManager
     private readonly RuleFactory ruleFactory;
 
     private List<IRule> rules = [];
+    private List<RuleSnapshot> ruleSnapshots = [];
     private readonly Dictionary<IRule, int> ruleIndices = [];
+
+    private sealed class RuleSnapshot
+    {
+        public required string IdentityKey { get; init; }
+        public required string SemanticKey { get; init; }
+    }
 
     private sealed class RuleUpdatePlan
     {
         public List<IRule> NextRules { get; } = [];
+        public List<RuleSnapshot> NextSnapshots { get; } = [];
         public HashSet<IRule> KeptRules { get; } = [];
         public List<IRule> CreatedRules { get; } = [];
     }
@@ -64,6 +73,7 @@ public class RuleManager
 
         rules = LoadRules(ruleJson, ruleFactory);
         RebuildRuleIndices();
+        RebuildRuleSnapshots();
     }
 
     public void StartMonitoring()
@@ -164,6 +174,11 @@ public class RuleManager
 
     public void SetRules(IEnumerable<IRuleDto> newRuleDtos)
     {
+        if (ruleSnapshots.Count != rules.Count)
+        {
+            RebuildRuleSnapshots();
+        }
+
         var plan = BuildRuleUpdatePlan([.. newRuleDtos]);
 
         var rulesToRemove = rules
@@ -177,6 +192,7 @@ public class RuleManager
         }
 
         rules = plan.NextRules;
+        ruleSnapshots = plan.NextSnapshots;
         RebuildRuleIndices();
 
         Subscribe(plan.CreatedRules);
@@ -194,6 +210,7 @@ public class RuleManager
         }
         rules = [.. newRules];
         RebuildRuleIndices();
+        RebuildRuleSnapshots();
         Subscribe(rules);
 
         EmitRulesUpdated();
@@ -215,6 +232,7 @@ public class RuleManager
             {
                 var createdRule = ruleFactory.Create(newDto);
                 plan.NextRules.Add(createdRule);
+                plan.NextSnapshots.Add(BuildRuleSnapshot(newDto));
                 plan.CreatedRules.Add(createdRule);
                 continue;
             }
@@ -226,6 +244,7 @@ public class RuleManager
 
                 var matchingRule = rules[matchingOldIndex.Value];
                 plan.NextRules.Add(matchingRule);
+                plan.NextSnapshots.Add(ruleSnapshots[matchingOldIndex.Value]);
                 _ = plan.KeptRules.Add(matchingRule);
                 continue;
             }
@@ -235,6 +254,7 @@ public class RuleManager
             {
                 var createdRule = ruleFactory.Create(newDto);
                 plan.NextRules.Add(createdRule);
+                plan.NextSnapshots.Add(BuildRuleSnapshot(newDto));
                 plan.CreatedRules.Add(createdRule);
                 continue;
             }
@@ -243,6 +263,7 @@ public class RuleManager
 
             var replacement = ruleFactory.Create(newDto);
             plan.NextRules.Add(replacement);
+            plan.NextSnapshots.Add(BuildRuleSnapshot(newDto));
             plan.CreatedRules.Add(replacement);
         }
 
@@ -253,9 +274,9 @@ public class RuleManager
     {
         var map = new Dictionary<string, List<int>>(StringComparer.Ordinal);
 
-        for (var i = 0; i < rules.Count; i++)
+        for (var i = 0; i < ruleSnapshots.Count; i++)
         {
-            var key = BuildRuleIdentityKey(rules[i].Dto);
+            var key = ruleSnapshots[i].IdentityKey;
             if (!map.TryGetValue(key, out var indices))
             {
                 indices = [];
@@ -280,7 +301,7 @@ public class RuleManager
                 continue;
             }
 
-            if (DtoSemanticallyEquals(rules[candidateIndex].Dto, newDto))
+            if (string.Equals(ruleSnapshots[candidateIndex].SemanticKey, BuildRuleSemanticKey(newDto), StringComparison.Ordinal))
             {
                 return candidateIndex;
             }
@@ -314,33 +335,35 @@ public class RuleManager
         _ => dto.GetType().FullName ?? dto.GetType().Name,
     };
 
-    private static bool DtoSemanticallyEquals(IRuleDto left, IRuleDto right)
+    private static RuleSnapshot BuildRuleSnapshot(IRuleDto dto) => new()
     {
-        if (left.GetType() != right.GetType())
-        {
-            return false;
-        }
+        IdentityKey = BuildRuleIdentityKey(dto),
+        SemanticKey = BuildRuleSemanticKey(dto),
+    };
 
-        if (left.SchemeGuid != right.SchemeGuid)
-        {
-            return false;
-        }
+    private void RebuildRuleSnapshots()
+    {
+        ruleSnapshots = [.. rules.Select(rule => BuildRuleSnapshot(rule.Dto))];
+    }
 
-        return (left, right) switch
+    private static string BuildRuleSemanticKey(IRuleDto dto)
+    {
+        var schemePart = dto.SchemeGuid.ToString("D");
+
+        return dto switch
         {
-            (ProcessRuleDto l, ProcessRuleDto r) =>
-                string.Equals(l.Pattern, r.Pattern, StringComparison.Ordinal)
-                && l.Type == r.Type,
-            (PowerLineRuleDto l, PowerLineRuleDto r) =>
-                l.PowerLineStatus == r.PowerLineStatus,
-            (IdleRuleDto l, IdleRuleDto r) =>
-                l.IdleTimeThreshold == r.IdleTimeThreshold
-                && l.CheckExecutionState == r.CheckExecutionState
-                && l.CheckFullscreenApps == r.CheckFullscreenApps,
-            (StartupRuleDto l, StartupRuleDto r) =>
-                l.Duration == r.Duration,
-            (ShutdownRuleDto, ShutdownRuleDto) => true,
-            _ => false,
+            ProcessRuleDto process =>
+                $"ProcessRule|{schemePart}|{process.Pattern ?? string.Empty}|{process.Type}",
+            PowerLineRuleDto powerLine =>
+                $"PowerLineRule|{schemePart}|{powerLine.PowerLineStatus}",
+            IdleRuleDto idle =>
+                $"IdleRule|{schemePart}|{idle.IdleTimeThreshold.Ticks}|{idle.CheckExecutionState}|{idle.CheckFullscreenApps}",
+            StartupRuleDto startup =>
+                $"StartupRule|{schemePart}|{(startup.Duration?.Ticks.ToString(CultureInfo.InvariantCulture) ?? "null")}",
+            ShutdownRuleDto =>
+                $"ShutdownRule|{schemePart}",
+            _ =>
+                $"{dto.GetType().FullName ?? dto.GetType().Name}|{schemePart}",
         };
     }
 
