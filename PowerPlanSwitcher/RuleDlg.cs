@@ -176,9 +176,11 @@ public partial class RuleDlg : Form
         {
             TipHints.SetToolTip(
                 PibRuleInfo,
-                $"A startup rule switches power plans when the system starts up." +
-                $"{Environment.NewLine}Optionally, you can set a duration after which the power scheme will be deactivated." +
-                $"{Environment.NewLine}This rule is always triggered and should be the last rule in the list.");
+                $"A startup rule switches power plans when PowerPlanSwitcher starts rule monitoring." +
+                $"{Environment.NewLine}Optionally, you can set a delay so triggering is postponed until after that wait." +
+                $"{Environment.NewLine}Optionally, you can set a duration after which the power scheme will be deactivated" +
+                $"{Environment.NewLine}once the rule has triggered. The duration counts from that moment, including after any delay." +
+                $"{Environment.NewLine}This rule is usually placed last in the list.");
             PrcProcessRule.Visible = false;
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = false;

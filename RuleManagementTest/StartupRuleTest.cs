@@ -9,13 +9,27 @@ using RuleManagement.Rules;
 public sealed class StartupRuleTest
 {
     [TestMethod]
-    public void InitialTriggerCount_IsOne()
+    public void InitialTriggerCount_IsOneWhenNoDelay()
     {
         var dto = new StartupRuleDto { SchemeGuid = Guid.NewGuid() };
 
         var rule = new StartupRule(dto);
 
         Assert.AreEqual(1, rule.TriggerCount);
+    }
+
+    [TestMethod]
+    public void InitialTriggerCount_IsZeroWhenDelayConfigured()
+    {
+        var dto = new StartupRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            Delay = TimeSpan.FromSeconds(1)
+        };
+
+        var rule = new StartupRule(dto);
+
+        Assert.AreEqual(0, rule.TriggerCount);
     }
 
     [TestMethod]
@@ -76,6 +90,79 @@ public sealed class StartupRuleTest
 
     [TestMethod]
     [Timeout(5000, CooperativeCancellation = true)]
+    public void WithDelay_BecomesTriggeredAfterElapsed()
+    {
+        var dto = new StartupRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            Delay = TimeSpan.FromMilliseconds(200),
+            Duration = null
+        };
+        var rule = new StartupRule(dto);
+
+        rule.StartRuling();
+        Assert.AreEqual(0, rule.TriggerCount);
+
+        WaitUntil(
+            () => rule.TriggerCount == 1,
+            TimeSpan.FromSeconds(3),
+            "Rule should trigger after delay elapses.");
+
+        rule.StopRuling();
+    }
+
+    [TestMethod]
+    [Timeout(5000, CooperativeCancellation = true)]
+    public void WithDelayAndDuration_DurationStartsAfterDelay()
+    {
+        var dto = new StartupRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            Delay = TimeSpan.FromMilliseconds(150),
+            Duration = TimeSpan.FromMilliseconds(250)
+        };
+        var rule = new StartupRule(dto);
+
+        rule.StartRuling();
+        Assert.AreEqual(0, rule.TriggerCount, "Rule should not trigger before delay elapses.");
+
+        WaitUntil(
+            () => rule.TriggerCount == 1,
+            TimeSpan.FromSeconds(3),
+            "Rule should trigger after delay elapses.");
+
+        WaitUntil(
+            () => rule.TriggerCount == 0,
+            TimeSpan.FromSeconds(3),
+            "Rule should untrigger after duration counted from trigger time.");
+
+        rule.StopRuling();
+    }
+
+    [TestMethod]
+    [Timeout(5000, CooperativeCancellation = true)]
+    public void StopRuling_CancelsDelayTimer()
+    {
+        var dto = new StartupRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            Delay = TimeSpan.FromSeconds(10),
+            Duration = null
+        };
+        var rule = new StartupRule(dto);
+
+        rule.StartRuling();
+        Assert.AreEqual(0, rule.TriggerCount);
+
+        rule.StopRuling();
+
+        Thread.Sleep(200);
+
+        Assert.AreEqual(0, rule.TriggerCount, "Rule should remain untriggered after StopRuling during delay.");
+    }
+
+    [TestMethod]
+    [Timeout(5000, CooperativeCancellation = true)]
     public void StopRuling_CancelsDurationTimer()
     {
         var dto = new StartupRuleDto
@@ -108,7 +195,7 @@ public sealed class StartupRuleTest
 
         var description = dto.GetDescription();
 
-        Assert.AreEqual("Startup Rule (30 seconds)", description);
+        Assert.AreEqual("Startup Rule (duration 30 seconds)", description);
     }
 
     [TestMethod]
@@ -122,7 +209,7 @@ public sealed class StartupRuleTest
 
         var description = dto.GetDescription();
 
-        Assert.AreEqual("Startup Rule (5 minutes)", description);
+        Assert.AreEqual("Startup Rule (duration 5 minutes)", description);
     }
 
     [TestMethod]
@@ -136,7 +223,32 @@ public sealed class StartupRuleTest
 
         var description = dto.GetDescription();
 
-        Assert.AreEqual("Startup Rule (2 hours)", description);
+        Assert.AreEqual("Startup Rule (duration 2 hours)", description);
+    }
+
+    [TestMethod]
+    public void GetDescription_WithDelayOnly()
+    {
+        var dto = new StartupRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            Delay = TimeSpan.FromSeconds(45)
+        };
+
+        Assert.AreEqual("Startup Rule (delay 45 seconds)", dto.GetDescription());
+    }
+
+    [TestMethod]
+    public void GetDescription_WithDelayAndDuration()
+    {
+        var dto = new StartupRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            Delay = TimeSpan.FromMinutes(2),
+            Duration = TimeSpan.FromMinutes(5)
+        };
+
+        Assert.AreEqual("Startup Rule (delay 2 minutes, duration 5 minutes)", dto.GetDescription());
     }
 
     [TestMethod]
@@ -173,4 +285,3 @@ public sealed class StartupRuleTest
         Assert.Fail(timeoutMessage);
     }
 }
-

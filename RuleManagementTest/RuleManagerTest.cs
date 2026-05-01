@@ -476,6 +476,7 @@ public sealed class RuleManagerTest
             },
                         {
                             ""$type"": ""RuleManagement.Dto.StartupRuleDto, RuleManagement"",
+                            ""Delay"": null,
                             ""Duration"": null,
                             ""SchemeGuid"": ""33333333-3333-3333-3333-333333333333""
                         },
@@ -764,6 +765,7 @@ public sealed class RuleManagerTest
             },
                         {
                             ""$type"": ""RuleManagement.Dto.StartupRuleDto, RuleManagement"",
+                            ""Delay"": null,
                             ""Duration"": null,
                             ""SchemeGuid"": ""33333333-3333-3333-3333-333333333333""
                         },
@@ -1316,6 +1318,120 @@ public sealed class RuleManagerTest
         });
     }
 
+    [TestMethod]
+    public void BackwardCompatibility_StartupRuleWithDurationButWithoutDelayProperty_DeserializesWithNullDelay()
+    {
+        var migrationPolicy = new MigrationPolicy(
+            MigratedPowerRulesToRules: true,
+            AcPowerSchemeGuid: CreateGuid('1'),
+            BatteryPowerSchemeGuid: CreateGuid('2'),
+            MigratedStartupRule: true,
+            ActivateInitialPowerScheme: false,
+            InitialPowerSchemeGuid: CreateGuid('3'));
+
+        // Saved settings from before Delay existed: Duration present, no Delay property
+        var jsonWithDurationOnly = /*lang=json,strict*/ @"
+        {
+          ""SchemaVersion"": 1,
+          ""Rules"": [
+            {
+              ""$type"": ""RuleManagement.Dto.StartupRuleDto, RuleManagement"",
+              ""SchemeGuid"": ""aaaaaaaa-aaaa-aaaa-aaaa-aaaaaaaaaaaa"",
+              ""Duration"": ""00:05:00""
+            }
+          ]
+        }";
+
+        var manager = new RuleManager(
+            ruleFactory,
+            jsonWithDurationOnly,
+            migrationPolicy,
+            batteryMonitor);
+        var rules = manager.GetRules().ToList();
+
+        Assert.HasCount(1, rules);
+        AssertRule(rules[0], new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('a'),
+            Delay = null,
+            Duration = TimeSpan.FromMinutes(5)
+        });
+    }
+
+    [TestMethod]
+    [Timeout(5000, CooperativeCancellation = true)]
+    public void SetRules_WithInPlaceMutatedStartupDelay_ReplacesRuleAndRespectsDelay()
+    {
+        var manager = new RuleManager(ruleFactory);
+        var startupDto = new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('a'),
+            Delay = null,
+            Duration = null
+        };
+
+        manager.SetRules([startupDto]);
+        var originalStartupRule = manager.GetRules().OfType<StartupRule>().Single();
+        Assert.AreEqual(1, originalStartupRule.TriggerCount, "StartupRule without delay should be triggered immediately.");
+
+        startupDto.Delay = TimeSpan.FromMilliseconds(250);
+
+        manager.SetRules([startupDto]);
+
+        var updatedStartupRule = manager.GetRules().OfType<StartupRule>().Single();
+        Assert.AreNotSame(originalStartupRule, updatedStartupRule, "Changing StartupRule delay via in-place DTO mutation must replace the running rule instance.");
+        Assert.AreEqual(0, updatedStartupRule.TriggerCount, "StartupRule with delay should not be triggered until delay elapses.");
+
+        WaitUntil(
+            () => updatedStartupRule.TriggerCount == 1,
+            TimeSpan.FromSeconds(3),
+            "StartupRule with delay should trigger after the configured interval.");
+
+        Assert.AreEqual(updatedStartupRule, manager.AppliedRule, "After delay elapses, StartupRule should be applied.");
+    }
+
+    [TestMethod]
+    public void StartupRuleWithDelayAndDuration_SerializesAndDeserializesCorrectly()
+    {
+        var migrationPolicy = new MigrationPolicy(
+            MigratedPowerRulesToRules: true,
+            AcPowerSchemeGuid: CreateGuid('1'),
+            BatteryPowerSchemeGuid: CreateGuid('2'),
+            MigratedStartupRule: true,
+            ActivateInitialPowerScheme: false,
+            InitialPowerSchemeGuid: CreateGuid('3'));
+
+        var startup = new StartupRule(new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('a'),
+            Delay = TimeSpan.FromMinutes(1),
+            Duration = TimeSpan.FromMinutes(5)
+        });
+
+        var manager = new RuleManager(ruleFactory);
+        string? serializedJson = null;
+        manager.RulesUpdated += (s, e) => serializedJson = e.Serialized;
+
+        manager.SetRules([startup]);
+
+        Assert.IsNotNull(serializedJson, "RulesUpdated event should fire");
+
+        var manager2 = new RuleManager(
+            ruleFactory,
+            serializedJson,
+            migrationPolicy,
+            batteryMonitor);
+        var deserializedRules = manager2.GetRules().ToList();
+
+        Assert.HasCount(1, deserializedRules);
+        AssertRule(deserializedRules[0], new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('a'),
+            Delay = TimeSpan.FromMinutes(1),
+            Duration = TimeSpan.FromMinutes(5)
+        });
+    }
+
     private static void WaitUntil(Func<bool> condition, TimeSpan timeout, string timeoutMessage)
     {
         var stopwatch = Stopwatch.StartNew();
@@ -1351,6 +1467,7 @@ public sealed class RuleManagerTest
     {
         Assert.IsInstanceOfType(rule, typeof(StartupRule));
         Assert.AreEqual(dto.SchemeGuid, ((StartupRule)rule).SchemeGuid);
+        Assert.AreEqual(dto.Delay, ((StartupRule)rule).Dto.Delay);
         Assert.AreEqual(dto.Duration, ((StartupRule)rule).Dto.Duration);
     }
 
