@@ -13,6 +13,7 @@ using Serilog;
 using Serilog.Core;
 using Serilog.Formatting.Json;
 using SevenZip;
+using System.IO.Compression;
 using SystemManagement;
 
 internal static class Program
@@ -151,9 +152,12 @@ internal static class Program
             using var saveAsDlg = new SaveFileDialog()
             {
                 Title = "Export Log",
-                Filter = "7zip Files (*.7z)|*.7z",
+                Filter = "Zip Files (*.zip)|*.zip|7zip Files (*.7z)|*.7z",
                 InitialDirectory = LogPath,
-                FileName = $"{AssemblyTitle}.log.7z"
+                FileName = $"{AssemblyTitle}.log.zip",
+                DefaultExt = "zip",
+                AddExtension = true,
+                FilterIndex = 1
             };
             if (saveAsDlg.ShowDialog() != DialogResult.OK)
             {
@@ -166,38 +170,69 @@ internal static class Program
                 return;
             }
 
-            SevenZipCompressor compressor = new()
-            {
-                CompressionLevel = CompressionLevel.Ultra,
-                ArchiveFormat = OutArchiveFormat.SevenZip,
-                CompressionMethod = CompressionMethod.BZip2,
-                EncryptHeaders = true
-            };
-
+            var exportPath = saveAsDlg.FileName;
             var logFiles = Directory.GetFiles(LogPath, LogFileNamePattern);
 
             if (string.IsNullOrWhiteSpace(passwordDlg.Password))
             {
-                compressor.CompressFiles(
-                    saveAsDlg.FileName,
-                    logFiles);
+                if (Path.GetExtension(exportPath).Equals(".7z", StringComparison.OrdinalIgnoreCase))
+                {
+                    exportPath = Path.ChangeExtension(exportPath, ".zip");
+                }
+
+                ExportLogToZip(exportPath, logFiles);
             }
             else
             {
-                compressor.CompressFilesEncrypted(
-                   saveAsDlg.FileName,
-                   passwordDlg.Password,
-                   logFiles);
+                if (!Path.GetExtension(exportPath).Equals(".7z", StringComparison.OrdinalIgnoreCase))
+                {
+                    exportPath = Path.ChangeExtension(exportPath, ".7z");
+                }
+
+                ExportLogTo7z(exportPath, passwordDlg.Password, logFiles);
             }
 
             Log.Information(
                 "Log exported to: {ExportFilePath}",
-                saveAsDlg.FileName);
+                exportPath);
         }
         catch (Exception ex)
         {
             Log.Error(ex, "Failed to export log.");
         }
+    }
+
+    private static void ExportLogToZip(string archivePath, string[] logFiles)
+    {
+        if (File.Exists(archivePath))
+        {
+            File.Delete(archivePath);
+        }
+
+        using var archive = ZipFile.Open(archivePath, ZipArchiveMode.Create);
+        foreach (var logFile in logFiles)
+        {
+            archive.CreateEntryFromFile(
+                logFile,
+                Path.GetFileName(logFile),
+                System.IO.Compression.CompressionLevel.Optimal);
+        }
+    }
+
+    private static void ExportLogTo7z(string archivePath, string password, string[] logFiles)
+    {
+        SevenZipCompressor compressor = new()
+        {
+            CompressionLevel = SevenZip.CompressionLevel.Ultra,
+            ArchiveFormat = OutArchiveFormat.SevenZip,
+            CompressionMethod = CompressionMethod.BZip2,
+            EncryptHeaders = true
+        };
+
+        compressor.CompressFilesEncrypted(
+            archivePath,
+            password,
+            logFiles);
     }
 
     public static void RegisterHotkeys(HotkeyManager hotkeyManager)
