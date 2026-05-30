@@ -56,6 +56,12 @@ public class PowerManager : IDisposable, IPowerManager
 
         public static bool IsExecutionStateBlockingIdle()
         {
+            return TryGetExecutionState(out var state)
+                && IsExecutionStateBlockingIdle(state);
+        }
+
+        public static bool TryGetExecutionState(out uint executionState)
+        {
             // Execution state is a 4-byte uint
             const int size = sizeof(uint);
 
@@ -70,16 +76,52 @@ public class PowerManager : IDisposable, IPowerManager
 
             if (status != NTStatus.STATUS_SUCCESS)
             {
+                executionState = 0;
                 return false;
             }
 
-            var raw = buffer.ToStructure<uint>();
+            executionState = buffer.ToStructure<uint>();
+            return true;
+        }
 
-            var systemRequired = (raw & 0x00000001) != 0;
-            var displayRequired = (raw & 0x00000002) != 0;
-            var awayMode = (raw & 0x00000040) != 0;
+        public static bool IsExecutionStateBlockingIdle(uint executionState)
+        {
+            var systemRequired = (executionState & 0x00000001) != 0;
+            var displayRequired = (executionState & 0x00000002) != 0;
+            var awayMode = (executionState & 0x00000040) != 0;
 
-            return systemRequired || displayRequired || awayMode;
+            var blocked = systemRequired || displayRequired || awayMode;
+            if (blocked)
+            {
+                Log.Verbose(
+                    "Execution state blocks idle: {ExecutionState} ({ExecutionStateDescription})",
+                    executionState,
+                    GetExecutionStateDescription(executionState));
+            }
+
+            return blocked;
+        }
+
+        public static string GetExecutionStateDescription(uint executionState)
+        {
+            var parts = new List<string>();
+            if ((executionState & 0x00000001) != 0)
+            {
+                parts.Add("ES_SYSTEM_REQUIRED");
+            }
+            if ((executionState & 0x00000002) != 0)
+            {
+                parts.Add("ES_DISPLAY_REQUIRED");
+            }
+            if ((executionState & 0x00000040) != 0)
+            {
+                parts.Add("ES_AWAYMODE_REQUIRED");
+            }
+            if (parts.Count == 0)
+            {
+                parts.Add("None");
+            }
+            return string.Join(", ", parts);
         }
     }
 
