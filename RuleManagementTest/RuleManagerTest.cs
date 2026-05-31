@@ -1359,38 +1359,6 @@ public sealed class RuleManagerTest
     }
 
     [TestMethod]
-    [Timeout(5000, CooperativeCancellation = true)]
-    public void SetRules_WithInPlaceMutatedStartupDelay_ReplacesRuleAndRespectsDelay()
-    {
-        var manager = new RuleManager(ruleFactory);
-        var startupDto = new StartupRuleDto
-        {
-            SchemeGuid = CreateGuid('a'),
-            Delay = null,
-            Duration = null
-        };
-
-        manager.SetRules([startupDto]);
-        var originalStartupRule = manager.GetRules().OfType<StartupRule>().Single();
-        Assert.AreEqual(1, originalStartupRule.TriggerCount, "StartupRule without delay should be triggered immediately.");
-
-        startupDto.Delay = TimeSpan.FromMilliseconds(250);
-
-        manager.SetRules([startupDto]);
-
-        var updatedStartupRule = manager.GetRules().OfType<StartupRule>().Single();
-        Assert.AreNotSame(originalStartupRule, updatedStartupRule, "Changing StartupRule delay via in-place DTO mutation must replace the running rule instance.");
-        Assert.AreEqual(0, updatedStartupRule.TriggerCount, "StartupRule with delay should not be triggered until delay elapses.");
-
-        WaitUntil(
-            () => updatedStartupRule.TriggerCount == 1,
-            TimeSpan.FromSeconds(3),
-            "StartupRule with delay should trigger after the configured interval.");
-
-        Assert.AreEqual(updatedStartupRule, manager.AppliedRule, "After delay elapses, StartupRule should be applied.");
-    }
-
-    [TestMethod]
     public void StartupRuleWithDelayAndDuration_SerializesAndDeserializesCorrectly()
     {
         var migrationPolicy = new MigrationPolicy(

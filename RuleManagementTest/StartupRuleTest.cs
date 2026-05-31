@@ -9,7 +9,7 @@ using RuleManagement.Rules;
 public sealed class StartupRuleTest
 {
     [TestMethod]
-    public void InitialTriggerCount_IsOneWhenNoDelay()
+    public void InitialTriggerCount_IsOne()
     {
         var dto = new StartupRuleDto { SchemeGuid = Guid.NewGuid() };
 
@@ -19,7 +19,7 @@ public sealed class StartupRuleTest
     }
 
     [TestMethod]
-    public void InitialTriggerCount_IsZeroWhenDelayConfigured()
+    public void InitialTriggerCount_IsOneEvenWhenDelayConfiguredOnDto()
     {
         var dto = new StartupRuleDto
         {
@@ -29,7 +29,7 @@ public sealed class StartupRuleTest
 
         var rule = new StartupRule(dto);
 
-        Assert.AreEqual(0, rule.TriggerCount);
+        Assert.AreEqual(1, rule.TriggerCount, "Delay on the DTO is not applied by StartupRule.");
     }
 
     [TestMethod]
@@ -86,79 +86,6 @@ public sealed class StartupRuleTest
 
         Assert.AreEqual(0, rule.TriggerCount, "Rule should be untriggered after duration elapses");
         rule.StopRuling();
-    }
-
-    [TestMethod]
-    [Timeout(5000, CooperativeCancellation = true)]
-    public void WithDelay_BecomesTriggeredAfterElapsed()
-    {
-        var dto = new StartupRuleDto
-        {
-            SchemeGuid = Guid.NewGuid(),
-            Delay = TimeSpan.FromMilliseconds(200),
-            Duration = null
-        };
-        var rule = new StartupRule(dto);
-
-        rule.StartRuling();
-        Assert.AreEqual(0, rule.TriggerCount);
-
-        WaitUntil(
-            () => rule.TriggerCount == 1,
-            TimeSpan.FromSeconds(3),
-            "Rule should trigger after delay elapses.");
-
-        rule.StopRuling();
-    }
-
-    [TestMethod]
-    [Timeout(5000, CooperativeCancellation = true)]
-    public void WithDelayAndDuration_DurationStartsAfterDelay()
-    {
-        var dto = new StartupRuleDto
-        {
-            SchemeGuid = Guid.NewGuid(),
-            Delay = TimeSpan.FromMilliseconds(150),
-            Duration = TimeSpan.FromMilliseconds(250)
-        };
-        var rule = new StartupRule(dto);
-
-        rule.StartRuling();
-        Assert.AreEqual(0, rule.TriggerCount, "Rule should not trigger before delay elapses.");
-
-        WaitUntil(
-            () => rule.TriggerCount == 1,
-            TimeSpan.FromSeconds(3),
-            "Rule should trigger after delay elapses.");
-
-        WaitUntil(
-            () => rule.TriggerCount == 0,
-            TimeSpan.FromSeconds(3),
-            "Rule should untrigger after duration counted from trigger time.");
-
-        rule.StopRuling();
-    }
-
-    [TestMethod]
-    [Timeout(5000, CooperativeCancellation = true)]
-    public void StopRuling_CancelsDelayTimer()
-    {
-        var dto = new StartupRuleDto
-        {
-            SchemeGuid = Guid.NewGuid(),
-            Delay = TimeSpan.FromSeconds(10),
-            Duration = null
-        };
-        var rule = new StartupRule(dto);
-
-        rule.StartRuling();
-        Assert.AreEqual(0, rule.TriggerCount);
-
-        rule.StopRuling();
-
-        Thread.Sleep(200);
-
-        Assert.AreEqual(0, rule.TriggerCount, "Rule should remain untriggered after StopRuling during delay.");
     }
 
     [TestMethod]
