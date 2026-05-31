@@ -168,6 +168,9 @@ public class PowerManager : IDisposable, IPowerManager
     public bool IsExecutionStateBlockingIdle() =>
         Api.IsExecutionStateBlockingIdle();
 
+    public bool TryGetExecutionState(out uint executionState) =>
+        Api.TryGetExecutionState(out executionState);
+
     public PowerManager()
     {
         powerSettingsChangedCallback = new DEVICE_NOTIFY_SUBSCRIBE_PARAMETERS

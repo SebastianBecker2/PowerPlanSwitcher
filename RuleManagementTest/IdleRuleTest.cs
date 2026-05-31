@@ -57,6 +57,49 @@ public sealed class IdleRuleTest
     }
 
     [TestMethod]
+    public void IdleMeetsThreshold_ExecutionStateBlocks_DoesNotActivate()
+    {
+        var dto = new IdleRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            IdleTimeThreshold = TimeSpan.FromSeconds(10),
+            CheckExecutionState = true,
+            CheckFullscreenApps = false,
+        };
+        var harness = new IdleRuleHarness(dto);
+        uint executionState = 0x00000001u;
+        A.CallTo(() => harness.PowerManager.TryGetExecutionState(out executionState))
+            .Returns(true)
+            .AssignsOutAndRefParameters(0x00000001u);
+        harness.IdleRule.StartRuling();
+
+        harness.IdleMonitor.IdleTimeChanged += Raise.With(
+            new IdleTimeChangedEventArgs(TimeSpan.FromSeconds(10)));
+
+        Assert.AreEqual(0, harness.IdleRule.TriggerCount);
+    }
+
+    [TestMethod]
+    public void IdleMeetsThreshold_FullscreenBlocks_DoesNotActivate()
+    {
+        var dto = new IdleRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            IdleTimeThreshold = TimeSpan.FromSeconds(10),
+            CheckExecutionState = false,
+            CheckFullscreenApps = true,
+        };
+        var harness = new IdleRuleHarness(dto);
+        A.CallTo(() => harness.SystemManager.IsFullscreenAppActive()).Returns(true);
+        harness.IdleRule.StartRuling();
+
+        harness.IdleMonitor.IdleTimeChanged += Raise.With(
+            new IdleTimeChangedEventArgs(TimeSpan.FromSeconds(10)));
+
+        Assert.AreEqual(0, harness.IdleRule.TriggerCount);
+    }
+
+    [TestMethod]
     public void IdleAboveThreshold_DoesNotExceedOne()
     {
         var dto = new IdleRuleDto

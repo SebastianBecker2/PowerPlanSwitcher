@@ -14,4 +14,5 @@ public interface IPowerManager
     public void SetActivePowerScheme(Guid schemeGuid);
     public Task SetActivePowerSchemeAsync(Guid schemeGuid);
     public bool IsExecutionStateBlockingIdle();
+    public bool TryGetExecutionState(out uint executionState);
 }

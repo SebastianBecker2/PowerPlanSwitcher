@@ -1,8 +1,10 @@
 namespace RuleManagement.Rules;
 
 using System;
+using System.Text;
 using PowerManagement;
 using RuleManagement.Dto;
+using Serilog;
 using SystemManagement;
 
 public sealed class IdleRule(
@@ -20,6 +22,7 @@ public sealed class IdleRule(
     public bool CheckFullscreenApps => Dto.CheckFullscreenApps;
 
     private readonly object syncRoot = new();
+    private string? lastIdleBlockReason;
 
     public override void StartRuling()
     {
@@ -61,21 +64,62 @@ public sealed class IdleRule(
         {
             if (idleTime < IdleTimeThreshold)
             {
+                lastIdleBlockReason = null;
                 return false;
             }
 
-            if (CheckExecutionState && powerManager.IsExecutionStateBlockingIdle())
+            var blockReasons = new StringBuilder();
+
+            if (CheckExecutionState
+                && powerManager.TryGetExecutionState(out var executionState)
+                && PowerManager.Api.IsExecutionStateBlockingIdle(executionState))
             {
-                return false;
+                AppendBlockReason(
+                    blockReasons,
+                    $"execution state 0x{executionState:X} " +
+                    $"({PowerManager.Api.GetExecutionStateDescription(executionState)})");
             }
 
             if (CheckFullscreenApps && systemManager.IsFullscreenAppActive())
             {
+                AppendBlockReason(blockReasons, "fullscreen app active");
+            }
+
+            if (blockReasons.Length > 0)
+            {
+                LogIdleBlockedIfChanged(idleTime, blockReasons.ToString());
                 return false;
             }
 
+            lastIdleBlockReason = null;
             return true;
         }
+    }
+
+    private void LogIdleBlockedIfChanged(TimeSpan idleTime, string blockReasons)
+    {
+        if (blockReasons == lastIdleBlockReason)
+        {
+            return;
+        }
+
+        lastIdleBlockReason = blockReasons;
+
+        Log.Information(
+            "Idle rule blocked: idle time {IdleTime} meets threshold {IdleTimeThreshold}, but {BlockReasons}",
+            idleTime,
+            IdleTimeThreshold,
+            blockReasons);
+    }
+
+    private static void AppendBlockReason(StringBuilder blockReasons, string reason)
+    {
+        if (blockReasons.Length > 0)
+        {
+            _ = blockReasons.Append("; ");
+        }
+
+        _ = blockReasons.Append(reason);
     }
 
     public void Dispose() => StopRuling();
