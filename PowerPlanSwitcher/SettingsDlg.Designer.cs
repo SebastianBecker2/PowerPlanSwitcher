@@ -46,6 +46,7 @@ namespace PowerPlanSwitcher
             DgcTriggerCount = new DataGridViewTextBoxColumn();
             BtnAddPowerRule = new Button();
             BtnEditPowerRule = new Button();
+            BtnOpenPowerPlanSettings = new Button();
             BtnAscentPowerRule = new Button();
             BtnDescentPowerRule = new Button();
             BtnDeletePowerRule = new Button();
@@ -117,7 +118,7 @@ namespace PowerPlanSwitcher
             DgvPowerSchemes.MultiSelect = false;
             DgvPowerSchemes.Name = "DgvPowerSchemes";
             DgvPowerSchemes.RowHeadersVisible = false;
-            tableLayoutPanel2.SetRowSpan(DgvPowerSchemes, 2);
+            tableLayoutPanel2.SetRowSpan(DgvPowerSchemes, 3);
             DgvPowerSchemes.RowTemplate.Height = 26;
             DgvPowerSchemes.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             DgvPowerSchemes.Size = new Size(903, 297);
@@ -375,13 +376,15 @@ namespace PowerPlanSwitcher
             tableLayoutPanel2.Controls.Add(BtnSetIcon, 2, 0);
             tableLayoutPanel2.Controls.Add(BtnSetHotkey, 2, 1);
             tableLayoutPanel2.Controls.Add(BtnRemoveHotkey, 3, 1);
+            tableLayoutPanel2.Controls.Add(BtnOpenPowerPlanSettings, 2, 2);
+            tableLayoutPanel2.SetColumnSpan(BtnOpenPowerPlanSettings, 2);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(3, 3);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 2;
+            tableLayoutPanel2.RowCount = 3;
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Absolute, 20F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.Size = new Size(1139, 303);
             tableLayoutPanel2.TabIndex = 1;
             // 
@@ -432,6 +435,18 @@ namespace PowerPlanSwitcher
             BtnRemoveHotkey.TextImageRelation = TextImageRelation.ImageAboveText;
             BtnRemoveHotkey.UseVisualStyleBackColor = true;
             BtnRemoveHotkey.Click += BtnRemoveHotkey_Click;
+            // 
+            // BtnOpenPowerPlanSettings
+            // 
+            BtnOpenPowerPlanSettings.Image = Properties.Resources.control_panel;
+            BtnOpenPowerPlanSettings.Location = new Point(912, 163);
+            BtnOpenPowerPlanSettings.Name = "BtnOpenPowerPlanSettings";
+            BtnOpenPowerPlanSettings.Size = new Size(224, 74);
+            BtnOpenPowerPlanSettings.TabIndex = 24;
+            BtnOpenPowerPlanSettings.Text = "Open power plan\r\nsettings";
+            BtnOpenPowerPlanSettings.TextImageRelation = TextImageRelation.ImageAboveText;
+            BtnOpenPowerPlanSettings.UseVisualStyleBackColor = true;
+            BtnOpenPowerPlanSettings.Click += HandleBtnOpenPowerPlanSettingsClick;
             // 
             // TacSettingsCategories
             // 
@@ -788,6 +803,7 @@ namespace PowerPlanSwitcher
         private DataGridView DgvRules;
         private Button BtnAddPowerRule;
         private Button BtnEditPowerRule;
+        private Button BtnOpenPowerPlanSettings;
         private Button BtnAscentPowerRule;
         private Button BtnDescentPowerRule;
         private Button BtnDeletePowerRule;

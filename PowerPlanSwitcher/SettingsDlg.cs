@@ -51,6 +51,7 @@ public partial class SettingsDlg : Form
         dpiImageScaler = new DpiImageScaler(this);
         dpiImageScaler.OverrideSource(BtnAddPowerRule, Resources.add);
         dpiImageScaler.OverrideSource(BtnEditPowerRule, Resources.pencil);
+        dpiImageScaler.OverrideSource(BtnOpenPowerPlanSettings, Resources.control_panel);
         dpiImageScaler.OverrideSource(BtnAscentPowerRule, Resources.arrow_up);
         dpiImageScaler.OverrideSource(BtnDescentPowerRule, Resources.arrow_down);
         dpiImageScaler.OverrideSource(BtnDeletePowerRule, Resources.delete);
@@ -136,6 +137,12 @@ public partial class SettingsDlg : Form
         }
 
         ChbExtendedLogging.Checked = Settings.Default.ExtendedLogging;
+
+        DgvRules.SelectionChanged += (_, _) => UpdateRuleSelectionButtons();
+        UpdateRuleSelectionButtons();
+
+        DgvPowerSchemes.SelectionChanged += (_, _) => UpdatePowerSchemeSelectionButtons();
+        UpdatePowerSchemeSelectionButtons();
 
         base.OnLoad(e);
     }
@@ -373,6 +380,52 @@ public partial class SettingsDlg : Form
 
         _ = DgvRules.Rows.Add(RuleDtoToRow(dlg.RuleDto));
         UpdateRulePriorities();
+    }
+
+    private void UpdateRuleSelectionButtons()
+    {
+        var hasSelection = DgvRules.SelectedRows.Count > 0;
+        BtnEditPowerRule.Enabled = hasSelection;
+        BtnDeletePowerRule.Enabled = hasSelection;
+    }
+
+    private void UpdatePowerSchemeSelectionButtons()
+    {
+        BtnOpenPowerPlanSettings.Enabled = DgvPowerSchemes.SelectedRows.Count > 0;
+    }
+
+    private void HandleBtnOpenPowerPlanSettingsClick(object sender, EventArgs e)
+    {
+        if (DgvPowerSchemes.SelectedRows.Count == 0)
+        {
+            _ = MessageBox.Show(
+                "Select a power plan first.",
+                "Open power plan settings",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+            return;
+        }
+
+        var schemeGuid = (Guid)DgvPowerSchemes.SelectedRows[0].Tag!;
+
+        if (!PowerSchemeSettingsOpener.IsKnownPowerScheme(schemeGuid))
+        {
+            _ = MessageBox.Show(
+                "The selected entry is not a valid power plan.",
+                "Open power plan settings",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
+            return;
+        }
+
+        if (!PowerSchemeSettingsOpener.TryOpenPowerOptions())
+        {
+            _ = MessageBox.Show(
+                "Could not open Windows power plan settings.",
+                "Open power plan settings",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Error);
+        }
     }
 
     private void HandleBtnEditPowerRuleClick(object sender, EventArgs e)
