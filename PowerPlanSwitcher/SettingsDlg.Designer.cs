@@ -43,7 +43,7 @@ namespace PowerPlanSwitcher
             DgcRuleDescription = new DataGridViewTextBoxColumn();
             DgcRuleSchemeIcon = new DataGridViewImageColumn();
             DgcRuleSchemeName = new DataGridViewTextBoxColumn();
-            DgcTriggerCount = new DataGridViewCheckBoxColumn();
+            DgcTriggerCount = new DataGridViewTextBoxColumn();
             BtnAddPowerRule = new Button();
             BtnEditPowerRule = new Button();
             BtnAscentPowerRule = new Button();
@@ -235,7 +235,7 @@ namespace PowerPlanSwitcher
             // DgcTriggerCount
             // 
             DgcTriggerCount.AutoSizeMode = DataGridViewAutoSizeColumnMode.AllCells;
-            DgcTriggerCount.HeaderText = "Triggered";
+            DgcTriggerCount.HeaderText = "Trigger";
             DgcTriggerCount.Name = "DgcTriggerCount";
             DgcTriggerCount.ReadOnly = true;
             DgcTriggerCount.Width = 63;
@@ -830,7 +830,7 @@ namespace PowerPlanSwitcher
         private DataGridViewTextBoxColumn DgcRuleDescription;
         private DataGridViewImageColumn DgcRuleSchemeIcon;
         private DataGridViewTextBoxColumn DgcRuleSchemeName;
-        private DataGridViewCheckBoxColumn DgcTriggerCount;
+        private DataGridViewTextBoxColumn DgcTriggerCount;
         private PictureBox PibRulesOrderInfo;
         private Label LblRulesOrderHint;
     }

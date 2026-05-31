@@ -7,19 +7,23 @@ using PowerManagement;
 using Properties;
 using RuleManagement;
 using RuleManagement.Dto;
+using RuleManagement.Events;
 using RuleManagement.Rules;
 using System.Drawing;
 
 public partial class SettingsDlg : Form
 {
-    private class RuleWrapper(IRuleDto dto, int triggerCount)
+    private sealed class RuleWrapper(IRuleDto dto, int triggerCount = 0)
     {
         public IRuleDto Dto { get; set; } = dto;
         public int TriggerCount { get; set; } = triggerCount;
+        public IRule? LiveRule { get; init; }
 
-        public RuleWrapper(IRuleDto dto) : this(dto, 0) { }
-        public RuleWrapper(IRule rule) : this(rule.Dto, rule.TriggerCount) { }
+        public RuleWrapper(IRule rule) : this(rule.Dto, rule.TriggerCount) => LiveRule = rule;
     }
+
+    private readonly List<IRule> triggerSubscribedRules = [];
+    private EventHandler<TriggerChangedEventArgs>? ruleTriggerChangedHandler;
 
     private readonly List<(Guid guid, string name)> powerSchemes =
         [.. PowerManager.Api.GetPowerSchemes()
@@ -78,6 +82,8 @@ public partial class SettingsDlg : Form
 
     protected override void OnFormClosing(FormClosingEventArgs e)
     {
+        UnsubscribeFromRuleTriggerChanges();
+
         if (TacSettingsCategories.SelectedTab != TapOtherSettings)
         {
             Settings.Default.SettingsDlgSize = Size;
@@ -95,6 +101,7 @@ public partial class SettingsDlg : Form
         DgvPowerSchemes.Rows.AddRange([.. powerSchemes.Select(SchemeToRow)]);
 
         UpdatePowerRules();
+        SubscribeToRuleTriggerChanges();
 
         var cycleHotkey = JsonConvert.DeserializeObject<Hotkey>(
             Settings.Default.CyclePowerSchemeHotkey);
@@ -286,6 +293,60 @@ public partial class SettingsDlg : Form
             });
 
         return row;
+    }
+
+    private void SubscribeToRuleTriggerChanges()
+    {
+        ruleTriggerChangedHandler ??= Rule_TriggerChanged;
+
+        foreach (var rule in RuleManager.GetRules())
+        {
+            rule.TriggerChanged += ruleTriggerChangedHandler;
+            triggerSubscribedRules.Add(rule);
+        }
+    }
+
+    private void UnsubscribeFromRuleTriggerChanges()
+    {
+        if (ruleTriggerChangedHandler is null)
+        {
+            return;
+        }
+
+        foreach (var rule in triggerSubscribedRules)
+        {
+            rule.TriggerChanged -= ruleTriggerChangedHandler;
+        }
+
+        triggerSubscribedRules.Clear();
+    }
+
+    private void Rule_TriggerChanged(object? sender, TriggerChangedEventArgs e)
+    {
+        void UpdateRow()
+        {
+            foreach (DataGridViewRow row in DgvRules.Rows)
+            {
+                if (row.Tag is not RuleWrapper wrapper
+                    || !ReferenceEquals(wrapper.LiveRule, e.Rule))
+                {
+                    continue;
+                }
+
+                wrapper.TriggerCount = e.Rule.TriggerCount;
+                row.Cells["DgcTriggerCount"].Value = e.Rule.TriggerCount;
+                return;
+            }
+        }
+
+        if (InvokeRequired)
+        {
+            BeginInvoke(UpdateRow);
+        }
+        else
+        {
+            UpdateRow();
+        }
     }
 
     private void UpdatePowerRules()
