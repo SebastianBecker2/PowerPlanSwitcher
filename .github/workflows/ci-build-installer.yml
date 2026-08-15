@@ -33,7 +33,9 @@ jobs:
       run: dotnet test PowerPlanSwitcher.sln --configuration Release -p:Platform=x64 --no-build --logger "trx;LogFileName=tests.trx" --results-directory TestResults
 
     - name: Publish app binaries
-      run: dotnet publish PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release -p:Platform=x64 --runtime win-x64 --self-contained false
+      run: |
+        dotnet publish PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release -p:Platform=x64 --runtime win-x64 --self-contained false
+        dotnet publish PowerPlanSwitcher.Cli/PowerPlanSwitcher.Cli.csproj --configuration Release -p:Platform=x64 --runtime win-x64 --self-contained false -o PowerPlanSwitcher/bin/publish
 
     - name: Build MSI installer
       run: dotnet build Setup/Setup.wixproj --configuration Release -p:Platform=x64

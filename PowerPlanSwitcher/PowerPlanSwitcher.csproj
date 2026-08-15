@@ -23,8 +23,11 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
 - [WiX Toolset 6](https://wixtoolset.org/)
 - [HotkeyManager](https://github.com/SebastianBecker2/HotkeyManager)
 - [DotNet.Glob](https://github.com/dazinator/DotNet.Glob)
-- [AutoFac](https://autofac.org/)</Description>
+- [AutoFac](https://autofac.org/)
+- [System.CommandLine](https://learn.microsoft.com/en-us/dotnet/standard/commandline/)</Description>
     <Authors>Sebastian Becker</Authors>
+    <Company>Sebastian Becker</Company>
+    <Product>PowerPlanSwitcher</Product>
     <AssemblyVersion></AssemblyVersion>
     <FileVersion></FileVersion>
     <PlatformTarget>x64</PlatformTarget>

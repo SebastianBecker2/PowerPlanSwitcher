@@ -314,7 +314,7 @@ internal static class Program
     {
         var schemes = PowerManager.Api.GetPowerSchemeGuids()
             .Where(ps => !Settings.Default.CycleOnlyVisible
-                || (PowerSchemeSettings.GetSetting(ps)?.Visible ?? false))
+                || (PowerSchemeSettings.GetSetting(ps)?.Visible ?? true))
             .ToList();
 
         if (schemes.Count == 0)
@@ -325,7 +325,7 @@ internal static class Program
         }
 
         var active = PowerManager.Api.GetActivePowerSchemeGuid();
-        var index = GetNextCycleSchemeIndex(schemes, active);
+        var index = PowerSchemeCycle.GetNextSchemeIndex(schemes, active);
         if (index < 0)
         {
             Log.ForContext("EventType", "PowerScheme.CycleIgnored")
@@ -346,22 +346,6 @@ internal static class Program
                 schemes[index],
                 "Cycle hotkey pressed");
         }
-    }
-
-    private static int GetNextCycleSchemeIndex(
-        List<Guid> schemes,
-        Guid activeSchemeGuid)
-    {
-        if (schemes.Count == 0)
-        {
-            return -1;
-        }
-
-        var index = activeSchemeGuid == Guid.Empty
-            ? 0
-            : schemes.IndexOf(activeSchemeGuid);
-
-        return (index + 1) % schemes.Count;
     }
 
     private static void HandlePowerSchemeHotkeyPressed(

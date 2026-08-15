@@ -35,5 +35,6 @@
   </ItemGroup>
   <Target Name="PreBuild" BeforeTargets="PreBuildEvent">
     <Exec Command="dotnet publish &quot;$(ProjectDir)..\PowerPlanSwitcher&quot; -c $(ConfigurationName) --runtime win-x64 --framework net8.0-windows --no-self-contained /p:PublishReadyToRun=false /p:PublishSingleFile=true" />
+    <Exec Command="dotnet publish &quot;$(ProjectDir)..\PowerPlanSwitcher.Cli&quot; -c $(ConfigurationName) --runtime win-x64 --framework net8.0-windows --no-self-contained /p:PublishReadyToRun=false /p:PublishSingleFile=true -o &quot;$(ProjectDir)..\PowerPlanSwitcher\bin\publish&quot;" />
   </Target>
 </Project>

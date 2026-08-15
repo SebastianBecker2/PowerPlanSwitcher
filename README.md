@@ -48,6 +48,17 @@ Furher settings allow you to:
 
 <img width="707" height="351" alt="image" src="https://github.com/user-attachments/assets/884ee63a-1c6e-402c-9a1a-e112f8785050" />
 
+## Command-line interface (`pps`)
+
+After install, `pps.exe` sits next to the tray app and can list/activate/cycle power plans without talking to the running tray process. It uses Windows power APIs and reads Visible / cycle preferences from the same user settings file.
+
+```text
+pps list [--visible] [--json]
+pps activate <guid-or-name>
+pps cycle [--all | --visible]
+pps get-active [--json]
+```
+
 PowerPlanSwitcher is using the following tools, resources and libraries:
 
 - [.NET 8](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8)
@@ -61,3 +72,4 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
 - [HotkeyManager](https://github.com/SebastianBecker2/HotkeyManager)
 - [DotNet.Glob](https://github.com/dazinator/DotNet.Glob)
 - [AutoFac](https://autofac.org/)
+- [System.CommandLine](https://learn.microsoft.com/en-us/dotnet/standard/commandline/)

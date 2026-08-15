@@ -11,6 +11,7 @@ before_build:
 build_script:
 - dotnet build PowerPlanSwitcher.sln --configuration Release -p:Platform=x64
 - dotnet publish PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release -p:Platform=x64 --runtime win-x64 --self-contained false
+- dotnet publish PowerPlanSwitcher.Cli/PowerPlanSwitcher.Cli.csproj --configuration Release -p:Platform=x64 --runtime win-x64 --self-contained false -o PowerPlanSwitcher/bin/publish
 - dotnet build Setup/Setup.wixproj --configuration Release -p:Platform=x64
 
 test_script:
