@@ -312,10 +312,12 @@ internal static class Program
 
     private static void HandleCycleHotkeyPressed()
     {
-        var schemes = PowerManager.Api.GetPowerSchemeGuids()
-            .Where(ps => !Settings.Default.CycleOnlyVisible
-                || (PowerSchemeSettings.GetSetting(ps)?.Visible ?? true))
-            .ToList();
+        var schemes = PowerSchemeOrder.Apply(
+            PowerManager.Api.GetPowerSchemeGuids()
+                .Where(ps => !Settings.Default.CycleOnlyVisible
+                    || (PowerSchemeSettings.GetSetting(ps)?.Visible ?? true)),
+            guid => guid,
+            guid => PowerSchemeSettings.GetSetting(guid)?.Order);
 
         if (schemes.Count == 0)
         {

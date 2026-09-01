@@ -47,6 +47,8 @@ namespace PowerPlanSwitcher
             BtnAddPowerRule = new Button();
             BtnEditPowerRule = new Button();
             BtnOpenPowerPlanSettings = new Button();
+            BtnAscentPowerScheme = new Button();
+            BtnDescentPowerScheme = new Button();
             BtnAscentPowerRule = new Button();
             BtnDescentPowerRule = new Button();
             BtnDeletePowerRule = new Button();
@@ -118,7 +120,7 @@ namespace PowerPlanSwitcher
             DgvPowerSchemes.MultiSelect = false;
             DgvPowerSchemes.Name = "DgvPowerSchemes";
             DgvPowerSchemes.RowHeadersVisible = false;
-            tableLayoutPanel2.SetRowSpan(DgvPowerSchemes, 3);
+            tableLayoutPanel2.SetRowSpan(DgvPowerSchemes, 4);
             DgvPowerSchemes.RowTemplate.Height = 26;
             DgvPowerSchemes.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             DgvPowerSchemes.Size = new Size(903, 297);
@@ -163,7 +165,7 @@ namespace PowerPlanSwitcher
             // BtnOk
             // 
             BtnOk.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
-            BtnOk.Location = new Point(537, 343);
+            BtnOk.Location = new Point(537, 423);
             BtnOk.Name = "BtnOk";
             BtnOk.Size = new Size(75, 23);
             BtnOk.TabIndex = 1;
@@ -175,7 +177,7 @@ namespace PowerPlanSwitcher
             // 
             BtnCancel.Anchor = AnchorStyles.Bottom | AnchorStyles.Right;
             BtnCancel.DialogResult = DialogResult.Cancel;
-            BtnCancel.Location = new Point(618, 343);
+            BtnCancel.Location = new Point(618, 423);
             BtnCancel.Name = "BtnCancel";
             BtnCancel.Size = new Size(75, 23);
             BtnCancel.TabIndex = 2;
@@ -376,14 +378,17 @@ namespace PowerPlanSwitcher
             tableLayoutPanel2.Controls.Add(BtnSetIcon, 2, 0);
             tableLayoutPanel2.Controls.Add(BtnSetHotkey, 2, 1);
             tableLayoutPanel2.Controls.Add(BtnRemoveHotkey, 3, 1);
-            tableLayoutPanel2.Controls.Add(BtnOpenPowerPlanSettings, 2, 2);
+            tableLayoutPanel2.Controls.Add(BtnAscentPowerScheme, 2, 2);
+            tableLayoutPanel2.Controls.Add(BtnDescentPowerScheme, 3, 2);
+            tableLayoutPanel2.Controls.Add(BtnOpenPowerPlanSettings, 2, 3);
             tableLayoutPanel2.SetColumnSpan(BtnOpenPowerPlanSettings, 2);
             tableLayoutPanel2.Dock = DockStyle.Fill;
             tableLayoutPanel2.Location = new Point(3, 3);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
-            tableLayoutPanel2.RowCount = 3;
+            tableLayoutPanel2.RowCount = 4;
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.RowStyles.Add(new RowStyle());
             tableLayoutPanel2.Size = new Size(1139, 303);
             tableLayoutPanel2.TabIndex = 1;
@@ -436,10 +441,34 @@ namespace PowerPlanSwitcher
             BtnRemoveHotkey.UseVisualStyleBackColor = true;
             BtnRemoveHotkey.Click += BtnRemoveHotkey_Click;
             // 
+            // BtnAscentPowerScheme
+            // 
+            BtnAscentPowerScheme.Image = Properties.Resources.arrow_up;
+            BtnAscentPowerScheme.Location = new Point(912, 163);
+            BtnAscentPowerScheme.Name = "BtnAscentPowerScheme";
+            BtnAscentPowerScheme.Size = new Size(109, 74);
+            BtnAscentPowerScheme.TabIndex = 25;
+            BtnAscentPowerScheme.Text = "Move Plan up";
+            BtnAscentPowerScheme.TextImageRelation = TextImageRelation.ImageAboveText;
+            BtnAscentPowerScheme.UseVisualStyleBackColor = true;
+            BtnAscentPowerScheme.Click += HandleBtnAscentPowerSchemeClick;
+            // 
+            // BtnDescentPowerScheme
+            // 
+            BtnDescentPowerScheme.Image = Properties.Resources.arrow_down;
+            BtnDescentPowerScheme.Location = new Point(1027, 163);
+            BtnDescentPowerScheme.Name = "BtnDescentPowerScheme";
+            BtnDescentPowerScheme.Size = new Size(109, 74);
+            BtnDescentPowerScheme.TabIndex = 26;
+            BtnDescentPowerScheme.Text = "Move Plan down";
+            BtnDescentPowerScheme.TextImageRelation = TextImageRelation.ImageAboveText;
+            BtnDescentPowerScheme.UseVisualStyleBackColor = true;
+            BtnDescentPowerScheme.Click += HandleBtnDescentPowerSchemeClick;
+            // 
             // BtnOpenPowerPlanSettings
             // 
             BtnOpenPowerPlanSettings.Image = Properties.Resources.control_panel;
-            BtnOpenPowerPlanSettings.Location = new Point(912, 163);
+            BtnOpenPowerPlanSettings.Location = new Point(912, 243);
             BtnOpenPowerPlanSettings.Name = "BtnOpenPowerPlanSettings";
             BtnOpenPowerPlanSettings.Size = new Size(224, 74);
             BtnOpenPowerPlanSettings.TabIndex = 24;
@@ -457,7 +486,7 @@ namespace PowerPlanSwitcher
             TacSettingsCategories.Location = new Point(0, 0);
             TacSettingsCategories.Name = "TacSettingsCategories";
             TacSettingsCategories.SelectedIndex = 0;
-            TacSettingsCategories.Size = new Size(705, 337);
+            TacSettingsCategories.Size = new Size(705, 417);
             TacSettingsCategories.TabIndex = 21;
             // 
             // TapPowerSchemes
@@ -762,12 +791,12 @@ namespace PowerPlanSwitcher
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             CancelButton = BtnCancel;
-            ClientSize = new Size(705, 378);
+            ClientSize = new Size(705, 458);
             Controls.Add(TacSettingsCategories);
             Controls.Add(BtnCancel);
             Controls.Add(BtnOk);
             Icon = (Icon)resources.GetObject("$this.Icon");
-            MinimumSize = new Size(721, 358);
+            MinimumSize = new Size(721, 438);
             Name = "SettingsDlg";
             Text = "PowerPlanSwitcher - Settings";
             ((System.ComponentModel.ISupportInitialize)DgvPowerSchemes).EndInit();
@@ -804,6 +833,8 @@ namespace PowerPlanSwitcher
         private Button BtnAddPowerRule;
         private Button BtnEditPowerRule;
         private Button BtnOpenPowerPlanSettings;
+        private Button BtnAscentPowerScheme;
+        private Button BtnDescentPowerScheme;
         private Button BtnAscentPowerRule;
         private Button BtnDescentPowerRule;
         private Button BtnDeletePowerRule;

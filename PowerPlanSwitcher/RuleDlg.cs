@@ -9,10 +9,7 @@ public partial class RuleDlg : Form
 
     public IRuleDto? RuleDto { get; set; }
 
-    private static readonly List<(Guid guid, string name)> PowerSchemes =
-        [.. PowerManager.Api.GetPowerSchemes()
-            .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
-            .Cast<(Guid schemeGuid, string name)>()];
+    private List<(Guid guid, string name)> powerSchemes = [];
 
     private static readonly List<(string name, Type type)> RuleTypes =
         [
@@ -26,8 +23,8 @@ public partial class RuleDlg : Form
     private static string GetSelectedString(ComboBox cmb) =>
         cmb.Items[cmb.SelectedIndex]?.ToString() ?? string.Empty;
 
-    private static Guid GetPowerSchemeGuid(string name) =>
-            PowerSchemes.First(scheme => scheme.name == name).guid;
+    private Guid GetPowerSchemeGuid(string name) =>
+            powerSchemes.First(scheme => scheme.name == name).guid;
 
     public RuleDlg()
     {
@@ -40,7 +37,17 @@ public partial class RuleDlg : Form
 
     protected override void OnLoad(EventArgs e)
     {
-        CmbPowerScheme.Items.AddRange([.. PowerSchemes
+        powerSchemes =
+        [
+            .. PowerSchemeOrder.Apply(
+                PowerManager.Api.GetPowerSchemes()
+                    .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
+                    .Select(scheme => (guid: scheme.guid, name: scheme.name!)),
+                scheme => scheme.guid,
+                guid => PowerSchemeSettings.GetSetting(guid)?.Order)
+        ];
+
+        CmbPowerScheme.Items.AddRange([.. powerSchemes
             .Select(scheme => scheme.name)
             .Cast<object>()]);
 
@@ -75,7 +82,7 @@ public partial class RuleDlg : Form
 
         if (RuleDto is not null && RuleDto.SchemeGuid != Guid.Empty)
         {
-            CmbPowerScheme.SelectedIndex = PowerSchemes.FindIndex(
+            CmbPowerScheme.SelectedIndex = powerSchemes.FindIndex(
                 scheme => scheme.guid == RuleDto.SchemeGuid);
         }
         else

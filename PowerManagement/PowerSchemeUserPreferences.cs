@@ -6,7 +6,7 @@ using System.Text.Json;
 using System.Xml.Linq;
 
 /// <summary>
-/// Reads Visible flags and CycleOnlyVisible from the tray app's user.config.
+/// Reads Visible flags, display Order, and CycleOnlyVisible from the tray app's user.config.
 /// </summary>
 public sealed class PowerSchemeUserPreferences
 {
@@ -14,15 +14,18 @@ public sealed class PowerSchemeUserPreferences
     public const string AppSettingsName = "PowerPlanSwitcher";
 
     private readonly Dictionary<Guid, bool> visibilityByGuid;
+    private readonly Dictionary<Guid, int> orderByGuid;
     public bool CycleOnlyVisible { get; }
     public string? SourceConfigPath { get; }
 
     private PowerSchemeUserPreferences(
         Dictionary<Guid, bool> visibilityByGuid,
+        Dictionary<Guid, int> orderByGuid,
         bool cycleOnlyVisible,
         string? sourceConfigPath)
     {
         this.visibilityByGuid = visibilityByGuid;
+        this.orderByGuid = orderByGuid;
         CycleOnlyVisible = cycleOnlyVisible;
         SourceConfigPath = sourceConfigPath;
     }
@@ -46,6 +49,7 @@ public sealed class PowerSchemeUserPreferences
         {
             return new PowerSchemeUserPreferences(
                 [],
+                [],
                 cycleOnlyVisible: false,
                 sourceConfigPath: null);
         }
@@ -56,6 +60,7 @@ public sealed class PowerSchemeUserPreferences
     public static PowerSchemeUserPreferences LoadFromUserConfig(string userConfigPath)
     {
         var visibility = new Dictionary<Guid, bool>();
+        var orderByGuid = new Dictionary<Guid, int>();
         var cycleOnlyVisible = false;
 
         try
@@ -102,6 +107,13 @@ public sealed class PowerSchemeUserPreferences
                         {
                             visibility[guid] = true;
                         }
+
+                        if (property.Value.TryGetProperty("Order", out var orderProperty)
+                            && orderProperty.ValueKind == JsonValueKind.Number
+                            && orderProperty.TryGetInt32(out var order))
+                        {
+                            orderByGuid[guid] = order;
+                        }
                     }
                 }
                 catch (JsonException)
@@ -114,12 +126,14 @@ public sealed class PowerSchemeUserPreferences
         {
             return new PowerSchemeUserPreferences(
                 [],
+                [],
                 cycleOnlyVisible: false,
                 sourceConfigPath: userConfigPath);
         }
 
         return new PowerSchemeUserPreferences(
             visibility,
+            orderByGuid,
             cycleOnlyVisible,
             userConfigPath);
     }
@@ -129,6 +143,9 @@ public sealed class PowerSchemeUserPreferences
     /// </summary>
     public bool IsVisible(Guid schemeGuid) =>
         !visibilityByGuid.TryGetValue(schemeGuid, out var visible) || visible;
+
+    public int? GetOrder(Guid schemeGuid) =>
+        orderByGuid.TryGetValue(schemeGuid, out var order) ? order : null;
 
     public static string ToSettingsCompanyFolderName(string companyName)
     {

@@ -16,14 +16,17 @@ public static class PowerSchemeOperations
 
         return
         [
-            .. PowerManager.Api.GetPowerSchemes()
-                .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name)
-                    || scheme.guid != Guid.Empty)
-                .Select(scheme => new PowerSchemeInfo(
-                    scheme.guid,
-                    scheme.name,
-                    preferences.IsVisible(scheme.guid),
-                    scheme.guid == active))
+            .. PowerSchemeOrder.Apply(
+                PowerManager.Api.GetPowerSchemes()
+                    .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name)
+                        || scheme.guid != Guid.Empty)
+                    .Select(scheme => new PowerSchemeInfo(
+                        scheme.guid,
+                        scheme.name,
+                        preferences.IsVisible(scheme.guid),
+                        scheme.guid == active)),
+                info => info.Id,
+                preferences.GetOrder)
         ];
     }
 
@@ -35,8 +38,11 @@ public static class PowerSchemeOperations
 
         return
         [
-            .. PowerManager.Api.GetPowerSchemeGuids()
-                .Where(guid => !visibleOnly || preferences.IsVisible(guid))
+            .. PowerSchemeOrder.Apply(
+                PowerManager.Api.GetPowerSchemeGuids()
+                    .Where(guid => !visibleOnly || preferences.IsVisible(guid)),
+                guid => guid,
+                preferences.GetOrder)
         ];
     }
 

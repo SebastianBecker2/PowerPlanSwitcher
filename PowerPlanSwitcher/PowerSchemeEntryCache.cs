@@ -1,5 +1,6 @@
 ﻿namespace PowerPlanSwitcher;
 
+using PowerManagement;
 using Properties;
 
 internal static class PowerSchemeEntryCache
@@ -41,16 +42,20 @@ internal static class PowerSchemeEntryCache
 
             cachedEntries =
             [
-                .. PowerManagement.PowerManager.Api.GetPowerSchemes().Select(static powerScheme =>
-                {
-                    var setting = PowerSchemeSettings.GetSetting(powerScheme.guid);
+                .. PowerSchemeOrder.Apply(
+                    PowerManager.Api.GetPowerSchemes(),
+                    static powerScheme => powerScheme.guid,
+                    static guid => PowerSchemeSettings.GetSetting(guid)?.Order)
+                    .Select(static powerScheme =>
+                    {
+                        var setting = PowerSchemeSettings.GetSetting(powerScheme.guid);
 
-                    return new Entry(
-                        powerScheme.guid,
-                        powerScheme.name,
-                        setting?.Icon,
-                        setting?.Visible ?? true);
-                })
+                        return new Entry(
+                            powerScheme.guid,
+                            powerScheme.name,
+                            setting?.Icon,
+                            setting?.Visible ?? true);
+                    })
             ];
 
             return cachedEntries;

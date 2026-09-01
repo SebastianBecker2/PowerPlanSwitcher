@@ -43,6 +43,45 @@ public sealed class PowerSchemeUserPreferencesTest
     }
 
     [TestMethod]
+    public void LoadFromUserConfig_ReadsOrderWhenPresent()
+    {
+        var first = Guid.NewGuid();
+        var second = Guid.NewGuid();
+        var unordered = Guid.NewGuid();
+        var json =
+            "{" +
+            $"\"{first}\":{{\"Visible\":true,\"Order\":1}}," +
+            $"\"{second}\":{{\"Visible\":false,\"Order\":0}}," +
+            $"\"{unordered}\":{{\"Visible\":true}}" +
+            "}";
+
+        var configPath = Path.Combine(
+            Path.GetTempPath(),
+            $"pps-user-config-{Guid.NewGuid():N}.config");
+
+        try
+        {
+            WriteUserConfig(configPath, json, cycleOnlyVisible: false);
+
+            var preferences = PowerSchemeUserPreferences.LoadFromUserConfig(configPath);
+
+            Assert.AreEqual(1, preferences.GetOrder(first));
+            Assert.AreEqual(0, preferences.GetOrder(second));
+            Assert.IsNull(preferences.GetOrder(unordered));
+            Assert.IsNull(preferences.GetOrder(Guid.NewGuid()));
+            Assert.IsTrue(preferences.IsVisible(first));
+            Assert.IsFalse(preferences.IsVisible(second));
+        }
+        finally
+        {
+            if (File.Exists(configPath))
+            {
+                File.Delete(configPath);
+            }
+        }
+    }
+
+    [TestMethod]
     public void LoadFromUserConfig_MissingFileContent_UsesDefaults()
     {
         var configPath = Path.Combine(

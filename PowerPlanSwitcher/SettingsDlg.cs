@@ -26,9 +26,12 @@ public partial class SettingsDlg : Form
     private EventHandler<TriggerChangedEventArgs>? ruleTriggerChangedHandler;
 
     private readonly List<(Guid guid, string name)> powerSchemes =
-        [.. PowerManager.Api.GetPowerSchemes()
-            .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
-            .Cast<(Guid schemeGuid, string name)>()];
+        [.. PowerSchemeOrder.Apply(
+            PowerManager.Api.GetPowerSchemes()
+                .Where(scheme => !string.IsNullOrWhiteSpace(scheme.name))
+                .Select(scheme => (guid: scheme.guid, name: scheme.name!)),
+            scheme => scheme.guid,
+            guid => PowerSchemeSettings.GetSetting(guid)?.Order)];
 
     private readonly DpiImageScaler dpiImageScaler;
 
@@ -54,6 +57,8 @@ public partial class SettingsDlg : Form
         dpiImageScaler.OverrideSource(BtnOpenPowerPlanSettings, Resources.control_panel);
         dpiImageScaler.OverrideSource(BtnAscentPowerRule, Resources.arrow_up);
         dpiImageScaler.OverrideSource(BtnDescentPowerRule, Resources.arrow_down);
+        dpiImageScaler.OverrideSource(BtnAscentPowerScheme, Resources.arrow_up);
+        dpiImageScaler.OverrideSource(BtnDescentPowerScheme, Resources.arrow_down);
         dpiImageScaler.OverrideSource(BtnDeletePowerRule, Resources.delete);
         dpiImageScaler.OverrideSource(BtnSetIcon, Resources.picture);
         dpiImageScaler.OverrideSource(BtnRemoveIcon, Resources.delete);
@@ -241,6 +246,7 @@ public partial class SettingsDlg : Form
                         ? null
                         : IconUtilities.NormalizeForPowerSchemeIcon(image),
                     Hotkey = row.Cells["DgcHotkey"].Tag as Hotkey,
+                    Order = row.Index,
                 });
         }
         PowerSchemeSettings.SaveSettings();
@@ -495,6 +501,34 @@ public partial class SettingsDlg : Form
         DgvRules.Rows.Insert(index, row);
         row.Selected = true;
         UpdateRulePriorities();
+    }
+
+    private void HandleBtnAscentPowerSchemeClick(object sender, EventArgs e)
+    {
+        if (DgvPowerSchemes.SelectedRows.Count == 0)
+        {
+            return;
+        }
+
+        var row = DgvPowerSchemes.SelectedRows[0];
+        var index = Math.Max(row.Index - 1, 0);
+        DgvPowerSchemes.Rows.Remove(row);
+        DgvPowerSchemes.Rows.Insert(index, row);
+        row.Selected = true;
+    }
+
+    private void HandleBtnDescentPowerSchemeClick(object sender, EventArgs e)
+    {
+        if (DgvPowerSchemes.SelectedRows.Count == 0)
+        {
+            return;
+        }
+
+        var row = DgvPowerSchemes.SelectedRows[0];
+        var index = Math.Min(row.Index + 1, DgvPowerSchemes.RowCount - 1);
+        DgvPowerSchemes.Rows.Remove(row);
+        DgvPowerSchemes.Rows.Insert(index, row);
+        row.Selected = true;
     }
 
     private void BtnRemoveIcon_Click(object sender, EventArgs e)

@@ -73,6 +73,7 @@ internal static class PowerSchemeSettings
         [JsonConverter(typeof(ImageConverter))]
         public Image? Icon { get; set; }
         public Hotkey? Hotkey { get; set; }
+        public int? Order { get; set; }
     }
 
     private static Dictionary<Guid, Setting>? settings;
