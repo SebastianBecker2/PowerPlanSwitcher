@@ -14,9 +14,9 @@ Or let PowerPlanSwitcher automatically switch between power plans depending on w
 
 ## Using rules to automatically switch power plans
 
-Create a list of rules that determine which power plan should be active. Rules will be triggered by various events but only the first rule in the list with a trigger of 1 or higher, determines the power plan.
+Create a list of rules that determine which power plan should be active. Rules will be triggered by various events but only the first rule in the list with a trigger of 1 or higher, determines the power plan. Click the info icons to get more information in the app.
 
-<img width="707" height="353" alt="image" src="https://github.com/user-attachments/assets/f432d005-7de7-4b2b-bdb0-502b5bb9c41a" />
+<img width="707" height="431" alt="image" src="https://github.com/user-attachments/assets/ebf6810e-cb84-43ce-aa0e-b34b606b3b70" />
 
 Create rules that switch Windows power plans based on:
 
