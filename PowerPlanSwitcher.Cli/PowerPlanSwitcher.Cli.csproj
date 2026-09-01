@@ -14,7 +14,7 @@
     <Company>Sebastian Becker</Company>
     <Product>PowerPlanSwitcher</Product>
     <VersionPrefix>1.2.10</VersionPrefix>
-    <VersionSuffix>rc1</VersionSuffix>
+    <VersionSuffix>rc2</VersionSuffix>
   </PropertyGroup>
 
   <ItemGroup>
