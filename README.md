@@ -4,7 +4,7 @@
 
 Configure visibility, icon and global hotkey for your Windows power plans in the settings dialog.
 
-<img width="707" height="353" alt="image" src="https://github.com/user-attachments/assets/33c0498f-782a-468c-9fd5-cecdb458a9a7" />
+<img width="770" height="431" alt="image" src="https://github.com/user-attachments/assets/593bbdf4-4bf8-41bd-91c9-556de41b9cc6" />
 
 Switch your power plan easily and quickly by clicking the tray-icon.
 
@@ -33,6 +33,7 @@ Create rules that switch Windows power plans based on:
 <img width="671" height="249" alt="image" src="https://github.com/user-attachments/assets/326a2f9e-d63b-414c-824f-201489c86a67" />
 
 - StartupRule: PowerPlanSwitcher being started. Optionally configure a delay before the rule triggers (so the power scheme is not applied until after that wait), and optionally a duration after which the scheme will be automatically deactivated once the rule has triggered. The duration countdown starts only when the rule actually triggers (after any delay). For example, you can wait two minutes after startup, then activate a performance plan for five minutes, then fall back to other rules.
+Note: This rule should probably be the last rule in the list!
 
 <img width="671" height="348" alt="image" src="https://github.com/user-attachments/assets/bb296c9f-5017-4ea7-82c5-15937f95ccbe" />
 
