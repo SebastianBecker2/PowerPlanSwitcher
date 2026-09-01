@@ -34,7 +34,7 @@ Create rules that switch Windows power plans based on:
 
 - StartupRule: PowerPlanSwitcher being started. Optionally configure a delay before the rule triggers (so the power scheme is not applied until after that wait), and optionally a duration after which the scheme will be automatically deactivated once the rule has triggered. The duration countdown starts only when the rule actually triggers (after any delay). For example, you can wait two minutes after startup, then activate a performance plan for five minutes, then fall back to other rules.
 
-<img width="671" height="153" alt="image" src="https://github.com/user-attachments/assets/479e1770-6074-4b43-addd-c7fa49eb63b5" />
+<img width="671" height="348" alt="image" src="https://github.com/user-attachments/assets/bb296c9f-5017-4ea7-82c5-15937f95ccbe" />
 
 - ShutdownRule: Windows initiating a shutdown
 
