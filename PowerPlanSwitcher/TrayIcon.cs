@@ -93,11 +93,12 @@ internal class TrayIcon : IDisposable
         }
     }
 
-    public void UpdateTooltip(IRule? rule)
+    public void UpdateTooltip(IRule? rule, Guid? powerSchemeGuid = null)
     {
         var schemeName =
             PowerManager.Api.GetPowerSchemeName(
-                rule?.Dto?.SchemeGuid
+                powerSchemeGuid
+                ?? rule?.Dto?.SchemeGuid
                 ?? PowerManager.Api.GetActivePowerSchemeGuid())
             ?? "<No Name>";
 

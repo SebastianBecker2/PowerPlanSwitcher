@@ -69,6 +69,7 @@ internal class AppContext : ApplicationContext
         try
         {
             TrayIcon.UpdateIcon(activeSchemeGuid);
+            TrayIcon.UpdateTooltip(ruleManager.AppliedRule, activeSchemeGuid);
         }
         catch (ObjectDisposedException)
         {
