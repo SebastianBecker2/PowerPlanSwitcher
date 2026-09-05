@@ -104,6 +104,9 @@ public partial class SettingsDlg : Form
 
     protected override void OnLoad(EventArgs e)
     {
+        ColorThemeHelper.ApplyToDataGridView(DgvPowerSchemes);
+        ColorThemeHelper.ApplyToDataGridView(DgvRules);
+
         DgvPowerSchemes.Rows.AddRange([.. powerSchemes.Select(SchemeToRow)]);
 
         UpdatePowerRules();
@@ -267,6 +270,7 @@ public partial class SettingsDlg : Form
         Settings.Default.ExtendedLogging = ChbExtendedLogging.Checked;
 
         Settings.Default.Save();
+        ColorThemeHelper.ApplyToApplication();
 
         DialogResult = DialogResult.OK;
     }

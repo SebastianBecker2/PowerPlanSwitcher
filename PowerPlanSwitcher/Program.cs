@@ -432,6 +432,8 @@ internal static class Program
         // To customize application configuration such as set high DPI settings or default font,
         // see https://aka.ms/applicationconfiguration.
         ApplicationConfiguration.Initialize();
+        ColorThemeHelper.Initialize();
+        ColorThemeHelper.ApplyToApplication();
         LogDpiEnvironment();
 
         var builder = new ContainerBuilder();

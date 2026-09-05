@@ -37,14 +37,114 @@ public partial class PowerSchemeSelectorDlg : Form
         _ = new DpiImageScaler(this);
     }
 
-    private Button CreateButton(
+    protected override CreateParams CreateParams
+    {
+        get
+        {
+            SetStyle(ControlStyles.ApplyThemingImplicitly, false);
+            return base.CreateParams;
+        }
+    }
+
+    private sealed class SelectorLayoutPanel : TableLayoutPanel
+    {
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                SetStyle(ControlStyles.ApplyThemingImplicitly, false);
+                return base.CreateParams;
+            }
+        }
+    }
+
+    private sealed class SelectorButton : Button
+    {
+        private bool hot;
+
+        public SelectorButton()
+        {
+            SetStyle(
+                ControlStyles.UserPaint
+                | ControlStyles.AllPaintingInWmPaint
+                | ControlStyles.OptimizedDoubleBuffer
+                | ControlStyles.ResizeRedraw,
+                true);
+            FlatStyle = FlatStyle.Flat;
+            FlatAppearance.BorderSize = 0;
+            TabStop = false;
+        }
+
+        protected override CreateParams CreateParams
+        {
+            get
+            {
+                SetStyle(ControlStyles.ApplyThemingImplicitly, false);
+                return base.CreateParams;
+            }
+        }
+
+        protected override void OnMouseEnter(EventArgs e)
+        {
+            hot = true;
+            Invalidate();
+            base.OnMouseEnter(e);
+        }
+
+        protected override void OnMouseLeave(EventArgs e)
+        {
+            hot = false;
+            Invalidate();
+            base.OnMouseLeave(e);
+        }
+
+        protected override void OnPaintBackground(PaintEventArgs pevent)
+        {
+        }
+
+        protected override void OnPaint(PaintEventArgs pevent)
+        {
+            var graphics = pevent.Graphics;
+            var back = hot ? FlatAppearance.MouseOverBackColor : BackColor;
+            using (var brush = new SolidBrush(back))
+            {
+                graphics.FillRectangle(brush, ClientRectangle);
+            }
+
+            var x = Padding.Left;
+            if (Image is not null)
+            {
+                var imageY = Math.Max(0, (Height - Image.Height) / 2);
+                graphics.DrawImage(Image, x, imageY, Image.Width, Image.Height);
+                x += Image.Width + LogicalToDeviceUnits(8);
+            }
+
+            var textRect = new Rectangle(
+                x,
+                0,
+                Math.Max(0, Width - x - LogicalToDeviceUnits(8)),
+                Height);
+            TextRenderer.DrawText(
+                graphics,
+                Text,
+                Font,
+                textRect,
+                ForeColor,
+                TextFormatFlags.Left
+                | TextFormatFlags.VerticalCenter
+                | TextFormatFlags.EndEllipsis
+                | TextFormatFlags.NoPadding);
+        }
+    }
+
+    private SelectorButton CreateButton(
         Guid guid,
         string? name,
         Image? icon,
         bool active)
     {
         name ??= guid.ToString();
-        var button = new Button
+        var button = new SelectorButton
         {
             FlatStyle = FlatStyle.Flat,
             Image = icon,

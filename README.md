@@ -62,7 +62,7 @@ pps get-active [--json]
 
 PowerPlanSwitcher is using the following tools, resources and libraries:
 
-- [.NET 8](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-8)
+- [.NET 10](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-10)
 - [Newtonsoft.Json](https://www.newtonsoft.com/json)
 - The amazing [FatCow IconPack](https://www.fatcow.com/free-icons)
 - [WindowsAPICodePack](https://github.com/contre/Windows-API-Code-Pack-1.1)

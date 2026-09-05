@@ -71,6 +71,7 @@ public partial class ToastDlg : Form
     {
         get
         {
+            SetStyle(ControlStyles.ApplyThemingImplicitly, false);
             var cp = base.CreateParams;
             // turn on WS_EX_TOOLWINDOW style bit
             // Used to hide the banner from alt+tab

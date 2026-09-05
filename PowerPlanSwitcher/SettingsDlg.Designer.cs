@@ -61,7 +61,7 @@ namespace PowerPlanSwitcher
             BtnSetIcon = new Button();
             BtnSetHotkey = new Button();
             BtnRemoveHotkey = new Button();
-            TacSettingsCategories = new TabControl();
+            TacSettingsCategories = new ThemedTabControl();
             TapPowerSchemes = new TabPage();
             TapRules = new TabPage();
             TapOtherSettings = new TabPage();
@@ -591,7 +591,6 @@ namespace PowerPlanSwitcher
             LblCycleHotkey.AutoSize = true;
             LblCycleHotkey.BackColor = Color.Transparent;
             LblCycleHotkey.Dock = DockStyle.Fill;
-            LblCycleHotkey.ForeColor = SystemColors.ControlText;
             LblCycleHotkey.Location = new Point(3, 0);
             LblCycleHotkey.Name = "LblCycleHotkey";
             tableLayoutPanel4.SetRowSpan(LblCycleHotkey, 2);
@@ -845,7 +844,7 @@ namespace PowerPlanSwitcher
         private Button BtnSetHotkey;
         private Button BtnRemoveHotkey;
         private Button BtnSetIcon;
-        private TabControl TacSettingsCategories;
+        private ThemedTabControl TacSettingsCategories;
         private TabPage TapPowerSchemes;
         private TabPage TapRules;
         private TabPage TapOtherSettings;

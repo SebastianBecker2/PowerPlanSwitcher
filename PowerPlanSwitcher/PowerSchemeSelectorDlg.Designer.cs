@@ -29,7 +29,7 @@ namespace PowerPlanSwitcher
         private void InitializeComponent()
         {
             var resources = new System.ComponentModel.ComponentResourceManager(typeof(PowerSchemeSelectorDlg));
-            TlpPowerSchemes = new TableLayoutPanel();
+            TlpPowerSchemes = new SelectorLayoutPanel();
             SuspendLayout();
             // 
             // TlpPowerSchemes
@@ -42,6 +42,7 @@ namespace PowerPlanSwitcher
             TlpPowerSchemes.Margin = new Padding(0);
             TlpPowerSchemes.Name = "TlpPowerSchemes";
             TlpPowerSchemes.Padding = new Padding(1);
+            TlpPowerSchemes.CellBorderStyle = TableLayoutPanelCellBorderStyle.None;
             TlpPowerSchemes.RowCount = 1;
             TlpPowerSchemes.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             TlpPowerSchemes.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
@@ -65,6 +66,6 @@ namespace PowerPlanSwitcher
 
         #endregion
 
-        private TableLayoutPanel TlpPowerSchemes;
+        private SelectorLayoutPanel TlpPowerSchemes;
     }
 }

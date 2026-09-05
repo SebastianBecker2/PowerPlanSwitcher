@@ -40,6 +40,22 @@ internal class ContextMenu : ContextMenuStrip
 
         BuildContextMenu();
 
+        ColorThemeHelper.ApplicationColorModeChanged += (_, _) =>
+        {
+            if (IsDisposed)
+            {
+                return;
+            }
+
+            if (InvokeRequired)
+            {
+                _ = BeginInvoke(ApplyColorMode);
+                return;
+            }
+
+            ApplyColorMode();
+        };
+
         Opening += (s, e) =>
         {
             if (IsMenuDirty)
@@ -51,6 +67,13 @@ internal class ContextMenu : ContextMenuStrip
                 RefreshPowerSchemeButtons();
             }
         };
+    }
+
+    private void ApplyColorMode()
+    {
+        IsMenuDirty = true;
+        BuildContextMenu();
+        Invalidate();
     }
 
     private void BuildContextMenu()

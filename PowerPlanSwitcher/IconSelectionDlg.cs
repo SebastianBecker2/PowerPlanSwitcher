@@ -75,6 +75,8 @@ public partial class IconSelectionDlg : Form
     public IconSelectionDlg()
     {
         InitializeComponent();
+        LvwIcons.BackColor = SystemColors.Window;
+        LvwIcons.ForeColor = SystemColors.WindowText;
 
         using (var loadingMs = new MemoryStream(Resources.loading))
         using (var loadingImage = Image.FromStream(loadingMs, false, false))

@@ -10,6 +10,7 @@ public partial class ProcessSelectionDlg : Form
 
     protected override void OnLoad(EventArgs e)
     {
+        ColorThemeHelper.ApplyToDataGridView(DgvProcesses);
         UpdateProcesses();
         base.OnLoad(e);
     }
