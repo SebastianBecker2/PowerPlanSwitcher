@@ -13,8 +13,8 @@
     <Authors>Sebastian Becker</Authors>
     <Company>Sebastian Becker</Company>
     <Product>PowerPlanSwitcher</Product>
-    <VersionPrefix>1.2.10</VersionPrefix>
-    <VersionSuffix>rc3</VersionSuffix>
+    <VersionPrefix>1.3.0</VersionPrefix>
+    <VersionSuffix></VersionSuffix>
   </PropertyGroup>
 
   <ItemGroup>
