@@ -1,27 +1,29 @@
 version: 1.0.{build}
-image: Visual Studio 2022
+image: Visual Studio 2026
 configuration: Release
 
+environment:
+  DOTNET_NOLOGO: true
+  DOTNET_CLI_TELEMETRY_OPTOUT: true
+
 install:
-- ps: |
-    Invoke-WebRequest -Uri https://dot.net/v1/dotnet-install.ps1 -OutFile "$env:TEMP\dotnet-install.ps1"
-    & "$env:TEMP\dotnet-install.ps1" -Channel 10.0 -InstallDir "$env:ProgramFiles\dotnet"
-- ps: nuget restore
+- cmd: dotnet --list-sdks
+- cmd: dotnet --version
 
 before_build:
-- ps: nuget restore
+- cmd: dotnet restore PowerPlanSwitcher.sln
 
 build_script:
-- dotnet build PowerPlanSwitcher.sln --configuration Release -p:Platform=x64
-- dotnet publish PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release -p:Platform=x64 --runtime win-x64 --self-contained false
-- dotnet publish PowerPlanSwitcher.Cli/PowerPlanSwitcher.Cli.csproj --configuration Release -p:Platform=x64 --runtime win-x64 --self-contained false -o PowerPlanSwitcher/bin/publish
+- dotnet build PowerPlanSwitcher.sln --configuration Release -p:Platform=x64 --no-restore
+- dotnet publish PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release -p:Platform=x64 --runtime win-x64 --self-contained false --no-restore
+- dotnet publish PowerPlanSwitcher.Cli/PowerPlanSwitcher.Cli.csproj --configuration Release -p:Platform=x64 --runtime win-x64 --self-contained false -o PowerPlanSwitcher/bin/publish --no-restore
 - dotnet build Setup/Setup.wixproj --configuration Release -p:Platform=x64
 
 test_script:
 - dotnet test RuleManagementTest/RuleManagementTest.csproj --configuration Release -p:Platform=x64 --no-build
 
 after_build:
-- dotnet pack PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release -p:Platform=x64 --include-symbols --output artifacts
+- dotnet pack PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release -p:Platform=x64 --include-symbols --output artifacts --no-restore
 
 artifacts:
 - path: Setup/bin/x64/Release/PowerPlanSwitcher.msi
