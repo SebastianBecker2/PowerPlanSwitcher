@@ -69,6 +69,7 @@ public partial class SettingsDlg : Form
         TacSettingsCategories.SelectedIndexChanged +=
             TacSettingsCategories_SelectedIndexChanged;
         Size = Settings.Default.SettingsDlgSize;
+        RestoreSelectedTab();
 
         var text = $"Regular logging only captures critical errors, " +
             $"such as crash-related exceptions.{Environment.NewLine}" +
@@ -98,8 +99,21 @@ public partial class SettingsDlg : Form
         {
             Settings.Default.SettingsDlgSize = SettingsDlgOriginalSize;
         }
+        Settings.Default.SettingsDlgSelectedTabIndex =
+            TacSettingsCategories.SelectedIndex;
         Settings.Default.Save();
         base.OnFormClosing(e);
+    }
+
+    private void RestoreSelectedTab()
+    {
+        var index = Settings.Default.SettingsDlgSelectedTabIndex;
+        if (index < 0 || index >= TacSettingsCategories.TabCount)
+        {
+            index = 0;
+        }
+
+        TacSettingsCategories.SelectedIndex = index;
     }
 
     protected override void OnLoad(EventArgs e)
