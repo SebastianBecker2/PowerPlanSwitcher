@@ -60,6 +60,44 @@ public sealed class RuleManagerTest
     }
 
     [TestMethod]
+    [Timeout(8000, CooperativeCancellation = true)]
+    public void StartupRule_WithDelayAndDuration_StaysAppliedUntilDurationAfterTrigger()
+    {
+        var manager = new RuleManager(ruleFactory);
+        var delay = TimeSpan.FromMilliseconds(300);
+        var duration = TimeSpan.FromMilliseconds(400);
+        var startup = new StartupRule(new StartupRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            Delay = delay,
+            Duration = duration
+        });
+
+        manager.SetRules([startup]);
+
+        Assert.IsNull(manager.AppliedRule, "StartupRule with delay should not be applied before the delay elapses.");
+        Assert.AreEqual(0, startup.TriggerCount);
+
+        WaitUntil(
+            () => manager.AppliedRule == startup,
+            TimeSpan.FromSeconds(3),
+            "StartupRule should be applied after the delay elapses.");
+
+        Thread.Sleep(200);
+        Assert.AreEqual(
+            startup,
+            manager.AppliedRule,
+            "StartupRule should remain applied after triggering; duration must be counted from trigger time, not from monitoring start.");
+
+        WaitUntil(
+            () => manager.AppliedRule is null,
+            TimeSpan.FromSeconds(3),
+            "StartupRule should stop being applied after duration counted from trigger time.");
+
+        Assert.AreEqual(0, startup.TriggerCount, "StartupRule should be untriggered after duration elapses.");
+    }
+
+    [TestMethod]
     public void IdleRule_Activation_AppliesRule()
     {
         var manager = new RuleManager(ruleFactory);
@@ -1110,6 +1148,38 @@ public sealed class RuleManagerTest
             "StartupRule with duration should untrigger after the configured interval.");
 
         Assert.IsNull(manager.AppliedRule, "After duration elapsed, StartupRule should no longer be applied.");
+    }
+
+    [TestMethod]
+    [Timeout(5000, CooperativeCancellation = true)]
+    public void SetRules_WithInPlaceMutatedStartupDelay_ReplacesRuleAndRespectsDelay()
+    {
+        var manager = new RuleManager(ruleFactory);
+        var startupDto = new StartupRuleDto
+        {
+            SchemeGuid = CreateGuid('a'),
+            Delay = null,
+            Duration = null
+        };
+
+        manager.SetRules([startupDto]);
+        var originalStartupRule = manager.GetRules().OfType<StartupRule>().Single();
+        Assert.AreEqual(1, originalStartupRule.TriggerCount, "StartupRule without delay should be triggered immediately.");
+
+        startupDto.Delay = TimeSpan.FromMilliseconds(250);
+
+        manager.SetRules([startupDto]);
+
+        var updatedStartupRule = manager.GetRules().OfType<StartupRule>().Single();
+        Assert.AreNotSame(originalStartupRule, updatedStartupRule, "Changing StartupRule delay via in-place DTO mutation must replace the running rule instance.");
+        Assert.AreEqual(0, updatedStartupRule.TriggerCount, "StartupRule with delay should not be triggered until delay elapses.");
+
+        WaitUntil(
+            () => updatedStartupRule.TriggerCount == 1,
+            TimeSpan.FromSeconds(3),
+            "StartupRule with delay should trigger after the configured interval.");
+
+        Assert.AreEqual(updatedStartupRule, manager.AppliedRule, "After delay elapses, StartupRule should be applied.");
     }
 
     [TestMethod]
