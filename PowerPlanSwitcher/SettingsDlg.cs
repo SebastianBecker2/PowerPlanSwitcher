@@ -762,9 +762,8 @@ public partial class SettingsDlg : Form
             var duplicateName = duplicate.Cells["DgcName"].Value;
             if (MessageBox.Show(
                 string.Format(
-                    Strings.SettingsDlg_MsgHotkeyAlreadyAssignedToPlan,
-                    duplicateName,
-                    "Cycle"),
+                    Strings.SettingsDlg_MsgHotkeyRebindToCycle,
+                    duplicateName),
                 Strings.SettingsDlg_TitleHotkeyAlreadyInUse,
                 MessageBoxButtons.YesNo) == DialogResult.No)
             {

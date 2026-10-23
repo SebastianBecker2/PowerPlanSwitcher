@@ -1,6 +1,7 @@
 namespace RuleManagementTest;
 
 using System.ComponentModel;
+using System.Globalization;
 using System.Reflection;
 using FakeItEasy;
 using ProcessManagement;
@@ -12,9 +13,24 @@ using RuleManagement.Rules;
 public sealed class ProcessRuleTest
 {
     private IProcessMonitor processMonitor = null!;
+    private CultureInfo? previousUiCulture;
 
     [TestInitialize]
-    public void Setup() => processMonitor = A.Fake<IProcessMonitor>();
+    public void Setup()
+    {
+        processMonitor = A.Fake<IProcessMonitor>();
+        previousUiCulture = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
+    }
+
+    [TestCleanup]
+    public void Cleanup()
+    {
+        if (previousUiCulture is not null)
+        {
+            CultureInfo.CurrentUICulture = previousUiCulture;
+        }
+    }
 
     [TestMethod]
     public void InitialTriggerCount_IsZero()

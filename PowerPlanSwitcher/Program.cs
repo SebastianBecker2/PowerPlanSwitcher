@@ -2,8 +2,6 @@ namespace PowerPlanSwitcher;
 
 using System.Diagnostics;
 using System.Drawing;
-using System.Globalization;
-using System.Reflection;
 using Autofac;
 using Hotkeys;
 using Newtonsoft.Json;
@@ -114,44 +112,6 @@ internal static class Program
         {
             // Best effort cleanup.
         }
-    }
-
-    // 卫星程序集被构建后移到 Lang\<culture>\ 下，ResourceManager 按默认约定
-    // 找不到它们。这里拦截程序集解析，从 Lang\ 加载。只处理 *.resources
-    // 程序集（本地化资源），其它程序集保持默认解析行为。
-    //
-    // Satellite assemblies are moved to Lang\<culture>\ by the build, so
-    // ResourceManager cannot find them at the default location. Intercept
-    // assembly resolution and load from Lang\. Only *.resources assemblies
-    // (localization) are handled; everything else falls back to the default
-    // resolver.
-    private static Assembly? ResolveSatelliteAssemblyFromLang(
-        object? sender,
-        ResolveEventArgs args)
-    {
-        var requested = new AssemblyName(args.Name);
-        var name = requested.Name;
-        if (name is null
-            || !name.EndsWith(".resources", StringComparison.Ordinal))
-        {
-            return null;
-        }
-
-        var culture = requested.CultureName;
-        if (string.IsNullOrEmpty(culture))
-        {
-            return null;
-        }
-
-        var path = Path.Combine(
-            System.AppContext.BaseDirectory,
-            "Lang",
-            culture,
-            name + ".dll");
-
-        return File.Exists(path)
-            ? Assembly.LoadFrom(path)
-            : null;
     }
 
     public static void OpenLogPath()
@@ -416,17 +376,6 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
-        Thread.CurrentThread.CurrentUICulture = CultureInfo.CurrentUICulture;
-        Thread.CurrentThread.CurrentCulture = CultureInfo.CurrentCulture;
-
-        // 卫星程序集被构建后移动到 Lang\<culture>\，注册解析事件让 ResourceManager
-        // 在默认路径找不到时从 Lang\ 加载。
-        //
-        // Satellite assemblies are moved to Lang\<culture>\ after build.
-        // Register the resolver so ResourceManager falls back to Lang\ when the
-        // default path does not contain the resource assembly.
-        AppDomain.CurrentDomain.AssemblyResolve += ResolveSatelliteAssemblyFromLang;
-
         InitializeRunMarker();
 
         if (Settings.Default.UpgradeRequired)

@@ -542,6 +542,15 @@ namespace PowerPlanSwitcher.Translations {
         }
         
         /// <summary>
+        ///   查找类似 PowerPlanSwitcher - Selector 的本地化字符串。
+        /// </summary>
+        internal static string PowerSchemeSelectorDlg_Title {
+            get {
+                return ResourceManager.GetString("PowerSchemeSelectorDlg_Title", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Select File... 的本地化字符串。
         /// </summary>
         internal static string ProcessRuleControl_BtnSelectFile {
@@ -1214,6 +1223,16 @@ namespace PowerPlanSwitcher.Translations {
         internal static string SettingsDlg_MsgHotkeyAlreadyAssignedToPlan {
             get {
                 return ResourceManager.GetString("SettingsDlg_MsgHotkeyAlreadyAssignedToPlan", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Hotkey already assigned to Power Plan &apos;{0}&apos;.
+        ///Do you want to rebind to cycle through Power Plans? 的本地化字符串。
+        /// </summary>
+        internal static string SettingsDlg_MsgHotkeyRebindToCycle {
+            get {
+                return ResourceManager.GetString("SettingsDlg_MsgHotkeyRebindToCycle", resourceCulture);
             }
         }
         

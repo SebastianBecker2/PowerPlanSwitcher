@@ -102,6 +102,7 @@
   <data name="SettingsDlg_TitleHotkeyAlreadyInUse"><value>Hotkey already in use</value></data>
   <data name="SettingsDlg_MsgHotkeyAlreadyAssignedToPlan"><value>Hotkey already assigned to Power Plan '{0}'.&#xD;&#xA;Do you want to rebind to '{1}'?</value></data>
   <data name="SettingsDlg_MsgHotkeyAlreadyAssignedToCycle"><value>Hotkey already assigned to cycle through Power Plans.&#xD;&#xA;Do you want to rebind to '{0}'?</value></data>
+  <data name="SettingsDlg_MsgHotkeyRebindToCycle"><value>Hotkey already assigned to Power Plan '{0}'.&#xD;&#xA;Do you want to rebind to cycle through Power Plans?</value></data>
   <data name="SettingsDlg_LoggingHint"><value>Regular logging only captures critical errors, such as crash-related exceptions.&#xD;&#xA;Extended logging may have performance implication.&#xD;&#xA;Extended log files will include basic information about running processes &#xD;&#xA;(process ID, executable path and start/stop times) &#xD;&#xA;which may be considered sensitive data.</value></data>
   <data name="SettingsDlg_RulesOrderHint"><value>Rules are evaluated from top to bottom.&#xD;&#xA;The first currently triggered rule is applied.&#xD;&#xA;Move Rule up/down to change priority.</value></data>
 
@@ -137,6 +138,9 @@
   <data name="IconSelectionDlg_FilterTiff"><value>TIFF (*.tiff; *.tif)|*.tiff;*.tif</value></data>
   <data name="IconSelectionDlg_FilterGif"><value>GIF (*.gif)|*.gif</value></data>
   <data name="IconSelectionDlg_FilterAllFiles"><value>All files (*.*)|*.*</value></data>
+
+  <!-- PowerSchemeSelectorDlg -->
+  <data name="PowerSchemeSelectorDlg_Title"><value>PowerPlanSwitcher - Selector</value></data>
 
   <!-- ProcessSelectionDlg -->
   <data name="ProcessSelectionDlg_Title"><value>PowerPlanSwitcher - Select Process</value></data>

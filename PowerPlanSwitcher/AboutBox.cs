@@ -8,9 +8,12 @@ internal sealed partial class AboutBox : Form
     public AboutBox()
     {
         InitializeComponent();
-        Text = $"About {AssemblyTitle ?? ""}";
+        Text = string.Format(Strings.AboutBox_TitleFormat, AssemblyTitle ?? "");
         labelProductName.Text = AssemblyProduct;
-        labelVersion.Text = $"Version {AssemblyInformationalVersion ?? ""}";
+        labelVersion.Text = string.Format(
+            Strings.AboutBox_VersionFormat,
+            AssemblyInformationalVersion ?? "");
+        okButton.Text = Strings.AboutBox_OkButton;
         labelCopyright.Text = AssemblyCopyright;
         labelCompanyName.Text = AssemblyCompany;
         textBoxDescription.Text = AssemblyDescription;
