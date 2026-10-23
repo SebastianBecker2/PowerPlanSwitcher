@@ -98,7 +98,7 @@ internal class ContextMenu : ContextMenuStrip
         var activeSchemeGuid = ActiveSchemeGuid;
         foreach (var (guid, menuItem, label) in schemeButtons)
         {
-            menuItem.Text = (guid == activeSchemeGuid ? "(Active) " : string.Empty) + label;
+            menuItem.Text = (guid == activeSchemeGuid ? Strings.Menu_ActivePrefix : string.Empty) + label;
         }
     }
 
@@ -114,7 +114,7 @@ internal class ContextMenu : ContextMenuStrip
             var button = new ToolStripMenuItem
             {
                 Image = scheme.Icon,
-                Text = (activeSchemeGuid == scheme.Guid ? "(Active) " : string.Empty)
+                Text = (activeSchemeGuid == scheme.Guid ? Strings.Menu_ActivePrefix : string.Empty)
                     + (scheme.Name ?? scheme.Guid.ToString()),
             };
 
@@ -140,7 +140,7 @@ internal class ContextMenu : ContextMenuStrip
     {
         var button = new ToolStripMenuItem
         {
-            Text = "Open settings..."
+            Text = Strings.Menu_OpenSettings
         };
 
         button.Click += (_, _) =>
@@ -164,7 +164,7 @@ internal class ContextMenu : ContextMenuStrip
     {
         var button = new ToolStripMenuItem
         {
-            Text = "About..."
+            Text = Strings.Menu_About
         };
 
         button.Click += (_, _) =>
@@ -180,7 +180,7 @@ internal class ContextMenu : ContextMenuStrip
     {
         var button = new ToolStripMenuItem
         {
-            Text = "Close PowerPlanSwitcher"
+            Text = Strings.Menu_Close
         };
 
         button.Click += (_, _) => Application.Exit();

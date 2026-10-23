@@ -18,7 +18,16 @@ public partial class CreatePasswordDlg : Form
     public CreatePasswordDlg()
     {
         InitializeComponent();
+        ApplyLocalization();
         _ = new DpiImageScaler(this);
+    }
+
+    private void ApplyLocalization()
+    {
+        Text = Strings.CreatePasswordDlg_Title;
+        BtnOkay.Text = Strings.CreatePasswordDlg_BtnOk;
+        btnCancel.Text = Strings.CreatePasswordDlg_BtnCancel;
+        label1.Text = Strings.CreatePasswordDlg_Hint;
     }
 
     private void BtnRandomize_Click(object sender, EventArgs e)
@@ -50,8 +59,8 @@ public partial class CreatePasswordDlg : Form
         catch (Exception ex)
         {
             _ = MessageBox.Show(
-                $"Failed to copy to clipboard: {ex.Message}",
-                "Clipboard Error",
+                string.Format(Strings.CreatePasswordDlg_MsgCopyFailed, ex.Message),
+                Strings.CreatePasswordDlg_TitleClipboardError,
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
         }

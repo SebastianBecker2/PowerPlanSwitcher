@@ -30,11 +30,21 @@ public partial class ProcessRuleControl : UserControl
     public ProcessRuleControl()
     {
         InitializeComponent();
+        ApplyLocalization();
 
         CmbComparisonType.Items.AddRange([.. ComparisonTypes
             .Select(ProcessRuleDto.ComparisonTypeToText)
             .Cast<object>()]);
         CmbComparisonType.SelectedIndex = 0;
+    }
+
+    private void ApplyLocalization()
+    {
+        label1.Text = Strings.ProcessRuleControl_LblComparison;
+        label2.Text = Strings.ProcessRuleControl_LblPattern;
+        BtnSelectFile.Text = Strings.ProcessRuleControl_BtnSelectFile;
+        BtnSelectFolder.Text = Strings.ProcessRuleControl_BtnSelectFolder;
+        BtnSelectFromProcess.Text = Strings.ProcessRuleControl_BtnSelectFromProcess;
     }
 
     private void BtnSelectPath_Click(object sender, EventArgs e)
@@ -92,22 +102,10 @@ public partial class ProcessRuleControl : UserControl
 
         var text = comparisonType switch
         {
-            ComparisonType.Exact =>
-                $"The processes execution path has to match the pattern completely." +
-                $"{Environment.NewLine}Ignoring case.",
-            ComparisonType.StartsWith =>
-                $"The processes execution path has to start with the provided pattern." +
-                $"{Environment.NewLine}Ignoring case.",
-            ComparisonType.EndsWith =>
-                $"The processes execution path has to end with the provided pattern." +
-                $"{Environment.NewLine}Ignoring case.",
-            ComparisonType.Wildcard =>
-                $"The process’s execution path must match the provided wildcard pattern, using glob‑style matching." +
-                $"{Environment.NewLine}Supports * (match within one folder), ? (single character), and ** (match across any number of folders)." +
-                $"{Environment.NewLine}C:\\Program Files\\*.exe → matches any exe files directly in C:\\Program Files\\" +
-                $"{Environment.NewLine}C:\\Program Files\\**\\*.exe → matches any exe files in any subfolder of C:\\Program Files\\" +
-                $"{Environment.NewLine}C:\\Program Files\\My?pp.exe → matches MyApp.exe and MySpp.exe in C:\\Program Files\\" +
-                $"{Environment.NewLine}Ignoring case.",
+            ComparisonType.Exact => Strings.ProcessRuleControl_CmpExactTip,
+            ComparisonType.StartsWith => Strings.ProcessRuleControl_CmpStartsWithTip,
+            ComparisonType.EndsWith => Strings.ProcessRuleControl_CmpEndsWithTip,
+            ComparisonType.Wildcard => Strings.ProcessRuleControl_CmpWildcardTip,
             _ => string.Empty,
         };
 

@@ -12,41 +12,89 @@ internal enum PopUpWindowLocation
 
 internal static class PopUpWindowLocationHelper
 {
-    private static readonly List<(string name, PopUpWindowLocation theme)>
-        PopUpWindowLocations =
-    [
-        ( "Bottom Right", PopUpWindowLocation.BottomRight ),
-        ( "Use System Setting", PopUpWindowLocation.System ),
-        ( "Center", PopUpWindowLocation.Center ),
-        ( "Off", PopUpWindowLocation.Off ),
-    ];
+    // 枚举 → 本地化显示名
+    // Enum -> localized display name
+    public static string GetDisplayName(PopUpWindowLocation location) => location switch
+    {
+        PopUpWindowLocation.BottomRight => Strings.PopUpLocation_BottomRight,
+        PopUpWindowLocation.System => Strings.PopUpLocation_System,
+        PopUpWindowLocation.Center => Strings.PopUpLocation_Center,
+        PopUpWindowLocation.Off => Strings.PopUpLocation_Off,
+        _ => location.ToString(),
+    };
+
+    // 显示名列表（顺序与 GetPopUpWindowLocations 一致）
+    // Display name list (order matches GetPopUpWindowLocations)
+    public static IEnumerable<string> GetDisplayNames() =>
+        GetPopUpWindowLocations().Select(GetDisplayName);
+
+    // 枚举列表，顺序固定
+    // Enum list, order is fixed
+    public static IList<PopUpWindowLocation> GetPopUpWindowLocations() =>
+        Enum.GetValues<PopUpWindowLocation>();
+
+    // 读取已保存的枚举名；兼容旧版英文显示名
+    // Read saved enum name; compatible with legacy English display names
+    public static PopUpWindowLocation GetSelectedPopUpWindowLocation(
+        string settingsValue)
+    {
+        if (string.IsNullOrEmpty(settingsValue))
+        {
+            return PopUpWindowLocation.Off;
+        }
+
+        if (Enum.TryParse<PopUpWindowLocation>(settingsValue, out var location))
+        {
+            return location;
+        }
+
+        // 兼容旧格式：英文显示名
+        // Legacy format: English display name
+        return settingsValue switch
+        {
+            "Bottom Right" => PopUpWindowLocation.BottomRight,
+            "Use System Setting" => PopUpWindowLocation.System,
+            "Center" => PopUpWindowLocation.Center,
+            "Off" => PopUpWindowLocation.Off,
+            _ => PopUpWindowLocation.Off,
+        };
+    }
+
+    // 保存为枚举名（语言无关）
+    // Save as enum name (language independent)
+    public static void SetSelectedPopUpWindowLocation(
+        PopUpWindowLocation location,
+        bool batteryManagement)
+    {
+        if (batteryManagement)
+        {
+            Settings.Default.PopUpWindowLocationBM = location.ToString();
+        }
+        else
+        {
+            Settings.Default.PopUpWindowLocationGlobal = location.ToString();
+        }
+    }
 
     public static bool ShouldShowToast(string reason)
     {
+        // "Battery Management" 是内部保留参数，不属于 UI 文本，保持英文
+        // "Battery Management" is an internal reserved argument, not UI text; keep English
         var popUpWindowSetting = reason == "Battery Management"
             ? Settings.Default.PopUpWindowLocationBM
             : Settings.Default.PopUpWindowLocationGlobal;
 
-        return
-            !string.IsNullOrEmpty(popUpWindowSetting)
-            && popUpWindowSetting != "Off";
+        var location = GetSelectedPopUpWindowLocation(popUpWindowSetting);
+
+        return location != PopUpWindowLocation.Off;
     }
-
-    public static IEnumerable<string> GetDisplayNames() =>
-        PopUpWindowLocations.Select(ct => ct.name);
-
-    public static PopUpWindowLocation GetSelectedPopUpWindowLocation(
-        string settingsValue) =>
-        PopUpWindowLocations
-            .FirstOrDefault(
-                ct => ct.name == settingsValue,
-                new("", PopUpWindowLocation.Off))
-        .theme;
 
     public static Point GetPositionOnTaskbar(
         Size windowSize,
         string activationReason)
     {
+        // "Battery Management" 是内部保留参数，不属于 UI 文本，保持英文
+        // "Battery Management" is an internal reserved argument, not UI text; keep English
         PopUpWindowLocation popUpWindowLocation;
         if (activationReason == "Battery Management")
         {

@@ -13,6 +13,15 @@ public partial class HotkeySelectionDlg : Form
     {
         this.hotkeyManager = hotkeyManager;
         InitializeComponent();
+        ApplyLocalization();
+    }
+
+    private void ApplyLocalization()
+    {
+        Text = Strings.HotkeySelectionDlg_Title;
+        label1.Text = Strings.HotkeySelectionDlg_LblSelectedHotkey;
+        BtnOk.Text = Strings.HotkeySelectionDlg_BtnOk;
+        BtnCancel.Text = Strings.HotkeySelectionDlg_BtnCancel;
     }
 
     protected override void OnLoad(EventArgs e)

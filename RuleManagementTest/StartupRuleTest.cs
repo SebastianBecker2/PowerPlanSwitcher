@@ -1,6 +1,7 @@
 namespace RuleManagementTest;
 
 using System.Diagnostics;
+using System.Globalization;
 using System.Threading;
 using RuleManagement.Dto;
 using RuleManagement.Rules;
@@ -8,6 +9,24 @@ using RuleManagement.Rules;
 [TestClass]
 public sealed class StartupRuleTest
 {
+    private CultureInfo? previousUiCulture;
+
+    [TestInitialize]
+    public void Setup()
+    {
+        previousUiCulture = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
+    }
+
+    [TestCleanup]
+    public void Cleanup()
+    {
+        if (previousUiCulture is not null)
+        {
+            CultureInfo.CurrentUICulture = previousUiCulture;
+        }
+    }
+
     [TestMethod]
     public void InitialTriggerCount_IsOneWhenNoDelay()
     {
@@ -217,6 +236,19 @@ public sealed class StartupRuleTest
         var description = dto.GetDescription();
 
         Assert.AreEqual("Startup Rule (duration 30 seconds)", description);
+    }
+
+    [TestMethod]
+    public void GetDescription_WithDurationSeconds_UsesZhCn()
+    {
+        CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("zh-CN");
+        var dto = new StartupRuleDto
+        {
+            SchemeGuid = Guid.NewGuid(),
+            Duration = TimeSpan.FromSeconds(30)
+        };
+
+        Assert.AreEqual("启动规则（持续 30 秒）", dto.GetDescription());
     }
 
     [TestMethod]

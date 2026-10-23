@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Process Rule -->
+  <data name="Rule_Process_Desc"><value>Process -&gt; {0} -&gt; {1}</value></data>
+  <data name="Rule_Process_CmpExact"><value>Match exact Path</value></data>
+  <data name="Rule_Process_CmpStartsWith"><value>Path starts with</value></data>
+  <data name="Rule_Process_CmpEndsWith"><value>Path ends with</value></data>
+  <data name="Rule_Process_CmpWildcard"><value>Wildcard match</value></data>
+
+  <!-- Power Line Rule -->
+  <data name="Rule_PowerLine_Desc"><value>Power Line -&gt; {0}</value></data>
+  <data name="Rule_PowerLine_Online"><value>Plugged in</value></data>
+  <data name="Rule_PowerLine_Offline"><value>On battery</value></data>
+  <data name="Rule_PowerLine_Unknown"><value>Unkown status</value></data>
+
+  <!-- Idle Rule -->
+  <data name="Rule_Idle_Desc"><value>Idle Time -&gt; {0}</value></data>
+
+  <!-- Startup Rule -->
+  <data name="Rule_Startup_Name"><value>Startup Rule</value></data>
+  <data name="Rule_Startup_Desc_OnlyDelay"><value>Startup Rule ({0})</value></data>
+  <data name="Rule_Startup_Desc_DelayDuration"><value>Startup Rule ({0}, {1})</value></data>
+  <data name="Rule_Startup_Delay"><value>delay {0}</value></data>
+  <data name="Rule_Startup_Duration"><value>duration {0}</value></data>
+  <data name="Rule_Startup_Second"><value>{0} second</value></data>
+  <data name="Rule_Startup_Seconds"><value>{0} seconds</value></data>
+  <data name="Rule_Startup_Minute"><value>{0} minute</value></data>
+  <data name="Rule_Startup_Minutes"><value>{0} minutes</value></data>
+  <data name="Rule_Startup_Hour"><value>{0} hour</value></data>
+  <data name="Rule_Startup_Hours"><value>{0} hours</value></data>
+
+  <!-- Shutdown Rule -->
+  <data name="Rule_Shutdown_Desc"><value>Shutdown Rule</value></data>
+</root>

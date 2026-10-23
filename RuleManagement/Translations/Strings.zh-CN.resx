@@ -1,0 +1,47 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Process Rule -->
+  <data name="Rule_Process_Desc"><value>进程 -&gt; {0} -&gt; {1}</value></data>
+  <data name="Rule_Process_CmpExact"><value>完全匹配路径</value></data>
+  <data name="Rule_Process_CmpStartsWith"><value>路径开头为</value></data>
+  <data name="Rule_Process_CmpEndsWith"><value>路径结尾为</value></data>
+  <data name="Rule_Process_CmpWildcard"><value>通配符匹配</value></data>
+
+  <!-- Power Line Rule -->
+  <data name="Rule_PowerLine_Desc"><value>电源线 -&gt; {0}</value></data>
+  <data name="Rule_PowerLine_Online"><value>已连接电源</value></data>
+  <data name="Rule_PowerLine_Offline"><value>使用电池</value></data>
+  <data name="Rule_PowerLine_Unknown"><value>未知状态</value></data>
+
+  <!-- Idle Rule -->
+  <data name="Rule_Idle_Desc"><value>空闲时间 -&gt; {0}</value></data>
+
+  <!-- Startup Rule -->
+  <data name="Rule_Startup_Name"><value>启动规则</value></data>
+  <data name="Rule_Startup_Desc_OnlyDelay"><value>启动规则（{0}）</value></data>
+  <data name="Rule_Startup_Desc_DelayDuration"><value>启动规则（{0}，{1}）</value></data>
+  <data name="Rule_Startup_Delay"><value>延迟 {0}</value></data>
+  <data name="Rule_Startup_Duration"><value>持续 {0}</value></data>
+  <data name="Rule_Startup_Second"><value>{0} 秒</value></data>
+  <data name="Rule_Startup_Seconds"><value>{0} 秒</value></data>
+  <data name="Rule_Startup_Minute"><value>{0} 分钟</value></data>
+  <data name="Rule_Startup_Minutes"><value>{0} 分钟</value></data>
+  <data name="Rule_Startup_Hour"><value>{0} 小时</value></data>
+  <data name="Rule_Startup_Hours"><value>{0} 小时</value></data>
+
+  <!-- Shutdown Rule -->
+  <data name="Rule_Shutdown_Desc"><value>关机规则</value></data>
+</root>

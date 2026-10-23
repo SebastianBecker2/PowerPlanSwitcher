@@ -29,10 +29,16 @@ public partial class PowerLineRuleControl : UserControl
     public PowerLineRuleControl()
     {
         InitializeComponent();
+        ApplyLocalization();
 
         CmbPowerLineStatus.Items.AddRange([.. PowerLineStatuses
             .Select(PowerLineRuleDto.PowerLineStatusToText)
             .Cast<object>()]);
         CmbPowerLineStatus.SelectedIndex = 0;
+    }
+
+    private void ApplyLocalization()
+    {
+        label1.Text = Strings.PowerLineRuleControl_LblPowerLineStatus;
     }
 }

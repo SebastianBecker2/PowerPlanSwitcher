@@ -1,4 +1,4 @@
-﻿namespace PowerPlanSwitcher;
+namespace PowerPlanSwitcher;
 
 using System.Configuration;
 using System.Threading;
@@ -120,7 +120,7 @@ internal class AppContext : ApplicationContext
             var baselineSchemeName =
                 PowerManagement.PowerManager.Api.GetPowerSchemeName(
                     BaselineSchemeGuid)
-                ?? "<No Name>";
+                ?? Strings.Common_NoName;
 
             Log.ForContext("EventType", "PowerScheme.ActivationRequested")
                 .Information(
@@ -142,9 +142,9 @@ internal class AppContext : ApplicationContext
         var schemeName =
             PowerManagement.PowerManager.Api.GetPowerSchemeName(
                 schemeGuid)
-            ?? "<No Name>";
+            ?? Strings.Common_NoName;
 
-        var reason = "Rule applied";
+        var reason = Strings.AppContext_ToastRuleApplied;
 
         Log.ForContext("EventType", "PowerScheme.ActivationRequested")
             .Information(

@@ -1,5 +1,6 @@
 namespace RuleManagementTest;
 
+using System.Globalization;
 using System.Reflection;
 using FakeItEasy;
 using PowerManagement;
@@ -10,9 +11,24 @@ using RuleManagement.Rules;
 public sealed class PowerLineRuleTest
 {
     private IBatteryMonitor batteryMonitor = null!;
+    private CultureInfo? previousUiCulture;
 
     [TestInitialize]
-    public void Setup() => batteryMonitor = A.Fake<IBatteryMonitor>();
+    public void Setup()
+    {
+        batteryMonitor = A.Fake<IBatteryMonitor>();
+        previousUiCulture = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
+    }
+
+    [TestCleanup]
+    public void Cleanup()
+    {
+        if (previousUiCulture is not null)
+        {
+            CultureInfo.CurrentUICulture = previousUiCulture;
+        }
+    }
 
     [TestMethod]
     public void InitialTriggerCount_IsZero()

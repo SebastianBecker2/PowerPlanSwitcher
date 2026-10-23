@@ -6,6 +6,8 @@ public class PowerLineRuleDto : RuleDto, IRuleDto
 {
     public PowerLineStatus PowerLineStatus { get; set; }
 
+    // 英文原文保留，只用于反查。
+    // English text kept only for reverse lookup.
     private static readonly List<(PowerLineStatus status, string text)>
         PowerLineStatusText =
         [
@@ -20,15 +22,21 @@ public class PowerLineRuleDto : RuleDto, IRuleDto
             StringComparer.Ordinal);
 
     public override string GetDescription() =>
-        $"Power Line -> {PowerLineStatusToText(PowerLineStatus)}";
+        string.Format(
+            Strings.Rule_PowerLine_Desc,
+            PowerLineStatusToText(PowerLineStatus));
 
+    // 返回本地化文本，供 UI 显示。
+    // Returns the localized text for UI display.
     public static string PowerLineStatusToText(
-        PowerLineStatus powerLineStatus)
-    {
-        (PowerLineStatus status, string text)? entry = PowerLineStatusText
-            .FirstOrDefault(rtt => rtt.status == powerLineStatus);
-        return entry?.text ?? string.Empty;
-    }
+        PowerLineStatus powerLineStatus) =>
+        powerLineStatus switch
+        {
+            PowerLineStatus.Online => Strings.Rule_PowerLine_Online,
+            PowerLineStatus.Offline => Strings.Rule_PowerLine_Offline,
+            PowerLineStatus.Unknown => Strings.Rule_PowerLine_Unknown,
+            _ => string.Empty,
+        };
 
     public static PowerLineStatus TextToPowerLineStatus(string text)
     {

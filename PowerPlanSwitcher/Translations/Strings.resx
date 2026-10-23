@@ -1,0 +1,207 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Common -->
+  <data name="Common_OK"><value>OK</value></data>
+  <data name="Common_Cancel"><value>Cancel</value></data>
+  <data name="Common_NoName"><value>&lt;No Name&gt;</value></data>
+  <data name="Common_NoRuleActive"><value>No rule active</value></data>
+
+  <!-- TrayIcon / Tooltip -->
+  <data name="Tray_Tooltip_Title"><value>PowerPlanSwitcher</value></data>
+  <data name="Tray_Tooltip_PowerPlan"><value>PowerPlan</value></data>
+  <data name="Tray_Tooltip_Rule"><value>Rule</value></data>
+
+  <!-- ContextMenu -->
+  <data name="Menu_OpenSettings"><value>Open settings...</value></data>
+  <data name="Menu_About"><value>About...</value></data>
+  <data name="Menu_Close"><value>Close PowerPlanSwitcher</value></data>
+  <data name="Menu_ActivePrefix"><value>(Active) </value></data>
+
+  <!-- Program -->
+  <data name="Program_OpenLogPathTitle"><value>Open log path</value></data>
+  <data name="Program_OpenLogPathFailed"><value>Failed to open log path: {0}</value></data>
+  <data name="Program_ExportLogTitle"><value>Export Log</value></data>
+  <data name="Program_ExportLogFilter"><value>Zip Files (*.zip)|*.zip|7zip Files (*.7z)|*.7z</value></data>
+  <data name="Program_ToastCycleHotkey"><value>Cycle hotkey pressed</value></data>
+  <data name="Program_ToastDirectHotkey"><value>Power Plan hotkey pressed</value></data>
+
+  <!-- AppContext -->
+  <data name="AppContext_ToastRuleApplied"><value>Rule applied</value></data>
+  <data name="AppContext_ToastBatteryManagement"><value>Battery Management</value></data>
+
+  <!-- ColorTheme -->
+  <data name="ColorTheme_System"><value>Use System Setting</value></data>
+  <data name="ColorTheme_Light"><value>Light Mode</value></data>
+  <data name="ColorTheme_Dark"><value>Dark Mode</value></data>
+
+  <!-- PopUpWindowLocation -->
+  <data name="PopUpLocation_BottomRight"><value>Bottom Right</value></data>
+  <data name="PopUpLocation_System"><value>Use System Setting</value></data>
+  <data name="PopUpLocation_Center"><value>Center</value></data>
+  <data name="PopUpLocation_Off"><value>Off</value></data>
+
+  <!-- AboutBox -->
+  <data name="AboutBox_TitleFormat"><value>About {0}</value></data>
+  <data name="AboutBox_VersionFormat"><value>Version {0}</value></data>
+  <data name="AboutBox_OkButton"><value>&amp;OK</value></data>
+
+  <!-- SettingsDlg -->
+  <data name="SettingsDlg_Title"><value>PowerPlanSwitcher - Settings</value></data>
+  <data name="SettingsDlg_TabPowerSchemes"><value>Power Plans</value></data>
+  <data name="SettingsDlg_TabRules"><value>Rules</value></data>
+  <data name="SettingsDlg_TabOtherSettings"><value>Other Settings</value></data>
+  <data name="SettingsDlg_GroupHotkeyCycle"><value>Hotkey to cycle through Power Plans</value></data>
+  <data name="SettingsDlg_GroupColorTheme"><value>Color Theme</value></data>
+  <data name="SettingsDlg_GroupNotificationLocation"><value>Notification Location</value></data>
+  <data name="SettingsDlg_GroupLogging"><value>Logging</value></data>
+  <data name="SettingsDlg_DgcVisible"><value>Visible</value></data>
+  <data name="SettingsDlg_DgcIcon"><value>Icon</value></data>
+  <data name="SettingsDlg_DgcName"><value>Name</value></data>
+  <data name="SettingsDlg_DgcHotkey"><value>Hotkey</value></data>
+  <data name="SettingsDlg_DgcRulePriority"><value>#</value></data>
+  <data name="SettingsDlg_DgcRuleDescription"><value>Description</value></data>
+  <data name="SettingsDlg_DgcRuleSchemeName"><value>Power Plan</value></data>
+  <data name="SettingsDlg_DgcTriggerCount"><value>Trigger</value></data>
+  <data name="SettingsDlg_BtnAddPowerRule"><value>Create new Rule</value></data>
+  <data name="SettingsDlg_BtnEditPowerRule"><value>Edit selected Rule</value></data>
+  <data name="SettingsDlg_BtnDeletePowerRule"><value>Delete selected Rule</value></data>
+  <data name="SettingsDlg_BtnAscentPowerRule"><value>Move Rule up&#xD;&#xA;(higher priority)</value></data>
+  <data name="SettingsDlg_BtnDescentPowerRule"><value>Move Rule down&#xD;&#xA;(lower priority)</value></data>
+  <data name="SettingsDlg_BtnOpenPowerPlanSettings"><value>Open power plan&#xD;&#xA;settings</value></data>
+  <data name="SettingsDlg_BtnSetIcon"><value>Set Icon</value></data>
+  <data name="SettingsDlg_BtnRemoveIcon"><value>Remove Icon</value></data>
+  <data name="SettingsDlg_BtnSetHotkey"><value>Set Hotkey</value></data>
+  <data name="SettingsDlg_BtnRemoveHotkey"><value>Remove Hotkey</value></data>
+  <data name="SettingsDlg_BtnAscentPowerScheme"><value>Move Plan up</value></data>
+  <data name="SettingsDlg_BtnDescentPowerScheme"><value>Move Plan down</value></data>
+  <data name="SettingsDlg_LblRulesOrderHint"><value>Rule order matters: rules are evaluated top to bottom, and the first triggered rule is applied.</value></data>
+  <data name="SettingsDlg_RdbCycleAll"><value>Cycle through all existing Power Plans</value></data>
+  <data name="SettingsDlg_RdbCycleVisible"><value>Cycle only through visible Power Plans</value></data>
+  <data name="SettingsDlg_BtnSetCycleHotkey"><value>Set Hotkey</value></data>
+  <data name="SettingsDlg_BtnRemoveCycleHotkey"><value>Remove Hotkey</value></data>
+  <data name="SettingsDlg_ChbExtendedLogging"><value>Extended Logging</value></data>
+  <data name="SettingsDlg_BtnOpenLogFolder"><value>Open log folder</value></data>
+  <data name="SettingsDlg_BtnExportLog"><value>Export log to zip</value></data>
+  <data name="SettingsDlg_TitleOpenPowerPlanSettings"><value>Open power plan settings</value></data>
+  <data name="SettingsDlg_MsgSelectPowerPlanFirst"><value>Select a power plan first.</value></data>
+  <data name="SettingsDlg_MsgNotValidPowerPlan"><value>The selected entry is not a valid power plan.</value></data>
+  <data name="SettingsDlg_MsgCouldNotOpenSettings"><value>Could not open Windows power plan settings.</value></data>
+  <data name="SettingsDlg_TitleHotkeyAlreadyInUse"><value>Hotkey already in use</value></data>
+  <data name="SettingsDlg_MsgHotkeyAlreadyAssignedToPlan"><value>Hotkey already assigned to Power Plan '{0}'.&#xD;&#xA;Do you want to rebind to '{1}'?</value></data>
+  <data name="SettingsDlg_MsgHotkeyAlreadyAssignedToCycle"><value>Hotkey already assigned to cycle through Power Plans.&#xD;&#xA;Do you want to rebind to '{0}'?</value></data>
+  <data name="SettingsDlg_MsgHotkeyRebindToCycle"><value>Hotkey already assigned to Power Plan '{0}'.&#xD;&#xA;Do you want to rebind to cycle through Power Plans?</value></data>
+  <data name="SettingsDlg_LoggingHint"><value>Regular logging only captures critical errors, such as crash-related exceptions.&#xD;&#xA;Extended logging may have performance implication.&#xD;&#xA;Extended log files will include basic information about running processes &#xD;&#xA;(process ID, executable path and start/stop times) &#xD;&#xA;which may be considered sensitive data.</value></data>
+  <data name="SettingsDlg_RulesOrderHint"><value>Rules are evaluated from top to bottom.&#xD;&#xA;The first currently triggered rule is applied.&#xD;&#xA;Move Rule up/down to change priority.</value></data>
+
+  <!-- ToastDlg -->
+  <data name="ToastDlg_Title"><value>PowerPlanSwitcher switched Power Plan to:</value></data>
+
+  <!-- CreatePasswordDlg -->
+  <data name="CreatePasswordDlg_Title"><value>Set Password</value></data>
+  <data name="CreatePasswordDlg_Hint"><value>To protect the ZIP file with encryption, enter a password.&#xD;&#xA;Leave the field empty to create an unencrypted archive.</value></data>
+  <data name="CreatePasswordDlg_BtnOk"><value>OK</value></data>
+  <data name="CreatePasswordDlg_BtnCancel"><value>Cancel</value></data>
+  <data name="CreatePasswordDlg_MsgCopyFailed"><value>Failed to copy to clipboard: {0}</value></data>
+  <data name="CreatePasswordDlg_TitleClipboardError"><value>Clipboard Error</value></data>
+
+  <!-- HotkeySelectionDlg -->
+  <data name="HotkeySelectionDlg_Title"><value>PowerPlanSwitcher - Set Hotkey</value></data>
+  <data name="HotkeySelectionDlg_LblSelectedHotkey"><value>Selected Hotkey:</value></data>
+  <data name="HotkeySelectionDlg_BtnOk"><value>OK</value></data>
+  <data name="HotkeySelectionDlg_BtnCancel"><value>Cancel</value></data>
+
+  <!-- IconSelectionDlg -->
+  <data name="IconSelectionDlg_Title"><value>PowerPlanSwitcher - Icon selection</value></data>
+  <data name="IconSelectionDlg_LblFilter"><value>Filter:</value></data>
+  <data name="IconSelectionDlg_BtnSelectFile"><value>Select from file...</value></data>
+  <data name="IconSelectionDlg_BtnOk"><value>OK</value></data>
+  <data name="IconSelectionDlg_BtnCancel"><value>Cancel</value></data>
+  <data name="IconSelectionDlg_MsgInvalidImageTitle"><value>Invalid image file</value></data>
+  <data name="IconSelectionDlg_MsgInvalidImage"><value>The selected file could not be loaded as an icon image. Please choose a valid PNG, JPG, BMP, TIFF, or GIF image.</value></data>
+  <data name="IconSelectionDlg_FilterAllImages"><value>All image types (*.png; *.jpg; *.jpeg; *.bmp; *.tiff; *.tif; *.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.tiff;*.tif;*.gif</value></data>
+  <data name="IconSelectionDlg_FilterPng"><value>PNG (*.png)|*.png</value></data>
+  <data name="IconSelectionDlg_FilterJpeg"><value>JPEG (*.jpg; *.jpeg)|*.jpg;*.jpeg</value></data>
+  <data name="IconSelectionDlg_FilterBmp"><value>BMP (*.bmp)|*.bmp</value></data>
+  <data name="IconSelectionDlg_FilterTiff"><value>TIFF (*.tiff; *.tif)|*.tiff;*.tif</value></data>
+  <data name="IconSelectionDlg_FilterGif"><value>GIF (*.gif)|*.gif</value></data>
+  <data name="IconSelectionDlg_FilterAllFiles"><value>All files (*.*)|*.*</value></data>
+
+  <!-- PowerSchemeSelectorDlg -->
+  <data name="PowerSchemeSelectorDlg_Title"><value>PowerPlanSwitcher - Selector</value></data>
+
+  <!-- ProcessSelectionDlg -->
+  <data name="ProcessSelectionDlg_Title"><value>PowerPlanSwitcher - Select Process</value></data>
+  <data name="ProcessSelectionDlg_DgcPid"><value>PID</value></data>
+  <data name="ProcessSelectionDlg_DgcName"><value>Name</value></data>
+  <data name="ProcessSelectionDlg_DgcStartTime"><value>Start Time</value></data>
+  <data name="ProcessSelectionDlg_DgcPath"><value>Path</value></data>
+  <data name="ProcessSelectionDlg_BtnOk"><value>OK</value></data>
+  <data name="ProcessSelectionDlg_BtnCancel"><value>Cancel</value></data>
+
+  <!-- RuleDlg -->
+  <data name="RuleDlg_Title"><value>PowerPlanSwitcher - Rule</value></data>
+  <data name="RuleDlg_LblRuleType"><value>Select Rule Type:</value></data>
+  <data name="RuleDlg_LblPowerScheme"><value>Power Plan:</value></data>
+  <data name="RuleDlg_BtnOk"><value>OK</value></data>
+  <data name="RuleDlg_BtnCancel"><value>Cancel</value></data>
+  <data name="RuleDlg_MsgSelectRuleType"><value>Select a Rule Type!</value></data>
+  <data name="RuleDlg_MsgInvalidInputTitle"><value>Invalid input</value></data>
+  <data name="RuleDlg_TypeProcess"><value>Process Rule</value></data>
+  <data name="RuleDlg_TypePowerLine"><value>Power Line Rule</value></data>
+  <data name="RuleDlg_TypeIdle"><value>Idle Rule</value></data>
+  <data name="RuleDlg_TypeStartup"><value>Startup Rule</value></data>
+  <data name="RuleDlg_TypeShutdown"><value>Shutdown Rule</value></data>
+  <data name="RuleDlg_TipProcess"><value>A process rule switches power plans based on the presence of a specified process running on the system.</value></data>
+  <data name="RuleDlg_TipPowerLine"><value>A power line rule switches power plans based on the current power line status (plugged in or on battery).</value></data>
+  <data name="RuleDlg_TipIdle"><value>An idle rule switches power plans based on the duration without user input.</value></data>
+  <data name="RuleDlg_TipStartup"><value>A startup rule switches power plans when the system starts up.&#xD;&#xA;Optionally, you can set a duration after which the power scheme will be deactivated.&#xD;&#xA;This rule is always triggered and should be the last rule in the list.</value></data>
+  <data name="RuleDlg_TipShutdown"><value>A shutdown rule switches power plans when the system is shutting down.</value></data>
+
+  <!-- StartupRuleControl -->
+  <data name="StartupRuleControl_LblEnableDelay"><value>Enable Delay:</value></data>
+  <data name="StartupRuleControl_LblDelay"><value>Delay:</value></data>
+  <data name="StartupRuleControl_LblEnableDuration"><value>Enable Duration:</value></data>
+  <data name="StartupRuleControl_LblDuration"><value>Duration:</value></data>
+  <data name="StartupRuleControl_UnitSeconds"><value>Seconds</value></data>
+  <data name="StartupRuleControl_UnitMinutes"><value>Minutes</value></data>
+  <data name="StartupRuleControl_UnitHours"><value>Hours</value></data>
+  <data name="StartupRuleControl_DelayHint"><value>When enabled, triggering of this Startup Rule is postponed by the configured delay after monitoring starts.&#xD;&#xA;If you also enable a duration, the countdown for that duration begins only when the rule actually becomes triggered (after the delay).</value></data>
+  <data name="StartupRuleControl_DurationHint"><value>Enable this option to automatically untrigger this Startup Rule after the specified duration.&#xD;&#xA;If disabled, the Startup Rule remains triggered indefinitely once it has triggered.</value></data>
+
+  <!-- IdleRuleControl -->
+  <data name="IdleRuleControl_LblIdleTimeThreshold"><value>Idle Time Threshold:</value></data>
+  <data name="IdleRuleControl_LblCheckExecutionState"><value>Check Execution State:</value></data>
+  <data name="IdleRuleControl_LblCheckFullscreenApp"><value>Check Fullscreen Apps:</value></data>
+  <data name="IdleRuleControl_UnitSeconds"><value>Seconds</value></data>
+  <data name="IdleRuleControl_UnitMinutes"><value>Minutes</value></data>
+  <data name="IdleRuleControl_UnitHours"><value>Hours</value></data>
+  <data name="IdleRuleControl_ExecutionStateHint"><value>Prevent idle when another process set any of these Execution States:&#xD;&#xA;- ES_AWAYMODE_REQUIRED Forces the system to continue running critical background processes.&#xD;&#xA;- ES_DISPLAY_REQUIRED Forces the display to be on by resetting the display idle timer.&#xD;&#xA;- ES_SYSTEM_REQUIRED Forces the system to be in the working state by resetting the system idle timer.</value></data>
+  <data name="IdleRuleControl_FullscreenAppHint"><value>Prevent idle when the active process is running in fullscreen mode.</value></data>
+
+  <!-- PowerLineRuleControl -->
+  <data name="PowerLineRuleControl_LblPowerLineStatus"><value>Power Line Status:</value></data>
+
+  <!-- ProcessRuleControl -->
+  <data name="ProcessRuleControl_LblComparison"><value>Comparison:</value></data>
+  <data name="ProcessRuleControl_LblPattern"><value>Pattern:</value></data>
+  <data name="ProcessRuleControl_BtnSelectFile"><value>Select File...</value></data>
+  <data name="ProcessRuleControl_BtnSelectFolder"><value>Select Folder...</value></data>
+  <data name="ProcessRuleControl_BtnSelectFromProcess"><value>Select from active Process...</value></data>
+  <data name="ProcessRuleControl_CmpExactTip"><value>The processes execution path has to match the pattern completely.&#xD;&#xA;Ignoring case.</value></data>
+  <data name="ProcessRuleControl_CmpStartsWithTip"><value>The processes execution path has to start with the provided pattern.&#xD;&#xA;Ignoring case.</value></data>
+  <data name="ProcessRuleControl_CmpEndsWithTip"><value>The processes execution path has to end with the provided pattern.&#xD;&#xA;Ignoring case.</value></data>
+  <data name="ProcessRuleControl_CmpWildcardTip"><value>The process's execution path must match the provided wildcard pattern, using glob-style matching.&#xD;&#xA;Supports * (match within one folder), ? (single character), and ** (match across any number of folders).&#xD;&#xA;C:\Program Files\*.exe -> matches any exe files directly in C:\Program Files&#xD;&#xA;C:\Program Files\**\*.exe -> matches any exe files in any subfolder of C:\Program Files&#xD;&#xA;C:\Program Files\My?pp.exe -> matches MyApp.exe and MySpp.exe in C:\Program Files&#xD;&#xA;Ignoring case.</value></data>
+</root>

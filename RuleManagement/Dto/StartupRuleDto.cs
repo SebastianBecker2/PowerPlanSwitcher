@@ -22,25 +22,40 @@ public class StartupRuleDto : RuleDto, IRuleDto
 
     public override string GetDescription()
     {
-        var delayPart = Delay is null ? null : $"delay {FormatSpanForDescription(Delay.Value)}";
-        var durationPart = Duration is null ? null : $"duration {FormatSpanForDescription(Duration.Value)}";
+        var delayPart = Delay is null
+            ? null
+            : string.Format(
+                Strings.Rule_Startup_Delay,
+                FormatSpanForDescription(Delay.Value));
+        var durationPart = Duration is null
+            ? null
+            : string.Format(
+                Strings.Rule_Startup_Duration,
+                FormatSpanForDescription(Duration.Value));
 
         if (delayPart is null && durationPart is null)
         {
-            return "Startup Rule";
+            return Strings.Rule_Startup_Name;
         }
 
         if (delayPart is not null && durationPart is null)
         {
-            return $"Startup Rule ({delayPart})";
+            return string.Format(
+                Strings.Rule_Startup_Desc_OnlyDelay,
+                delayPart);
         }
 
         if (delayPart is null && durationPart is not null)
         {
-            return $"Startup Rule ({durationPart})";
+            return string.Format(
+                Strings.Rule_Startup_Desc_OnlyDelay,
+                durationPart);
         }
 
-        return $"Startup Rule ({delayPart}, {durationPart})";
+        return string.Format(
+            Strings.Rule_Startup_Desc_DelayDuration,
+            delayPart,
+            durationPart);
     }
 
     private static string FormatSpanForDescription(TimeSpan span)
@@ -48,16 +63,22 @@ public class StartupRuleDto : RuleDto, IRuleDto
         var totalSeconds = (long)span.TotalSeconds;
         if (totalSeconds < 60)
         {
-            return $"{totalSeconds} second{(totalSeconds != 1 ? "s" : "")}";
+            return totalSeconds == 1
+                ? string.Format(Strings.Rule_Startup_Second, totalSeconds)
+                : string.Format(Strings.Rule_Startup_Seconds, totalSeconds);
         }
 
         var totalMinutes = totalSeconds / 60;
         if (totalMinutes < 60)
         {
-            return $"{totalMinutes} minute{(totalMinutes != 1 ? "s" : "")}";
+            return totalMinutes == 1
+                ? string.Format(Strings.Rule_Startup_Minute, totalMinutes)
+                : string.Format(Strings.Rule_Startup_Minutes, totalMinutes);
         }
 
         var totalHours = totalMinutes / 60;
-        return $"{totalHours} hour{(totalHours != 1 ? "s" : "")}";
+        return totalHours == 1
+            ? string.Format(Strings.Rule_Startup_Hour, totalHours)
+            : string.Format(Strings.Rule_Startup_Hours, totalHours);
     }
 }

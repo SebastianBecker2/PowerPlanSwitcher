@@ -1,4 +1,4 @@
-﻿namespace PowerPlanSwitcher;
+namespace PowerPlanSwitcher;
 
 using PowerManagement;
 using Properties;
@@ -16,7 +16,7 @@ internal class TrayIcon : IDisposable
     private readonly NotifyIcon notifyIcon = new()
     {
         Icon = DefaultIcon,
-        Text = "PowerPlanSwitcher",
+        Text = Strings.Tray_Tooltip_Title,
         Visible = true,
     };
 
@@ -100,11 +100,11 @@ internal class TrayIcon : IDisposable
                 powerSchemeGuid
                 ?? rule?.Dto?.SchemeGuid
                 ?? PowerManager.Api.GetActivePowerSchemeGuid())
-            ?? "<No Name>";
+            ?? Strings.Common_NoName;
 
-        var tooltipText = $"PowerPlanSwitcher" +
-            $"\nPowerPlan: {schemeName}" +
-            $"\nRule: {rule?.Dto?.GetDescription() ?? "No rule active"}";
+        var tooltipText = $"{Strings.Tray_Tooltip_Title}" +
+            $"\n{Strings.Tray_Tooltip_PowerPlan}: {schemeName}" +
+            $"\n{Strings.Tray_Tooltip_Rule}: {rule?.Dto?.GetDescription() ?? Strings.Common_NoRuleActive}";
         notifyIcon.Text = TrimTooltip(tooltipText);
 
         static string TrimTooltip(string text)

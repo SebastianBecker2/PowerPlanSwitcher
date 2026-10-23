@@ -55,16 +55,31 @@ public partial class IdleRuleControl : UserControl
     public IdleRuleControl()
     {
         InitializeComponent();
+        ApplyLocalization();
         CmbUnit.SelectedIndex = 0;
 
-        var executionStateText = $"Prevent idle when another process set any of these Execution States:" +
-            $"{Environment.NewLine}- ES_AWAYMODE_REQUIRED Forces the system to continue running critical background processes.{Environment.NewLine}" +
-            $"- ES_DISPLAY_REQUIRED Forces the display to be on by resetting the display idle timer.{Environment.NewLine}" +
-            $"- ES_SYSTEM_REQUIRED Forces the system to be in the working state by resetting the system idle timer.";
+        var executionStateText = Strings.IdleRuleControl_ExecutionStateHint;
         TipHints.SetToolTip(PibCheckExecutionState, executionStateText);
 
-        var fullscreenAppText = $"Prevent idle when the active process is running in fullscreen mode.";
+        var fullscreenAppText = Strings.IdleRuleControl_FullscreenAppHint;
         TipHints.SetToolTip(PibCheckFullscreenApp, fullscreenAppText);
+    }
+
+    private void ApplyLocalization()
+    {
+        label1.Text = Strings.IdleRuleControl_LblIdleTimeThreshold;
+        label2.Text = Strings.IdleRuleControl_LblCheckExecutionState;
+        label3.Text = Strings.IdleRuleControl_LblCheckFullscreenApp;
+
+        var unitIndex = CmbUnit.SelectedIndex;
+        CmbUnit.Items.Clear();
+        CmbUnit.Items.AddRange(new object[]
+        {
+            Strings.IdleRuleControl_UnitSeconds,
+            Strings.IdleRuleControl_UnitMinutes,
+            Strings.IdleRuleControl_UnitHours,
+        });
+        CmbUnit.SelectedIndex = unitIndex >= 0 ? unitIndex : 0;
     }
 
     private void PibCheckExecutionState_Click(object sender, EventArgs e) =>

@@ -1,4 +1,4 @@
-﻿namespace PowerPlanSwitcher;
+namespace PowerPlanSwitcher;
 
 using System.Diagnostics;
 using System.Drawing;
@@ -132,8 +132,8 @@ internal static class Program
         catch (Exception ex)
         {
             _ = MessageBox.Show(
-                $"Failed to open log path: {LogPath}",
-                "Open log path",
+                string.Format(Strings.Program_OpenLogPathFailed, LogPath),
+                Strings.Program_OpenLogPathTitle,
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
             Log.Error(ex, "Failed to open log path: {LogPath}", LogPath);
@@ -151,8 +151,8 @@ internal static class Program
         {
             using var saveAsDlg = new SaveFileDialog()
             {
-                Title = "Export Log",
-                Filter = "Zip Files (*.zip)|*.zip|7zip Files (*.7z)|*.7z",
+                Title = Strings.Program_ExportLogTitle,
+                Filter = Strings.Program_ExportLogFilter,
                 InitialDirectory = LogPath,
                 FileName = $"{AssemblyTitle}.log.zip",
                 DefaultExt = "zip",
@@ -339,14 +339,14 @@ internal static class Program
             .Information(
                 "Activating power scheme: {PowerSchemeName} " +
                 "{PowerSchemeGuid} Reason: Cycle Hotkey",
-                PowerManager.Api.GetPowerSchemeName(schemes[index]) ?? "<No Name>",
+                PowerManager.Api.GetPowerSchemeName(schemes[index]) ?? Strings.Common_NoName,
                 schemes[index]);
         _ = PowerManager.Api.SetActivePowerSchemeAsync(schemes[index]);
         if (PopUpWindowLocationHelper.ShouldShowToast("hotkey"))
         {
             ToastDlg.ShowToastNotification(
                 schemes[index],
-                "Cycle hotkey pressed");
+                Strings.Program_ToastCycleHotkey);
         }
     }
 
@@ -367,7 +367,7 @@ internal static class Program
                 target.name,
                 target.guid);
         _ = PowerManager.Api.SetActivePowerSchemeAsync(target.guid);
-        ToastDlg.ShowToastNotification(target.guid, "Power Plan hotkey pressed");
+        ToastDlg.ShowToastNotification(target.guid, Strings.Program_ToastDirectHotkey);
     }
 
     /// <summary>
@@ -572,4 +572,3 @@ internal static class Program
         Application.Run(appContext);
     }
 }
-

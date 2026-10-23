@@ -7,5 +7,5 @@ public class IdleRuleDto : RuleDto, IRuleDto
     public bool CheckFullscreenApps { get; set; } = true;
 
     public override string GetDescription() =>
-        $"Idle Time -> {IdleTimeThreshold}";
+        string.Format(Strings.Rule_Idle_Desc, IdleTimeThreshold);
 }

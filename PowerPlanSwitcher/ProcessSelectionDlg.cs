@@ -1,4 +1,4 @@
-﻿namespace PowerPlanSwitcher;
+namespace PowerPlanSwitcher;
 
 using ProcessManagement;
 
@@ -6,7 +6,22 @@ public partial class ProcessSelectionDlg : Form
 {
     public IProcess? SelectedProcess { get; set; }
 
-    public ProcessSelectionDlg() => InitializeComponent();
+    public ProcessSelectionDlg()
+    {
+        InitializeComponent();
+        ApplyLocalization();
+    }
+
+    private void ApplyLocalization()
+    {
+        Text = Strings.ProcessSelectionDlg_Title;
+        BtnOk.Text = Strings.ProcessSelectionDlg_BtnOk;
+        BtnCancel.Text = Strings.ProcessSelectionDlg_BtnCancel;
+        DgcProcessId.HeaderText = Strings.ProcessSelectionDlg_DgcPid;
+        DgcProcessName.HeaderText = Strings.ProcessSelectionDlg_DgcName;
+        DgcProcessStartTime.HeaderText = Strings.ProcessSelectionDlg_DgcStartTime;
+        DgcProcessPath.HeaderText = Strings.ProcessSelectionDlg_DgcPath;
+    }
 
     protected override void OnLoad(EventArgs e)
     {

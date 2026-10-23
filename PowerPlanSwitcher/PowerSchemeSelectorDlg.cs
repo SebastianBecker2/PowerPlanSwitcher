@@ -34,6 +34,7 @@ public partial class PowerSchemeSelectorDlg : Form
     public PowerSchemeSelectorDlg()
     {
         InitializeComponent();
+        Text = Strings.PowerSchemeSelectorDlg_Title;
         _ = new DpiImageScaler(this);
     }
 
@@ -157,7 +158,7 @@ public partial class PowerSchemeSelectorDlg : Form
                 ? SelectedButtonBackgroundColor
                 : ButtonBackgroundColor,
             Margin = Padding.Empty,
-            Text = active ? "(Active) " + name : " " + name,
+            Text = active ? Strings.Menu_ActivePrefix + name : " " + name,
             Font = new Font(Font.FontFamily, 12),
             Tag = guid,
             Dock = DockStyle.Fill,

@@ -1,0 +1,604 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <!-- 
+    Microsoft ResX Schema 
+    
+    Version 2.0
+    
+    The primary goals of this format is to allow a simple XML format 
+    that is mostly human readable. The generation and parsing of the 
+    various data types are done through the TypeConverter classes 
+    associated with the data types.
+    
+    Example:
+    
+    ... ado.net/XML headers & schema ...
+    <resheader name="resmimetype">text/microsoft-resx</resheader>
+    <resheader name="version">2.0</resheader>
+    <resheader name="reader">System.Resources.ResXResourceReader, System.Windows.Forms, ...</resheader>
+    <resheader name="writer">System.Resources.ResXResourceWriter, System.Windows.Forms, ...</resheader>
+    <data name="Name1"><value>this is my long string</value><comment>this is a comment</comment></data>
+    <data name="Color1" type="System.Drawing.Color, System.Drawing">Blue</data>
+    <data name="Bitmap1" mimetype="application/x-microsoft.net.object.binary.base64">
+        <value>[base64 mime encoded serialized .NET Framework object]</value>
+    </data>
+    <data name="Icon1" type="System.Drawing.Icon, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+        <value>[base64 mime encoded string representing a byte array form of the .NET Framework object]</value>
+        <comment>This is a comment</comment>
+    </data>
+                
+    There are any number of "resheader" rows that contain simple 
+    name/value pairs.
+    
+    Each data row contains a name, and value. The row also contains a 
+    type or mimetype. Type corresponds to a .NET class that support 
+    text/value conversion through the TypeConverter architecture. 
+    Classes that don't support this are serialized and stored with the 
+    mimetype set.
+    
+    The mimetype is used for serialized objects, and tells the 
+    ResXResourceReader how to depersist the object. This is currently not 
+    extensible. For a given mimetype the value must be set accordingly:
+    
+    Note - application/x-microsoft.net.object.binary.base64 is the format 
+    that the ResXResourceWriter will generate, however the reader can 
+    read any of the formats listed below.
+    
+    mimetype: application/x-microsoft.net.object.binary.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Binary.BinaryFormatter
+            : and then encoded with base64 encoding.
+    
+    mimetype: application/x-microsoft.net.object.soap.base64
+    value   : The object must be serialized with 
+            : System.Runtime.Serialization.Formatters.Soap.SoapFormatter
+            : and then encoded with base64 encoding.
+
+    mimetype: application/x-microsoft.net.object.bytearray.base64
+    value   : The object must be serialized into a byte array 
+            : using a System.ComponentModel.TypeConverter
+            : and then encoded with base64 encoding.
+    -->
+  <xsd:schema id="root" xmlns="" xmlns:xsd="http://www.w3.org/2001/XMLSchema" xmlns:msdata="urn:schemas-microsoft-com:xml-msdata">
+    <xsd:import namespace="http://www.w3.org/XML/1998/namespace" />
+    <xsd:element name="root" msdata:IsDataSet="true">
+      <xsd:complexType>
+        <xsd:choice maxOccurs="unbounded">
+          <xsd:element name="metadata">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" />
+              </xsd:sequence>
+              <xsd:attribute name="name" use="required" type="xsd:string" />
+              <xsd:attribute name="type" type="xsd:string" />
+              <xsd:attribute name="mimetype" type="xsd:string" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="assembly">
+            <xsd:complexType>
+              <xsd:attribute name="alias" type="xsd:string" />
+              <xsd:attribute name="name" type="xsd:string" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="data">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+                <xsd:element name="comment" type="xsd:string" minOccurs="0" msdata:Ordinal="2" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" msdata:Ordinal="1" />
+              <xsd:attribute name="type" type="xsd:string" msdata:Ordinal="3" />
+              <xsd:attribute name="mimetype" type="xsd:string" msdata:Ordinal="4" />
+              <xsd:attribute ref="xml:space" />
+            </xsd:complexType>
+          </xsd:element>
+          <xsd:element name="resheader">
+            <xsd:complexType>
+              <xsd:sequence>
+                <xsd:element name="value" type="xsd:string" minOccurs="0" msdata:Ordinal="1" />
+              </xsd:sequence>
+              <xsd:attribute name="name" type="xsd:string" use="required" />
+            </xsd:complexType>
+          </xsd:element>
+        </xsd:choice>
+      </xsd:complexType>
+    </xsd:element>
+  </xsd:schema>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <data name="Common_OK" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="Common_Cancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="Common_NoName" xml:space="preserve">
+    <value>&lt;无名称&gt;</value>
+  </data>
+  <data name="Common_NoRuleActive" xml:space="preserve">
+    <value>无规则生效</value>
+  </data>
+  <data name="Tray_Tooltip_Title" xml:space="preserve">
+    <value>PowerPlanSwitcher</value>
+  </data>
+  <data name="Tray_Tooltip_PowerPlan" xml:space="preserve">
+    <value>电源计划</value>
+  </data>
+  <data name="Tray_Tooltip_Rule" xml:space="preserve">
+    <value>规则</value>
+  </data>
+  <data name="Menu_OpenSettings" xml:space="preserve">
+    <value>打开设置...</value>
+  </data>
+  <data name="Menu_About" xml:space="preserve">
+    <value>关于...</value>
+  </data>
+  <data name="Menu_Close" xml:space="preserve">
+    <value>退出程序</value>
+  </data>
+  <data name="Menu_ActivePrefix" xml:space="preserve">
+    <value>(当前) </value>
+  </data>
+  <data name="Program_OpenLogPathTitle" xml:space="preserve">
+    <value>打开日志路径</value>
+  </data>
+  <data name="Program_OpenLogPathFailed" xml:space="preserve">
+    <value>无法打开日志路径：{0}</value>
+  </data>
+  <data name="Program_ExportLogTitle" xml:space="preserve">
+    <value>导出日志</value>
+  </data>
+  <data name="Program_ExportLogFilter" xml:space="preserve">
+    <value>Zip 文件 (*.zip)|*.zip|7z 文件 (*.7z)|*.7z</value>
+  </data>
+  <data name="Program_ToastCycleHotkey" xml:space="preserve">
+    <value>已按下循环快捷键</value>
+  </data>
+  <data name="Program_ToastDirectHotkey" xml:space="preserve">
+    <value>已按下电源计划快捷键</value>
+  </data>
+  <data name="AppContext_ToastRuleApplied" xml:space="preserve">
+    <value>规则已应用</value>
+  </data>
+  <data name="AppContext_ToastBatteryManagement" xml:space="preserve">
+    <value>电池管理</value>
+  </data>
+  <data name="ColorTheme_System" xml:space="preserve">
+    <value>跟随系统</value>
+  </data>
+  <data name="ColorTheme_Light" xml:space="preserve">
+    <value>浅色模式</value>
+  </data>
+  <data name="ColorTheme_Dark" xml:space="preserve">
+    <value>深色模式</value>
+  </data>
+  <data name="PopUpLocation_BottomRight" xml:space="preserve">
+    <value>右下角</value>
+  </data>
+  <data name="PopUpLocation_System" xml:space="preserve">
+    <value>跟随系统</value>
+  </data>
+  <data name="PopUpLocation_Center" xml:space="preserve">
+    <value>居中</value>
+  </data>
+  <data name="PopUpLocation_Off" xml:space="preserve">
+    <value>关闭</value>
+  </data>
+  <data name="AboutBox_TitleFormat" xml:space="preserve">
+    <value>关于 {0}</value>
+  </data>
+  <data name="AboutBox_VersionFormat" xml:space="preserve">
+    <value>版本 {0}</value>
+  </data>
+  <data name="AboutBox_OkButton" xml:space="preserve">
+    <value>确定(&amp;O)</value>
+  </data>
+  <data name="SettingsDlg_Title" xml:space="preserve">
+    <value>PowerPlanSwitcher - 设置</value>
+  </data>
+  <data name="SettingsDlg_TabPowerSchemes" xml:space="preserve">
+    <value>电源计划</value>
+  </data>
+  <data name="SettingsDlg_TabRules" xml:space="preserve">
+    <value>规则</value>
+  </data>
+  <data name="SettingsDlg_TabOtherSettings" xml:space="preserve">
+    <value>其他设置</value>
+  </data>
+  <data name="SettingsDlg_GroupHotkeyCycle" xml:space="preserve">
+    <value>循环切换计划快捷键</value>
+  </data>
+  <data name="SettingsDlg_GroupColorTheme" xml:space="preserve">
+    <value>颜色主题</value>
+  </data>
+  <data name="SettingsDlg_GroupNotificationLocation" xml:space="preserve">
+    <value>通知位置</value>
+  </data>
+  <data name="SettingsDlg_GroupLogging" xml:space="preserve">
+    <value>日志</value>
+  </data>
+  <data name="SettingsDlg_DgcVisible" xml:space="preserve">
+    <value>可见</value>
+  </data>
+  <data name="SettingsDlg_DgcIcon" xml:space="preserve">
+    <value>图标</value>
+  </data>
+  <data name="SettingsDlg_DgcName" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="SettingsDlg_DgcHotkey" xml:space="preserve">
+    <value>快捷键</value>
+  </data>
+  <data name="SettingsDlg_DgcRulePriority" xml:space="preserve">
+    <value>#</value>
+  </data>
+  <data name="SettingsDlg_DgcRuleDescription" xml:space="preserve">
+    <value>描述</value>
+  </data>
+  <data name="SettingsDlg_DgcRuleSchemeName" xml:space="preserve">
+    <value>电源计划</value>
+  </data>
+  <data name="SettingsDlg_DgcTriggerCount" xml:space="preserve">
+    <value>触发次数</value>
+  </data>
+  <data name="SettingsDlg_BtnAddPowerRule" xml:space="preserve">
+    <value>新建规则</value>
+  </data>
+  <data name="SettingsDlg_BtnEditPowerRule" xml:space="preserve">
+    <value>编辑规则</value>
+  </data>
+  <data name="SettingsDlg_BtnDeletePowerRule" xml:space="preserve">
+    <value>删除规则</value>
+  </data>
+  <data name="SettingsDlg_BtnAscentPowerRule" xml:space="preserve">
+    <value>上移规则
+(提高优先级)</value>
+  </data>
+  <data name="SettingsDlg_BtnDescentPowerRule" xml:space="preserve">
+    <value>下移规则
+(降低优先级)</value>
+  </data>
+  <data name="SettingsDlg_BtnOpenPowerPlanSettings" xml:space="preserve">
+    <value>打开电源计划
+设置</value>
+  </data>
+  <data name="SettingsDlg_BtnSetIcon" xml:space="preserve">
+    <value>设置图标</value>
+  </data>
+  <data name="SettingsDlg_BtnRemoveIcon" xml:space="preserve">
+    <value>移除图标</value>
+  </data>
+  <data name="SettingsDlg_BtnSetHotkey" xml:space="preserve">
+    <value>设置快捷键</value>
+  </data>
+  <data name="SettingsDlg_BtnRemoveHotkey" xml:space="preserve">
+    <value>移除快捷键</value>
+  </data>
+  <data name="SettingsDlg_BtnAscentPowerScheme" xml:space="preserve">
+    <value>上移计划</value>
+  </data>
+  <data name="SettingsDlg_BtnDescentPowerScheme" xml:space="preserve">
+    <value>下移计划</value>
+  </data>
+  <data name="SettingsDlg_LblRulesOrderHint" xml:space="preserve">
+    <value>规则顺序很重要：规则从上到下依次评估，第一个触发的规则会被应用。</value>
+  </data>
+  <data name="SettingsDlg_RdbCycleAll" xml:space="preserve">
+    <value>在所有电源计划中循环</value>
+  </data>
+  <data name="SettingsDlg_RdbCycleVisible" xml:space="preserve">
+    <value>仅在可见电源计划中循环</value>
+  </data>
+  <data name="SettingsDlg_BtnSetCycleHotkey" xml:space="preserve">
+    <value>设置快捷键</value>
+  </data>
+  <data name="SettingsDlg_BtnRemoveCycleHotkey" xml:space="preserve">
+    <value>移除快捷键</value>
+  </data>
+  <data name="SettingsDlg_ChbExtendedLogging" xml:space="preserve">
+    <value>扩展日志</value>
+  </data>
+  <data name="SettingsDlg_BtnOpenLogFolder" xml:space="preserve">
+    <value>打开日志文件夹</value>
+  </data>
+  <data name="SettingsDlg_BtnExportLog" xml:space="preserve">
+    <value>导出日志为 zip</value>
+  </data>
+  <data name="SettingsDlg_TitleOpenPowerPlanSettings" xml:space="preserve">
+    <value>打开电源设置</value>
+  </data>
+  <data name="SettingsDlg_MsgSelectPowerPlanFirst" xml:space="preserve">
+    <value>请先选择一个电源计划。</value>
+  </data>
+  <data name="SettingsDlg_MsgNotValidPowerPlan" xml:space="preserve">
+    <value>所选项不是有效的电源计划。</value>
+  </data>
+  <data name="SettingsDlg_MsgCouldNotOpenSettings" xml:space="preserve">
+    <value>无法打开 Windows 电源计划设置。</value>
+  </data>
+  <data name="SettingsDlg_TitleHotkeyAlreadyInUse" xml:space="preserve">
+    <value>快捷键已被占用</value>
+  </data>
+  <data name="SettingsDlg_MsgHotkeyAlreadyAssignedToPlan" xml:space="preserve">
+    <value>快捷键已分配给电源计划“{0}”。
+是否要重新绑定到“{1}”？</value>
+  </data>
+  <data name="SettingsDlg_MsgHotkeyAlreadyAssignedToCycle" xml:space="preserve">
+    <value>快捷键已分配给循环切换电源计划。
+是否要重新绑定到“{0}”？</value>
+  </data>
+  <data name="SettingsDlg_MsgHotkeyRebindToCycle" xml:space="preserve">
+    <value>快捷键已分配给电源计划“{0}”。
+是否要重新绑定为循环切换电源计划？</value>
+  </data>
+  <data name="SettingsDlg_LoggingHint" xml:space="preserve">
+    <value>常规日志仅记录关键错误，例如崩溃相关的异常。
+扩展日志可能影响性能。
+扩展日志文件会包含正在运行的进程的基本信息
+（进程 ID、可执行文件路径及启动/停止时间），
+这些信息可能被视为敏感数据。</value>
+  </data>
+  <data name="SettingsDlg_RulesOrderHint" xml:space="preserve">
+    <value>规则从上到下依次评估。
+当前第一个已触发的规则会被应用。
+上移/下移规则以更改优先级。</value>
+  </data>
+  <data name="ToastDlg_Title" xml:space="preserve">
+    <value>电源计划切换为：</value>
+  </data>
+  <data name="CreatePasswordDlg_Title" xml:space="preserve">
+    <value>设置密码</value>
+  </data>
+  <data name="CreatePasswordDlg_Hint" xml:space="preserve">
+    <value>要使用加密保护 ZIP 文件，请输入密码。
+将字段留空以创建未加密的压缩包。</value>
+  </data>
+  <data name="CreatePasswordDlg_BtnOk" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="CreatePasswordDlg_BtnCancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="CreatePasswordDlg_MsgCopyFailed" xml:space="preserve">
+    <value>复制到剪贴板失败：{0}</value>
+  </data>
+  <data name="CreatePasswordDlg_TitleClipboardError" xml:space="preserve">
+    <value>剪贴板错误</value>
+  </data>
+  <data name="HotkeySelectionDlg_Title" xml:space="preserve">
+    <value>PowerPlanSwitcher - 设置快捷键</value>
+  </data>
+  <data name="HotkeySelectionDlg_LblSelectedHotkey" xml:space="preserve">
+    <value>已选快捷键：</value>
+  </data>
+  <data name="HotkeySelectionDlg_BtnOk" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="HotkeySelectionDlg_BtnCancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="IconSelectionDlg_Title" xml:space="preserve">
+    <value>PowerPlanSwitcher - 图标选择</value>
+  </data>
+  <data name="IconSelectionDlg_LblFilter" xml:space="preserve">
+    <value>筛选：</value>
+  </data>
+  <data name="IconSelectionDlg_BtnSelectFile" xml:space="preserve">
+    <value>从文件选择...</value>
+  </data>
+  <data name="IconSelectionDlg_BtnOk" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="IconSelectionDlg_BtnCancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="IconSelectionDlg_MsgInvalidImageTitle" xml:space="preserve">
+    <value>无效的图片文件</value>
+  </data>
+  <data name="IconSelectionDlg_MsgInvalidImage" xml:space="preserve">
+    <value>所选文件无法作为图标图片加载。请选择有效的 PNG、JPG、BMP、TIFF 或 GIF 图片。</value>
+  </data>
+  <data name="IconSelectionDlg_FilterAllImages" xml:space="preserve">
+    <value>所有图片类型 (*.png; *.jpg; *.jpeg; *.bmp; *.tiff; *.tif; *.gif)|*.png;*.jpg;*.jpeg;*.bmp;*.tiff;*.tif;*.gif</value>
+  </data>
+  <data name="IconSelectionDlg_FilterPng" xml:space="preserve">
+    <value>PNG (*.png)|*.png</value>
+  </data>
+  <data name="IconSelectionDlg_FilterJpeg" xml:space="preserve">
+    <value>JPEG (*.jpg; *.jpeg)|*.jpg;*.jpeg</value>
+  </data>
+  <data name="IconSelectionDlg_FilterBmp" xml:space="preserve">
+    <value>BMP (*.bmp)|*.bmp</value>
+  </data>
+  <data name="IconSelectionDlg_FilterTiff" xml:space="preserve">
+    <value>TIFF (*.tiff; *.tif)|*.tiff;*.tif</value>
+  </data>
+  <data name="IconSelectionDlg_FilterGif" xml:space="preserve">
+    <value>GIF (*.gif)|*.gif</value>
+  </data>
+  <data name="IconSelectionDlg_FilterAllFiles" xml:space="preserve">
+    <value>所有文件 (*.*)|*.*</value>
+  </data>
+  <data name="PowerSchemeSelectorDlg_Title" xml:space="preserve">
+    <value>PowerPlanSwitcher - 选择计划</value>
+  </data>
+  <data name="ProcessSelectionDlg_Title" xml:space="preserve">
+    <value>PowerPlanSwitcher - 选择进程</value>
+  </data>
+  <data name="ProcessSelectionDlg_DgcPid" xml:space="preserve">
+    <value>PID</value>
+  </data>
+  <data name="ProcessSelectionDlg_DgcName" xml:space="preserve">
+    <value>名称</value>
+  </data>
+  <data name="ProcessSelectionDlg_DgcStartTime" xml:space="preserve">
+    <value>启动时间</value>
+  </data>
+  <data name="ProcessSelectionDlg_DgcPath" xml:space="preserve">
+    <value>路径</value>
+  </data>
+  <data name="ProcessSelectionDlg_BtnOk" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="ProcessSelectionDlg_BtnCancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="RuleDlg_Title" xml:space="preserve">
+    <value>PowerPlanSwitcher - 规则</value>
+  </data>
+  <data name="RuleDlg_LblRuleType" xml:space="preserve">
+    <value>选择规则类型：</value>
+  </data>
+  <data name="RuleDlg_LblPowerScheme" xml:space="preserve">
+    <value>电源计划：</value>
+  </data>
+  <data name="RuleDlg_BtnOk" xml:space="preserve">
+    <value>确定</value>
+  </data>
+  <data name="RuleDlg_BtnCancel" xml:space="preserve">
+    <value>取消</value>
+  </data>
+  <data name="RuleDlg_MsgSelectRuleType" xml:space="preserve">
+    <value>请选择规则类型！</value>
+  </data>
+  <data name="RuleDlg_MsgInvalidInputTitle" xml:space="preserve">
+    <value>输入无效</value>
+  </data>
+  <data name="RuleDlg_TypeProcess" xml:space="preserve">
+    <value>进程规则</value>
+  </data>
+  <data name="RuleDlg_TypePowerLine" xml:space="preserve">
+    <value>电源线规则</value>
+  </data>
+  <data name="RuleDlg_TypeIdle" xml:space="preserve">
+    <value>空闲规则</value>
+  </data>
+  <data name="RuleDlg_TypeStartup" xml:space="preserve">
+    <value>启动规则</value>
+  </data>
+  <data name="RuleDlg_TypeShutdown" xml:space="preserve">
+    <value>关机规则</value>
+  </data>
+  <data name="RuleDlg_TipProcess" xml:space="preserve">
+    <value>进程规则根据系统上运行的指定进程来切换电源计划。</value>
+  </data>
+  <data name="RuleDlg_TipPowerLine" xml:space="preserve">
+    <value>电源线规则根据当前电源线状态（已连接电源或使用电池）来切换电源计划。</value>
+  </data>
+  <data name="RuleDlg_TipIdle" xml:space="preserve">
+    <value>空闲规则根据无用户输入的持续时间来切换电源计划。</value>
+  </data>
+  <data name="RuleDlg_TipStartup" xml:space="preserve">
+    <value>启动规则在系统启动时切换电源计划。
+可选：设置一个持续时间，超过该时间后电源计划将被停用。
+该规则始终会被触发，应放在规则列表的最后。</value>
+  </data>
+  <data name="RuleDlg_TipShutdown" xml:space="preserve">
+    <value>关机规则在系统关闭时切换电源计划。</value>
+  </data>
+  <data name="StartupRuleControl_LblEnableDelay" xml:space="preserve">
+    <value>启用延迟：</value>
+  </data>
+  <data name="StartupRuleControl_LblDelay" xml:space="preserve">
+    <value>延迟：</value>
+  </data>
+  <data name="StartupRuleControl_LblEnableDuration" xml:space="preserve">
+    <value>启用持续时间：</value>
+  </data>
+  <data name="StartupRuleControl_LblDuration" xml:space="preserve">
+    <value>持续时间：</value>
+  </data>
+  <data name="StartupRuleControl_UnitSeconds" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="StartupRuleControl_UnitMinutes" xml:space="preserve">
+    <value>分钟</value>
+  </data>
+  <data name="StartupRuleControl_UnitHours" xml:space="preserve">
+    <value>小时</value>
+  </data>
+  <data name="StartupRuleControl_DelayHint" xml:space="preserve">
+    <value>启用后，在监视开始后按配置的延迟推迟此启动规则的触发。
+如果同时启用了持续时间，则持续时间的倒计时仅在规则实际触发后（延迟之后）才开始。</value>
+  </data>
+  <data name="StartupRuleControl_DurationHint" xml:space="preserve">
+    <value>启用此选项可在指定持续时间后自动取消触发此启动规则。
+禁用时，启动规则一旦触发将无限期保持触发状态。</value>
+  </data>
+  <data name="IdleRuleControl_LblIdleTimeThreshold" xml:space="preserve">
+    <value>空闲时间阈值：</value>
+  </data>
+  <data name="IdleRuleControl_LblCheckExecutionState" xml:space="preserve">
+    <value>检查执行状态：</value>
+  </data>
+  <data name="IdleRuleControl_LblCheckFullscreenApp" xml:space="preserve">
+    <value>检查全屏应用：</value>
+  </data>
+  <data name="IdleRuleControl_UnitSeconds" xml:space="preserve">
+    <value>秒</value>
+  </data>
+  <data name="IdleRuleControl_UnitMinutes" xml:space="preserve">
+    <value>分钟</value>
+  </data>
+  <data name="IdleRuleControl_UnitHours" xml:space="preserve">
+    <value>小时</value>
+  </data>
+  <data name="IdleRuleControl_ExecutionStateHint" xml:space="preserve">
+    <value>当其他进程设置了以下任一执行状态时，阻止进入空闲：
+- ES_AWAYMODE_REQUIRED 强制系统继续运行关键后台进程。
+- ES_DISPLAY_REQUIRED 通过重置显示空闲计时器强制显示保持开启。
+- ES_SYSTEM_REQUIRED 通过重置系统空闲计时器强制系统保持工作状态。</value>
+  </data>
+  <data name="IdleRuleControl_FullscreenAppHint" xml:space="preserve">
+    <value>当活动进程正在全屏模式下运行时，阻止进入空闲。</value>
+  </data>
+  <data name="PowerLineRuleControl_LblPowerLineStatus" xml:space="preserve">
+    <value>电源线状态：</value>
+  </data>
+  <data name="ProcessRuleControl_LblComparison" xml:space="preserve">
+    <value>比较方式：</value>
+  </data>
+  <data name="ProcessRuleControl_LblPattern" xml:space="preserve">
+    <value>匹配模式：</value>
+  </data>
+  <data name="ProcessRuleControl_BtnSelectFile" xml:space="preserve">
+    <value>选择文件...</value>
+  </data>
+  <data name="ProcessRuleControl_BtnSelectFolder" xml:space="preserve">
+    <value>选择文件夹...</value>
+  </data>
+  <data name="ProcessRuleControl_BtnSelectFromProcess" xml:space="preserve">
+    <value>从活动进程选择...</value>
+  </data>
+  <data name="ProcessRuleControl_CmpExactTip" xml:space="preserve">
+    <value>进程的执行路径必须完全匹配该模式。
+忽略大小写。</value>
+  </data>
+  <data name="ProcessRuleControl_CmpStartsWithTip" xml:space="preserve">
+    <value>进程的执行路径必须以提供的模式开头。
+忽略大小写。</value>
+  </data>
+  <data name="ProcessRuleControl_CmpEndsWithTip" xml:space="preserve">
+    <value>进程的执行路径必须以提供的模式结尾。
+忽略大小写。</value>
+  </data>
+  <data name="ProcessRuleControl_CmpWildcardTip" xml:space="preserve">
+    <value>进程的执行路径必须匹配提供的通配符模式，使用 glob 风格匹配。
+支持 *（在单个文件夹内匹配）、?（单个字符）和 **（跨任意数量的文件夹匹配）。
+C:\Program Files\*.exe -&gt; 匹配 C:\Program Files 下的任意 exe 文件
+C:\Program Files\**\*.exe -&gt; 匹配 C:\Program Files 任意子文件夹下的 exe 文件
+C:\Program Files\My?pp.exe -&gt; 匹配 C:\Program Files 中的 MyApp.exe 和 MySpp.exe
+忽略大小写。</value>
+  </data>
+</root>

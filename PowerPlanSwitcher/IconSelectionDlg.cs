@@ -75,6 +75,7 @@ public partial class IconSelectionDlg : Form
     public IconSelectionDlg()
     {
         InitializeComponent();
+        ApplyLocalization();
         LvwIcons.BackColor = SystemColors.Window;
         LvwIcons.ForeColor = SystemColors.WindowText;
 
@@ -105,6 +106,15 @@ public partial class IconSelectionDlg : Form
         filteredMapping = [.. imageCache.Keys];
 
         RebuildIconList();
+    }
+
+    private void ApplyLocalization()
+    {
+        Text = Strings.IconSelectionDlg_Title;
+        label1.Text = Strings.IconSelectionDlg_LblFilter;
+        BtnSelectFile.Text = Strings.IconSelectionDlg_BtnSelectFile;
+        BtnOk.Text = Strings.IconSelectionDlg_BtnOk;
+        BtnCancel.Text = Strings.IconSelectionDlg_BtnCancel;
     }
 
     protected override void OnShown(EventArgs e) => base.OnShown(e);
@@ -162,15 +172,13 @@ public partial class IconSelectionDlg : Form
     {
         var typeFilters = new[]
         {
-            "All image types " +
-            "(*.png; *.jpg; *.jpeg; *.bmp; *.tiff; *.tif; *.gif)" +
-            "|*.png;*.jpg;*.jpeg;*.bmp;*.tiff;*.tif;*.gif",
-            "PNG (*.png)|*.png",
-            "JPEG (*.jpg; *.jpeg)|*.jpg;*.jpeg",
-            "BMP (*.bmp)|*.bmp",
-            "TIFF (*.tiff; *.tif)|*.tiff;*.tif",
-            "GIF (*.gif)|*.gif",
-            "All files (*.*)|*.*",
+            Strings.IconSelectionDlg_FilterAllImages,
+            Strings.IconSelectionDlg_FilterPng,
+            Strings.IconSelectionDlg_FilterJpeg,
+            Strings.IconSelectionDlg_FilterBmp,
+            Strings.IconSelectionDlg_FilterTiff,
+            Strings.IconSelectionDlg_FilterGif,
+            Strings.IconSelectionDlg_FilterAllFiles,
         };
 
         using var dlg = new OpenFileDialog
@@ -194,9 +202,8 @@ public partial class IconSelectionDlg : Form
                 "Failed to load user-selected icon file {FilePath}",
                 dlg.FileName);
             _ = MessageBox.Show(
-                "The selected file could not be loaded as an icon image. " +
-                "Please choose a valid PNG, JPG, BMP, TIFF, or GIF image.",
-                "Invalid image file",
+                Strings.IconSelectionDlg_MsgInvalidImage,
+                Strings.IconSelectionDlg_MsgInvalidImageTitle,
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Warning);
             return;

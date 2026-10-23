@@ -1,4 +1,4 @@
-﻿namespace PowerPlanSwitcher;
+namespace PowerPlanSwitcher;
 
 using System;
 using System.Windows.Forms;
@@ -31,7 +31,13 @@ public partial class ToastDlg : Form
     public ToastDlg()
     {
         InitializeComponent();
+        ApplyLocalization();
         dpiImageScaler = new DpiImageScaler(this);
+    }
+
+    private void ApplyLocalization()
+    {
+        LblTitle.Text = Strings.ToastDlg_Title;
     }
 
     protected override void OnLoad(EventArgs e)

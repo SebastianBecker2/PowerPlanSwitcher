@@ -1,4 +1,4 @@
-﻿namespace PowerPlanSwitcher;
+namespace PowerPlanSwitcher;
 
 using System.Data;
 using Autofac;
@@ -51,6 +51,7 @@ public partial class SettingsDlg : Form
         Rules = ruleManager.GetRules().Select(r => new RuleWrapper(r));
 
         InitializeComponent();
+        ApplyLocalization();
         dpiImageScaler = new DpiImageScaler(this);
         dpiImageScaler.OverrideSource(BtnAddPowerRule, Resources.add);
         dpiImageScaler.OverrideSource(BtnEditPowerRule, Resources.pencil);
@@ -71,20 +72,75 @@ public partial class SettingsDlg : Form
         Size = Settings.Default.SettingsDlgSize;
         RestoreSelectedTab();
 
-        var text = $"Regular logging only captures critical errors, " +
-            $"such as crash-related exceptions.{Environment.NewLine}" +
-            $"Extended logging may have performance implication." +
-            $"{Environment.NewLine}Extended log files will include basic " +
-            $"information about running processes {Environment.NewLine}" +
-            $"(process ID, executable path and start/stop times) " +
-            $"{Environment.NewLine}which may be considered sensitive data.";
-        TipHints.SetToolTip(PibLoggingInfo, text);
+        TipHints.SetToolTip(PibLoggingInfo, Strings.SettingsDlg_LoggingHint);
 
         TipHints.SetToolTip(
             PibRulesOrderInfo,
-            "Rules are evaluated from top to bottom.\n" +
-            "The first currently triggered rule is applied.\n" +
-            "Move Rule up/down to change priority.");
+            Strings.SettingsDlg_RulesOrderHint);
+    }
+
+    private void ApplyLocalization()
+    {
+        // Form title
+        Text = Strings.SettingsDlg_Title;
+
+        // Tab pages
+        TapPowerSchemes.Text = Strings.SettingsDlg_TabPowerSchemes;
+        TapRules.Text = Strings.SettingsDlg_TabRules;
+        TapOtherSettings.Text = Strings.SettingsDlg_TabOtherSettings;
+
+        // OK / Cancel
+        BtnOk.Text = Strings.Common_OK;
+        BtnCancel.Text = Strings.Common_Cancel;
+
+        // Power schemes DataGridView columns
+        DgcVisible.HeaderText = Strings.SettingsDlg_DgcVisible;
+        DgcIcon.HeaderText = Strings.SettingsDlg_DgcIcon;
+        DgcName.HeaderText = Strings.SettingsDlg_DgcName;
+        DgcHotkey.HeaderText = Strings.SettingsDlg_DgcHotkey;
+
+        // Rules DataGridView columns
+        DgcRulePriority.HeaderText = Strings.SettingsDlg_DgcRulePriority;
+        DgcRuleDescription.HeaderText = Strings.SettingsDlg_DgcRuleDescription;
+        DgcRuleSchemeIcon.HeaderText = Strings.SettingsDlg_DgcIcon;
+        DgcRuleSchemeName.HeaderText = Strings.SettingsDlg_DgcRuleSchemeName;
+        DgcTriggerCount.HeaderText = Strings.SettingsDlg_DgcTriggerCount;
+
+        // Rules tab buttons
+        BtnAddPowerRule.Text = Strings.SettingsDlg_BtnAddPowerRule;
+        BtnEditPowerRule.Text = Strings.SettingsDlg_BtnEditPowerRule;
+        BtnDeletePowerRule.Text = Strings.SettingsDlg_BtnDeletePowerRule;
+        BtnAscentPowerRule.Text = Strings.SettingsDlg_BtnAscentPowerRule;
+        BtnDescentPowerRule.Text = Strings.SettingsDlg_BtnDescentPowerRule;
+
+        // Rules order hint
+        LblRulesOrderHint.Text = Strings.SettingsDlg_LblRulesOrderHint;
+
+        // Power schemes tab buttons
+        BtnOpenPowerPlanSettings.Text = Strings.SettingsDlg_BtnOpenPowerPlanSettings;
+        BtnSetIcon.Text = Strings.SettingsDlg_BtnSetIcon;
+        BtnRemoveIcon.Text = Strings.SettingsDlg_BtnRemoveIcon;
+        BtnSetHotkey.Text = Strings.SettingsDlg_BtnSetHotkey;
+        BtnRemoveHotkey.Text = Strings.SettingsDlg_BtnRemoveHotkey;
+        BtnAscentPowerScheme.Text = Strings.SettingsDlg_BtnAscentPowerScheme;
+        BtnDescentPowerScheme.Text = Strings.SettingsDlg_BtnDescentPowerScheme;
+
+        // Other settings tab - group boxes
+        groupBox4.Text = Strings.SettingsDlg_GroupHotkeyCycle;
+        groupBox1.Text = Strings.SettingsDlg_GroupColorTheme;
+        groupBox3.Text = Strings.SettingsDlg_GroupNotificationLocation;
+        groupBox2.Text = Strings.SettingsDlg_GroupLogging;
+
+        // Cycle hotkey group
+        RdbCycleAll.Text = Strings.SettingsDlg_RdbCycleAll;
+        RdbCycleVisible.Text = Strings.SettingsDlg_RdbCycleVisible;
+        BtnSetCycleHotkey.Text = Strings.SettingsDlg_BtnSetCycleHotkey;
+        BtnRemoveCycleHotkey.Text = Strings.SettingsDlg_BtnRemoveCycleHotkey;
+
+        // Logging group
+        ChbExtendedLogging.Text = Strings.SettingsDlg_ChbExtendedLogging;
+        BtnOpenLogFolder.Text = Strings.SettingsDlg_BtnOpenLogFolder;
+        BtnExportLog.Text = Strings.SettingsDlg_BtnExportLog;
     }
 
     protected override void OnFormClosing(FormClosingEventArgs e)
@@ -134,29 +190,26 @@ public partial class SettingsDlg : Form
         RdbCycleAll.Checked = !Settings.Default.CycleOnlyVisible;
         RdbCycleVisible.Checked = Settings.Default.CycleOnlyVisible;
 
-        CmbColorTheme.Items.AddRange([.. ColorThemeHelper.GetDisplayNames().Cast<object>()]);
-        var index = CmbColorTheme.Items.IndexOf(Settings.Default.ColorTheme);
-        if (index != -1 && index < CmbColorTheme.Items.Count)
-        {
-            CmbColorTheme.SelectedIndex = index;
-        }
-        else
-        {
-            CmbColorTheme.SelectedIndex = 0;
-        }
+        // Color theme combo: populate with localized display names,
+        // select by enum index so save/load is language independent.
+        var themes = ColorThemeHelper.GetColorThemes();
+        CmbColorTheme.Items.Clear();
+        CmbColorTheme.Items.AddRange(
+            [.. themes.Select(ColorThemeHelper.GetDisplayName).Cast<object>()]);
+        var selectedTheme = ColorThemeHelper.GetSelectedColorTheme();
+        var themeIndex = themes.IndexOf(selectedTheme);
+        CmbColorTheme.SelectedIndex = themeIndex >= 0 ? themeIndex : 0;
 
+        // Pop-up window location combo: same approach.
+        var locations = PopUpWindowLocationHelper.GetPopUpWindowLocations();
+        CmbPopUpWindowGlobal.Items.Clear();
         CmbPopUpWindowGlobal.Items.AddRange(
-            [.. PopUpWindowLocationHelper.GetDisplayNames().Cast<object>()]);
-        index = CmbPopUpWindowGlobal.Items.IndexOf(
-            Settings.Default.PopUpWindowLocationGlobal);
-        if (index != -1 && index < CmbPopUpWindowGlobal.Items.Count)
-        {
-            CmbPopUpWindowGlobal.SelectedIndex = index;
-        }
-        else
-        {
-            CmbPopUpWindowGlobal.SelectedIndex = 0;
-        }
+            [.. locations.Select(PopUpWindowLocationHelper.GetDisplayName).Cast<object>()]);
+        var selectedLocation =
+            PopUpWindowLocationHelper.GetSelectedPopUpWindowLocation(
+                Settings.Default.PopUpWindowLocationGlobal);
+        var locationIndex = locations.IndexOf(selectedLocation);
+        CmbPopUpWindowGlobal.SelectedIndex = locationIndex >= 0 ? locationIndex : 0;
 
         ChbExtendedLogging.Checked = Settings.Default.ExtendedLogging;
 
@@ -276,10 +329,23 @@ public partial class SettingsDlg : Form
             JsonConvert.SerializeObject(LblCycleHotkey.Tag);
         Settings.Default.CycleOnlyVisible = RdbCycleVisible.Checked;
 
-        Settings.Default.ColorTheme = CmbColorTheme.SelectedItem as string;
+        // Save color theme by enum name, language independent.
+        var themes = ColorThemeHelper.GetColorThemes();
+        var themeIndex = CmbColorTheme.SelectedIndex;
+        if (themeIndex >= 0 && themeIndex < themes.Count)
+        {
+            ColorThemeHelper.SetSelectedColorTheme(themes[themeIndex]);
+        }
 
-        Settings.Default.PopUpWindowLocationGlobal =
-            CmbPopUpWindowGlobal.SelectedItem as string;
+        // Save pop-up window location by enum name, language independent.
+        var locations = PopUpWindowLocationHelper.GetPopUpWindowLocations();
+        var locationIndex = CmbPopUpWindowGlobal.SelectedIndex;
+        if (locationIndex >= 0 && locationIndex < locations.Count)
+        {
+            PopUpWindowLocationHelper.SetSelectedPopUpWindowLocation(
+                locations[locationIndex],
+                batteryManagement: false);
+        }
 
         Settings.Default.ExtendedLogging = ChbExtendedLogging.Checked;
 
@@ -423,8 +489,8 @@ public partial class SettingsDlg : Form
         if (DgvPowerSchemes.SelectedRows.Count == 0)
         {
             _ = MessageBox.Show(
-                "Select a power plan first.",
-                "Open power plan settings",
+                Strings.SettingsDlg_MsgSelectPowerPlanFirst,
+                Strings.SettingsDlg_TitleOpenPowerPlanSettings,
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Information);
             return;
@@ -435,8 +501,8 @@ public partial class SettingsDlg : Form
         if (!PowerSchemeSettingsOpener.IsKnownPowerScheme(schemeGuid))
         {
             _ = MessageBox.Show(
-                "The selected entry is not a valid power plan.",
-                "Open power plan settings",
+                Strings.SettingsDlg_MsgNotValidPowerPlan,
+                Strings.SettingsDlg_TitleOpenPowerPlanSettings,
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Warning);
             return;
@@ -445,8 +511,8 @@ public partial class SettingsDlg : Form
         if (!PowerSchemeSettingsOpener.TryOpenPowerOptions())
         {
             _ = MessageBox.Show(
-                "Could not open Windows power plan settings.",
-                "Open power plan settings",
+                Strings.SettingsDlg_MsgCouldNotOpenSettings,
+                Strings.SettingsDlg_TitleOpenPowerPlanSettings,
                 MessageBoxButtons.OK,
                 MessageBoxIcon.Error);
         }
@@ -628,10 +694,11 @@ public partial class SettingsDlg : Form
         {
             var duplicateName = duplicate.Cells["DgcName"].Value;
             if (MessageBox.Show(
-                "Hotkey already assigned to Power Plan " +
-                $"'{duplicateName}'.{Environment.NewLine}Do you want to " +
-                $"rebind to '{name}'?",
-                "Hotkey already in use",
+                string.Format(
+                    Strings.SettingsDlg_MsgHotkeyAlreadyAssignedToPlan,
+                    duplicateName,
+                    name),
+                Strings.SettingsDlg_TitleHotkeyAlreadyInUse,
                 MessageBoxButtons.YesNo) == DialogResult.No)
             {
                 return;
@@ -643,10 +710,10 @@ public partial class SettingsDlg : Form
         else if (dlg.Hotkey.Equals(LblCycleHotkey.Tag))
         {
             if (MessageBox.Show(
-                "Hotkey already assigned to cycle through Power Plans." +
-                $"{Environment.NewLine}Do you want to " +
-                $"rebind to '{name}'?",
-                "Hotkey already in use",
+                string.Format(
+                    Strings.SettingsDlg_MsgHotkeyAlreadyAssignedToCycle,
+                    name),
+                Strings.SettingsDlg_TitleHotkeyAlreadyInUse,
                 MessageBoxButtons.YesNo) == DialogResult.No)
             {
                 return;
@@ -694,10 +761,10 @@ public partial class SettingsDlg : Form
         {
             var duplicateName = duplicate.Cells["DgcName"].Value;
             if (MessageBox.Show(
-                "Hotkey already assigned to Power Plan " +
-                $"'{duplicateName}'.{Environment.NewLine}Do you want to " +
-                $"rebind to cycle through Power Plans?",
-                "Hotkey already in use",
+                string.Format(
+                    Strings.SettingsDlg_MsgHotkeyRebindToCycle,
+                    duplicateName),
+                Strings.SettingsDlg_TitleHotkeyAlreadyInUse,
                 MessageBoxButtons.YesNo) == DialogResult.No)
             {
                 return;

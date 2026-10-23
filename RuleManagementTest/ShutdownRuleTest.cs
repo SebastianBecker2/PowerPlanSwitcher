@@ -1,5 +1,6 @@
 namespace RuleManagementTest;
 
+using System.Globalization;
 using FakeItEasy;
 using RuleManagement.Dto;
 using RuleManagement.Rules;
@@ -9,9 +10,24 @@ using SystemManagement;
 public sealed class ShutdownRuleTest
 {
     private IWindowMessageMonitor monitor = null!;
+    private CultureInfo? previousUiCulture;
 
     [TestInitialize]
-    public void Setup() => monitor = A.Fake<IWindowMessageMonitor>();
+    public void Setup()
+    {
+        monitor = A.Fake<IWindowMessageMonitor>();
+        previousUiCulture = CultureInfo.CurrentUICulture;
+        CultureInfo.CurrentUICulture = CultureInfo.GetCultureInfo("en");
+    }
+
+    [TestCleanup]
+    public void Cleanup()
+    {
+        if (previousUiCulture is not null)
+        {
+            CultureInfo.CurrentUICulture = previousUiCulture;
+        }
+    }
 
     [TestMethod]
     public void InitialTriggerCount_IsZero()

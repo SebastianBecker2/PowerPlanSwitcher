@@ -127,16 +127,44 @@ public partial class StartupRuleControl : UserControl
     public StartupRuleControl()
     {
         InitializeComponent();
+        ApplyLocalization();
         CmbDelayUnit.SelectedIndex = 0;
         CmbUnit.SelectedIndex = 0;
 
-        var delayHint = "When enabled, triggering of this Startup Rule is postponed by the configured delay after monitoring starts." +
-            $"{Environment.NewLine}If you also enable a duration, the countdown for that duration begins only when the rule actually becomes triggered (after the delay).";
+        var delayHint = Strings.StartupRuleControl_DelayHint;
         TipHints.SetToolTip(PibDelayHint, delayHint);
 
-        var durationHint = "Enable this option to automatically untrigger this Startup Rule after the specified duration." +
-            $"{Environment.NewLine}If disabled, the Startup Rule remains triggered indefinitely once it has triggered.";
+        var durationHint = Strings.StartupRuleControl_DurationHint;
         TipHints.SetToolTip(PibDurationHint, durationHint);
+    }
+
+    private void ApplyLocalization()
+    {
+        labelEnableDelay.Text = Strings.StartupRuleControl_LblEnableDelay;
+        labelDelay.Text = Strings.StartupRuleControl_LblDelay;
+        label1.Text = Strings.StartupRuleControl_LblEnableDuration;
+        label2.Text = Strings.StartupRuleControl_LblDuration;
+
+        // 单位列表用本地化显示名替换 Designer 里的硬编码英文
+        var delayUnitIndex = CmbDelayUnit.SelectedIndex;
+        CmbDelayUnit.Items.Clear();
+        CmbDelayUnit.Items.AddRange(new object[]
+        {
+            Strings.StartupRuleControl_UnitSeconds,
+            Strings.StartupRuleControl_UnitMinutes,
+            Strings.StartupRuleControl_UnitHours,
+        });
+        CmbDelayUnit.SelectedIndex = delayUnitIndex >= 0 ? delayUnitIndex : 0;
+
+        var unitIndex = CmbUnit.SelectedIndex;
+        CmbUnit.Items.Clear();
+        CmbUnit.Items.AddRange(new object[]
+        {
+            Strings.StartupRuleControl_UnitSeconds,
+            Strings.StartupRuleControl_UnitMinutes,
+            Strings.StartupRuleControl_UnitHours,
+        });
+        CmbUnit.SelectedIndex = unitIndex >= 0 ? unitIndex : 0;
     }
 
     private void PibDelayHint_Click(object sender, EventArgs e) =>

@@ -1,4 +1,4 @@
-﻿namespace PowerPlanSwitcher;
+namespace PowerPlanSwitcher;
 
 using PowerManagement;
 using RuleManagement.Dto;
@@ -11,13 +11,13 @@ public partial class RuleDlg : Form
 
     private List<(Guid guid, string name)> powerSchemes = [];
 
-    private static readonly List<(string name, Type type)> RuleTypes =
+    private static readonly List<(string nameKey, Type type)> RuleTypes =
         [
-            ("Process Rule", typeof(ProcessRuleDto)),
-            ("Power Line Rule", typeof(PowerLineRuleDto)),
-            ("Idle Rule", typeof(IdleRuleDto)),
-            ("Startup Rule", typeof(StartupRuleDto)),
-            ("Shutdown Rule", typeof(ShutdownRuleDto)),
+            ("RuleDlg_TypeProcess", typeof(ProcessRuleDto)),
+            ("RuleDlg_TypePowerLine", typeof(PowerLineRuleDto)),
+            ("RuleDlg_TypeIdle", typeof(IdleRuleDto)),
+            ("RuleDlg_TypeStartup", typeof(StartupRuleDto)),
+            ("RuleDlg_TypeShutdown", typeof(ShutdownRuleDto)),
         ];
 
     private static string GetSelectedString(ComboBox cmb) =>
@@ -29,10 +29,25 @@ public partial class RuleDlg : Form
     public RuleDlg()
     {
         InitializeComponent();
+        ApplyLocalization();
         _ = new DpiImageScaler(this);
         srcStartupRule.Dock = DockStyle.Fill;
         tableLayoutPanel1.Controls.Add(srcStartupRule, 0, 3);
         tableLayoutPanel1.SetColumnSpan(srcStartupRule, 3);
+    }
+
+    private void ApplyLocalization()
+    {
+        Text = Strings.RuleDlg_Title;
+        LblRuleType.Text = Strings.RuleDlg_LblRuleType;
+        LblPowerScheme.Text = Strings.RuleDlg_LblPowerScheme;
+        BtnOk.Text = Strings.RuleDlg_BtnOk;
+        BtnCancel.Text = Strings.RuleDlg_BtnCancel;
+
+        CmbRuleType.Items.Clear();
+        CmbRuleType.Items.AddRange([.. RuleTypes
+            .Select(rt => (object)Strings.ResourceManager.GetString(rt.nameKey)!)
+        ]);
     }
 
     protected override void OnLoad(EventArgs e)
@@ -140,8 +155,8 @@ public partial class RuleDlg : Form
         }
 
         _ = MessageBox.Show(
-            "Select a Rule Type!",
-            "Invalid input",
+            Strings.RuleDlg_MsgSelectRuleType,
+            Strings.RuleDlg_MsgInvalidInputTitle,
             MessageBoxButtons.OK,
             MessageBoxIcon.Error);
     }
@@ -153,7 +168,7 @@ public partial class RuleDlg : Form
         {
             TipHints.SetToolTip(
                 PibRuleInfo,
-                "A process rule switches power plans based on the presence of a specified process running on the system.");
+                Strings.RuleDlg_TipProcess);
             PrcProcessRule.Visible = true;
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = false;
@@ -163,7 +178,7 @@ public partial class RuleDlg : Form
         {
             TipHints.SetToolTip(
                 PibRuleInfo,
-                "A power line rule switches power plans based on the current power line status (plugged in or on battery).");
+                Strings.RuleDlg_TipPowerLine);
             PrcProcessRule.Visible = false;
             PlcPowerLineRule.Visible = true;
             IrcIdleRule.Visible = false;
@@ -173,7 +188,7 @@ public partial class RuleDlg : Form
         {
             TipHints.SetToolTip(
                 PibRuleInfo,
-                "An idle rule switches power plans based on the duration without user input.");
+                Strings.RuleDlg_TipIdle);
             PrcProcessRule.Visible = false;
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = true;
@@ -183,9 +198,7 @@ public partial class RuleDlg : Form
         {
             TipHints.SetToolTip(
                 PibRuleInfo,
-                $"A startup rule switches power plans when the system starts up." +
-                $"{Environment.NewLine}Optionally, you can set a duration after which the power scheme will be deactivated." +
-                $"{Environment.NewLine}This rule is always triggered and should be the last rule in the list.");
+                Strings.RuleDlg_TipStartup);
             PrcProcessRule.Visible = false;
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = false;
@@ -195,7 +208,7 @@ public partial class RuleDlg : Form
         {
             TipHints.SetToolTip(
                 PibRuleInfo,
-                "A shutdown rule switches power plans when the system is shutting down.");
+                Strings.RuleDlg_TipShutdown);
             PrcProcessRule.Visible = false;
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = false;
@@ -205,7 +218,7 @@ public partial class RuleDlg : Form
         {
             TipHints.SetToolTip(
                 PibRuleInfo,
-                "Select a Rule Type!");
+                Strings.RuleDlg_MsgSelectRuleType);
             PrcProcessRule.Visible = false;
             PlcPowerLineRule.Visible = false;
             IrcIdleRule.Visible = false;
