@@ -458,7 +458,7 @@ namespace PowerPlanSwitcher
             BtnSetHotkey.Image = (Image)resources.GetObject("BtnSetHotkey.Image");
             BtnSetHotkey.Location = new Point(464, 93);
             BtnSetHotkey.Name = "BtnSetHotkey";
-            BtnSetHotkey.Size = new Size(109, 65);
+            BtnSetHotkey.Size = new Size(109, 84);
             BtnSetHotkey.TabIndex = 6;
             BtnSetHotkey.Text = "Set Hotkey";
             BtnSetHotkey.TextImageRelation = TextImageRelation.ImageAboveText;
@@ -470,7 +470,7 @@ namespace PowerPlanSwitcher
             BtnRemoveHotkey.Image = (Image)resources.GetObject("BtnRemoveHotkey.Image");
             BtnRemoveHotkey.Location = new Point(579, 93);
             BtnRemoveHotkey.Name = "BtnRemoveHotkey";
-            BtnRemoveHotkey.Size = new Size(109, 65);
+            BtnRemoveHotkey.Size = new Size(109, 84);
             BtnRemoveHotkey.TabIndex = 22;
             BtnRemoveHotkey.Text = "Remove Hotkey";
             BtnRemoveHotkey.TextImageRelation = TextImageRelation.ImageAboveText;
@@ -575,7 +575,6 @@ namespace PowerPlanSwitcher
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
             tableLayoutPanel4.Size = new Size(679, 212);
             tableLayoutPanel4.TabIndex = 0;
-            tableLayoutPanel4.Paint += tableLayoutPanel4_Paint;
             // 
             // RdbCycleAll
             // 
