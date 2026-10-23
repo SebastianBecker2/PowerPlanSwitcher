@@ -1,5 +1,6 @@
 <Wix xmlns="http://wixtoolset.org/schemas/v4/wxs"
-     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui">
+     xmlns:ui="http://wixtoolset.org/schemas/v4/wxs/ui"
+     xmlns:util="http://wixtoolset.org/schemas/v4/wxs/util">
     <?include $(sys.CURRENTDIR)\Config.wxi?>
 
     <Package Name="$(var.ProductName)"
@@ -11,6 +12,13 @@
 
         <MajorUpgrade AllowSameVersionUpgrades="yes"
                       DowngradeErrorMessage="A newer version of [ProductName] is already installed." />
+
+        <util:CloseApplication Id="ClosePowerPlanSwitcher"
+                               Target="PowerPlanSwitcher.exe"
+                               CloseMessage="yes"
+                               EndSessionMessage="yes"
+                               RebootPrompt="no"
+                               TerminateProcess="1" />
 
         <MediaTemplate EmbedCab="yes" />
 
@@ -87,40 +95,9 @@
                       Return="ignore"
                       BinaryRef="Wix4UtilCA_X86" />
 
-        <CustomAction Id="SetCloseCmdLine"
-                  Property="WixQuietExecCmdLine"
-                  Value="&quot;[WindowsFolder]System32\taskkill.exe&quot; /IM PowerPlanSwitcher.exe"
-                  Execute="immediate"
-                  Return="check" />
-        <CustomAction Id="CloseProduct"
-                      DllEntry="WixQuietExec"
-                      Execute="immediate"
-                      Return="ignore"
-                      BinaryRef="Wix4UtilCA_X86" />
-
-        <CustomAction Id="UpdateCmdToKill"
-                      Property="WixQuietExecCmdLine"
-                      Value="&quot;[WindowsFolder]\System32\taskkill.exe&quot; /F /IM PowerPlanSwitcher.exe"
-                      Execute="immediate"
-                      Return="check" />
-
-        <CustomAction Id="KillProduct"
-                      DllEntry="WixQuietExec"
-                      Execute="immediate"
-                      Return="ignore"
-                      BinaryRef="Wix4UtilCA_X86" />
-
         <InstallExecuteSequence>
             <Custom Action="LaunchProduct"
                     After="InstallFinalize" />
-            <Custom Action="SetCloseCmdLine"
-                Before="CloseProduct" />
-            <Custom Action="CloseProduct"
-                    Before="LaunchConditions" />
-            <Custom Action="UpdateCmdToKill"
-                    After="CloseProduct" />
-            <Custom Action="KillProduct"
-                    After="UpdateCmdToKill" />
         </InstallExecuteSequence>
     </Fragment>
 
