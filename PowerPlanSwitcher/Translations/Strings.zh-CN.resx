@@ -163,10 +163,10 @@
     <value>Zip 文件 (*.zip)|*.zip|7z 文件 (*.7z)|*.7z</value>
   </data>
   <data name="Program_ToastCycleHotkey" xml:space="preserve">
-    <value>已按循环快捷键</value>
+    <value>已按下循环快捷键</value>
   </data>
   <data name="Program_ToastDirectHotkey" xml:space="preserve">
-    <value>已按电源计划快捷键</value>
+    <value>已按下电源计划快捷键</value>
   </data>
   <data name="AppContext_ToastRuleApplied" xml:space="preserve">
     <value>规则已应用</value>
@@ -295,10 +295,10 @@
     <value>规则顺序很重要：规则从上到下依次评估，第一个触发的规则会被应用。</value>
   </data>
   <data name="SettingsDlg_RdbCycleAll" xml:space="preserve">
-    <value>所有计划中循环</value>
+    <value>在所有电源计划中循环</value>
   </data>
   <data name="SettingsDlg_RdbCycleVisible" xml:space="preserve">
-    <value>可见计划中循环</value>
+    <value>仅在可见电源计划中循环</value>
   </data>
   <data name="SettingsDlg_BtnSetCycleHotkey" xml:space="preserve">
     <value>设置快捷键</value>
@@ -346,12 +346,12 @@
     <value>常规日志仅记录关键错误，例如崩溃相关的异常。
 扩展日志可能影响性能。
 扩展日志文件会包含正在运行的进程的基本信息
-（进程 ID、可执行文件路径及启动/停止时间）
+（进程 ID、可执行文件路径及启动/停止时间），
 这些信息可能被视为敏感数据。</value>
   </data>
   <data name="SettingsDlg_RulesOrderHint" xml:space="preserve">
     <value>规则从上到下依次评估。
-第一个当前触发的规则会被应用。
+当前第一个已触发的规则会被应用。
 上移/下移规则以更改优先级。</value>
   </data>
   <data name="ToastDlg_Title" xml:space="preserve">
