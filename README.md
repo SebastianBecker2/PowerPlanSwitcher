@@ -12,6 +12,12 @@ Switch your power plan easily and quickly by clicking the tray-icon.
 
 Or let PowerPlanSwitcher automatically switch between power plans depending on what you do.
 
+## Install
+
+WinGet (`SebastianBecker.PowerPlanSwitcher`) and Scoop (`extras/powerplanswitcher`) packages are pending their first submissions to the public catalogs. Until those pull requests are merged, install the MSI from the GitHub releases.
+
+The app needs the .NET 10 Desktop Runtime. Once published, `winget install SebastianBecker.PowerPlanSwitcher` also installs `Microsoft.DotNet.DesktopRuntime.10`. `scoop install extras/powerplanswitcher` does not install that runtime; install the .NET 10 Desktop Runtime before launching the app.
+
 ## Using rules to automatically switch power plans
 
 Create a list of rules that determine which power plan should be active. Rules will be triggered by various events but only the first rule in the list with a trigger of 1 or higher, determines the power plan. Click the info icons to get more information in the app.

@@ -97,7 +97,8 @@
 
         <InstallExecuteSequence>
             <Custom Action="LaunchProduct"
-                    After="InstallFinalize" />
+                    After="InstallFinalize"
+                    Condition="UILevel &gt; 3" />
         </InstallExecuteSequence>
     </Fragment>
 

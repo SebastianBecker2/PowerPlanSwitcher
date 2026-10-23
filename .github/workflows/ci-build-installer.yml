@@ -40,6 +40,20 @@ jobs:
     - name: Build MSI installer
       run: dotnet build Setup/Setup.wixproj --configuration Release -p:Platform=x64
 
+    - name: Publish portable zip
+      if: startsWith(github.ref, 'refs/tags/v')
+      shell: pwsh
+      run: |
+        $out = "artifacts/portable"
+        $cli = "artifacts/cli"
+        if (Test-Path $out) { Remove-Item $out -Recurse -Force }
+        if (Test-Path $cli) { Remove-Item $cli -Recurse -Force }
+        dotnet publish PowerPlanSwitcher/PowerPlanSwitcher.csproj --configuration Release -p:Platform=x64 --runtime win-x64 --framework net10.0-windows --no-self-contained /p:PublishReadyToRun=false /p:PublishSingleFile=true -o $out
+        dotnet publish PowerPlanSwitcher.Cli/PowerPlanSwitcher.Cli.csproj --configuration Release -p:Platform=x64 --runtime win-x64 --framework net10.0-windows --no-self-contained /p:PublishReadyToRun=false /p:PublishSingleFile=true -o $cli
+        Copy-Item "$cli\*" $out -Recurse -Force
+        Get-ChildItem $out -Recurse -Filter *.pdb | Remove-Item -Force
+        Compress-Archive -Path "$out/*" -DestinationPath artifacts/PowerPlanSwitcher-win-x64.zip
+
     - name: Upload installer artifact
       uses: actions/upload-artifact@v4
       with:
@@ -58,7 +72,9 @@ jobs:
       if: startsWith(github.ref, 'refs/tags/v')
       uses: softprops/action-gh-release@v1
       with:
-        files: Setup/bin/x64/Release/PowerPlanSwitcher.msi
+        files: |
+          Setup/bin/x64/Release/PowerPlanSwitcher.msi
+          artifacts/PowerPlanSwitcher-win-x64.zip
         prerelease: ${{ contains(github.ref, 'rc') }}
         body: ""
       env:
