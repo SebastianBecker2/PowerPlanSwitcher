@@ -608,6 +608,7 @@ namespace PowerPlanSwitcher
             tableLayoutPanel4.Dock = DockStyle.Fill;
             tableLayoutPanel4.Location = new Point(3, 19);
             tableLayoutPanel4.Name = "tableLayoutPanel4";
+            tableLayoutPanel4.Padding = new Padding(0, 8, 0, 0);
             tableLayoutPanel4.RowCount = 2;
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Absolute, 80F));
             tableLayoutPanel4.RowStyles.Add(new RowStyle());
