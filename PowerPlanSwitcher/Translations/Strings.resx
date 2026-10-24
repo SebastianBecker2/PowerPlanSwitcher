@@ -63,7 +63,13 @@
   <data name="SettingsDlg_TabPowerSchemes"><value>Power Plans</value></data>
   <data name="SettingsDlg_TabRules"><value>Rules</value></data>
   <data name="SettingsDlg_TabOtherSettings"><value>Other Settings</value></data>
+  <data name="SettingsDlg_BtnSelectorFont"><value>Font...</value></data>
+  <data name="SettingsDlg_BtnSelectorReset"><value>Reset</value></data>
+  <data name="SettingsDlg_LblSelectorWidth"><value>Width</value></data>
+  <data name="SettingsDlg_LblSelectorItemHeight"><value>Item height</value></data>
+  <data name="SettingsDlg_SelectorSizeFormat"><value>{0} × {1}</value></data>
   <data name="SettingsDlg_GroupHotkeyCycle"><value>Hotkey to cycle through Power Plans</value></data>
+  <data name="SettingsDlg_GroupPlanMenuAppearance"><value>Appearance of Power Plan selection</value></data>
   <data name="SettingsDlg_GroupColorTheme"><value>Color Theme</value></data>
   <data name="SettingsDlg_GroupNotificationLocation"><value>Notification Location</value></data>
   <data name="SettingsDlg_GroupLogging"><value>Logging</value></data>

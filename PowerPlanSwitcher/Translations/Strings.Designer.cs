@@ -1032,6 +1032,24 @@ namespace PowerPlanSwitcher.Translations {
         }
         
         /// <summary>
+        ///   查找类似 Font... 的本地化字符串。
+        /// </summary>
+        internal static string SettingsDlg_BtnSelectorFont {
+            get {
+                return ResourceManager.GetString("SettingsDlg_BtnSelectorFont", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Reset 的本地化字符串。
+        /// </summary>
+        internal static string SettingsDlg_BtnSelectorReset {
+            get {
+                return ResourceManager.GetString("SettingsDlg_BtnSelectorReset", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Set Hotkey 的本地化字符串。
         /// </summary>
         internal static string SettingsDlg_BtnSetCycleHotkey {
@@ -1176,6 +1194,33 @@ namespace PowerPlanSwitcher.Translations {
         }
         
         /// <summary>
+        ///   查找类似 Appearance of Power Plan selection 的本地化字符串。
+        /// </summary>
+        internal static string SettingsDlg_GroupPlanMenuAppearance {
+            get {
+                return ResourceManager.GetString("SettingsDlg_GroupPlanMenuAppearance", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Item height 的本地化字符串。
+        /// </summary>
+        internal static string SettingsDlg_LblSelectorItemHeight {
+            get {
+                return ResourceManager.GetString("SettingsDlg_LblSelectorItemHeight", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 Width 的本地化字符串。
+        /// </summary>
+        internal static string SettingsDlg_LblSelectorWidth {
+            get {
+                return ResourceManager.GetString("SettingsDlg_LblSelectorWidth", resourceCulture);
+            }
+        }
+        
+        /// <summary>
         ///   查找类似 Rule order matters: rules are evaluated top to bottom, and the first triggered rule is applied. 的本地化字符串。
         /// </summary>
         internal static string SettingsDlg_LblRulesOrderHint {
@@ -1280,6 +1325,15 @@ namespace PowerPlanSwitcher.Translations {
         internal static string SettingsDlg_RulesOrderHint {
             get {
                 return ResourceManager.GetString("SettingsDlg_RulesOrderHint", resourceCulture);
+            }
+        }
+        
+        /// <summary>
+        ///   查找类似 {0} × {1} 的本地化字符串。
+        /// </summary>
+        internal static string SettingsDlg_SelectorSizeFormat {
+            get {
+                return ResourceManager.GetString("SettingsDlg_SelectorSizeFormat", resourceCulture);
             }
         }
         

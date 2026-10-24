@@ -18,6 +18,10 @@ namespace PowerPlanSwitcher
                 components.Dispose();
             }
             base.Dispose(disposing);
+            if (disposing)
+            {
+                DisposeMenuFont();
+            }
         }
 
         #region Windows Form Designer generated code

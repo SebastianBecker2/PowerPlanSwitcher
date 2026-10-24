@@ -9,7 +9,6 @@ using RuleManagement;
 using RuleManagement.Dto;
 using RuleManagement.Events;
 using RuleManagement.Rules;
-using System.Drawing;
 
 public partial class SettingsDlg : Form
 {
@@ -36,6 +35,10 @@ public partial class SettingsDlg : Form
     private readonly DpiImageScaler dpiImageScaler;
 
     private Size SettingsDlgOriginalSize { get; set; } = Size.Empty;
+    private Font? selectorMenuFont;
+    private Color? selectorMenuTextColor;
+    private bool rebuildingSelectorPreview;
+    private PowerSchemeSelectorDlg? selectorPreview;
 
     public IEnumerable<IRuleDto> RuleDto => [.. Rules.Select(r => r.Dto)];
     private IEnumerable<RuleWrapper> Rules { get; init; }
@@ -70,6 +73,7 @@ public partial class SettingsDlg : Form
         TacSettingsCategories.SelectedIndexChanged +=
             TacSettingsCategories_SelectedIndexChanged;
         Size = Settings.Default.SettingsDlgSize;
+        InitializeSelectorMenu();
         RestoreSelectedTab();
 
         TipHints.SetToolTip(PibLoggingInfo, Strings.SettingsDlg_LoggingHint);
@@ -127,6 +131,7 @@ public partial class SettingsDlg : Form
 
         // Other settings tab - group boxes
         groupBox4.Text = Strings.SettingsDlg_GroupHotkeyCycle;
+        groupBox5.Text = Strings.SettingsDlg_GroupPlanMenuAppearance;
         groupBox1.Text = Strings.SettingsDlg_GroupColorTheme;
         groupBox3.Text = Strings.SettingsDlg_GroupNotificationLocation;
         groupBox2.Text = Strings.SettingsDlg_GroupLogging;
@@ -136,6 +141,13 @@ public partial class SettingsDlg : Form
         RdbCycleVisible.Text = Strings.SettingsDlg_RdbCycleVisible;
         BtnSetCycleHotkey.Text = Strings.SettingsDlg_BtnSetCycleHotkey;
         BtnRemoveCycleHotkey.Text = Strings.SettingsDlg_BtnRemoveCycleHotkey;
+
+        BtnSelectorFont.Text = Strings.SettingsDlg_BtnSelectorFont;
+        LblSelectorWidth.Text = Strings.SettingsDlg_LblSelectorWidth;
+        LblSelectorItemHeight.Text = Strings.SettingsDlg_LblSelectorItemHeight;
+        BtnSelectorReset.Text = Strings.SettingsDlg_BtnSelectorReset;
+        NudSelectorWidth.AccessibleName = Strings.SettingsDlg_LblSelectorWidth;
+        NudSelectorItemHeight.AccessibleName = Strings.SettingsDlg_LblSelectorItemHeight;
 
         // Logging group
         ChbExtendedLogging.Text = Strings.SettingsDlg_ChbExtendedLogging;
@@ -222,6 +234,12 @@ public partial class SettingsDlg : Form
         base.OnLoad(e);
     }
 
+    protected override void OnShown(EventArgs e)
+    {
+        base.OnShown(e);
+        UpdatePlanMenuPreviewVisibility();
+    }
+
     private DataGridViewRow SchemeToRow((Guid guid, string name) scheme)
     {
         var setting = PowerSchemeSettings.GetSetting(scheme.guid);
@@ -273,6 +291,8 @@ public partial class SettingsDlg : Form
             MaximumSize = Size.Empty;
             Size = SettingsDlgOriginalSize;
         }
+
+        UpdatePlanMenuPreviewVisibility();
     }
 
     private void HandleDlgPowerSchemesVisibleCellClick(
@@ -348,6 +368,18 @@ public partial class SettingsDlg : Form
         }
 
         Settings.Default.ExtendedLogging = ChbExtendedLogging.Checked;
+
+        if (selectorMenuFont is not null)
+        {
+            Settings.Default.SelectorMenuFont =
+                SelectorMenuAppearance.ToSetting(selectorMenuFont);
+            Settings.Default.SelectorMenuFontColor = selectorMenuTextColor is Color color
+                ? SelectorMenuAppearance.ToColorSetting(color)
+                : "";
+            Settings.Default.SelectorMenuWidth = (int)NudSelectorWidth.Value;
+            Settings.Default.SelectorMenuItemHeight =
+                (int)NudSelectorItemHeight.Value;
+        }
 
         Settings.Default.Save();
         ColorThemeHelper.ApplyToApplication();
@@ -817,5 +849,164 @@ public partial class SettingsDlg : Form
 
     private void BtnExportLog_Click(object sender, EventArgs e) =>
         Program.ExportLog();
+
+    private void InitializeSelectorMenu()
+    {
+        selectorMenuFont = SelectorMenuAppearance.CreateFont(
+            Settings.Default.SelectorMenuFont,
+            Font);
+        selectorMenuTextColor = SelectorMenuAppearance.ParseTextColor(
+            Settings.Default.SelectorMenuFontColor);
+        LblSelectorFont.Text = SelectorMenuAppearance.ToSetting(selectorMenuFont);
+        NudSelectorWidth.Value = SelectorMenuAppearance.ClampWidth(
+            Settings.Default.SelectorMenuWidth);
+        NudSelectorItemHeight.Value = SelectorMenuAppearance.ClampItemHeight(
+            Settings.Default.SelectorMenuItemHeight);
+    }
+
+    private void BtnSelectorFont_Click(object sender, EventArgs e)
+    {
+        if (selectorMenuFont is null)
+        {
+            return;
+        }
+
+        var startingColor = selectorMenuTextColor
+            ?? SelectorMenuAppearance.ThemeTextColor();
+        using var dialog = new FontDialog
+        {
+            Font = selectorMenuFont,
+            Color = startingColor,
+            ShowColor = true,
+            ShowEffects = true,
+        };
+        if (dialog.ShowDialog(this) == DialogResult.OK)
+        {
+            if (dialog.Color.ToArgb() != startingColor.ToArgb())
+            {
+                selectorMenuTextColor = dialog.Color;
+            }
+
+            ReplaceSelectorMenuFont(new Font(dialog.Font, dialog.Font.Style));
+            return;
+        }
+
+        RefreshSelectorPreview();
+    }
+
+    private void BtnSelectorReset_Click(object sender, EventArgs e)
+    {
+        rebuildingSelectorPreview = true;
+        try
+        {
+            NudSelectorWidth.Value = SelectorMenuAppearance.DefaultWidth;
+            NudSelectorItemHeight.Value = SelectorMenuAppearance.DefaultItemHeight;
+        }
+        finally
+        {
+            rebuildingSelectorPreview = false;
+        }
+
+        selectorMenuTextColor = null;
+        ReplaceSelectorMenuFont(
+            new Font(Font.FontFamily, SelectorMenuAppearance.DefaultFontSize));
+    }
+
+    private void SelectorMenuSize_ValueChanged(object sender, EventArgs e)
+    {
+        if (rebuildingSelectorPreview)
+        {
+            return;
+        }
+
+        RefreshSelectorPreview();
+    }
+
+    private void ReplaceSelectorMenuFont(Font next)
+    {
+        var previous = selectorMenuFont;
+        selectorMenuFont = next;
+        LblSelectorFont.Text = SelectorMenuAppearance.ToSetting(next);
+        RefreshSelectorPreview();
+        if (!ReferenceEquals(previous, next))
+        {
+            previous?.Dispose();
+        }
+    }
+
+    private void UpdatePlanMenuPreviewVisibility()
+    {
+        if (TacSettingsCategories.SelectedTab == TapOtherSettings)
+        {
+            ShowSelectorPreview();
+            return;
+        }
+
+        HideSelectorPreview();
+    }
+
+    private void ShowSelectorPreview()
+    {
+        if (!Visible || selectorMenuFont is null)
+        {
+            return;
+        }
+
+        selectorPreview ??= new PowerSchemeSelectorDlg();
+        selectorPreview.ApplyPreview(
+            selectorMenuFont,
+            selectorMenuTextColor,
+            (int)NudSelectorWidth.Value,
+            (int)NudSelectorItemHeight.Value);
+        if (!selectorPreview.Visible)
+        {
+            selectorPreview.Show(this);
+        }
+
+        selectorPreview.BringToFront();
+    }
+
+    private void HideSelectorPreview()
+    {
+        if (selectorPreview is { Visible: true })
+        {
+            selectorPreview.Hide();
+        }
+    }
+
+    private void RefreshSelectorPreview()
+    {
+        if (selectorPreview is not { Visible: true } || selectorMenuFont is null)
+        {
+            return;
+        }
+
+        selectorPreview.ApplyPreview(
+            selectorMenuFont,
+            selectorMenuTextColor,
+            (int)NudSelectorWidth.Value,
+            (int)NudSelectorItemHeight.Value);
+    }
+
+    private void DisposeSelectorPreview()
+    {
+        if (selectorPreview is null)
+        {
+            return;
+        }
+
+        var preview = selectorPreview;
+        selectorPreview = null;
+        if (!preview.IsDisposed)
+        {
+            preview.Dispose();
+        }
+    }
+
+    private void DisposeSelectorMenuFont()
+    {
+        selectorMenuFont?.Dispose();
+        selectorMenuFont = null;
+    }
 }
 

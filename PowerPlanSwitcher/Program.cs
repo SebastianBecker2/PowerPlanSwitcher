@@ -38,7 +38,7 @@ internal static class Program
     private static readonly string RunMarkerPath =
         Path.Combine(LogPath, ".run-in-progress");
     private static readonly string ZipLibraryPath =
-        Path.Combine("Resources", "7z.dll");
+        Path.Combine(System.AppContext.BaseDirectory, "Resources", "7z.dll");
     private static readonly Guid RunId = Guid.NewGuid();
     private static bool previousRunUnclean;
     private static bool runMarkerInitialized;

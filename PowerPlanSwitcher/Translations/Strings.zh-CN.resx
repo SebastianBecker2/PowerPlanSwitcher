@@ -216,8 +216,26 @@
   <data name="SettingsDlg_TabOtherSettings" xml:space="preserve">
     <value>其他设置</value>
   </data>
+  <data name="SettingsDlg_BtnSelectorFont" xml:space="preserve">
+    <value>字体...</value>
+  </data>
+  <data name="SettingsDlg_BtnSelectorReset" xml:space="preserve">
+    <value>重置</value>
+  </data>
+  <data name="SettingsDlg_LblSelectorWidth" xml:space="preserve">
+    <value>宽度</value>
+  </data>
+  <data name="SettingsDlg_LblSelectorItemHeight" xml:space="preserve">
+    <value>每项高度</value>
+  </data>
+  <data name="SettingsDlg_SelectorSizeFormat" xml:space="preserve">
+    <value>{0} × {1}</value>
+  </data>
   <data name="SettingsDlg_GroupHotkeyCycle" xml:space="preserve">
     <value>循环切换计划快捷键</value>
+  </data>
+  <data name="SettingsDlg_GroupPlanMenuAppearance" xml:space="preserve">
+    <value>电源计划选择外观</value>
   </data>
   <data name="SettingsDlg_GroupColorTheme" xml:space="preserve">
     <value>颜色主题</value>

@@ -274,5 +274,53 @@ namespace PowerPlanSwitcher.Properties {
                 this["ProcessMonitorIntervalInMilliseconds"] = value;
             }
         }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SelectorMenuFont {
+            get {
+                return ((string)(this["SelectorMenuFont"]));
+            }
+            set {
+                this["SelectorMenuFont"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("")]
+        public string SelectorMenuFontColor {
+            get {
+                return ((string)(this["SelectorMenuFontColor"]));
+            }
+            set {
+                this["SelectorMenuFontColor"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("360")]
+        public int SelectorMenuWidth {
+            get {
+                return ((int)(this["SelectorMenuWidth"]));
+            }
+            set {
+                this["SelectorMenuWidth"] = value;
+            }
+        }
+        
+        [global::System.Configuration.UserScopedSettingAttribute()]
+        [global::System.Diagnostics.DebuggerNonUserCodeAttribute()]
+        [global::System.Configuration.DefaultSettingValueAttribute("50")]
+        public int SelectorMenuItemHeight {
+            get {
+                return ((int)(this["SelectorMenuItemHeight"]));
+            }
+            set {
+                this["SelectorMenuItemHeight"] = value;
+            }
+        }
     }
 }

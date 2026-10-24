@@ -49,7 +49,8 @@ public partial class IconSelectionDlg : Form
 
     }
 
-    private static string ArchivePath => @"Resources\fatcow-hosting-icons-3.9.2.zip";
+    private static string ArchivePath =>
+        Path.Combine(System.AppContext.BaseDirectory, "Resources", "fatcow-hosting-icons-3.9.2.zip");
     private static string ArchiveFolder => "FatCow_Icons32x32";
 
     private readonly CancellationTokenSource loadCancellation = new();
