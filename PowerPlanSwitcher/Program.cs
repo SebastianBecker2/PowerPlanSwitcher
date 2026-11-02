@@ -376,6 +376,7 @@ internal static class Program
     [STAThread]
     private static void Main()
     {
+		LocalizationService.Initialize();
         InitializeRunMarker();
 
         if (Settings.Default.UpgradeRequired)

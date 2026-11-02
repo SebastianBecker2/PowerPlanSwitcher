@@ -36,15 +36,15 @@ namespace RuleManagement.Translations {
         ///   返回此类使用的缓存的 ResourceManager 实例。
         /// </summary>
         [global::System.ComponentModel.EditorBrowsableAttribute(global::System.ComponentModel.EditorBrowsableState.Advanced)]
-        internal static global::System.Resources.ResourceManager ResourceManager {
-            get {
-                if (object.ReferenceEquals(resourceMan, null)) {
-                    global::System.Resources.ResourceManager temp = new global::System.Resources.ResourceManager("RuleManagement.Translations.Strings", typeof(Strings).Assembly);
-                    resourceMan = temp;
-                }
-                return resourceMan;
-            }
-        }
+		internal static global::System.Resources.ResourceManager ResourceManager {
+			get {
+				if (object.ReferenceEquals(resourceMan, null)) {
+					resourceMan = LocalizationService.CreateResourceManager(
+						"RuleManagement.Translations.Strings", typeof(Strings).Assembly);
+				}
+				return resourceMan;
+			}
+		}
         
         /// <summary>
         ///   重写当前线程的 CurrentUICulture 属性，对

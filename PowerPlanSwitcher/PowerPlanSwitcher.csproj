@@ -98,4 +98,21 @@ PowerPlanSwitcher is using the following tools, resources and libraries:
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>
+  <ItemGroup>
+    <None Update="Lang\*.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </None>
+  </ItemGroup>
+  <PropertyGroup>
+    <SyncLangJsonProject>$(MSBuildThisFileDirectory)..\tools\SyncLangJson\SyncLangJson.csproj</SyncLangJsonProject>
+    <!-- Defaults to sync locally; CI passes -p:SyncLangJsonMode=check to switch to check mode. -->
+    <SyncLangJsonMode Condition="'$(SyncLangJsonMode)' == ''">sync</SyncLangJsonMode>
+  </PropertyGroup>
+
+  <Target Name="SyncLangJson" BeforeTargets="Build">
+    <Exec Command="dotnet run --project &quot;$(SyncLangJsonProject)&quot; -- --$(SyncLangJsonMode)"
+          StandardOutputImportance="Low"
+          StandardErrorImportance="High" />
+  </Target>
 </Project>
