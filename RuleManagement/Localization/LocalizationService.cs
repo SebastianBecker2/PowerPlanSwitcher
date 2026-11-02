@@ -13,6 +13,13 @@ public static class LocalizationService
     private static IReadOnlyDictionary<string, string> _strings =
         new Dictionary<string, string>();
 
+
+	/// <summary>
+	/// Loads <c>Lang/&lt;CultureInfo.CurrentUICulture.Name&gt;.json</c> from
+	/// <see cref="AppContext.BaseDirectory"/>. Missing file or missing keys fall
+	/// back to the embedded English <c>Strings.resx</c>. See
+	/// <c>PowerPlanSwitcher/Lang/README.md</c> for file naming.
+	/// </summary>
     public static void Initialize(string? cultureName = null)
     {
         cultureName ??= CultureInfo.CurrentUICulture.Name;

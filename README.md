@@ -66,6 +66,12 @@ pps cycle [--all | --visible]
 pps get-active [--json]
 ```
 
+## Translations
+
+UI strings are loaded at runtime from `Lang/<culture>.json` next to the executable. Missing keys fall back to the embedded English `Strings.resx`.
+
+To add a language, see [PowerPlanSwitcher/Lang/README.md](PowerPlanSwitcher/Lang/README.md).
+
 PowerPlanSwitcher is using the following tools, resources and libraries:
 
 - [.NET 10](https://learn.microsoft.com/en-us/dotnet/core/whats-new/dotnet-10)
