@@ -295,10 +295,10 @@
     <value>规则顺序很重要：规则从上到下依次评估，第一个触发的规则会被应用。</value>
   </data>
   <data name="SettingsDlg_RdbCycleAll" xml:space="preserve">
-    <value>在所有电源计划中循环</value>
+    <value>在所有计划中循环</value>
   </data>
   <data name="SettingsDlg_RdbCycleVisible" xml:space="preserve">
-    <value>仅在可见电源计划中循环</value>
+    <value>仅在可见计划中循环</value>
   </data>
   <data name="SettingsDlg_BtnSetCycleHotkey" xml:space="preserve">
     <value>设置快捷键</value>
@@ -350,8 +350,7 @@
 这些信息可能被视为敏感数据。</value>
   </data>
   <data name="SettingsDlg_RulesOrderHint" xml:space="preserve">
-    <value>规则从上到下依次评估。
-当前第一个已触发的规则会被应用。
+    <value>规则从上到下依次评估，应用第一个触发的规则。
 上移/下移规则以更改优先级。</value>
   </data>
   <data name="ToastDlg_Title" xml:space="preserve">
