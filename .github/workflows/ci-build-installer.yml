@@ -76,6 +76,14 @@ jobs:
           Setup/bin/x64/Release/PowerPlanSwitcher.msi
           artifacts/PowerPlanSwitcher-win-x64.zip
         prerelease: ${{ contains(github.ref, 'rc') }}
-        body: ""
+        generate_release_notes: true
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Publish to WinGet
+      if: startsWith(github.ref, 'refs/tags/v') && !contains(github.ref, 'rc')
+      uses: vedantmgoyal9/winget-releaser@v2
+      with:
+        identifier: SebastianBecker.PowerPlanSwitcher
+        installers-regex: '\.msi$'
+        token: ${{ secrets.WINGET_TOKEN }}
