@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<root>
+  <resheader name="resmimetype">
+    <value>text/microsoft-resx</value>
+  </resheader>
+  <resheader name="version">
+    <value>2.0</value>
+  </resheader>
+  <resheader name="reader">
+    <value>System.Resources.ResXResourceReader, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+  <resheader name="writer">
+    <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
+  </resheader>
+
+  <!-- Process Rule -->
+  <data name="Rule_Process_Desc"><value>プロセス -&gt; {0} -&gt; {1}</value></data>
+  <data name="Rule_Process_CmpExact"><value>パスが完全一致</value></data>
+  <data name="Rule_Process_CmpStartsWith"><value>パスが次で始まる</value></data>
+  <data name="Rule_Process_CmpEndsWith"><value>パスが次で終わる</value></data>
+  <data name="Rule_Process_CmpWildcard"><value>ワイルドカード一致</value></data>
+
+  <!-- Power Line Rule -->
+  <data name="Rule_PowerLine_Desc"><value>電源接続 -&gt; {0}</value></data>
+  <data name="Rule_PowerLine_Online"><value>AC 電源に接続中</value></data>
+  <data name="Rule_PowerLine_Offline"><value>バッテリー使用中</value></data>
+  <data name="Rule_PowerLine_Unknown"><value>状態不明</value></data>
+
+  <!-- Idle Rule -->
+  <data name="Rule_Idle_Desc"><value>アイドル時間 -&gt; {0}</value></data>
+
+  <!-- Startup Rule -->
+  <data name="Rule_Startup_Name"><value>起動ルール</value></data>
+  <data name="Rule_Startup_Desc_OnlyDelay"><value>起動ルール ({0})</value></data>
+  <data name="Rule_Startup_Desc_DelayDuration"><value>起動ルール ({0}、{1})</value></data>
+  <data name="Rule_Startup_Delay"><value>遅延 {0}</value></data>
+  <data name="Rule_Startup_Duration"><value>継続時間 {0}</value></data>
+  <data name="Rule_Startup_Second"><value>{0}秒</value></data>
+  <data name="Rule_Startup_Seconds"><value>{0}秒</value></data>
+  <data name="Rule_Startup_Minute"><value>{0}分</value></data>
+  <data name="Rule_Startup_Minutes"><value>{0}分</value></data>
+  <data name="Rule_Startup_Hour"><value>{0}時間</value></data>
+  <data name="Rule_Startup_Hours"><value>{0}時間</value></data>
+
+  <!-- Shutdown Rule -->
+  <data name="Rule_Shutdown_Desc"><value>シャットダウンルール</value></data>
+</root>
